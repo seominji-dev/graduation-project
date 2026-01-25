@@ -123,7 +123,7 @@ describe('RollbackManager', () => {
     });
 
     it('should get latest checkpoint', () => {
-      const cp1 = manager.createCheckpoint(agent);
+      const _cp1 = manager.createCheckpoint(agent);
       const cp2 = manager.createCheckpoint(agent);
 
       const latest = manager.getLatestCheckpoint(agent.id);

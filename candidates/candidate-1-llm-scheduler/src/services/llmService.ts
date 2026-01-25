@@ -7,6 +7,9 @@ import { LLMProvider } from '../domain/models';
 import { config } from '../config';
 import ollama from 'ollama';
 import OpenAI from 'openai';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('LLMService');
 
 export interface LLMResponse {
   content: string;
@@ -43,7 +46,7 @@ export class LLMService {
           throw new Error('Unsupported provider: ' + String(provider.name));
       }
     } catch (error) {
-      console.error('LLM processing error:', error);
+      logger.error('LLM processing error:', error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       throw new Error('LLM processing failed: ' + errorMsg);
     }
@@ -61,7 +64,7 @@ export class LLMService {
 
       return response.response;
     } catch (error) {
-      console.error('Ollama error:', error);
+      logger.error('Ollama error:', error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       throw new Error('Ollama processing failed: ' + errorMsg);
     }
@@ -90,7 +93,7 @@ export class LLMService {
 
       return response.choices[0]?.message?.content || '';
     } catch (error) {
-      console.error('OpenAI error:', error);
+      logger.error('OpenAI error:', error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       throw new Error('OpenAI processing failed: ' + errorMsg);
     }
@@ -113,7 +116,7 @@ export class LLMService {
       await this.ollamaClient.list();
       results.ollama = true;
     } catch (error) {
-      console.error('Ollama health check failed:', error);
+      logger.warn('Ollama health check failed:', error);
     }
 
     // Check OpenAI
@@ -122,7 +125,7 @@ export class LLMService {
         await this.openaiClient.models.list();
         results.openai = true;
       } catch (error) {
-        console.error('OpenAI health check failed:', error);
+        logger.warn('OpenAI health check failed:', error);
       }
     }
 

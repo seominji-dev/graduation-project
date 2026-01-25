@@ -9,7 +9,7 @@ import {
   Agent,
   DeadlockCycle,
   RecoveryActionType,
-  createRecoveryAction,
+  
 } from '../domain/models.js';
 
 /**
@@ -57,7 +57,7 @@ export class VictimSelector {
    */
   public selectVictim(
     cycle: DeadlockCycle,
-    agents: Map<string, Agent>
+    agents: Map<string, Agent>,
   ): VictimSelectionResult {
     const cycleAgents = cycle.agentIds
       .map(id => agents.get(id))
@@ -142,7 +142,7 @@ export class VictimSelector {
     score: number;
   } {
     const sorted = [...agents].sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
     const victim = sorted[0];
     
@@ -162,7 +162,7 @@ export class VictimSelector {
     score: number;
   } {
     const sorted = [...agents].sort(
-      (a, b) => b.heldResources.length - a.heldResources.length
+      (a, b) => b.heldResources.length - a.heldResources.length,
     );
     const victim = sorted[0];
     
@@ -179,7 +179,7 @@ export class VictimSelector {
     score: number;
   } {
     const sorted = [...agents].sort(
-      (a, b) => a.heldResources.length - b.heldResources.length
+      (a, b) => a.heldResources.length - b.heldResources.length,
     );
     const victim = sorted[0];
     
@@ -215,7 +215,7 @@ export class VictimSelector {
 
   public rankAgents(
     cycle: DeadlockCycle,
-    agents: Map<string, Agent>
+    agents: Map<string, Agent>,
   ): Array<{ agent: Agent; score: number; rank: number }> {
     const cycleAgents = cycle.agentIds
       .map(id => agents.get(id))
@@ -279,7 +279,7 @@ export class CompositeVictimSelector {
 
   public getAllRecommendations(
     cycle: DeadlockCycle,
-    agents: Map<string, Agent>
+    agents: Map<string, Agent>,
   ): Map<VictimSelectionStrategy, VictimSelectionResult> {
     const recommendations = new Map<VictimSelectionStrategy, VictimSelectionResult>();
 
@@ -297,7 +297,7 @@ export class CompositeVictimSelector {
 
   public getConsensusVictim(
     cycle: DeadlockCycle,
-    agents: Map<string, Agent>
+    agents: Map<string, Agent>,
   ): VictimSelectionResult | null {
     const recommendations = this.getAllRecommendations(cycle, agents);
     

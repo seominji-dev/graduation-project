@@ -6,6 +6,7 @@
 
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import { MemoryPage, MemoryLevel, PageStatus } from '../domain/models';
+import logger from '../utils/logger';
 
 // MemoryPage Document Interface
 export interface IMemoryPageDocument extends Document {
@@ -20,7 +21,13 @@ export interface IMemoryPageDocument extends Document {
   lastAccessedAt: Date;
   createdAt: Date;
   size: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
+}
+
+// Aggregation result interface
+interface SizeAggregationResult {
+  _id: null;
+  totalSize: number;
 }
 
 // MemoryPage Schema
@@ -30,21 +37,21 @@ const MemoryPageSchema = new Schema<IMemoryPageDocument>({
   key: { type: String, required: true },
   value: { type: String, required: true },
   embedding: { type: [Number] },
-  level: { 
-    type: String, 
+  level: {
+    type: String,
     enum: Object.values(MemoryLevel),
-    default: MemoryLevel.L3_DISK 
+    default: MemoryLevel.L3_DISK,
   },
   status: {
     type: String,
     enum: Object.values(PageStatus),
-    default: PageStatus.IDLE
+    default: PageStatus.IDLE,
   },
   accessCount: { type: Number, default: 0 },
   lastAccessedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now, index: true },
   size: { type: Number, default: 0 },
-  metadata: { type: Schema.Types.Mixed }
+  metadata: { type: Schema.Types.Mixed },
 });
 
 // Compound index for efficient queries
@@ -73,7 +80,7 @@ export class MongoDBPageStore {
     this.collectionName = config.collectionName || 'archived_contexts';
     this.MemoryPageModel = mongoose.model<IMemoryPageDocument>(
       this.collectionName,
-      MemoryPageSchema
+      MemoryPageSchema,
     );
   }
 
@@ -84,9 +91,9 @@ export class MongoDBPageStore {
     try {
       await mongoose.connect(this.uri);
       this.initialized = true;
-      console.log(`MongoDB initialized: ${this.dbName}.${this.collectionName}`);
+      logger.info(`MongoDB initialized: ${this.dbName}.${this.collectionName}`);
     } catch (error) {
-      console.error('Failed to initialize MongoDB:', error);
+      logger.error('Failed to initialize MongoDB:', error);
       throw error;
     }
   }
@@ -117,7 +124,7 @@ export class MongoDBPageStore {
 
       await doc.save();
     } catch (error) {
-      console.error('Failed to store page in MongoDB:', error);
+      logger.error('Failed to store page in MongoDB:', error);
       throw error;
     }
   }
@@ -134,7 +141,7 @@ export class MongoDBPageStore {
       const doc = await this.MemoryPageModel.findOne({ agentId, key });
       return doc ? this.toMemoryPage(doc) : null;
     } catch (error) {
-      console.error('Failed to get page from MongoDB:', error);
+      logger.error('Failed to get page from MongoDB:', error);
       return null;
     }
   }
@@ -160,10 +167,10 @@ export class MongoDBPageStore {
             size: page.size,
             metadata: page.metadata,
           },
-        }
+        },
       );
     } catch (error) {
-      console.error('Failed to update page in MongoDB:', error);
+      logger.error('Failed to update page in MongoDB:', error);
       throw error;
     }
   }
@@ -180,7 +187,7 @@ export class MongoDBPageStore {
       const result = await this.MemoryPageModel.deleteOne({ agentId, key });
       return result.deletedCount > 0;
     } catch (error) {
-      console.error('Failed to delete page from MongoDB:', error);
+      logger.error('Failed to delete page from MongoDB:', error);
       return false;
     }
   }
@@ -194,14 +201,11 @@ export class MongoDBPageStore {
     }
 
     try {
-      const docs = await this.MemoryPageModel
-        .find({ agentId })
-        .sort({ lastAccessedAt: -1 })
-        .exec();
-      
+      const docs = await this.MemoryPageModel.find({ agentId }).sort({ lastAccessedAt: -1 }).exec();
+
       return docs.map(doc => this.toMemoryPage(doc));
     } catch (error) {
-      console.error('Failed to get pages from MongoDB:', error);
+      logger.error('Failed to get pages from MongoDB:', error);
       return [];
     }
   }
@@ -219,21 +223,21 @@ export class MongoDBPageStore {
 
     try {
       const count = await this.MemoryPageModel.countDocuments();
-      const stats = await this.MemoryPageModel.aggregate([
+      const stats = await this.MemoryPageModel.aggregate<SizeAggregationResult>([
         {
           $group: {
             _id: null,
-            totalSize: { $sum: '$size' }
-          }
-        }
+            totalSize: { $sum: '$size' },
+          },
+        },
       ]).exec();
 
       return {
         count,
-        totalSize: stats[0]?.totalSize || 0,
+        totalSize: stats[0]?.totalSize ?? 0,
       };
     } catch (error) {
-      console.error('Failed to get MongoDB stats:', error);
+      logger.error('Failed to get MongoDB stats:', error);
       return { count: 0, totalSize: 0 };
     }
   }
@@ -249,7 +253,7 @@ export class MongoDBPageStore {
     try {
       await this.MemoryPageModel.deleteMany({});
     } catch (error) {
-      console.error('Failed to clear MongoDB:', error);
+      logger.error('Failed to clear MongoDB:', error);
     }
   }
 

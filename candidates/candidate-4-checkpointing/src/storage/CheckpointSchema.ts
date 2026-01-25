@@ -3,14 +3,7 @@
  */
 
 import mongoose, { Schema, Model, Document } from 'mongoose';
-import {
-  Checkpoint,
-  CheckpointType,
-  CheckpointStatus,
-  AgentState,
-  CheckpointMetadata,
-  StateDiff,
-} from '../domain/models.js';
+import { Checkpoint } from '../domain/models.js';
 
 interface CheckpointDocument extends Document, Omit<Checkpoint, '_id'> {}
 
@@ -57,7 +50,7 @@ const CheckpointMetadataSchema = new Schema({
   },
 }, { _id: false });
 
-const CheckpointSchema = new Schema<CheckpointDocument>({
+const CheckpointSchemaDefinition = new Schema<CheckpointDocument>({
   agentId: { type: String, required: true, index: true },
   checkpointId: { type: String, required: true, unique: true },
   timestamp: { type: Date, required: true, index: true },
@@ -86,9 +79,9 @@ const CheckpointSchema = new Schema<CheckpointDocument>({
 });
 
 // Compound indexes for common queries
-CheckpointSchema.index({ agentId: 1, sequenceNumber: -1 });
-CheckpointSchema.index({ agentId: 1, createdAt: -1 });
-CheckpointSchema.index({ agentId: 1, type: 1 });
+CheckpointSchemaDefinition.index({ agentId: 1, sequenceNumber: -1 });
+CheckpointSchemaDefinition.index({ agentId: 1, createdAt: -1 });
+CheckpointSchemaDefinition.index({ agentId: 1, type: 1 });
 
 export const CheckpointModel: Model<CheckpointDocument> = 
-  mongoose.model<CheckpointDocument>('Checkpoint', CheckpointSchema);
+  mongoose.model<CheckpointDocument>('Checkpoint', CheckpointSchemaDefinition);

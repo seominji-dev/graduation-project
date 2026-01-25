@@ -5,6 +5,9 @@
 
 import mongoose from 'mongoose';
 import { config } from '../config';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('MongoDB');
 
 class MongoDBManager {
   private isConnected: boolean = false;
@@ -20,9 +23,9 @@ class MongoDBManager {
     try {
       await mongoose.connect(config.mongodb.uri);
       this.isConnected = true;
-      console.log('MongoDB connected successfully');
+      logger.info('MongoDB connected successfully');
     } catch (error) {
-      console.error('MongoDB connection error:', error);
+      logger.error('MongoDB connection error:', error);
       throw error;
     }
   }
@@ -34,7 +37,7 @@ class MongoDBManager {
     if (this.isConnected) {
       await mongoose.disconnect();
       this.isConnected = false;
-      console.log('MongoDB disconnected');
+      logger.info('MongoDB disconnected');
     }
   }
 

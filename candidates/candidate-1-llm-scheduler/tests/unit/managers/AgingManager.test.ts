@@ -74,7 +74,7 @@ describe('AgingManager', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
       await agingManager.start();
       await agingManager.start();
-      expect(consoleWarnSpy).toHaveBeenCalledWith('AgingManager already started');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('AgingManager already started'));
       consoleWarnSpy.mockRestore();
     });
   });

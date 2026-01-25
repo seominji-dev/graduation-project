@@ -7,6 +7,10 @@
  * SPEC-SCHED-003: MLFQ Rule 5 - Periodic boosting
  */
 
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('BoostManager');
+
 /**
  * Boost configuration
  */
@@ -36,11 +40,11 @@ export class BoostManager {
    */
   start(): void {
     if (this.intervalId) {
-      console.warn('BoostManager already started');
+      logger.warn('BoostManager already started');
       return;
     }
 
-    console.log('Starting BoostManager (interval: ' + BOOST_INTERVAL_MS + 'ms)');
+    logger.info('Starting BoostManager (interval: ' + BOOST_INTERVAL_MS + 'ms)');
 
     // Schedule periodic boosting
     this.intervalId = setInterval(() => {
@@ -64,7 +68,7 @@ export class BoostManager {
       this.intervalId = null;
     }
     this.scheduler = null;
-    console.log('BoostManager stopped (total boosts: ' + this.boostCount + ')');
+    logger.info('BoostManager stopped (total boosts: ' + this.boostCount + ')');
   }
 
   /**
@@ -80,9 +84,9 @@ export class BoostManager {
       const boostedCount = await this.scheduler.boostAllJobs();
       this.boostCount++;
       
-      console.log('Boost #' + this.boostCount + ': Moved ' + boostedCount + ' jobs to Q0');
+      logger.info('Boost #' + this.boostCount + ': Moved ' + boostedCount + ' jobs to Q0');
     } catch (error) {
-      console.error('Boost cycle failed:', error);
+      logger.error('Boost cycle failed:', error);
     }
   }
 

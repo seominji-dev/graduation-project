@@ -2,9 +2,40 @@
  * Tests for MongoDB Infrastructure
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Mock mongoose before importing the module
+vi.mock('mongoose', async () => {
+  const actual = await vi.importActual('mongoose');
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      connect: vi.fn().mockResolvedValue(undefined),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+      model: vi.fn((name: string, schema: any) => {
+        return {
+          modelName: name,
+          schema,
+          find: vi.fn(),
+          findOne: vi.fn(),
+          create: vi.fn(),
+        };
+      }),
+      Schema: actual.Schema,
+    },
+  };
+});
 
 describe('MongoDB Infrastructure', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
   describe('Module Exports', () => {
     it('should export connectToMongoDB function', async () => {
       const module = await import('../../src/infrastructure/mongodb.js');
@@ -49,14 +80,8 @@ describe('MongoDB Infrastructure', () => {
       const { connectToMongoDB } = await import('../../src/infrastructure/mongodb.js');
       const result = connectToMongoDB();
       expect(result).toBeInstanceOf(Promise);
-      // Clean up - try to disconnect if connection succeeded
-      try {
-        await result;
-        const { disconnectFromMongoDB } = await import('../../src/infrastructure/mongodb.js');
-        await disconnectFromMongoDB();
-      } catch (e) {
-        // Ignore errors if MongoDB is not available
-      }
+      // Wait for the mocked promise to resolve
+      await expect(result).resolves.toBeUndefined();
     });
   });
 

@@ -188,7 +188,7 @@ export enum RecoveryResult {
  */
 export function createAgent(
   name: string,
-  priority: number = 5
+  priority: number = 5,
 ): Agent {
   return {
     id: uuidv4(),
@@ -208,7 +208,7 @@ export function createAgent(
 export function createResource(
   name: string,
   type: ResourceType = ResourceType.CUSTOM,
-  instances: number = 1
+  instances: number = 1,
 ): Resource {
   return {
     id: uuidv4(),
@@ -227,7 +227,7 @@ export function createResource(
 export function createWaitForEdge(
   fromAgentId: string,
   toAgentId: string,
-  resourceId: string
+  resourceId: string,
 ): WaitForEdge {
   return {
     id: uuidv4(),
@@ -255,7 +255,7 @@ export function createWaitForGraph(): WaitForGraph {
  */
 export function createDeadlockCycle(
   agentIds: string[],
-  edges: WaitForEdge[]
+  edges: WaitForEdge[],
 ): DeadlockCycle {
   return {
     agentIds,
@@ -270,7 +270,7 @@ export function createDeadlockCycle(
  */
 export function createDetectionResult(
   hasDeadlock: boolean,
-  cycles: DeadlockCycle[]
+  cycles: DeadlockCycle[],
 ): DetectionResult {
   const affectedAgents = new Set<string>();
   cycles.forEach(cycle => {
@@ -292,7 +292,7 @@ export function createRecoveryAction(
   type: RecoveryActionType,
   agentId: string,
   resourcesReleased: string[] = [],
-  result: RecoveryResult = RecoveryResult.SUCCESS
+  result: RecoveryResult = RecoveryResult.SUCCESS,
 ): RecoveryAction {
   return {
     type,

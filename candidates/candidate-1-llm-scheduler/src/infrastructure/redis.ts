@@ -5,6 +5,9 @@
 
 import Redis from 'ioredis';
 import { config } from '../config';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('Redis');
 
 class RedisManager {
   private client: Redis | null = null;
@@ -28,11 +31,11 @@ class RedisManager {
       });
 
       this.client.on('error', (err) => {
-        console.error('Redis connection error:', err);
+        logger.error('Redis connection error:', err);
       });
 
       this.client.on('connect', () => {
-        console.log('Redis connected successfully');
+        logger.info('Redis connected successfully');
       });
     }
 
@@ -54,11 +57,11 @@ class RedisManager {
       });
 
       this.bullmqConnection.on('error', (err) => {
-        console.error('BullMQ Redis connection error:', err);
+        logger.error('BullMQ Redis connection error:', err);
       });
 
       this.bullmqConnection.on('connect', () => {
-        console.log('BullMQ Redis connected successfully');
+        logger.info('BullMQ Redis connected successfully');
       });
     }
 

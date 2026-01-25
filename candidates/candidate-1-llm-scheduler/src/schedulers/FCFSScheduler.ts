@@ -26,6 +26,9 @@ import {
   
 } from './types';
 import { LLMService } from '../services/llmService';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('FCFSScheduler');
 
 export class FCFSScheduler implements IScheduler {
   private queue: Queue | null = null;
@@ -78,18 +81,18 @@ export class FCFSScheduler implements IScheduler {
 
     // Worker event handlers
     this.worker.on('completed', (job: Job<QueueJob>) => {
-      console.log('Job ' + job.id + ' completed');
+      logger.info('Job ' + job.id + ' completed');
       this.cleanupJobTimings(job.data.requestId);
     });
 
     this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
-      console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
+      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
       }
     });
 
-    console.log('FCFS Scheduler "' + this.config.name + '" initialized');
+    logger.info('FCFS Scheduler "' + this.config.name + '" initialized');
     return Promise.resolve();
   }
 
@@ -235,7 +238,7 @@ export class FCFSScheduler implements IScheduler {
       await this.queue.close();
       this.queue = null;
     }
-    console.log('FCFS Scheduler "' + this.config.name + '" shut down');
+    logger.info('FCFS Scheduler "' + this.config.name + '" shut down');
   }
 
   /**
@@ -323,7 +326,7 @@ export class FCFSScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      console.error('Failed to log request:', error);
+      logger.error('Failed to log request:', error);
     }
   }
 
@@ -355,7 +358,7 @@ export class FCFSScheduler implements IScheduler {
         }
       );
     } catch (logError) {
-      console.error('Failed to log response:', logError);
+      logger.error('Failed to log response:', logError);
     }
   }
 

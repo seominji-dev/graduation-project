@@ -5,6 +5,9 @@
  */
 
 import { EventEmitter } from 'events';
+import { createLogger } from '../../utils/logger';
+
+const logger = createLogger('MockRedis');
 
 class MockRedisConnection extends EventEmitter {
   status = 'ready';
@@ -16,7 +19,7 @@ class MockRedisConnection extends EventEmitter {
   };
   keyPrefix = 'bull';
   _client = this; // Reference to self for BullMQ internal use
-  commands: Map<string, any> = new Map();
+  commands: Map<string, unknown> = new Map();
 
   duplicate() {
     return new MockRedisConnection();
@@ -103,10 +106,10 @@ class MockRedisConnection extends EventEmitter {
     return [];
   }
   // defineCommand for BullMQ Lua scripts
-  defineCommand(name: string, definition: any) {
+  defineCommand(name: string, definition: unknown) {
     // Store the command and create a method that can be called
     this.commands.set(name, definition);
-    (this as any)[name] = async (...args: any[]) => {
+    (this as Record<string, unknown>)[name] = async () => {
       // Return default values for common BullMQ commands
       if (name.includes('getCounts') || name.includes('count')) {
         return [0, 0, 0, 0]; // waiting, active, completed, failed
@@ -292,10 +295,10 @@ class RedisManager {
     if (!this.client) {
       this.client = new MockRedisConnection();
       this.client.on('error', (err) => {
-        console.error('Redis connection error:', err);
+        logger.error('Redis connection error:', err);
       });
       this.client.on('connect', () => {
-        console.log('Redis connected successfully');
+        logger.info('Redis connected successfully');
       });
     }
     return this.client;
@@ -309,10 +312,10 @@ class RedisManager {
     if (!this.bullmqConnection) {
       this.bullmqConnection = new MockRedisConnection();
       this.bullmqConnection.on('error', (err) => {
-        console.error('BullMQ Redis connection error:', err);
+        logger.error('BullMQ Redis connection error:', err);
       });
       this.bullmqConnection.on('connect', () => {
-        console.log('BullMQ Redis connected successfully');
+        logger.info('BullMQ Redis connected successfully');
       });
     }
     return this.bullmqConnection;

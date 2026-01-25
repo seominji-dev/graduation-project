@@ -175,7 +175,7 @@ export class SafetyChecker {
         const need = this.calculateNeed(
           agentId,
           state.allocation,
-          state.maximumDemand
+          state.maximumDemand,
         );
 
         let canFinish = true;
@@ -224,7 +224,7 @@ export class SafetyChecker {
   private calculateNeed(
     agentId: string,
     allocation: Map<string, Map<string, number>>,
-    maximumDemand: Map<string, Map<string, number>>
+    maximumDemand: Map<string, Map<string, number>>,
   ): Map<string, number> {
     const need = new Map<string, number>();
     const alloc = allocation.get(agentId) || new Map();
@@ -252,7 +252,7 @@ export class SafetyChecker {
   public createRequest(
     agentId: string,
     resourceId: string,
-    count: number = 1
+    count: number = 1,
   ): ResourceRequest {
     return {
       agentId,

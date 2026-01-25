@@ -1,24 +1,39 @@
 /**
  * Hierarchical Memory Manager
  * Implements OS paging with three-tier memory hierarchy
- * 
+ *
  * Architecture:
  * - L1 (Redis): Fast cache for frequently accessed pages
  * - L2 (ChromaDB): Semantic search for context retrieval
  * - L3 (MongoDB): Long-term storage for cold data
- * 
+ *
  * REQ-MEM-001: Three-tier hierarchy for efficient memory management
  * REQ-MEM-004: Page fault handling when data not in cache
  * REQ-MEM-005: LRU eviction policy
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { MemoryPage, PageStatus, MemoryLevel, MemoryAccessRequest, MemoryAccessResponse } from '../domain/models';
+import {
+  MemoryPage,
+  PageStatus,
+  MemoryLevel,
+  MemoryAccessRequest,
+  MemoryAccessResponse,
+} from '../domain/models';
 import { MemoryPageLRUCache } from './LRUCache';
 import { RedisCacheStore } from '../infrastructure/RedisClient';
 import { ChromaDBVectorStore } from '../infrastructure/ChromaDBClient';
 import { MongoDBPageStore } from '../infrastructure/MongoDBClient';
 import { OllamaEmbeddingService } from '../services/OllamaEmbeddingService';
+import logger from '../utils/logger';
+
+// Helper to format error messages
+const formatError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+};
 
 export interface HierarchicalMemoryConfig {
   // L1 Configuration
@@ -75,14 +90,14 @@ export class HierarchicalMemoryManager {
   private stats: MemoryManagerStats;
 
   // Configuration
-  private config: HierarchicalMemoryConfig;
+  private config: Required<HierarchicalMemoryConfig>;
 
   private initialized: boolean = false;
 
   constructor(config: HierarchicalMemoryConfig = {}) {
     this.config = {
       l1Capacity: config.l1Capacity ?? 100,
-      l1Ttl: config.l1Ttl,
+      l1Ttl: config.l1Ttl ?? 0,
       l2CollectionName: config.l2CollectionName ?? 'agent_contexts',
       l3DbName: config.l3DbName ?? 'memory_manager',
       l3CollectionName: config.l3CollectionName ?? 'archived_contexts',
@@ -96,30 +111,30 @@ export class HierarchicalMemoryManager {
     };
 
     // Initialize components
-    this.l1Cache = new MemoryPageLRUCache({ capacity: this.config.l1Capacity! });
+    this.l1Cache = new MemoryPageLRUCache({ capacity: this.config.l1Capacity });
     this.l1Store = new RedisCacheStore({
-      host: this.config.redisHost!,
-      port: this.config.redisPort!,
+      host: this.config.redisHost,
+      port: this.config.redisPort,
     });
     this.l2Store = new ChromaDBVectorStore({
-      host: this.config.chromaHost!,
-      port: this.config.chromaPort!,
-      collectionName: this.config.l2CollectionName!,
+      host: this.config.chromaHost,
+      port: this.config.chromaPort,
+      collectionName: this.config.l2CollectionName,
     });
     this.l3Store = new MongoDBPageStore({
-      uri: this.config.mongoUri!,
-      dbName: this.config.l3DbName!,
-      collectionName: this.config.l3CollectionName!,
+      uri: this.config.mongoUri,
+      dbName: this.config.l3DbName,
+      collectionName: this.config.l3CollectionName,
     });
     this.embeddingService = new OllamaEmbeddingService({
-      baseUrl: this.config.ollamaBaseUrl!,
-      model: this.config.embeddingModel!,
+      baseUrl: this.config.ollamaBaseUrl,
+      model: this.config.embeddingModel,
     });
 
     // Initialize statistics
     this.stats = {
       l1Size: 0,
-      l1Capacity: this.config.l1Capacity!,
+      l1Capacity: this.config.l1Capacity,
       l2Size: 0,
       l3Size: 0,
       totalAccesses: 0,
@@ -147,9 +162,9 @@ export class HierarchicalMemoryManager {
       ]);
 
       this.initialized = true;
-      console.log('Hierarchical Memory Manager initialized');
+      logger.info('Hierarchical Memory Manager initialized');
     } catch (error) {
-      console.error('Failed to initialize Hierarchical Memory Manager:', error);
+      logger.error('Failed to initialize Hierarchical Memory Manager:', error);
       throw error;
     }
   }
@@ -250,14 +265,14 @@ export class HierarchicalMemoryManager {
         message: 'Key not found in any memory level',
       };
     } catch (error) {
-      console.error('Failed to get from memory:', error);
+      logger.error('Failed to get from memory:', error);
       this.stats.misses++;
       return {
         success: false,
         level: undefined,
         accessTime: Date.now() - startTime,
         pageFault: true,
-        message: `Error: ${error}`,
+        message: `Error: ${formatError(error)}`,
       };
     }
   }
@@ -321,12 +336,12 @@ export class HierarchicalMemoryManager {
         message: 'Stored in all memory levels',
       };
     } catch (error) {
-      console.error('Failed to put in memory:', error);
+      logger.error('Failed to put in memory:', error);
       return {
         success: false,
         accessTime: Date.now() - startTime,
         pageFault: false,
-        message: `Error: ${error}`,
+        message: `Error: ${formatError(error)}`,
       };
     }
   }
@@ -359,12 +374,12 @@ export class HierarchicalMemoryManager {
         message: 'Deleted from all memory levels',
       };
     } catch (error) {
-      console.error('Failed to delete from memory:', error);
+      logger.error('Failed to delete from memory:', error);
       return {
         success: false,
         accessTime: Date.now() - startTime,
         pageFault: false,
-        message: `Error: ${error}`,
+        message: `Error: ${formatError(error)}`,
       };
     }
   }
@@ -376,7 +391,7 @@ export class HierarchicalMemoryManager {
   async semanticSearch(
     agentId: string,
     query: string,
-    topK: number = 5
+    topK: number = 5,
   ): Promise<Array<{ key: string; value: string; similarity: number; level: MemoryLevel }>> {
     if (!this.initialized) {
       throw new Error('Memory Manager not initialized');
@@ -396,7 +411,7 @@ export class HierarchicalMemoryManager {
         level: r.page.level,
       }));
     } catch (error) {
-      console.error('Failed to perform semantic search:', error);
+      logger.error('Failed to perform semantic search:', error);
       return [];
     }
   }
@@ -407,9 +422,8 @@ export class HierarchicalMemoryManager {
   getStats(): MemoryManagerStats {
     // Update current sizes
     this.stats.l1Size = this.l1Cache.getStats().size;
-    this.stats.hitRate = this.stats.totalAccesses > 0
-      ? (this.stats.hits / this.stats.totalAccesses) * 100
-      : 0;
+    this.stats.hitRate =
+      this.stats.totalAccesses > 0 ? (this.stats.hits / this.stats.totalAccesses) * 100 : 0;
 
     return { ...this.stats };
   }
@@ -419,16 +433,12 @@ export class HierarchicalMemoryManager {
    */
   async clear(): Promise<void> {
     this.l1Cache.clear();
-    await Promise.all([
-      this.l1Store.clear(),
-      this.l2Store.clear(),
-      this.l3Store.clear(),
-    ]);
+    await Promise.all([this.l1Store.clear(), this.l2Store.clear(), this.l3Store.clear()]);
 
     // Reset statistics
     this.stats = {
       l1Size: 0,
-      l1Capacity: this.config.l1Capacity!,
+      l1Capacity: this.config.l1Capacity,
       l2Size: 0,
       l3Size: 0,
       totalAccesses: 0,
@@ -447,10 +457,7 @@ export class HierarchicalMemoryManager {
    * Shutdown memory manager
    */
   async shutdown(): Promise<void> {
-    await Promise.all([
-      this.l1Store.disconnect(),
-      this.l3Store.disconnect(),
-    ]);
+    await Promise.all([this.l1Store.disconnect(), this.l3Store.disconnect()]);
     this.initialized = false;
   }
 
@@ -500,7 +507,7 @@ export class HierarchicalMemoryManager {
 
     // Store in L1 cache and Redis
     this.l1Cache.putPage(page);
-    await this.l1Store.storePage(page, this.config.l1Ttl ?? undefined);
+    await this.l1Store.storePage(page, this.config.l1Ttl > 0 ? this.config.l1Ttl : undefined);
   }
 
   /**

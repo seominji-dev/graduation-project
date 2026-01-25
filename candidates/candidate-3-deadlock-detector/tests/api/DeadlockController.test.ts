@@ -3,7 +3,7 @@
  * API Controller for Deadlock Detection and Recovery
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { Request, Response } from 'express';
 import DeadlockController from '../../src/api/controllers/DeadlockController.js';
 import { AgentState } from '../../src/domain/models.js';

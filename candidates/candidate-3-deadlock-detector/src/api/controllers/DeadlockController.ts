@@ -3,8 +3,7 @@
  */
 
 import { Request, Response } from 'express';
-import { AgentState } from '../../domain/models.js';
-import { WaitForGraph, createWaitForGraph, createAgent, createResource, createWaitForEdge, createDetectionResult } from '../../domain/models.js';
+import { AgentState, WaitForGraph, createWaitForGraph, createAgent, createResource, createWaitForEdge, createDetectionResult } from '../../domain/models.js';
 import { CycleDetector } from '../../detectors/CycleDetector.js';
 import { VictimSelector, VictimSelectionStrategy } from '../../recovery/VictimSelector.js';
 import { RollbackManager } from '../../recovery/RollbackManager.js';
@@ -270,7 +269,7 @@ class DeadlockController {
     const result = this.rollbackManager.rollbackToLatest(
       agentId,
       this.wfg.agents,
-      this.wfg.resources
+      this.wfg.resources,
     );
 
     res.json({

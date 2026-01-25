@@ -4,7 +4,7 @@
  * REQ-MEM-005: LRU eviction policy for cache management
  */
 
-import { MemoryPage, PageStatus, MemoryLevel } from '../domain/models';
+import { MemoryPage, PageStatus } from '../domain/models';
 
 // Doubly Linked List Node for LRU tracking
 class LRUNode<T> {
@@ -52,7 +52,7 @@ export class LRUCache<T> {
    */
   get(key: string): T | undefined {
     const node = this.cache.get(key);
-    
+
     if (!node) {
       return undefined;
     }
@@ -85,7 +85,7 @@ export class LRUCache<T> {
     } else {
       // Create new node
       const newNode = new LRUNode(key, value);
-      
+
       // Check capacity and evict if needed
       if (this.cache.size >= this.capacity) {
         this.evictLeastRecentlyUsed();
@@ -122,7 +122,7 @@ export class LRUCache<T> {
    */
   delete(key: string): boolean {
     const node = this.cache.get(key);
-    
+
     if (!node) {
       return false;
     }
@@ -146,12 +146,12 @@ export class LRUCache<T> {
   keys(): string[] {
     const keys: string[] = [];
     let current = this.head;
-    
+
     while (current) {
       keys.push(current.key);
       current = current.next;
     }
-    
+
     return keys;
   }
 
@@ -326,7 +326,7 @@ export class MemoryPageLRUCache {
    */
   getLRUPage(): { agentId: string; key: string; page: MemoryPage } | null {
     const keys = this.cache.keys();
-    
+
     if (keys.length === 0) {
       return null;
     }

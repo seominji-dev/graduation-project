@@ -5,6 +5,7 @@
 import { createClient, RedisClientType } from 'redis';
 import { config } from '../config/index.js';
 import { WaitForGraph } from '../domain/models.js';
+import logger from '../utils/logger.js';
 
 let redisClient: RedisClientType | null = null;
 
@@ -21,12 +22,12 @@ export async function connectToRedis(): Promise<void> {
       password: config.redis.password,
     });
 
-    redisClient.on('error', (err) => console.error('Redis Client Error:', err));
-    redisClient.on('connect', () => console.log('Connected to Redis'));
+    redisClient.on('error', (err) => logger.error('Redis Client Error', err));
+    redisClient.on('connect', () => logger.info('Connected to Redis'));
 
     await redisClient.connect();
   } catch (error) {
-    console.error('Redis connection error:', error);
+    logger.error('Redis connection error', error);
     throw error;
   }
 }
@@ -37,11 +38,14 @@ export async function connectToRedis(): Promise<void> {
 export async function disconnectFromRedis(): Promise<void> {
   if (redisClient) {
     try {
-      await redisClient.quit();
-      console.log('Disconnected from Redis');
+      if (redisClient.isOpen) {
+        await redisClient.quit();
+        logger.info('Disconnected from Redis');
+      }
     } catch (error) {
-      console.error('Redis disconnection error:', error);
-      throw error;
+      logger.error('Redis disconnection error', error);
+    } finally {
+      redisClient = null;
     }
   }
 }
@@ -69,17 +73,17 @@ export async function cacheWFG(graph: WaitForGraph): Promise<void> {
       edges: graph.edges,
       lastUpdated: graph.lastUpdated.toISOString(),
     };
-    
+
     await redisClient.set(key, JSON.stringify(data), { EX: 3600 });
   } catch (error) {
-    console.error('Error caching WFG:', error);
+    logger.error('Error caching WFG', error);
   }
 }
 
 /**
  * Get cached Wait-For Graph from Redis
  */
-export async function getCachedWFG(): Promise<any | null> {
+export async function getCachedWFG(): Promise<unknown | null> {
   if (!redisClient) {
     return null;
   }
@@ -87,14 +91,14 @@ export async function getCachedWFG(): Promise<any | null> {
   try {
     const key = 'wfg:current';
     const data = await redisClient.get(key);
-    
+
     if (data) {
       return JSON.parse(data);
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Error getting cached WFG:', error);
+    logger.error('Error getting cached WFG', error);
     return null;
   }
 }
@@ -110,14 +114,14 @@ export async function clearCachedWFG(): Promise<void> {
   try {
     await redisClient.del('wfg:current');
   } catch (error) {
-    console.error('Error clearing cached WFG:', error);
+    logger.error('Error clearing cached WFG', error);
   }
 }
 
 /**
  * Publish deadlock detection event
  */
-export async function publishDeadlockEvent(deadlockData: any): Promise<void> {
+export async function publishDeadlockEvent(deadlockData: unknown): Promise<void> {
   if (!redisClient) {
     return;
   }
@@ -125,6 +129,6 @@ export async function publishDeadlockEvent(deadlockData: any): Promise<void> {
   try {
     await redisClient.publish('deadlock-detected', JSON.stringify(deadlockData));
   } catch (error) {
-    console.error('Error publishing deadlock event:', error);
+    logger.error('Error publishing deadlock event', error);
   }
 }

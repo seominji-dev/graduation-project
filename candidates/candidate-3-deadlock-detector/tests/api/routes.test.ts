@@ -2,7 +2,7 @@
  * Tests for API Routes
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import routes from '../../src/api/routes/index.js';
 
 describe('API Routes', () => {
@@ -159,14 +159,14 @@ describe('API Routes', () => {
 
     it('should have GET routes for health, graph, and bankers', () => {
       const getRoutes = routes.stack.filter((layer: any) => 
-        layer.route?.methods.get === true
+        layer.route?.methods.get === true,
       );
       expect(getRoutes.length).toBeGreaterThanOrEqual(2);
     });
 
     it('should have POST routes for mutations', () => {
       const postRoutes = routes.stack.filter((layer: any) => 
-        layer.route?.methods.post === true
+        layer.route?.methods.post === true,
       );
       expect(postRoutes.length).toBeGreaterThan(5);
     });

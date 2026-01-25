@@ -8,6 +8,9 @@
  */
 
 import { RequestPriority } from '../domain/models';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('AgingManager');
 
 /**
  * Aging configuration
@@ -40,11 +43,11 @@ export class AgingManager {
    */
   start(): void {
     if (this.intervalId) {
-      console.warn('AgingManager already started');
+      logger.warn('AgingManager already started');
       return;
     }
 
-    console.log('Starting AgingManager (interval: ' + AGING_INTERVAL_MS + 'ms)');
+    logger.info('Starting AgingManager (interval: ' + AGING_INTERVAL_MS + 'ms)');
 
     // Run aging immediately on start
     void this.runAging();
@@ -72,7 +75,7 @@ export class AgingManager {
     }
     this.agingCount.clear();
     this.scheduler = null;
-    console.log('AgingManager stopped');
+    logger.info('AgingManager stopped');
   }
 
   /**
@@ -107,7 +110,7 @@ export class AgingManager {
               if (success) {
                 this.agingCount.set(job.jobId, currentPromotions + 1);
                 promotedCount++;
-                console.log('Aging: Promoted job ' + job.jobId + ' from ' + 
+                logger.debug('Aging: Promoted job ' + job.jobId + ' from ' + 
                   RequestPriority[job.priority] + ' to ' + RequestPriority[newPriority] +
                   ' (wait time: ' + Math.round(waitTime / 1000) + 's)');
               }
@@ -117,10 +120,10 @@ export class AgingManager {
       }
 
       if (promotedCount > 0) {
-        console.log('Aging cycle complete: promoted ' + promotedCount + ' jobs');
+        logger.debug('Aging cycle complete: promoted ' + promotedCount + ' jobs');
       }
     } catch (error) {
-      console.error('Aging cycle failed:', error);
+      logger.error('Aging cycle failed:', error);
     }
   }
 

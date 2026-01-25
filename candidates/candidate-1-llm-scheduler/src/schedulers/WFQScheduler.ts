@@ -26,6 +26,9 @@ import { LLMService } from '../services/llmService';
 import { TenantRegistry, TenantTier, DEFAULT_WEIGHTS } from '../managers/TenantRegistry';
 import { VirtualTimeTracker, VirtualFinishTime } from '../managers/VirtualTimeTracker';
 import { FairnessCalculator } from '../managers/FairnessCalculator';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('WFQScheduler');
 
 const DEFAULT_ESTIMATED_SERVICE_TIME = 5000;
 
@@ -99,18 +102,18 @@ export class WFQScheduler implements IScheduler {
     );
 
     this.worker.on('completed', (job: Job<WFQQueueJob>) => {
-      console.log('Job ' + job.id + ' completed');
+      logger.info('Job ' + job.id + ' completed');
       this.cleanupJobMetadata(job.data.requestId);
     });
 
     this.worker.on('failed', (job: Job<WFQQueueJob> | undefined, error: Error) => {
-      console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
+      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobMetadata(job.data.requestId);
       }
     });
 
-    console.log('WFQ Scheduler "' + this.config.name + '" initialized with ' +
+    logger.info('WFQ Scheduler "' + this.config.name + '" initialized with ' +
       this.tenantRegistry.getTenantCount() + ' tenants');
     return Promise.resolve();
   }
@@ -256,7 +259,7 @@ export class WFQScheduler implements IScheduler {
       await this.queue.close();
       this.queue = null;
     }
-    console.log('WFQ Scheduler "' + this.config.name + '" shut down');
+    logger.info('WFQ Scheduler "' + this.config.name + '" shut down');
     return Promise.resolve();
   }
 
@@ -350,7 +353,7 @@ export class WFQScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      console.error('Failed to log request:', error);
+      logger.error('Failed to log request:', error);
     }
   }
 
@@ -379,7 +382,7 @@ export class WFQScheduler implements IScheduler {
         }
       );
     } catch (logError) {
-      console.error('Failed to log response:', logError);
+      logger.error('Failed to log response:', logError);
     }
   }
 

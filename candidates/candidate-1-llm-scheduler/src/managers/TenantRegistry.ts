@@ -7,6 +7,10 @@
  * SPEC-SCHED-004: Weight-based fair queuing for multi-tenant LLM requests
  */
 
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('TenantRegistry');
+
 /**
  * Default tenant weights based on service tier
  * Higher weight = larger share of processing capacity
@@ -27,6 +31,22 @@ export const DEFAULT_WEIGHTS: Record<TenantTier, number> = {
 };
 
 /**
+ * Tenant metadata value type - supports primitive values and nested structures
+ */
+export type TenantMetadataValue =
+  | string
+  | number
+  | boolean
+  | null
+  | TenantMetadataValue[]
+  | { [key: string]: TenantMetadataValue };
+
+/**
+ * Tenant metadata type for extensible properties
+ */
+export type TenantMetadata = Record<string, TenantMetadataValue>;
+
+/**
  * Tenant information
  */
 export interface Tenant {
@@ -35,7 +55,7 @@ export interface Tenant {
   tier: TenantTier;
   weight: number;
   createdAt: Date;
-  metadata?: Record<string, any>;
+  metadata?: TenantMetadata;
 }
 
 /**
@@ -58,7 +78,7 @@ export class TenantRegistry {
     };
 
     this.tenants.set(tenant.id, fullTenant);
-    console.log('Tenant registered: ' + tenant.id + ' (tier: ' + tenant.tier + ', weight: ' + tenant.weight + ')');
+    logger.info('Tenant registered: ' + tenant.id + ' (tier: ' + tenant.tier + ', weight: ' + tenant.weight + ')');
 
     return fullTenant;
   }
@@ -101,7 +121,7 @@ export class TenantRegistry {
 
     tenant.weight = newWeight;
     this.tenants.set(tenantId, tenant);
-    console.log('Tenant weight updated: ' + tenantId + ' -> ' + newWeight);
+    logger.info('Tenant weight updated: ' + tenantId + ' -> ' + newWeight);
 
     return true;
   }
@@ -120,7 +140,7 @@ export class TenantRegistry {
     tenant.weight = DEFAULT_WEIGHTS[newTier];
     this.tenants.set(tenantId, tenant);
 
-    console.log('Tenant tier updated: ' + tenantId + ' (' + oldTier + ' -> ' + newTier + ')');
+    logger.info('Tenant tier updated: ' + tenantId + ' (' + oldTier + ' -> ' + newTier + ')');
 
     return true;
   }

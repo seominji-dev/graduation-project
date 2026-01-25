@@ -88,7 +88,7 @@ describe('Deadlock Detection Integration', () => {
         const result = rollbackManager.rollbackToLatest(
           victim.victim.id,
           graph.agents,
-          graph.resources
+          graph.resources,
         );
 
         expect(result.success).toBe(true);

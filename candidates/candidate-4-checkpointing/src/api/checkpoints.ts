@@ -8,6 +8,9 @@ import { z } from 'zod';
 import { CheckpointManager } from '../managers/CheckpointManager.js';
 import { RecoveryManager } from '../recovery/RecoveryManager.js';
 import { AgentState, CheckpointCreationOptions, CheckpointType } from '../domain/models.js';
+import { logger } from '../utils/logger.js';
+
+const log = logger.child('CheckpointAPI');
 
 // Validation schemas
 const CreateCheckpointSchema = z.object({
@@ -43,12 +46,6 @@ const RecoverAgentSchema = z.object({
   checkpointId: z.string().uuid().optional(),
   verifyIntegrity: z.boolean().optional(),
   fallbackToLatest: z.boolean().optional(),
-});
-
-const RegisterAgentSchema = z.object({
-  agentId: z.string().uuid(),
-  initialState: z.any(),
-  isImportantTask: z.boolean().optional(),
 });
 
 export function createCheckpointRoutes(
@@ -110,7 +107,7 @@ export function createCheckpointRoutes(
         });
       }
 
-      console.error('Error creating checkpoint:', error);
+      log.error('Error creating checkpoint:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -136,7 +133,7 @@ export function createCheckpointRoutes(
         stats,
       });
     } catch (error) {
-      console.error('Error getting checkpoints:', error);
+      log.error('Error getting checkpoints:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -166,7 +163,7 @@ export function createCheckpointRoutes(
         checkpoint,
       });
     } catch (error) {
-      console.error('Error getting latest checkpoint:', error);
+      log.error('Error getting latest checkpoint:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -196,7 +193,7 @@ export function createCheckpointRoutes(
         message: 'Checkpoint deleted',
       });
     } catch (error) {
-      console.error('Error deleting checkpoint:', error);
+      log.error('Error deleting checkpoint:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -220,7 +217,7 @@ export function createCheckpointRoutes(
         count,
       });
     } catch (error) {
-      console.error('Error deleting checkpoints:', error);
+      log.error('Error deleting checkpoints:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -265,7 +262,7 @@ export function createCheckpointRoutes(
         });
       }
 
-      console.error('Error recovering agent:', error);
+      log.error('Error recovering agent:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -289,7 +286,7 @@ export function createCheckpointRoutes(
         recoveryPoints,
       });
     } catch (error) {
-      console.error('Error getting recovery points:', error);
+      log.error('Error getting recovery points:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',
@@ -314,7 +311,7 @@ export function createCheckpointRoutes(
         issues: validation.issues,
       });
     } catch (error) {
-      console.error('Error validating checkpoint:', error);
+      log.error('Error validating checkpoint:', error);
       return res.status(500).json({
         success: false,
         error: 'Internal server error',

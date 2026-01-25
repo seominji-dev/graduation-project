@@ -73,7 +73,7 @@ describe('BoostManager', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
       await boostManager.start();
       await boostManager.start();
-      expect(consoleWarnSpy).toHaveBeenCalledWith('BoostManager already started');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('BoostManager already started'));
       consoleWarnSpy.mockRestore();
     });
   });
@@ -86,7 +86,7 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(3, 2);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(mockScheduler.getJobsAtLevel(0)).toBe(10);
       expect(mockScheduler.getJobsAtLevel(1)).toBe(0);
@@ -96,28 +96,28 @@ describe('BoostManager', () => {
 
     it('should track boost count', async () => {
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       const stats = boostManager.getStats();
       expect(stats.totalBoosts).toBeGreaterThan(0);
     });
 
     it('should log boost cycle with job count', async () => {
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
       mockScheduler.setJobsAtLevel(0, 0);
       mockScheduler.setJobsAtLevel(1, 5);
       mockScheduler.setJobsAtLevel(2, 3);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
-      expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
         expect.stringContaining('Moved')
       );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
         expect.stringContaining('jobs to Q0')
       );
-      consoleLogSpy.mockRestore();
+      consoleInfoSpy.mockRestore();
     });
   });
 
@@ -129,19 +129,19 @@ describe('BoostManager', () => {
     });
 
     it('should log total boosts on stop', async () => {
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       await boostManager.stop();
 
-      expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
         expect.stringContaining('BoostManager stopped')
       );
-      expect(consoleLogSpy).toHaveBeenCalledWith(
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
         expect.stringContaining('total boosts')
       );
-      consoleLogSpy.mockRestore();
+      consoleInfoSpy.mockRestore();
     });
   });
 
@@ -158,7 +158,7 @@ describe('BoostManager', () => {
 
     it('should update total boosts after each boost', async () => {
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       const stats = boostManager.getStats();
       expect(stats.totalBoosts).toBe(1);
@@ -173,7 +173,7 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(3, 0);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(mockScheduler.getJobsAtLevel(0)).toBe(0);
     });
@@ -185,7 +185,7 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(3, 0);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(mockScheduler.getJobsAtLevel(0)).toBe(20);
     });
@@ -197,7 +197,7 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(3, 15);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(mockScheduler.getJobsAtLevel(0)).toBe(15);
       expect(mockScheduler.getJobsAtLevel(3)).toBe(0);
@@ -210,7 +210,7 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(3, 2);
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(mockScheduler.getJobsAtLevel(0)).toBe(17);
       expect(mockScheduler.getJobsAtLevel(1)).toBe(0);
@@ -224,7 +224,7 @@ describe('BoostManager', () => {
       mockScheduler.boostAllJobs = jest.fn().mockRejectedValue(new Error('Boost failed'));
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(true).toBe(true); // Should complete without throwing
     });
@@ -234,11 +234,10 @@ describe('BoostManager', () => {
       mockScheduler.boostAllJobs = jest.fn().mockRejectedValue(new Error('Boost failed'));
 
       await boostManager.start();
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Boost cycle failed'),
-        expect.any(Error)
+        expect.stringContaining('Boost cycle failed')
       );
       consoleErrorSpy.mockRestore();
     });
@@ -254,7 +253,7 @@ describe('BoostManager', () => {
       await boostManager.start();
 
       // First boost
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       expect(mockScheduler.getJobsAtLevel(0)).toBe(10);
 
       // Add more jobs to lower levels
@@ -262,20 +261,20 @@ describe('BoostManager', () => {
       mockScheduler.setJobsAtLevel(2, 2);
 
       // Second boost
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       expect(mockScheduler.getJobsAtLevel(0)).toBe(16);
     });
 
     it('should track boost count across multiple cycles', async () => {
       await boostManager.start();
 
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       expect(boostManager.getStats().totalBoosts).toBe(1);
 
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       expect(boostManager.getStats().totalBoosts).toBe(2);
 
-      await (boostManager as any).runBoost();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
       expect(boostManager.getStats().totalBoosts).toBe(3);
     });
   });

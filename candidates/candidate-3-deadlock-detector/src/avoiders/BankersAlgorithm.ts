@@ -5,12 +5,7 @@
  * deadlocks by ensuring the system always remains in a safe state.
  */
 
-import {
-  Agent,
-  Resource,
-  createAgent,
-  createResource,
-} from '../domain/models.js';
+import { Agent, AgentState, Resource } from '../domain/models.js';
 import { SafetyChecker, SafetyResult, ResourceRequest } from './SafetyChecker.js';
 
 /**
@@ -138,7 +133,7 @@ export class BankersAlgorithm {
   private grantResource(
     request: ResourceRequest,
     agent: Agent,
-    resource: Resource
+    resource: Resource,
   ): AllocationResult {
     // Allocate resource to agent
     if (!agent.heldResources.includes(request.resourceId)) {
@@ -170,7 +165,7 @@ export class BankersAlgorithm {
    */
   public releaseResources(
     agentId: string,
-    resourceIds: string[]
+    resourceIds: string[],
   ): boolean {
     const agent = this.agents.get(agentId);
 
@@ -275,7 +270,7 @@ export class BankersAlgorithm {
   public createRequest(
     agentId: string,
     resourceId: string,
-    count: number = 1
+    count: number = 1,
   ): ResourceRequest {
     return this.safetyChecker.createRequest(agentId, resourceId, count);
   }
@@ -300,7 +295,7 @@ export class BankersAlgorithm {
     }
 
     for (const agent of this.agents.values()) {
-      if (agent.state === 'waiting') {
+      if (agent.state === AgentState.WAITING) {
         waitingCount++;
       }
     }

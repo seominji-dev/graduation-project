@@ -298,7 +298,7 @@ describe('PriorityScheduler - Specification Tests', () => {
     });
 
     it('should log job completion message', async () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleSpy = jest.spyOn(console, 'info').mockImplementation();
       await scheduler.initialize();
       const mockJob = { id: 'test-job-123', data: { requestId: 'test-job-123' } };
       mockWorker.emit('completed', mockJob);
@@ -312,7 +312,7 @@ describe('PriorityScheduler - Specification Tests', () => {
       const mockJob = { id: 'test-job-456', data: { requestId: 'test-job-456' } };
       const mockError = new Error('Processing failed');
       mockWorker.emit('failed', mockJob, mockError);
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Job test-job-456 failed:'), mockError);
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Job test-job-456 failed'));
       consoleSpy.mockRestore();
     });
 
@@ -321,7 +321,7 @@ describe('PriorityScheduler - Specification Tests', () => {
       await scheduler.initialize();
       const mockError = new Error('Unknown failure');
       mockWorker.emit('failed', undefined, mockError);
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Job unknown failed:'), mockError);
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Job unknown failed'));
       consoleSpy.mockRestore();
     });
   });
@@ -598,7 +598,7 @@ describe('PriorityScheduler - Specification Tests', () => {
       job.remove = jest.fn().mockRejectedValue(new Error('Remove failed'));
       const result = await scheduler.updateJobPriority(request.id, RequestPriority.URGENT);
       expect(result).toBe(false);
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to update job priority:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to update job priority'));
       consoleSpy.mockRestore();
     });
   });
@@ -735,7 +735,7 @@ describe('PriorityScheduler - Specification Tests', () => {
         updatedAt: new Date(),
       };
       await expect(logRequest(request, RequestStatus.QUEUED, new Date())).resolves.not.toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to log request:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to log request'));
       consoleSpy.mockRestore();
     });
   });
@@ -766,7 +766,7 @@ describe('PriorityScheduler - Specification Tests', () => {
       await expect(
         logResponse('550e8400-e29b-41d4-a716-446655440072', RequestStatus.COMPLETED, 'Test response', 100, 200, new Date())
       ).resolves.not.toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to log response:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to log response'));
       consoleSpy.mockRestore();
     });
 
@@ -849,7 +849,7 @@ describe('PriorityScheduler - Specification Tests', () => {
       mockQueue.getJobs = jest.fn().mockRejectedValue(new Error('Fetch error'));
       const jobs = await scheduler.getWaitingJobs();
       expect(jobs).toEqual([]);
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to get waiting jobs:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to get waiting jobs'));
       consoleSpy.mockRestore();
     });
   });

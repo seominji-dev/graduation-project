@@ -12,7 +12,7 @@ import {
   WaitForGraph,
   WaitForEdge,
   DeadlockCycle,
-  Agent,
+  
   createDeadlockCycle,
 } from '../domain/models.js';
 
@@ -120,7 +120,7 @@ export class CycleDetector {
         // Back edge found - cycle detected!
         neighbor.lowLink = Math.min(
           neighbor.lowLink,
-          node.discoveryTime
+          node.discoveryTime,
         );
         this.extractCycle(agentId, neighborId);
       } else if (neighbor.state === NodeState.UNVISITED) {
@@ -189,7 +189,7 @@ export class CycleDetector {
    */
   private findEdge(fromId: string, toId: string): WaitForEdge | undefined {
     return this.graph.edges.find(
-      edge => edge.fromAgentId === fromId && edge.toAgentId === toId
+      edge => edge.fromAgentId === fromId && edge.toAgentId === toId,
     );
   }
 
@@ -213,7 +213,7 @@ export class CycleDetector {
    */
   public isAgentInDeadlock(agentId: string): boolean {
     return this.cycles.some(cycle => 
-      cycle.agentIds.includes(agentId)
+      cycle.agentIds.includes(agentId),
     );
   }
 
@@ -319,7 +319,7 @@ export class GraphBasedCycleDetector {
     color: Map<string, NodeState>,
     parent: Map<string, string | null>,
     path: string[],
-    cycles: DeadlockCycle[]
+    cycles: DeadlockCycle[],
   ): void {
     color.set(agentId, NodeState.VISITING);
     path.push(agentId);
@@ -355,7 +355,7 @@ export class GraphBasedCycleDetector {
       const to = agentIds[(i + 1) % agentIds.length];
       
       const edge = this.graph.edges.find(
-        e => e.fromAgentId === from && e.toAgentId === to
+        e => e.fromAgentId === from && e.toAgentId === to,
       );
       
       if (edge) {

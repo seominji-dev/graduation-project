@@ -6,6 +6,7 @@
 
 import Redis from 'ioredis';
 import { MemoryPage, MemoryLevel, PageStatus } from '../domain/models';
+import logger from '../utils/logger';
 
 export interface RedisConfig {
   host?: string;
@@ -40,9 +41,9 @@ export class RedisCacheStore {
     try {
       await this.client.ping();
       this.initialized = true;
-      console.log('Redis initialized: L1 cache ready');
+      logger.info('Redis initialized: L1 cache ready');
     } catch (error) {
-      console.error('Failed to initialize Redis:', error);
+      logger.error('Failed to initialize Redis:', error);
       throw error;
     }
   }
@@ -83,7 +84,7 @@ export class RedisCacheStore {
       // Update agent's page list
       await this.client.sadd(this.getAgentPagesKey(page.agentId), key);
     } catch (error) {
-      console.error('Failed to store page in Redis:', error);
+      logger.error('Failed to store page in Redis:', error);
       throw error;
     }
   }
@@ -106,7 +107,7 @@ export class RedisCacheStore {
 
       return this.parseMemoryPage(data);
     } catch (error) {
-      console.error('Failed to get page from Redis:', error);
+      logger.error('Failed to get page from Redis:', error);
       return null;
     }
   }
@@ -128,7 +129,7 @@ export class RedisCacheStore {
 
       return result > 0;
     } catch (error) {
-      console.error('Failed to delete page from Redis:', error);
+      logger.error('Failed to delete page from Redis:', error);
       return false;
     }
   }
@@ -145,7 +146,7 @@ export class RedisCacheStore {
       const compositeKey = this.getCompositeKey(agentId, key);
       return (await this.client.exists(compositeKey)) > 0;
     } catch (error) {
-      console.error('Failed to check page in Redis:', error);
+      logger.error('Failed to check page in Redis:', error);
       return false;
     }
   }
@@ -162,7 +163,7 @@ export class RedisCacheStore {
       const keys = await this.client.smembers(this.getAgentPagesKey(agentId));
       return keys.map(key => key.substring(this.keyPrefix.length));
     } catch (error) {
-      console.error('Failed to get agent page keys:', error);
+      logger.error('Failed to get agent page keys:', error);
       return [];
     }
   }
@@ -182,7 +183,7 @@ export class RedisCacheStore {
     try {
       const info = await this.client.info('memory');
       const memoryMatch = info.match(/used_memory_human:(.*)/);
-      const memoryUsage = memoryMatch ? memoryMatch[1].trim() : '0B';
+      const _memoryUsage = memoryMatch ? memoryMatch[1].trim() : '0B';
 
       let agentKeys: number | undefined;
       if (agentId) {
@@ -195,7 +196,7 @@ export class RedisCacheStore {
         agentKeys,
       };
     } catch (error) {
-      console.error('Failed to get Redis stats:', error);
+      logger.error('Failed to get Redis stats:', error);
       return { totalKeys: 0, memoryUsage: 0 };
     }
   }
@@ -211,7 +212,7 @@ export class RedisCacheStore {
     try {
       await this.client.flushdb();
     } catch (error) {
-      console.error('Failed to clear Redis:', error);
+      logger.error('Failed to clear Redis:', error);
     }
   }
 
@@ -242,7 +243,18 @@ export class RedisCacheStore {
    */
   private parseMemoryPage(data: string): MemoryPage | null {
     try {
-      const parsed = JSON.parse(data);
+      const parsed = JSON.parse(data) as {
+        id: string;
+        agentId: string;
+        key: string;
+        value: string;
+        status: PageStatus;
+        accessCount: number;
+        lastAccessedAt: string;
+        createdAt: string;
+        size: number;
+        metadata?: Record<string, unknown>;
+      };
       return {
         ...parsed,
         level: MemoryLevel.L1_CACHE,
@@ -250,7 +262,7 @@ export class RedisCacheStore {
         createdAt: new Date(parsed.createdAt),
       };
     } catch (error) {
-      console.error('Failed to parse MemoryPage:', error);
+      logger.error('Failed to parse MemoryPage:', error);
       return null;
     }
   }

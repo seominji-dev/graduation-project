@@ -5,6 +5,9 @@
 
 import { CheckpointModel } from './CheckpointSchema.js';
 import { Checkpoint, CheckpointType, CheckpointStatus } from '../domain/models.js';
+import { logger } from '../utils/logger.js';
+
+const log = logger.child('CheckpointStore');
 
 export interface StoreResult {
   success: boolean;
@@ -34,7 +37,7 @@ export class CheckpointStore {
         };
       } catch (error) {
         lastError = error as Error;
-        console.error(
+        log.error(
           `Checkpoint save attempt ${attempt}/${maxRetries} failed:`,
           error
         );
@@ -60,7 +63,7 @@ export class CheckpointStore {
       const doc = await CheckpointModel.findOne({ checkpointId });
       return doc ? this.documentToCheckpoint(doc) : null;
     } catch (error) {
-      console.error('Error finding checkpoint by ID:', error);
+      log.error('Error finding checkpoint by ID:', error);
       return null;
     }
   }
@@ -79,7 +82,7 @@ export class CheckpointStore {
         .exec();
       return doc ? this.documentToCheckpoint(doc) : null;
     } catch (error) {
-      console.error('Error finding latest checkpoint:', error);
+      log.error('Error finding latest checkpoint:', error);
       return null;
     }
   }
@@ -99,7 +102,7 @@ export class CheckpointStore {
         .exec();
       return docs.map(doc => this.documentToCheckpoint(doc));
     } catch (error) {
-      console.error('Error finding checkpoints by agent:', error);
+      log.error('Error finding checkpoints by agent:', error);
       return [];
     }
   }
@@ -115,7 +118,7 @@ export class CheckpointStore {
         .exec();
       return docs.map(doc => this.documentToCheckpoint(doc));
     } catch (error) {
-      console.error('Error finding checkpoints by type:', error);
+      log.error('Error finding checkpoints by type:', error);
       return [];
     }
   }
@@ -127,7 +130,7 @@ export class CheckpointStore {
     try {
       return await CheckpointModel.countDocuments({ agentId });
     } catch (error) {
-      console.error('Error counting checkpoints:', error);
+      log.error('Error counting checkpoints:', error);
       return 0;
     }
   }
@@ -151,7 +154,7 @@ export class CheckpointStore {
 
       return deleteCount;
     } catch (error) {
-      console.error('Error deleting oldest checkpoints:', error);
+      log.error('Error deleting oldest checkpoints:', error);
       return 0;
     }
   }
@@ -164,7 +167,7 @@ export class CheckpointStore {
       const result = await CheckpointModel.deleteOne({ checkpointId });
       return result.deletedCount > 0;
     } catch (error) {
-      console.error('Error deleting checkpoint:', error);
+      log.error('Error deleting checkpoint:', error);
       return false;
     }
   }
@@ -177,7 +180,7 @@ export class CheckpointStore {
       const result = await CheckpointModel.deleteMany({ agentId });
       return result.deletedCount;
     } catch (error) {
-      console.error('Error deleting agent checkpoints:', error);
+      log.error('Error deleting agent checkpoints:', error);
       return 0;
     }
   }
@@ -196,7 +199,7 @@ export class CheckpointStore {
       );
       return result.modifiedCount > 0;
     } catch (error) {
-      console.error('Error marking checkpoint as corrupted:', error);
+      log.error('Error marking checkpoint as corrupted:', error);
       return false;
     }
   }
@@ -211,7 +214,7 @@ export class CheckpointStore {
       });
       return result.deletedCount;
     } catch (error) {
-      console.error('Error deleting expired checkpoints:', error);
+      log.error('Error deleting expired checkpoints:', error);
       return 0;
     }
   }
@@ -227,7 +230,7 @@ export class CheckpointStore {
         .exec();
       return (latest?.sequenceNumber ?? -1) + 1;
     } catch (error) {
-      console.error('Error getting next sequence number:', error);
+      log.error('Error getting next sequence number:', error);
       return 0;
     }
   }
@@ -254,7 +257,7 @@ export class CheckpointStore {
 
       return true;
     } catch (error) {
-      console.error('Error verifying checkpoint integrity:', error);
+      log.error('Error verifying checkpoint integrity:', error);
       return false;
     }
   }

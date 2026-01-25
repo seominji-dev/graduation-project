@@ -26,6 +26,9 @@ import {
 } from './types';
 import { LLMService } from '../services/llmService';
 import { AgingManager } from '../managers/AgingManager';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('PriorityScheduler');
 
 /**
  * Maximum priority value for calculating BullMQ priority
@@ -79,7 +82,7 @@ export class PriorityScheduler implements IScheduler {
     );
 
     this.worker.on('completed', (job: Job<QueueJob>) => {
-      console.log('Job ' + job.id + ' completed');
+      logger.info('Job ' + job.id + ' completed');
       this.cleanupJobTimings(job.data.requestId);
       if (this.agingManager) {
         this.agingManager.resetJobAging(job.data.requestId);
@@ -87,7 +90,7 @@ export class PriorityScheduler implements IScheduler {
     });
 
     this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
-      console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
+      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
         if (this.agingManager) {
@@ -99,7 +102,7 @@ export class PriorityScheduler implements IScheduler {
     this.agingManager = new AgingManager(this);
     this.agingManager.start();
 
-    console.log('Priority Scheduler "' + this.config.name + '" initialized');
+    logger.info('Priority Scheduler "' + this.config.name + '" initialized');
     return Promise.resolve();
   }
 
@@ -244,7 +247,7 @@ export class PriorityScheduler implements IScheduler {
       await this.queue.close();
       this.queue = null;
     }
-    console.log('Priority Scheduler "' + this.config.name + '" shut down');
+    logger.info('Priority Scheduler "' + this.config.name + '" shut down');
   }
 
   /**
@@ -291,7 +294,7 @@ export class PriorityScheduler implements IScheduler {
 
       return true;
     } catch (error) {
-      console.error('Failed to update job priority:', error);
+      logger.error('Failed to update job priority:', error);
       return false;
     }
   }
@@ -315,7 +318,7 @@ export class PriorityScheduler implements IScheduler {
         };
       });
     } catch (error) {
-      console.error('Failed to get waiting jobs:', error);
+      logger.error('Failed to get waiting jobs:', error);
       return [];
     }
   }
@@ -401,7 +404,7 @@ export class PriorityScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      console.error('Failed to log request:', error);
+      logger.error('Failed to log request:', error);
     }
   }
 
@@ -433,7 +436,7 @@ export class PriorityScheduler implements IScheduler {
         }
       );
     } catch (logError) {
-      console.error('Failed to log response:', logError);
+      logger.error('Failed to log response:', logError);
     }
   }
 

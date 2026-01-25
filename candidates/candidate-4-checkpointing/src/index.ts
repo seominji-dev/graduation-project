@@ -14,6 +14,7 @@ import { PeriodicCheckpointManager } from './managers/PeriodicCheckpointManager.
 import { RollbackExecutor } from './recovery/RollbackExecutor.js';
 import { RecoveryManager } from './recovery/RecoveryManager.js';
 import { createCheckpointRoutes } from './api/checkpoints.js';
+import { logger } from './utils/logger.js';
 
 // Initialize Express app
 const app = express();
@@ -80,12 +81,12 @@ async function initializeServices() {
   // Setup API routes
   app.use('/api', createCheckpointRoutes(checkpointManager, recoveryManager));
 
-  console.log('Services initialized successfully');
+  logger.info('Services initialized successfully');
 }
 
 // Graceful shutdown
 async function shutdown() {
-  console.log('Starting graceful shutdown...');
+  logger.info('Starting graceful shutdown...');
 
   // Create final checkpoints for all agents
   if (periodicManager) {
@@ -95,7 +96,7 @@ async function shutdown() {
   // Disconnect from MongoDB
   await mongodbManager.disconnect();
 
-  console.log('Shutdown complete');
+  logger.info('Shutdown complete');
   process.exit(0);
 }
 
@@ -108,26 +109,22 @@ async function start() {
     await initializeServices();
 
     app.listen(config.port, () => {
-      console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   AI Agent Checkpointing System                          ║
-║   OS Checkpointing applied to LLM Agents                  ║
-║                                                           ║
-║   Server running on: http://localhost:${config.port}       ║
-║   Health check: http://localhost:${config.port}/api/health ║
-║                                                           ║
-║   Features:                                               ║
-║   - Periodic checkpointing (${config.checkpointing.intervalMs}ms interval)     ║
-║   - Incremental checkpoints                              ║
-║   - Automatic recovery                                   ║
-║   - State versioning                                      ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+      logger.info(`
+AI Agent Checkpointing System
+OS Checkpointing applied to LLM Agents
+
+Server running on: http://localhost:${config.port}
+Health check: http://localhost:${config.port}/api/health
+
+Features:
+- Periodic checkpointing (${config.checkpointing.intervalMs}ms interval)
+- Incremental checkpoints
+- Automatic recovery
+- State versioning
       `);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server:', error);
     process.exit(1);
   }
 }

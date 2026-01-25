@@ -16,6 +16,9 @@ import { FCFSScheduler } from './schedulers/FCFSScheduler';
 import { RequestController } from './api/controllers/requestController';
 import { createRoutes } from './api/routes';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
+import { createLogger } from './utils/logger';
+
+const logger = createLogger('Server');
 
 // Load environment variables
 dotenv.config();
@@ -66,7 +69,7 @@ class LLMSchedulerServer {
 
     // Request logging
     this.app.use((req, res, next) => {
-      console.log(`${req.method} ${req.url}`);
+      logger.debug(req.method + ' ' + req.url);
       next();
     });
   }
@@ -86,10 +89,10 @@ class LLMSchedulerServer {
    */
   private setupSocketIO(): void {
     this.io.on('connection', (socket) => {
-      console.log('Client connected:', socket.id);
+      logger.debug('Client connected: ' + socket.id);
 
       socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
+        logger.debug('Client disconnected: ' + socket.id);
       });
     });
 
@@ -118,21 +121,21 @@ class LLMSchedulerServer {
 
       // Start HTTP server
       this.httpServer.listen(config.server.port, () => {
-        console.log('='.repeat(50));
-        console.log('LLM Scheduler Server Started');
-        console.log('='.repeat(50));
-        console.log(`Environment: ${config.server.nodeEnv}`);
-        console.log(`Server running on: http://localhost:${config.server.port}`);
-        console.log(`Scheduler type: FCFS (MVP)`);
-        console.log(`Health check: http://localhost:${config.server.port}/api/health`);
-        console.log('='.repeat(50));
+        logger.info('='.repeat(50));
+        logger.info('LLM Scheduler Server Started');
+        logger.info('='.repeat(50));
+        logger.info('Environment: ' + config.server.nodeEnv);
+        logger.info('Server running on: http://localhost:' + config.server.port);
+        logger.info('Scheduler type: FCFS (MVP)');
+        logger.info('Health check: http://localhost:' + config.server.port + '/api/health');
+        logger.info('='.repeat(50));
       });
 
       // Graceful shutdown
       process.on('SIGTERM', () => { void this.shutdown(); });
       process.on('SIGINT', () => { void this.shutdown(); });
     } catch (error) {
-      console.error('Failed to start server:', error);
+      logger.error('Failed to start server:', error);
       process.exit(1);
     }
   }
@@ -141,7 +144,7 @@ class LLMSchedulerServer {
    * Graceful shutdown
    */
   private async shutdown(): Promise<void> {
-    console.log('Shutting down gracefully...');
+    logger.info('Shutting down gracefully...');
 
     try {
       // Shutdown scheduler
@@ -152,11 +155,11 @@ class LLMSchedulerServer {
 
       // Close HTTP server
       this.httpServer.close(() => {
-        console.log('Server shut down successfully');
+        logger.info('Server shut down successfully');
         process.exit(0);
       });
     } catch (error) {
-      console.error('Error during shutdown:', error);
+      logger.error('Error during shutdown:', error);
       process.exit(1);
     }
   }

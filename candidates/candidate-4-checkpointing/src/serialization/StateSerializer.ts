@@ -3,8 +3,7 @@
  * Handles serialization and deserialization of agent states (REQ-CHECK-001)
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { AgentState, CheckpointMetadata, CheckpointType, StateDiff } from '../domain/models.js';
+import { AgentState, StateDiff } from '../domain/models.js';
 
 export interface SerializationResult {
   success: boolean;
@@ -37,14 +36,13 @@ export class StateSerializer {
    */
   public serialize(state: AgentState): SerializationResult {
     const warnings: string[] = [];
-    const startTime = Date.now();
 
     try {
       // Filter sensitive information (REQ-CHECK-009)
       const sanitizedState = this.filterSensitiveData(state, warnings);
 
       // Convert to JSON
-      const jsonString = JSON.stringify(sanitizedState, this.replacer);
+      const jsonString = JSON.stringify(sanitizedState, this.replacer.bind(this));
       const size = Buffer.byteLength(jsonString, 'utf8');
 
       // Check size limit (REQ-CHECK-006)
@@ -78,7 +76,7 @@ export class StateSerializer {
    */
   public deserialize(jsonString: string): DeserializationResult {
     try {
-      const state = JSON.parse(jsonString, this.reviver) as AgentState;
+      const state = JSON.parse(jsonString, this.reviver.bind(this)) as AgentState;
 
       // Validate required fields
       if (!state.messages || !Array.isArray(state.messages)) {
@@ -92,12 +90,12 @@ export class StateSerializer {
       if (state.messages) {
         state.messages = state.messages.map(msg => ({
           ...msg,
-          timestamp: new Date(msg.timestamp as any),
+          timestamp: new Date(msg.timestamp as unknown as string),
         }));
       }
 
       if (state.lastActivity) {
-        state.lastActivity = new Date(state.lastActivity as any);
+        state.lastActivity = new Date(state.lastActivity as unknown as string);
       }
 
       return {
@@ -119,8 +117,8 @@ export class StateSerializer {
     baseState: AgentState,
     currentState: AgentState
   ): StateDiff {
-    const added: Record<string, any> = {};
-    const modified: Record<string, any> = {};
+    const added: Record<string, unknown> = {};
+    const modified: Record<string, unknown> = {};
     const deleted: string[] = [];
 
     // Compare variables
@@ -172,11 +170,11 @@ export class StateSerializer {
     // Apply modified fields (excluding special keys)
     for (const key of Object.keys(diff.modified)) {
       if (key === '_status') {
-        newState.status = diff.modified[key];
+        newState.status = diff.modified[key] as AgentState['status'];
       } else if (key === 'messages') {
-        newState.messages = diff.modified[key];
+        newState.messages = diff.modified[key] as AgentState['messages'];
       } else if (key === 'executionPosition') {
-        newState.executionPosition = diff.modified[key];
+        newState.executionPosition = diff.modified[key] as AgentState['executionPosition'];
       } else {
         newState.variables[key] = diff.modified[key];
       }
@@ -212,7 +210,7 @@ export class StateSerializer {
   private filterSensitiveData(state: AgentState, warnings: string[]): AgentState {
     const sanitized = JSON.parse(JSON.stringify(state));
 
-    const filterRecursive = (obj: any, path: string = ''): void => {
+    const filterRecursive = (obj: Record<string, unknown>, path: string = ''): void => {
       if (typeof obj !== 'object' || obj === null) {
         return;
       }
@@ -225,7 +223,7 @@ export class StateSerializer {
           obj[key] = '[REDACTED]';
           warnings.push(`Filtered sensitive field: ${fullPath}`);
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-          filterRecursive(obj[key], fullPath);
+          filterRecursive(obj[key] as Record<string, unknown>, fullPath);
         }
       }
     };
@@ -237,7 +235,7 @@ export class StateSerializer {
   /**
    * JSON replacer function for handling special types
    */
-  private replacer(key: string, value: any): any {
+  private replacer(_key: string, value: unknown): unknown {
     // Handle Date objects
     if (value instanceof Date) {
       return { __type: 'Date', value: value.toISOString() };
@@ -259,9 +257,9 @@ export class StateSerializer {
   /**
    * JSON reviver function for restoring special types
    */
-  private reviver(key: string, value: any): any {
-    if (value && typeof value === 'object' && value.__type === 'Date') {
-      return new Date(value.value);
+  private reviver(_key: string, value: unknown): unknown {
+    if (value && typeof value === 'object' && (value as Record<string, unknown>).__type === 'Date') {
+      return new Date((value as Record<string, unknown>).value as string);
     }
     return value;
   }

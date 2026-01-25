@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   createAgent,
   createResource,
@@ -141,7 +141,7 @@ describe('Domain Models', () => {
         RecoveryActionType.TERMINATE,
         'agent-1',
         ['resource-1'],
-        RecoveryResult.SUCCESS
+        RecoveryResult.SUCCESS,
       );
       
       expect(action.type).toBe(RecoveryActionType.TERMINATE);

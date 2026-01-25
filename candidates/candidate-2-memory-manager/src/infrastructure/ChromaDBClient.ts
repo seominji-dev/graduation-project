@@ -6,6 +6,7 @@
 
 import { ChromaClient, Collection } from 'chromadb';
 import { MemoryPage, MemoryLevel, PageStatus } from '../domain/models';
+import logger from '../utils/logger';
 
 export interface ChromaDBConfig {
   host?: string;
@@ -37,21 +38,21 @@ export class ChromaDBVectorStore {
       try {
         this.collection = await this.client.getCollection({
           name: this.collectionName,
-          embeddingFunction: undefined as any,
+          embeddingFunction: undefined as unknown as undefined,
         });
-      } catch (error) {
+      } catch (_error) {
         // Collection doesn't exist, create it
         this.collection = await this.client.createCollection({
           name: this.collectionName,
           metadata: { description: 'AI Agent Context Vectors' },
-          embeddingFunction: undefined as any,
+          embeddingFunction: undefined as unknown as undefined,
         });
       }
 
       this.initialized = true;
-      console.log(`ChromaDB initialized: collection "${this.collectionName}"`);
+      logger.info(`ChromaDB initialized: collection "${this.collectionName}"`);
     } catch (error) {
-      console.error('Failed to initialize ChromaDB:', error);
+      logger.error('Failed to initialize ChromaDB:', error);
       throw error;
     }
   }
@@ -73,20 +74,22 @@ export class ChromaDBVectorStore {
       await this.collection.add({
         ids: [`${page.agentId}:${page.key}`],
         embeddings: [page.embedding],
-        metadatas: [{
-          agentId: page.agentId,
-          key: page.key,
-          level: MemoryLevel.L2_VECTOR,
-          status: page.status,
-          createdAt: page.createdAt.toISOString(),
-          lastAccessedAt: page.lastAccessedAt.toISOString(),
-          accessCount: page.accessCount,
-          size: page.size,
-        }],
+        metadatas: [
+          {
+            agentId: page.agentId,
+            key: page.key,
+            level: MemoryLevel.L2_VECTOR,
+            status: page.status,
+            createdAt: page.createdAt.toISOString(),
+            lastAccessedAt: page.lastAccessedAt.toISOString(),
+            accessCount: page.accessCount,
+            size: page.size,
+          },
+        ],
         documents: [page.value],
       });
     } catch (error) {
-      console.error('Failed to store page in ChromaDB:', error);
+      logger.error('Failed to store page in ChromaDB:', error);
       throw error;
     }
   }
@@ -110,7 +113,7 @@ export class ChromaDBVectorStore {
 
       return this.toMemoryPage(result);
     } catch (error) {
-      console.error('Failed to get page from ChromaDB:', error);
+      logger.error('Failed to get page from ChromaDB:', error);
       return null;
     }
   }
@@ -122,7 +125,7 @@ export class ChromaDBVectorStore {
   async semanticSearch(
     agentId: string,
     queryEmbedding: number[],
-    topK: number = 5
+    topK: number = 5,
   ): Promise<Array<{ page: MemoryPage; similarity: number }>> {
     if (!this.initialized || !this.collection) {
       throw new Error('ChromaDB not initialized');
@@ -161,9 +164,7 @@ export class ChromaDBVectorStore {
           };
 
           const distance = result.distances?.[0]?.[i];
-          const similarity = distance !== undefined 
-            ? 1 - Number(distance) // Convert distance to similarity
-            : 1.0;
+          const similarity = distance !== undefined ? 1 - Number(distance) : 1.0;
 
           results.push({ page, similarity });
         }
@@ -171,7 +172,7 @@ export class ChromaDBVectorStore {
 
       return results;
     } catch (error) {
-      console.error('Failed to perform semantic search:', error);
+      logger.error('Failed to perform semantic search:', error);
       return [];
     }
   }
@@ -190,7 +191,7 @@ export class ChromaDBVectorStore {
       });
       return true;
     } catch (error) {
-      console.error('Failed to delete page from ChromaDB:', error);
+      logger.error('Failed to delete page from ChromaDB:', error);
       return false;
     }
   }
@@ -211,20 +212,22 @@ export class ChromaDBVectorStore {
       await this.collection.update({
         ids: [`${page.agentId}:${page.key}`],
         embeddings: [page.embedding],
-        metadatas: [{
-          agentId: page.agentId,
-          key: page.key,
-          level: MemoryLevel.L2_VECTOR,
-          status: page.status,
-          createdAt: page.createdAt.toISOString(),
-          lastAccessedAt: page.lastAccessedAt.toISOString(),
-          accessCount: page.accessCount,
-          size: page.size,
-        }],
+        metadatas: [
+          {
+            agentId: page.agentId,
+            key: page.key,
+            level: MemoryLevel.L2_VECTOR,
+            status: page.status,
+            createdAt: page.createdAt.toISOString(),
+            lastAccessedAt: page.lastAccessedAt.toISOString(),
+            accessCount: page.accessCount,
+            size: page.size,
+          },
+        ],
         documents: [page.value],
       });
     } catch (error) {
-      console.error('Failed to update page in ChromaDB:', error);
+      logger.error('Failed to update page in ChromaDB:', error);
       throw error;
     }
   }
@@ -247,7 +250,7 @@ export class ChromaDBVectorStore {
         dimension: null,
       };
     } catch (error) {
-      console.error('Failed to get ChromaDB stats:', error);
+      logger.error('Failed to get ChromaDB stats:', error);
       return { count: 0, dimension: null };
     }
   }
@@ -265,17 +268,22 @@ export class ChromaDBVectorStore {
       this.collection = await this.client.createCollection({
         name: this.collectionName,
         metadata: { description: 'AI Agent Context Vectors' },
-        embeddingFunction: undefined as any,
+        embeddingFunction: undefined as unknown as undefined,
       });
     } catch (error) {
-      console.error('Failed to clear ChromaDB:', error);
+      logger.error('Failed to clear ChromaDB:', error);
     }
   }
 
   /**
    * Convert ChromaDB result to MemoryPage
    */
-  private toMemoryPage(result: any): MemoryPage | null {
+  private toMemoryPage(result: {
+    ids: string[];
+    metadatas: (Record<string, unknown> | null)[];
+    documents: (string | null)[];
+    embeddings?: number[][] | null;
+  }): MemoryPage | null {
     if (!result.ids || result.ids.length === 0) {
       return null;
     }

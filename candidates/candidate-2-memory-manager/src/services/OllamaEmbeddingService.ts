@@ -5,6 +5,7 @@
  */
 
 import { Ollama as OllamaClass } from 'ollama';
+import logger from '../utils/logger';
 
 export interface EmbeddingConfig {
   baseUrl?: string;
@@ -32,9 +33,9 @@ export class OllamaEmbeddingService {
       // Check if Ollama is available
       await this.ollama.list();
       this.initialized = true;
-      console.log(`Ollama initialized: model "${this.model}"`);
+      logger.info(`Ollama initialized: model "${this.model}"`);
     } catch (error) {
-      console.error('Failed to initialize Ollama:', error);
+      logger.error('Failed to initialize Ollama:', error);
       throw error;
     }
   }
@@ -55,7 +56,7 @@ export class OllamaEmbeddingService {
 
       return response.embedding;
     } catch (error) {
-      console.error('Failed to generate embedding:', error);
+      logger.error('Failed to generate embedding:', error);
       throw error;
     }
   }
@@ -70,7 +71,7 @@ export class OllamaEmbeddingService {
 
     try {
       const embeddings: number[][] = [];
-      
+
       for (const text of texts) {
         const embedding = await this.generateEmbedding(text);
         embeddings.push(embedding);
@@ -78,7 +79,7 @@ export class OllamaEmbeddingService {
 
       return embeddings;
     } catch (error) {
-      console.error('Failed to generate batch embeddings:', error);
+      logger.error('Failed to generate batch embeddings:', error);
       throw error;
     }
   }
@@ -121,7 +122,7 @@ export class OllamaEmbeddingService {
       const testEmbedding = await this.generateEmbedding('test');
       return testEmbedding.length;
     } catch (error) {
-      console.error('Failed to get embedding dimension:', error);
+      logger.error('Failed to get embedding dimension:', error);
       return 0;
     }
   }

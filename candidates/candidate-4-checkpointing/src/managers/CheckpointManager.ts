@@ -15,6 +15,9 @@ import {
   CheckpointMetadata,
   StateDiff,
 } from '../domain/models.js';
+import { logger } from '../utils/logger.js';
+
+const log = logger.child('CheckpointManager');
 
 export interface CheckpointCreationResult {
   success: boolean;
@@ -81,7 +84,7 @@ export class CheckpointManager {
 
       // Log warnings from serialization
       for (const warning of serializationResult.warnings) {
-        console.warn(`[CheckpointManager] ${warning}`);
+        log.warn(warning);
       }
 
       // Calculate diff for incremental checkpoints (REQ-CHECK-017, REQ-CHECK-019)

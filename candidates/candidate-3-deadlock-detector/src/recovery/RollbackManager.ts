@@ -69,7 +69,7 @@ export class RollbackManager {
     agentId: string,
     checkpointId: string | null,
     agents: Map<string, Agent>,
-    resources: Map<string, Resource>
+    resources: Map<string, Resource>,
   ): RollbackResult {
     const agent = agents.get(agentId);
     
@@ -119,7 +119,7 @@ export class RollbackManager {
     const resourcesReleased = this.performRollback(
       agent,
       targetCheckpoint,
-      resources
+      resources,
     );
 
     return {
@@ -134,7 +134,7 @@ export class RollbackManager {
   private performRollback(
     agent: Agent,
     checkpoint: Checkpoint,
-    resources: Map<string, Resource>
+    resources: Map<string, Resource>,
   ): string[] {
     const resourcesReleased: string[] = [];
 
@@ -160,7 +160,7 @@ export class RollbackManager {
   public rollbackToLatest(
     agentId: string,
     agents: Map<string, Agent>,
-    resources: Map<string, Resource>
+    resources: Map<string, Resource>,
   ): RollbackResult {
     return this.rollback(agentId, null, agents, resources);
   }
@@ -204,13 +204,13 @@ export class RollbackManager {
   }
 
   public static createRecoveryActionResult(
-    result: RollbackResult
+    result: RollbackResult,
   ): RecoveryAction {
     return createRecoveryAction(
       'rollback' as any,
       result.agentId,
       result.resourcesReleased,
-      result.success ? RecoveryResult.SUCCESS : RecoveryResult.FAILED
+      result.success ? RecoveryResult.SUCCESS : RecoveryResult.FAILED,
     );
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Deadlock Detector - Main Entry Point
- * 
+ *
  * Multi-agent system deadlock detection and recovery using Wait-For Graph
  */
 
@@ -10,8 +10,8 @@ import { Server as SocketIOServer } from 'socket.io';
 import config from './config/index.js';
 import apiRoutes from './api/routes/index.js';
 import { connectToMongoDB, disconnectFromMongoDB } from './infrastructure/mongodb.js';
-import { connectToRedis, disconnectFromRedis, cacheWFG, publishDeadlockEvent } from './infrastructure/redis.js';
-import DeadlockController from './api/controllers/DeadlockController.js';
+import { connectToRedis, disconnectFromRedis } from './infrastructure/redis.js';
+import logger from './utils/logger.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,15 +21,13 @@ const io = new SocketIOServer(httpServer, {
   },
 });
 
-const controller = new DeadlockController();
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
 app.use((req, _res, next) => {
-  console.log(req.method + ' ' + req.path);
+  logger.debug('HTTP Request', { method: req.method, path: req.path });
   next();
 });
 
@@ -38,7 +36,7 @@ app.use('/api', apiRoutes);
 
 // Socket.IO for real-time deadlock notifications
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  logger.info('Client connected', { socketId: socket.id });
 
   socket.emit('connected', {
     message: 'Connected to Deadlock Detector',
@@ -46,25 +44,25 @@ io.on('connection', (socket) => {
   });
 
   socket.on('subscribe:graph', () => {
-    socket.join('graph-updates');
-    console.log('Client subscribed to graph updates:', socket.id);
+    void socket.join('graph-updates');
+    logger.debug('Client subscribed to graph updates', { socketId: socket.id });
   });
 
   socket.on('subscribe:deadlock', () => {
-    socket.join('deadlock-alerts');
-    console.log('Client subscribed to deadlock alerts:', socket.id);
+    void socket.join('deadlock-alerts');
+    logger.debug('Client subscribed to deadlock alerts', { socketId: socket.id });
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    logger.info('Client disconnected', { socketId: socket.id });
   });
 });
 
-function broadcastDeadlock(deadlockData: any): void {
+function broadcastDeadlock(deadlockData: unknown): void {
   io.to('deadlock-alerts').emit('deadlock-detected', deadlockData);
 }
 
-function broadcastGraphUpdate(graphData: any): void {
+function broadcastGraphUpdate(graphData: unknown): void {
   io.to('graph-updates').emit('graph-updated', graphData);
 }
 
@@ -74,27 +72,29 @@ async function startServer(): Promise<void> {
     await connectToRedis();
 
     httpServer.listen(config.port, () => {
-      console.log('Deadlock Detector API server running on port', config.port);
-      console.log('Socket.IO server running on port', config.port);
+      logger.info('Deadlock Detector API server started', { port: config.port });
+      logger.info('Socket.IO server running', { port: config.port });
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server', error);
     process.exit(1);
   }
 }
 
-async function shutdown(): Promise<void> {
-  console.log('Shutting down server...');
-  
-  httpServer.close(async () => {
-    await disconnectFromMongoDB();
-    await disconnectFromRedis();
-    console.log('Server shutdown complete');
-    process.exit(0);
+function shutdown(): void {
+  logger.info('Shutting down server...');
+
+  httpServer.close(() => {
+    void (async (): Promise<void> => {
+      await disconnectFromMongoDB();
+      await disconnectFromRedis();
+      logger.info('Server shutdown complete');
+      process.exit(0);
+    })();
   });
 
   setTimeout(() => {
-    console.error('Forced shutdown after timeout');
+    logger.error('Forced shutdown after timeout');
     process.exit(1);
   }, 10000);
 }
@@ -102,6 +102,6 @@ async function shutdown(): Promise<void> {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-startServer();
+void startServer();
 
 export { app, io, broadcastDeadlock, broadcastGraphUpdate };

@@ -8,7 +8,7 @@ import {
   createAgent,
   createDeadlockCycle,
   createWaitForEdge,
-  AgentState,
+  
 } from '../../src/domain/models';
 
 describe('VictimSelector', () => {
@@ -32,7 +32,7 @@ describe('VictimSelector', () => {
 
       const cycle = createDeadlockCycle(
         [agent1.id, agent2.id, agent3.id],
-        [edge1, edge2, edge3]
+        [edge1, edge2, edge3],
       );
 
       const result = selector.selectVictim(cycle, agents);
@@ -64,7 +64,7 @@ describe('VictimSelector', () => {
 
       const cycle = createDeadlockCycle(
         [agent1.id, agent2.id],
-        [edge1, edge2]
+        [edge1, edge2],
       );
 
       const result = selector.selectVictim(cycle, agents);
@@ -94,7 +94,7 @@ describe('VictimSelector', () => {
 
       const cycle = createDeadlockCycle(
         [agent1.id, agent2.id],
-        [edge1, edge2]
+        [edge1, edge2],
       );
 
       const result = selector.selectVictim(cycle, agents);
@@ -124,7 +124,7 @@ describe('VictimSelector', () => {
 
       const cycle = createDeadlockCycle(
         [agent1.id, agent2.id],
-        [edge1, edge2]
+        [edge1, edge2],
       );
 
       const result = selector.selectVictim(cycle, agents);
@@ -166,7 +166,7 @@ describe('VictimSelector', () => {
 
       const cycle = createDeadlockCycle(
         [agent1.id, agent2.id, agent3.id],
-        [edge1, edge2, edge3]
+        [edge1, edge2, edge3],
       );
 
       const ranked = selector.rankAgents(cycle, agents);
@@ -201,7 +201,7 @@ describe('CompositeVictimSelector', () => {
 
     const cycle = createDeadlockCycle(
       [agent1.id, agent2.id],
-      [edge1, edge2]
+      [edge1, edge2],
     );
 
     const recommendations = compositeSelector.getAllRecommendations(cycle, agents);
@@ -223,7 +223,7 @@ describe('CompositeVictimSelector', () => {
 
     const cycle = createDeadlockCycle(
       [agent1.id, agent2.id],
-      [edge1, edge2]
+      [edge1, edge2],
     );
 
     const consensus = compositeSelector.getConsensusVictim(cycle, agents);

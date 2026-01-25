@@ -2,9 +2,35 @@
  * Tests for Redis Infrastructure
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Create mock Redis client
+const mockRedisClient = {
+  connect: vi.fn().mockResolvedValue(undefined),
+  quit: vi.fn().mockResolvedValue(undefined),
+  isOpen: true,
+  on: vi.fn(),
+  set: vi.fn().mockResolvedValue('OK'),
+  get: vi.fn().mockResolvedValue(null),
+  del: vi.fn().mockResolvedValue(1),
+  publish: vi.fn().mockResolvedValue(1),
+};
+
+// Mock redis module before importing
+vi.mock('redis', () => ({
+  createClient: vi.fn(() => mockRedisClient),
+}));
 
 describe('Redis Infrastructure', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockRedisClient.isOpen = true;
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
   describe('Module Exports', () => {
     it('should export connectToRedis function', async () => {
       const module = await import('../../src/infrastructure/redis.js');
@@ -59,14 +85,8 @@ describe('Redis Infrastructure', () => {
       const { connectToRedis } = await import('../../src/infrastructure/redis.js');
       const result = connectToRedis();
       expect(result).toBeInstanceOf(Promise);
-      // Clean up if connection succeeded
-      try {
-        await result;
-        const { disconnectFromRedis } = await import('../../src/infrastructure/redis.js');
-        await disconnectFromRedis();
-      } catch (e) {
-        // Ignore errors if Redis is not available
-      }
+      // Wait for the mocked promise to resolve
+      await expect(result).resolves.toBeUndefined();
     });
   });
 
@@ -110,7 +130,7 @@ describe('Redis Infrastructure', () => {
         edges: [],
         lastUpdated: new Date(),
       };
-      
+
       // Should not throw even if Redis is not connected
       await expect(cacheWFG(mockGraph)).resolves.not.toThrow();
     });

@@ -35,6 +35,9 @@ import {
 } from './types';
 import { LLMService } from '../services/llmService';
 import { BoostManager } from '../managers/BoostManager';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('MLFQScheduler');
 
 /**
  * MLFQ Configuration
@@ -127,12 +130,12 @@ export class MLFQScheduler implements IScheduler {
 
       // Worker event handlers
       worker.on('completed', (job: Job<MLFQQueueJob>) => {
-        console.log('Job ' + job.id + ' completed from Q' + level);
+        logger.info('Job ' + job.id + ' completed from Q' + level);
         this.cleanupJobMetadata(job.data.requestId);
       });
 
       worker.on('failed', (job: Job<MLFQQueueJob> | undefined, error: Error) => {
-        console.error('Job ' + (job?.id || 'unknown') + ' failed from Q' + level + ':', error);
+        logger.error('Job ' + (job?.id || 'unknown') + ' failed from Q' + level + ':', error);
         if (job) {
           this.cleanupJobMetadata(job.data.requestId);
         }
@@ -143,7 +146,7 @@ export class MLFQScheduler implements IScheduler {
     this.boostManager = new BoostManager(this);
     this.boostManager.start();
 
-    console.log('MLFQ Scheduler "' + this.config.name + '" initialized with ' + 
+    logger.info('MLFQ Scheduler "' + this.config.name + '" initialized with ' + 
       QUEUE_LEVELS + ' queues (Q0: ' + TIME_QUANTA[0] + 'ms, Q1: ' + 
       TIME_QUANTA[1] + 'ms, Q2: ' + TIME_QUANTA[2] + 'ms, Q3: Infinity)');
     return Promise.resolve();
@@ -323,7 +326,7 @@ export class MLFQScheduler implements IScheduler {
     }
     this.queues = [];
 
-    console.log('MLFQ Scheduler "' + this.config.name + '" shut down');
+    logger.info('MLFQ Scheduler "' + this.config.name + '" shut down');
   }
 
   /**
@@ -376,7 +379,7 @@ export class MLFQScheduler implements IScheduler {
             boostedCount++;
           }
         } catch (error) {
-          console.error('Failed to boost job ' + job.id + ':', error);
+          logger.error('Failed to boost job ' + job.id + ':', error);
         }
       }
     }
@@ -533,7 +536,7 @@ export class MLFQScheduler implements IScheduler {
     // Update MongoDB log
     await this.updateQueueLevel(requestId, newLevel, metadata.queueHistory);
 
-    console.log('Job ' + requestId + ' demoted from Q' + currentLevel + ' to Q' + newLevel);
+    logger.debug('Job ' + requestId + ' demoted from Q' + currentLevel + ' to Q' + newLevel);
   }
 
   /**
@@ -564,7 +567,7 @@ export class MLFQScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      console.error('Failed to log request:', error);
+      logger.error('Failed to log request:', error);
     }
   }
 
@@ -616,7 +619,7 @@ export class MLFQScheduler implements IScheduler {
         { $set: updateData }
       );
     } catch (logError) {
-      console.error('Failed to log response:', logError);
+      logger.error('Failed to log response:', logError);
     }
   }
 
@@ -638,7 +641,7 @@ export class MLFQScheduler implements IScheduler {
         }
       );
     } catch (error) {
-      console.error('Failed to update queue level:', error);
+      logger.error('Failed to update queue level:', error);
     }
   }
 
