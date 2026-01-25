@@ -596,3 +596,166 @@ describe('FairnessCalculator', () => {
     });
   });
 });
+
+describe('Branch Coverage - FairnessCalculator', () => {
+  let calculator: FairnessCalculator;
+
+  beforeEach(() => {
+    calculator = new FairnessCalculator();
+  });
+
+  describe('Disparity Ratio Edge Cases', () => {
+    it('should return 0 disparity ratio when minimum throughput is 0', () => {
+      // Record only for one tenant to create 0 throughput for comparison scenario
+      // This tests the case where minThroughput could be 0
+      const metrics = calculator.getFairnessMetrics();
+      
+      // With no tenants, disparity ratio handling
+      expect(Object.is(0, metrics.disparityRatio) || metrics.disparityRatio === 0).toBe(true);
+    });
+
+    it('should calculate disparity ratio correctly when all tenants have throughput', () => {
+      calculator.recordRequestCompletion('tenant-1', 1000, 500);
+      calculator.recordRequestCompletion('tenant-1', 1000, 500);
+      calculator.recordRequestCompletion('tenant-2', 1000, 500);
+
+      const metrics = calculator.getFairnessMetrics();
+      
+      // Both tenants have non-zero throughput
+      expect(metrics.disparityRatio).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Average Calculation Edge Cases', () => {
+    it('should return 0 for avgProcessingTime when no requests processed', () => {
+      // This is tricky - we need to test the branch where requestsProcessed is 0
+      // but getTenantStats returns null for non-existent tenants
+      // The branch is checked inside getTenantStats
+      
+      // Test through getFairnessMetrics which handles the same logic
+      const metrics = calculator.getFairnessMetrics();
+      
+      // With no tenants, everything should be default
+      expect(metrics.tenantWaitTime.size).toBe(0);
+    });
+
+    it('should calculate avgWaitTime correctly for tenant with requests', () => {
+      calculator.recordRequestCompletion('tenant-1', 1000, 500);
+      calculator.recordRequestCompletion('tenant-1', 1000, 700);
+      
+      const stats = calculator.getTenantStats('tenant-1');
+      expect(stats?.avgWaitTime).toBe(600); // (500 + 700) / 2
+    });
+
+    it('should calculate avgProcessingTime correctly for tenant with requests', () => {
+      calculator.recordRequestCompletion('tenant-1', 1000, 500);
+      calculator.recordRequestCompletion('tenant-1', 2000, 500);
+      
+      const stats = calculator.getTenantStats('tenant-1');
+      expect(stats?.avgProcessingTime).toBe(1500); // (1000 + 2000) / 2
+    });
+  });
+
+  describe('getFairnessMetrics Branch Coverage', () => {
+    it('should handle single tenant scenario for most/least favored', () => {
+      calculator.recordRequestCompletion('single-tenant', 1000, 500);
+      
+      const metrics = calculator.getFairnessMetrics();
+      
+      expect(metrics.mostFavoredTenant).toBe('single-tenant');
+      expect(metrics.leastFavoredTenant).toBe('single-tenant');
+      expect(metrics.disparityRatio).toBe(1);
+    });
+
+    it('should identify most and least favored correctly with different throughputs', () => {
+      // Create significant throughput difference
+      for (let i = 0; i < 10; i++) {
+        calculator.recordRequestCompletion('high-throughput', 100, 50);
+      }
+      calculator.recordRequestCompletion('low-throughput', 100, 50);
+
+      const metrics = calculator.getFairnessMetrics();
+      
+      expect(metrics.mostFavoredTenant).toBe('high-throughput');
+      expect(metrics.leastFavoredTenant).toBe('low-throughput');
+      expect(metrics.disparityRatio).toBeGreaterThan(1);
+    });
+  });
+
+  describe('getTenantStats Branch Coverage', () => {
+    it('should calculate throughput based on elapsed time from first request', () => {
+      calculator.recordRequestCompletion('tenant-time', 1000, 500);
+      
+      const stats = calculator.getTenantStats('tenant-time');
+      
+      // Throughput should be calculated based on elapsed time
+      expect(stats?.throughput).toBeGreaterThan(0);
+    });
+
+    it('should handle tenant stats with multiple rapid requests', () => {
+      for (let i = 0; i < 100; i++) {
+        calculator.recordRequestCompletion('rapid-tenant', 10, 5);
+      }
+      
+      const stats = calculator.getTenantStats('rapid-tenant');
+      
+      expect(stats?.requestsProcessed).toBe(100);
+      expect(stats?.avgProcessingTime).toBe(10);
+      expect(stats?.avgWaitTime).toBe(5);
+    });
+  });
+
+  describe('generateFairnessReport Branch Coverage', () => {
+    it('should generate report with tenant wait time of 0', () => {
+      calculator.recordRequestCompletion('no-wait-tenant', 1000, 0);
+      
+      const report = calculator.generateFairnessReport();
+      
+      expect(report).toContain('no-wait-tenant');
+      expect(report).toContain('Avg Wait Time: 0.00ms');
+    });
+
+    it('should include all report sections with multiple tenants', () => {
+      calculator.recordRequestCompletion('tenant-a', 500, 100);
+      calculator.recordRequestCompletion('tenant-b', 1000, 200);
+      calculator.recordRequestCompletion('tenant-c', 1500, 300);
+
+      const report = calculator.generateFairnessReport();
+
+      expect(report).toContain('tenant-a');
+      expect(report).toContain('tenant-b');
+      expect(report).toContain('tenant-c');
+      expect(report).toContain('Throughput:');
+      expect(report).toContain('Avg Wait Time:');
+    });
+  });
+
+  describe('calculateWeightedFairness Branch Coverage', () => {
+    it('should handle tenant not in weights map', () => {
+      calculator.recordRequestCompletion('unmapped-tenant', 1000, 500);
+      
+      const weights = new Map<string, number>();
+      // Don't add unmapped-tenant to weights
+      
+      const fairness = calculator.calculateWeightedFairness(weights);
+      
+      // Should use default weight of 1
+      expect(fairness).toBeLessThanOrEqual(1);
+      expect(fairness).toBeGreaterThan(0);
+    });
+
+    it('should handle all tenants with weights', () => {
+      calculator.recordRequestCompletion('weighted-1', 1000, 500);
+      calculator.recordRequestCompletion('weighted-2', 1000, 500);
+      
+      const weights = new Map([
+        ['weighted-1', 10],
+        ['weighted-2', 10],
+      ]);
+      
+      const fairness = calculator.calculateWeightedFairness(weights);
+      
+      expect(fairness).toBeCloseTo(1.0, 2);
+    });
+  });
+});

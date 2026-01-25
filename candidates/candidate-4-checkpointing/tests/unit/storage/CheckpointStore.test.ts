@@ -5,6 +5,7 @@
 
 import { CheckpointStore } from '../../../src/storage/CheckpointStore';
 import { Checkpoint, CheckpointType, CheckpointStatus, AgentState, AgentStatus } from '../../../src/domain/models';
+import type { CheckpointDocument } from '../../../src/storage/CheckpointSchema';
 
 // Mock the entire CheckpointSchema module
 jest.mock('../../../src/storage/CheckpointSchema.js', () => ({
@@ -261,7 +262,7 @@ describe('CheckpointStore', () => {
       }));
 
       const testStore = new (await import('../../../src/storage/CheckpointStore.js')).CheckpointStore();
-      const result = await testStore['documentToCheckpoint'](doc);
+      const result = await testStore['documentToCheckpoint'](doc as unknown as CheckpointDocument);
 
       expect(result._id).toBe('mongo-id-123');
       expect(result.agentId).toBe('agent-1');

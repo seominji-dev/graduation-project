@@ -143,6 +143,18 @@ describe('BoostManager', () => {
       );
       consoleInfoSpy.mockRestore();
     });
+
+    it('should not run boost after stop is called', async () => {
+      await boostManager.start();
+      await boostManager.stop();
+
+      // runBoost should return early when stopped
+      mockScheduler.reset();
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
+
+      // boostAllJobs should not be called because manager is stopped
+      expect(mockScheduler.boostAllJobsCalled).toBe(false);
+    });
   });
 
   describe('getStats', () => {
@@ -217,6 +229,33 @@ describe('BoostManager', () => {
       expect(mockScheduler.getJobsAtLevel(2)).toBe(0);
       expect(mockScheduler.getJobsAtLevel(3)).toBe(0);
     });
+
+    it('should return early when stopped before runBoost', async () => {
+      await boostManager.start();
+      
+      // Stop the manager first
+      await boostManager.stop();
+      
+      // Reset the mock to track new calls
+      mockScheduler.reset();
+      
+      // Call runBoost after stop - should return early without calling scheduler
+      await (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost();
+      
+      // Scheduler method should not be called because isStopped is true
+      expect(mockScheduler.boostAllJobsCalled).toBe(false);
+    });
+
+    it('should handle scheduler being null after stop', async () => {
+      await boostManager.start();
+      await boostManager.stop();
+
+      // After stop, scheduler is set to null
+      // runBoost should handle this gracefully
+      await expect(
+        (boostManager as unknown as { runBoost: () => Promise<void> }).runBoost()
+      ).resolves.toBeUndefined();
+    });
   });
 
   describe('Error Handling', () => {
@@ -290,6 +329,30 @@ describe('BoostManager', () => {
 
     it('should implement getStats method', () => {
       expect(typeof boostManager.getStats).toBe('function');
+    });
+  });
+
+  describe('Stopped State Behavior', () => {
+    it('should not boost when manager is in stopped state', async () => {
+      await boostManager.start();
+      mockScheduler.setJobsAtLevel(1, 10);
+      
+      // Stop immediately
+      await boostManager.stop();
+      
+      // Create fresh mock to track calls
+      const freshMockScheduler = new MockMLFQScheduler();
+      freshMockScheduler.setJobsAtLevel(1, 10);
+      
+      const stoppedManager = new BoostManager(freshMockScheduler);
+      await stoppedManager.start();
+      await stoppedManager.stop();
+      
+      // Try to run boost on stopped manager
+      await (stoppedManager as unknown as { runBoost: () => Promise<void> }).runBoost();
+      
+      // Should not have called boost because manager is stopped
+      expect(freshMockScheduler.boostAllJobsCalled).toBe(false);
     });
   });
 });
