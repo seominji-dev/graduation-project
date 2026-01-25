@@ -61,7 +61,7 @@ export class VirtualTimeTracker {
    */
   updateVirtualTime(serviceTime: number, activeWeightSum: number): void {
     const now = Date.now();
-    const realTimeElapsed = now - this.state.lastUpdateTime;
+    const _realTimeElapsed = now - this.state.lastUpdateTime;
 
     // Update virtual time using GPS formula
     // V(t) = V(t_prev) + (service_time / sum_of_active_weights)

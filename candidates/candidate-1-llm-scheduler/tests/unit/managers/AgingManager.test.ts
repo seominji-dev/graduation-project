@@ -295,13 +295,23 @@ describe('AgingManager', () => {
   });
 
   describe('Error Handling', () => {
+    let consoleErrorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
     it('should handle getWaitingJobs errors gracefully', async () => {
       mockScheduler.getWaitingJobs = jest.fn().mockRejectedValue(new Error('Database error'));
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
-      expect(true).toBe(true); // Should complete without throwing
+      expect(consoleErrorSpy).toHaveBeenCalled();
     });
 
     it('should handle updateJobPriority errors gracefully', async () => {
@@ -311,7 +321,7 @@ describe('AgingManager', () => {
       await agingManager.start();
       await (agingManager as any).runAging();
 
-      expect(true).toBe(true); // Should complete without throwing
+      expect(consoleErrorSpy).toHaveBeenCalled();
     });
   });
 });

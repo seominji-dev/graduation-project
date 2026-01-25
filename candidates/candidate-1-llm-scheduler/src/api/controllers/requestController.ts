@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { IScheduler } from '../../schedulers/types';
 import {
   LLMRequest,
-  LLMRequestSchema,
+  
   RequestPriority,
   RequestStatus,
 } from '../../domain/models';

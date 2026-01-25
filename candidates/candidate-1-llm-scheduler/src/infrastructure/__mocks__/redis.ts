@@ -185,6 +185,100 @@ class MockRedisConnection extends EventEmitter {
   async sismember() {
     return 0;
   }
+  // Sorted set methods (required for BullMQ)
+  async zadd() {
+    return 1;
+  }
+  async zrem() {
+    return 1;
+  }
+  async zrange() {
+    return [];
+  }
+  async zrangebyscore() {
+    return [];
+  }
+  async zrevrange() {
+    return [];
+  }
+  async zscore() {
+    return null;
+  }
+  async zcard() {
+    return 0;
+  }
+  async zcount() {
+    return 0;
+  }
+  async zincrby() {
+    return '1';
+  }
+  async zrank() {
+    return null;
+  }
+  // Blocking operations for BullMQ workers
+  async bzpopmin() {
+    return null;
+  }
+  async bzpopmax() {
+    return null;
+  }
+  async blpop() {
+    return null;
+  }
+  async brpop() {
+    return null;
+  }
+  async brpoplpush() {
+    return null;
+  }
+  async blmove() {
+    return null;
+  }
+  // List operations
+  async lpush() {
+    return 1;
+  }
+  async rpush() {
+    return 1;
+  }
+  async lpop() {
+    return null;
+  }
+  async rpop() {
+    return null;
+  }
+  async lrange() {
+    return [];
+  }
+  async llen() {
+    return 0;
+  }
+  async lrem() {
+    return 0;
+  }
+  async lmove() {
+    return null;
+  }
+  // Additional BullMQ required methods
+  async client() {
+    return 'OK';
+  }
+  async time() {
+    return [Date.now().toString(), '0'];
+  }
+  async script() {
+    return 'OK';
+  }
+  async evalsha() {
+    return [];
+  }
+  async scriptExists() {
+    return [1];
+  }
+  async scriptLoad() {
+    return 'mock-sha';
+  }
 }
 
 class RedisManager {

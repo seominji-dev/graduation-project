@@ -10,7 +10,7 @@ export function createRoutes(requestController: RequestController): Router {
   const router = Router();
 
   // Health check
-  router.get('/health', (req, res) => {
+  router.get('/health', (_req, res) => {
     res.status(200).json({
       success: true,
       message: 'LLM Scheduler API is running',
@@ -18,13 +18,21 @@ export function createRoutes(requestController: RequestController): Router {
     });
   });
 
-  // Request routes
-  router.post('/requests', requestController.createRequest);
-  router.get('/requests/:id', requestController.getRequestStatus);
-  router.delete('/requests/:id', requestController.cancelRequest);
+  // Request routes - wrap async handlers to avoid no-misused-promises
+  router.post('/requests', (req, res, next) => {
+    void requestController.createRequest(req, res, next);
+  });
+  router.get('/requests/:id', (req, res, next) => {
+    void requestController.getRequestStatus(req, res, next);
+  });
+  router.delete('/requests/:id', (req, res, next) => {
+    void requestController.cancelRequest(req, res, next);
+  });
 
   // Scheduler routes
-  router.get('/scheduler/stats', requestController.getSchedulerStats);
+  router.get('/scheduler/stats', (req, res, next) => {
+    void requestController.getSchedulerStats(req, res, next);
+  });
 
   return router;
 }

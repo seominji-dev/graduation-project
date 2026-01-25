@@ -42,7 +42,7 @@ class MongoDBManager {
    * Check connection status
    */
   isHealthy(): boolean {
-    return this.isConnected && mongoose.connection.readyState === 1;
+    return this.isConnected && Number(mongoose.connection.readyState) === 1;
   }
 }
 

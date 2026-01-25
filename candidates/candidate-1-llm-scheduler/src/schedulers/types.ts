@@ -3,7 +3,7 @@
  * Defines the contract for all scheduling algorithms
  */
 
-import { Queue } from 'bullmq';
+import type { Queue as _Queue } from 'bullmq';
 import { LLMRequest, QueueJob } from '../domain/models';
 
 // Scheduler Configuration

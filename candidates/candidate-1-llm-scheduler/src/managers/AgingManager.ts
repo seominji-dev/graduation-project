@@ -25,18 +25,20 @@ export interface IPriorityScheduler {
 }
 
 export class AgingManager {
-  private scheduler: IPriorityScheduler;
+  private scheduler: IPriorityScheduler | null;
   private intervalId: NodeJS.Timeout | null = null;
   private agingCount: Map<string, number> = new Map(); // Track promotions per job
+  private isStopped: boolean = false;
 
   constructor(scheduler: IPriorityScheduler) {
     this.scheduler = scheduler;
+    this.isStopped = false;
   }
 
   /**
    * Start the aging process
    */
-  async start(): Promise<void> {
+  start(): void {
     if (this.intervalId) {
       console.warn('AgingManager already started');
       return;
@@ -45,23 +47,31 @@ export class AgingManager {
     console.log('Starting AgingManager (interval: ' + AGING_INTERVAL_MS + 'ms)');
 
     // Run aging immediately on start
-    await this.runAging();
+    void this.runAging();
 
     // Schedule periodic aging
-    this.intervalId = setInterval(async () => {
-      await this.runAging();
+    this.intervalId = setInterval(() => {
+      void this.runAging();
     }, AGING_INTERVAL_MS);
+
+    // Prevent interval from keeping Node.js alive during tests
+    if (this.intervalId.unref) {
+      this.intervalId.unref();
+    }
   }
 
   /**
    * Stop the aging process
    */
-  async stop(): Promise<void> {
+  stop(): void {
+    this.isStopped = true;
+    
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
     this.agingCount.clear();
+    this.scheduler = null;
     console.log('AgingManager stopped');
   }
 
@@ -69,6 +79,11 @@ export class AgingManager {
    * Run aging process - promote long-waiting jobs
    */
   private async runAging(): Promise<void> {
+    // Guard: Check if stopped or scheduler is invalid
+    if (this.isStopped || !this.scheduler) {
+      return;
+    }
+
     try {
       const now = Date.now();
       const waitingJobs = await this.scheduler.getWaitingJobs();

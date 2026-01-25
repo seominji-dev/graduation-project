@@ -8,8 +8,8 @@
  * REQ-SCHED-201: IF request has priority field, THEN respect it (extended FCFS with priority)
  */
 
-import { Queue, Job, Worker, JobState } from 'bullmq';
-import { v4 as uuidv4 } from 'uuid';
+import { Queue, Job, Worker } from 'bullmq';
+
 import { redisManager } from '../infrastructure/redis';
 import { RequestLog } from '../infrastructure/models/RequestLog';
 import { mongodbManager } from '../infrastructure/mongodb';
@@ -23,7 +23,7 @@ import {
   IScheduler,
   SchedulerConfig,
   SchedulerStats,
-  LLMProcessor,
+  
 } from './types';
 import { LLMService } from '../services/llmService';
 
@@ -46,7 +46,7 @@ export class FCFSScheduler implements IScheduler {
   /**
    * Initialize the FCFS scheduler
    */
-  async initialize(): Promise<void> {
+  initialize(): Promise<void> {
     // Use BullMQ-specific connection (maxRetriesPerRequest: null)
     const bullmqConnection = redisManager.getBullMQConnection();
 
@@ -67,7 +67,7 @@ export class FCFSScheduler implements IScheduler {
     // so we set all jobs to same priority for true FCFS
     this.worker = new Worker(
       this.config.name,
-      async (job: Job) => {
+      async (job: Job<QueueJob>) => {
         return await this.processJob(job);
       },
       {
@@ -77,12 +77,12 @@ export class FCFSScheduler implements IScheduler {
     );
 
     // Worker event handlers
-    this.worker.on('completed', (job: Job) => {
+    this.worker.on('completed', (job: Job<QueueJob>) => {
       console.log('Job ' + job.id + ' completed');
       this.cleanupJobTimings(job.data.requestId);
     });
 
-    this.worker.on('failed', (job: Job | undefined, error: Error) => {
+    this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
       console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
@@ -90,6 +90,7 @@ export class FCFSScheduler implements IScheduler {
     });
 
     console.log('FCFS Scheduler "' + this.config.name + '" initialized');
+    return Promise.resolve();
   }
 
   /**

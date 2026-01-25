@@ -60,6 +60,10 @@ class MockRequestLog {
     return null;
   }
 
+  static async updateOne(): Promise<{ modifiedCount: number }> {
+    return { modifiedCount: 1 };
+  }
+
   static async deleteOne(): Promise<{ deletedCount: number }> {
     return { deletedCount: 1 };
   }

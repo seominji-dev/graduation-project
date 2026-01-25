@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 import { config } from './config';
 import { mongodbManager } from './infrastructure/mongodb';
 import { LLMService } from './services/llmService';
-import { SchedulerFactory, SchedulerType } from './services/schedulerFactory';
+import { SchedulerFactory } from './services/schedulerFactory';
 import { FCFSScheduler } from './schedulers/FCFSScheduler';
 import { RequestController } from './api/controllers/requestController';
 import { createRoutes } from './api/routes';
@@ -94,7 +94,7 @@ class LLMSchedulerServer {
     });
 
     // Make io accessible to other parts of the app
-    (this.app as any).set('io', this.io);
+    (this.app as unknown as { set: (key: string, value: SocketIOServer) => void }).set('io', this.io);
   }
 
   /**
@@ -129,8 +129,8 @@ class LLMSchedulerServer {
       });
 
       // Graceful shutdown
-      process.on('SIGTERM', () => this.shutdown());
-      process.on('SIGINT', () => this.shutdown());
+      process.on('SIGTERM', () => { void this.shutdown(); });
+      process.on('SIGINT', () => { void this.shutdown(); });
     } catch (error) {
       console.error('Failed to start server:', error);
       process.exit(1);
@@ -164,6 +164,6 @@ class LLMSchedulerServer {
 
 // Start the server
 const server = new LLMSchedulerServer();
-server.start();
+void server.start();
 
 export default server;

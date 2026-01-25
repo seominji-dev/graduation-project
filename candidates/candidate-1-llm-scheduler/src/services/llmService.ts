@@ -40,7 +40,7 @@ export class LLMService {
         case 'openai':
           return await this.processOpenAI(prompt, provider.model || 'gpt-3.5-turbo');
         default:
-          throw new Error('Unsupported provider: ' + provider.name);
+          throw new Error('Unsupported provider: ' + String(provider.name));
       }
     } catch (error) {
       console.error('LLM processing error:', error);

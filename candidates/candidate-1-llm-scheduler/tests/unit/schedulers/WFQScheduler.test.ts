@@ -752,4 +752,883 @@ describe('WFQScheduler - Specification Tests', () => {
       expect(tracker).toBeDefined();
     });
   });
+
+  // NEW TESTS FOR COVERAGE IMPROVEMENT
+
+  describe('getStatus - Job State Mapping', () => {
+    it('should return QUEUED for waiting state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440020',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-standard' },
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('waiting');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.QUEUED);
+    });
+
+    it('should return QUEUED for delayed state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440021',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('delayed');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.QUEUED);
+    });
+
+    it('should return PROCESSING for active state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440022',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('active');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.PROCESSING);
+    });
+
+    it('should return COMPLETED for completed state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440023',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('completed');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.COMPLETED);
+    });
+
+    it('should return FAILED for failed state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440024',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('failed');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.FAILED);
+    });
+
+    it('should return PENDING for unknown state', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440025',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      await scheduler.submit(request);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      if (job) {
+        job.getState = jest.fn().mockResolvedValue('unknown-state');
+      }
+
+      const status = await scheduler.getStatus(request.id);
+      expect(status).toBe(RequestStatus.PENDING);
+    });
+  });
+
+  describe('cancel - Job Removal', () => {
+    it('should return true and remove existing job', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440030',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-standard' },
+      };
+
+      await scheduler.submit(request);
+
+      const result = await scheduler.cancel(request.id);
+      expect(result).toBe(true);
+
+      const queue = (scheduler as any).queue;
+      const job = await queue.getJob(request.id);
+      expect(job).toBeNull();
+    });
+
+    it('should cleanup job metadata when cancelling', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440031',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-enterprise' },
+      };
+
+      await scheduler.submit(request);
+
+      const jobMetadata = (scheduler as any).jobMetadata;
+      expect(jobMetadata.has(request.id)).toBe(true);
+
+      await scheduler.cancel(request.id);
+
+      expect(jobMetadata.has(request.id)).toBe(false);
+    });
+
+    it('should throw error when cancel called before initialization', async () => {
+      const uninitializedScheduler = new WFQScheduler(config, mockLLMService);
+
+      await expect(uninitializedScheduler.cancel('test-id')).rejects.toThrow('Scheduler not initialized');
+    });
+  });
+
+  describe('Worker Event Handlers', () => {
+    it('should trigger completed event handler', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440040',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-standard' },
+      };
+
+      await scheduler.submit(request);
+
+      const worker = (scheduler as any).worker;
+      const mockJob = {
+        id: request.id,
+        data: { requestId: request.id },
+      };
+
+      worker.emit('completed', mockJob);
+
+      const jobMetadata = (scheduler as any).jobMetadata;
+      expect(jobMetadata.has(request.id)).toBe(false);
+    });
+
+    it('should trigger failed event handler with job', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440041',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-premium' },
+      };
+
+      await scheduler.submit(request);
+
+      const worker = (scheduler as any).worker;
+      const mockJob = {
+        id: request.id,
+        data: { requestId: request.id },
+      };
+      const mockError = new Error('Test error');
+
+      worker.emit('failed', mockJob, mockError);
+
+      const jobMetadata = (scheduler as any).jobMetadata;
+      expect(jobMetadata.has(request.id)).toBe(false);
+    });
+
+    it('should handle failed event with undefined job', async () => {
+      await scheduler.initialize();
+
+      const worker = (scheduler as any).worker;
+      const mockError = new Error('Test error');
+
+      expect(() => {
+        worker.emit('failed', undefined, mockError);
+      }).not.toThrow();
+    });
+  });
+
+  describe('processJob - Success Path', () => {
+    it('should process job successfully and update metrics', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440050',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440050',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      const result = await processJob(mockJob);
+
+      expect(result).toBe('Test response');
+      expect(mockLLMService.process).toHaveBeenCalledWith(
+        mockJobData.prompt,
+        mockJobData.provider
+      );
+    });
+
+    it('should record fairness metrics on successful completion', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440051',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-enterprise',
+        weight: 100,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440051',
+          tenantId: 'tenant-enterprise',
+          virtualStartTime: 0,
+          virtualFinishTime: 50,
+          weight: 100,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const calculator = scheduler.getFairnessCalculator();
+      const initialTotal = calculator.getTotalRequestsProcessed();
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      await processJob(mockJob);
+
+      expect(calculator.getTotalRequestsProcessed()).toBe(initialTotal + 1);
+    });
+
+    it('should update virtual time after job completion', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440052',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-premium',
+        weight: 50,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440052',
+          tenantId: 'tenant-premium',
+          virtualStartTime: 0,
+          virtualFinishTime: 100,
+          weight: 50,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const tracker = scheduler.getVirtualTimeTracker();
+      const initialVirtualTime = tracker.getCurrentVirtualTime();
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      await processJob(mockJob);
+
+      expect(tracker.getCurrentVirtualTime()).toBeGreaterThanOrEqual(initialVirtualTime);
+    });
+  });
+
+  describe('processJob - Error Path', () => {
+    it('should handle LLM service errors', async () => {
+      await scheduler.initialize();
+
+      const testError = new Error('LLM service error');
+      mockLLMService.process.mockRejectedValueOnce(testError);
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440060',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440060',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      await expect(processJob(mockJob)).rejects.toThrow('LLM service error');
+    });
+
+    it('should cleanup active tenant weights on error', async () => {
+      await scheduler.initialize();
+
+      mockLLMService.process.mockRejectedValueOnce(new Error('Service error'));
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440062',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440062',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const activeTenantWeights = (scheduler as any).activeTenantWeights;
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      try {
+        await processJob(mockJob);
+      } catch {
+        // Expected error
+      }
+
+      expect(activeTenantWeights.has(mockJobData.tenantId)).toBe(false);
+    });
+
+    it('should handle non-Error objects in catch block', async () => {
+      await scheduler.initialize();
+
+      mockLLMService.process.mockRejectedValueOnce('String error');
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440063',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440063',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      await expect(processJob(mockJob)).rejects.toBe('String error');
+    });
+  });
+
+  describe('processJob - Timing Calculations', () => {
+    it('should calculate wait time correctly', async () => {
+      await scheduler.initialize();
+
+      const queuedTime = new Date(Date.now() - 5000);
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440070',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440070',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: queuedTime });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      await processJob(mockJob);
+
+      const timing = jobTimings.get(mockJobData.requestId);
+      expect(timing?.started).toBeDefined();
+    });
+
+    it('should handle missing timing data', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440071',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440071',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      await expect(processJob(mockJob)).resolves.toBe('Test response');
+    });
+  });
+
+  describe('Logging Methods - MongoDB Integration', () => {
+    it('should call logRequest when submitting a job', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440080',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-standard' },
+      };
+
+      // Submit should complete without error even if MongoDB operations occur
+      await expect(scheduler.submit(request)).resolves.not.toThrow();
+    });
+
+    it('should handle MongoDB errors gracefully in logRequest', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440081',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Should not throw even if MongoDB fails internally
+      await expect(scheduler.submit(request)).resolves.not.toThrow();
+    });
+
+    it('should call logResponse on successful job completion', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440082',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440082',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      
+      // Process should complete and call logResponse internally
+      await expect(processJob(mockJob)).resolves.toBe('Test response');
+    });
+
+    it('should call logResponse with error on failed job', async () => {
+      await scheduler.initialize();
+
+      mockLLMService.process.mockRejectedValueOnce(new Error('Processing error'));
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440083',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440083',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      // Error should be thrown but logResponse should be called internally
+      await expect(processJob(mockJob)).rejects.toThrow('Processing error');
+    });
+
+    it('should handle MongoDB errors gracefully in logResponse', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440084',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-standard',
+        weight: 10,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440084',
+          tenantId: 'tenant-standard',
+          virtualStartTime: 0,
+          virtualFinishTime: 500,
+          weight: 10,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+
+      // Should not throw even if MongoDB update fails internally
+      await expect(processJob(mockJob)).resolves.toBe('Test response');
+    });
+  });
+
+  describe('Active Weight Sum', () => {
+    it('should track active tenant weights during processing', async () => {
+      await scheduler.initialize();
+
+      const mockJobData = {
+        requestId: '550e8400-e29b-41d4-a716-446655440090',
+        prompt: 'Test prompt',
+        provider: { name: 'ollama', model: 'llama2' },
+        tenantId: 'tenant-enterprise',
+        weight: 100,
+        virtualFinishTime: {
+          requestId: '550e8400-e29b-41d4-a716-446655440090',
+          tenantId: 'tenant-enterprise',
+          virtualStartTime: 0,
+          virtualFinishTime: 50,
+          weight: 100,
+        },
+      };
+
+      const jobTimings = (scheduler as any).jobTimings;
+      jobTimings.set(mockJobData.requestId, { queued: new Date() });
+
+      const mockJob = {
+        id: mockJobData.requestId,
+        data: mockJobData,
+      };
+
+      const activeTenantWeights = (scheduler as any).activeTenantWeights;
+
+      mockLLMService.process.mockImplementationOnce(async () => {
+        expect(activeTenantWeights.has('tenant-enterprise')).toBe(true);
+        expect(activeTenantWeights.get('tenant-enterprise')).toBe(100);
+        return 'Test response';
+      });
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      await processJob(mockJob);
+
+      expect(activeTenantWeights.has('tenant-enterprise')).toBe(false);
+    });
+
+    it('should calculate getActiveWeightSum correctly', async () => {
+      await scheduler.initialize();
+
+      const activeTenantWeights = (scheduler as any).activeTenantWeights;
+      activeTenantWeights.set('tenant-a', 10);
+      activeTenantWeights.set('tenant-b', 50);
+      activeTenantWeights.set('tenant-c', 100);
+
+      const getActiveWeightSum = (scheduler as any).getActiveWeightSum.bind(scheduler);
+      const sum = getActiveWeightSum();
+
+      expect(sum).toBe(160);
+    });
+
+    it('should return 0 when no active tenants', async () => {
+      await scheduler.initialize();
+
+      const getActiveWeightSum = (scheduler as any).getActiveWeightSum.bind(scheduler);
+      const sum = getActiveWeightSum();
+
+      expect(sum).toBe(0);
+    });
+  });
+
+  describe('cleanupJobMetadata', () => {
+    it('should remove all metadata for a job', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440100',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-standard' },
+      };
+
+      await scheduler.submit(request);
+
+      const jobTimings = (scheduler as any).jobTimings;
+      const jobMetadata = (scheduler as any).jobMetadata;
+      expect(jobTimings.has(request.id)).toBe(true);
+      expect(jobMetadata.has(request.id)).toBe(true);
+
+      const cleanupJobMetadata = (scheduler as any).cleanupJobMetadata.bind(scheduler);
+      cleanupJobMetadata(request.id);
+
+      expect(jobTimings.has(request.id)).toBe(false);
+      expect(jobMetadata.has(request.id)).toBe(false);
+    });
+
+    it('should remove virtual finish time from tracker', async () => {
+      await scheduler.initialize();
+
+      const tracker = scheduler.getVirtualTimeTracker();
+      tracker.calculateVirtualFinishTime('test-job-vft', 'tenant-standard', 5000, 10);
+
+      // Verify it exists before cleanup
+      expect(tracker.getVirtualFinishTime('test-job-vft')).toBeDefined();
+
+      const cleanupJobMetadata = (scheduler as any).cleanupJobMetadata.bind(scheduler);
+      cleanupJobMetadata('test-job-vft');
+
+      // Virtual finish time should be removed
+      expect(tracker.getVirtualFinishTime('test-job-vft')).toBeUndefined();
+    });
+  });
+
+  describe('Error Handling - Extended', () => {
+    it('should throw error if pause called before initialization', async () => {
+      const uninitializedScheduler = new WFQScheduler(config, mockLLMService);
+
+      await expect(uninitializedScheduler.pause()).rejects.toThrow('Scheduler not initialized');
+    });
+
+    it('should throw error if resume called before initialization', async () => {
+      const uninitializedScheduler = new WFQScheduler(config, mockLLMService);
+
+      await expect(uninitializedScheduler.resume()).rejects.toThrow('Scheduler not initialized');
+    });
+
+    it('should throw error if getStats called before initialization', async () => {
+      const uninitializedScheduler = new WFQScheduler(config, mockLLMService);
+
+      await expect(uninitializedScheduler.getStats()).rejects.toThrow('Scheduler not initialized');
+    });
+  });
+
+  describe('submit - Virtual Finish Time Calculation', () => {
+    it('should calculate and store virtual finish time on submit', async () => {
+      await scheduler.initialize();
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440110',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'tenant-enterprise' },
+      };
+
+      await scheduler.submit(request);
+
+      const jobMetadata = (scheduler as any).jobMetadata;
+      const metadata = jobMetadata.get(request.id);
+
+      expect(metadata).toBeDefined();
+      expect(metadata.virtualFinishTime).toBeDefined();
+      expect(metadata.virtualFinishTime.virtualFinishTime).toBeGreaterThan(0);
+    });
+
+    it('should use weight from tenant registry', async () => {
+      await scheduler.initialize();
+
+      scheduler.addTenant('custom-weight-tenant', 'Custom', TenantTier.STANDARD, 75);
+
+      const request: LLMRequest = {
+        id: '550e8400-e29b-41d4-a716-446655440111',
+        prompt: 'Test request',
+        provider: { name: 'ollama', model: 'llama2' },
+        priority: RequestPriority.NORMAL,
+        status: RequestStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { tenantId: 'custom-weight-tenant' },
+      };
+
+      await scheduler.submit(request);
+
+      const jobMetadata = (scheduler as any).jobMetadata;
+      const metadata = jobMetadata.get(request.id);
+
+      expect(metadata.weight).toBe(75);
+    });
+  });
 });

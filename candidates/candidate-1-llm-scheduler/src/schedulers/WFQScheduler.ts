@@ -73,7 +73,7 @@ export class WFQScheduler implements IScheduler {
     this.tenantRegistry.initializeDefaultTenants();
   }
 
-  async initialize(): Promise<void> {
+  initialize(): Promise<void> {
     const bullmqConnection = redisManager.getBullMQConnection();
 
     this.queue = new Queue(this.config.name, {
@@ -89,7 +89,7 @@ export class WFQScheduler implements IScheduler {
 
     this.worker = new Worker(
       this.config.name,
-      async (job: Job) => {
+      async (job: Job<WFQQueueJob>) => {
         return await this.processJob(job);
       },
       {
@@ -98,12 +98,12 @@ export class WFQScheduler implements IScheduler {
       }
     );
 
-    this.worker.on('completed', (job: Job) => {
+    this.worker.on('completed', (job: Job<WFQQueueJob>) => {
       console.log('Job ' + job.id + ' completed');
       this.cleanupJobMetadata(job.data.requestId);
     });
 
-    this.worker.on('failed', (job: Job | undefined, error: Error) => {
+    this.worker.on('failed', (job: Job<WFQQueueJob> | undefined, error: Error) => {
       console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobMetadata(job.data.requestId);
@@ -112,6 +112,7 @@ export class WFQScheduler implements IScheduler {
 
     console.log('WFQ Scheduler "' + this.config.name + '" initialized with ' +
       this.tenantRegistry.getTenantCount() + ' tenants');
+    return Promise.resolve();
   }
 
   async submit(request: LLMRequest): Promise<string> {
@@ -256,6 +257,7 @@ export class WFQScheduler implements IScheduler {
       this.queue = null;
     }
     console.log('WFQ Scheduler "' + this.config.name + '" shut down');
+    return Promise.resolve();
   }
 
   private async processJob(job: Job<WFQQueueJob>): Promise<string> {

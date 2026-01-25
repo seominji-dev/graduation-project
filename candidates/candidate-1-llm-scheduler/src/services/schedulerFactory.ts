@@ -41,9 +41,10 @@ export class SchedulerFactory {
       case SchedulerType.WFQ:
         return new WFQScheduler(config, this.llmService);
 
-      default:
+      default: {
         const _exhaustiveCheck: never = type;
-        throw new Error('Unknown scheduler type: ' + _exhaustiveCheck);
+        throw new Error('Unknown scheduler type: ' + String(_exhaustiveCheck));
+      }
     }
   }
 }

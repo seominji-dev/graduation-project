@@ -17,8 +17,8 @@
  * - Q3: Infinity (lowest priority, FCFS behavior)
  */
 
-import { Queue, Job, Worker, JobState } from 'bullmq';
-import { v4 as uuidv4 } from 'uuid';
+import { Queue, Job, Worker } from 'bullmq';
+
 import { redisManager } from '../infrastructure/redis';
 import { RequestLog } from '../infrastructure/models/RequestLog';
 import { mongodbManager } from '../infrastructure/mongodb';
@@ -95,7 +95,7 @@ export class MLFQScheduler implements IScheduler {
   /**
    * Initialize the MLFQ scheduler with 4 queues
    */
-  async initialize(): Promise<void> {
+  initialize(): Promise<void> {
     const bullmqConnection = redisManager.getBullMQConnection();
 
     // Create 4 priority queues (Q0, Q1, Q2, Q3)
@@ -115,7 +115,7 @@ export class MLFQScheduler implements IScheduler {
       // Create worker for this queue
       const worker = new Worker(
         QUEUE_NAMES[level],
-        async (job: Job) => {
+        async (job: Job<MLFQQueueJob>) => {
           return await this.processJob(job, level);
         },
         {
@@ -126,12 +126,12 @@ export class MLFQScheduler implements IScheduler {
       this.workers.push(worker);
 
       // Worker event handlers
-      worker.on('completed', (job: Job) => {
+      worker.on('completed', (job: Job<MLFQQueueJob>) => {
         console.log('Job ' + job.id + ' completed from Q' + level);
         this.cleanupJobMetadata(job.data.requestId);
       });
 
-      worker.on('failed', (job: Job | undefined, error: Error) => {
+      worker.on('failed', (job: Job<MLFQQueueJob> | undefined, error: Error) => {
         console.error('Job ' + (job?.id || 'unknown') + ' failed from Q' + level + ':', error);
         if (job) {
           this.cleanupJobMetadata(job.data.requestId);
@@ -141,11 +141,12 @@ export class MLFQScheduler implements IScheduler {
 
     // Start boost manager (Rule 5: Periodic boosting)
     this.boostManager = new BoostManager(this);
-    await this.boostManager.start();
+    this.boostManager.start();
 
     console.log('MLFQ Scheduler "' + this.config.name + '" initialized with ' + 
       QUEUE_LEVELS + ' queues (Q0: ' + TIME_QUANTA[0] + 'ms, Q1: ' + 
       TIME_QUANTA[1] + 'ms, Q2: ' + TIME_QUANTA[2] + 'ms, Q3: Infinity)');
+    return Promise.resolve();
   }
 
   /**
@@ -308,7 +309,7 @@ export class MLFQScheduler implements IScheduler {
    */
   async shutdown(): Promise<void> {
     if (this.boostManager) {
-      await this.boostManager.stop();
+      this.boostManager.stop();
       this.boostManager = null;
     }
 
@@ -329,15 +330,22 @@ export class MLFQScheduler implements IScheduler {
    * Boost all jobs to Q0 (Rule 5) - called by BoostManager
    */
   async boostAllJobs(): Promise<number> {
+    // Guard: Check if queues are still valid (may be called after shutdown)
+    if (!this.queues || this.queues.length === 0 || !this.queues[0]) {
+      return 0;
+    }
+
     let boostedCount = 0;
 
     // Move jobs from Q1, Q2, Q3 to Q0
     for (let sourceLevel = 1; sourceLevel < QUEUE_LEVELS; sourceLevel++) {
+      if (!this.queues[sourceLevel]) continue;
       const jobs = await this.queues[sourceLevel].getJobs(['waiting', 'delayed'], 0, 1000);
 
       for (const job of jobs) {
         try {
-          const metadata = this.jobMetadata.get(job.data.requestId);
+          const jobData = job.data as MLFQQueueJob;
+          const metadata = this.jobMetadata.get(jobData.requestId);
           if (!metadata) continue;
 
           // Only boost if not already in Q0
@@ -350,7 +358,7 @@ export class MLFQScheduler implements IScheduler {
             metadata.queueHistory.push(0);
             metadata.timeSliceRemaining = TIME_QUANTA[0];
             metadata.lastQueueChange = new Date();
-            this.jobMetadata.set(job.data.requestId, metadata);
+            this.jobMetadata.set(jobData.requestId, metadata);
 
             // Add to Q0
             await this.queues[0].add(
@@ -363,7 +371,7 @@ export class MLFQScheduler implements IScheduler {
             );
 
             // Update MongoDB log
-            await this.updateQueueLevel(job.data.requestId, 0, metadata.queueHistory);
+            await this.updateQueueLevel(jobData.requestId, 0, metadata.queueHistory);
 
             boostedCount++;
           }
@@ -576,7 +584,18 @@ export class MLFQScheduler implements IScheduler {
     try {
       await mongodbManager.connect();
 
-      const updateData: any = {
+      const updateData: {
+        status: RequestStatus;
+        response?: string;
+        processingTime: number;
+        waitTime: number;
+        completedAt?: Date;
+        error?: string;
+        updatedAt: Date;
+        queueLevel?: number;
+        queueHistory?: number[];
+        timeSliceUsed?: number;
+      } = {
         status,
         response,
         processingTime,
@@ -594,7 +613,7 @@ export class MLFQScheduler implements IScheduler {
 
       await RequestLog.updateOne(
         { requestId },
-        updateData
+        { $set: updateData }
       );
     } catch (logError) {
       console.error('Failed to log response:', logError);

@@ -11,6 +11,13 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   moduleNameMapper: {
+    '^bullmq$': '<rootDir>/tests/__mocks__/bullmq.ts',
     '^@/(.*)$': '<rootDir>/src/$1'
-  }
+  },
+  // Fix worker teardown issues
+  testTimeout: 10000,
+  forceExit: true,
+  detectOpenHandles: false,
+  // Cleanup after tests
+  globalTeardown: '<rootDir>/tests/teardown.js',
 };

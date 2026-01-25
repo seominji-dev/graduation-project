@@ -21,18 +21,20 @@ export interface IMLFQScheduler {
 }
 
 export class BoostManager {
-  private scheduler: IMLFQScheduler;
+  private scheduler: IMLFQScheduler | null;
   private intervalId: NodeJS.Timeout | null = null;
   private boostCount: number = 0;
+  private isStopped: boolean = false;
 
   constructor(scheduler: IMLFQScheduler) {
     this.scheduler = scheduler;
+    this.isStopped = false;
   }
 
   /**
    * Start the periodic boosting process
    */
-  async start(): Promise<void> {
+  start(): void {
     if (this.intervalId) {
       console.warn('BoostManager already started');
       return;
@@ -41,19 +43,27 @@ export class BoostManager {
     console.log('Starting BoostManager (interval: ' + BOOST_INTERVAL_MS + 'ms)');
 
     // Schedule periodic boosting
-    this.intervalId = setInterval(async () => {
-      await this.runBoost();
+    this.intervalId = setInterval(() => {
+      void this.runBoost();
     }, BOOST_INTERVAL_MS);
+
+    // Prevent interval from keeping Node.js alive during tests
+    if (this.intervalId.unref) {
+      this.intervalId.unref();
+    }
   }
 
   /**
    * Stop the boosting process
    */
-  async stop(): Promise<void> {
+  stop(): void {
+    this.isStopped = true;
+    
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+    this.scheduler = null;
     console.log('BoostManager stopped (total boosts: ' + this.boostCount + ')');
   }
 
@@ -61,6 +71,11 @@ export class BoostManager {
    * Run boost process - move all jobs to Q0
    */
   private async runBoost(): Promise<void> {
+    // Guard: Check if stopped or scheduler is invalid
+    if (this.isStopped || !this.scheduler) {
+      return;
+    }
+
     try {
       const boostedCount = await this.scheduler.boostAllJobs();
       this.boostCount++;

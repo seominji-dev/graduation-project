@@ -53,7 +53,7 @@ export class PriorityScheduler implements IScheduler {
   /**
    * Initialize the Priority scheduler with aging support
    */
-  async initialize(): Promise<void> {
+  initialize(): Promise<void> {
     const bullmqConnection = redisManager.getBullMQConnection();
 
     this.queue = new Queue(this.config.name, {
@@ -69,7 +69,7 @@ export class PriorityScheduler implements IScheduler {
 
     this.worker = new Worker(
       this.config.name,
-      async (job: Job) => {
+      async (job: Job<QueueJob>) => {
         return await this.processJob(job);
       },
       {
@@ -78,7 +78,7 @@ export class PriorityScheduler implements IScheduler {
       }
     );
 
-    this.worker.on('completed', (job: Job) => {
+    this.worker.on('completed', (job: Job<QueueJob>) => {
       console.log('Job ' + job.id + ' completed');
       this.cleanupJobTimings(job.data.requestId);
       if (this.agingManager) {
@@ -86,7 +86,7 @@ export class PriorityScheduler implements IScheduler {
       }
     });
 
-    this.worker.on('failed', (job: Job | undefined, error: Error) => {
+    this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
       console.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
@@ -97,9 +97,10 @@ export class PriorityScheduler implements IScheduler {
     });
 
     this.agingManager = new AgingManager(this);
-    await this.agingManager.start();
+    this.agingManager.start();
 
     console.log('Priority Scheduler "' + this.config.name + '" initialized');
+    return Promise.resolve();
   }
 
   /**
@@ -232,7 +233,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async shutdown(): Promise<void> {
     if (this.agingManager) {
-      await this.agingManager.stop();
+      this.agingManager.stop();
       this.agingManager = null;
     }
     if (this.worker) {
@@ -267,7 +268,7 @@ export class PriorityScheduler implements IScheduler {
       }
 
       // Store original job data
-      const originalData = job.data;
+      const originalData = job.data as QueueJob;
       const originalName = job.name;
       const originalOpts = job.opts;
 
@@ -305,11 +306,14 @@ export class PriorityScheduler implements IScheduler {
 
     try {
       const jobs = await this.queue.getJobs(['waiting', 'delayed'], 0, 100);
-      return jobs.map((job) => ({
-        jobId: job.id!,
-        priority: job.data.priority || RequestPriority.NORMAL,
-        queuedAt: job.data.queuedAt || new Date(),
-      }));
+      return jobs.map((job) => {
+        const jobData = job.data as QueueJob;
+        return {
+          jobId: job.id!,
+          priority: jobData.priority || RequestPriority.NORMAL,
+          queuedAt: jobData.queuedAt || new Date(),
+        };
+      });
     } catch (error) {
       console.error('Failed to get waiting jobs:', error);
       return [];
