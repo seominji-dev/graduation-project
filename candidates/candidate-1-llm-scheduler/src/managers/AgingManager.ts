@@ -1,0 +1,131 @@
+/**
+ * Aging Manager
+ * 
+ * Implements aging mechanism for priority scheduling to prevent starvation.
+ * Periodically promotes long-waiting jobs to higher priority levels.
+ * 
+ * REQ-SCHED-401: Aging to prevent starvation
+ */
+
+import { RequestPriority } from '../domain/models';
+
+/**
+ * Aging configuration
+ */
+const AGING_INTERVAL_MS = 60000; // 60 seconds
+const AGING_THRESHOLD_MS = 120000; // 2 minutes - start aging after this wait time
+const MAX_AGE_PROMOTIONS = 2; // Maximum number of priority promotions
+
+/**
+ * Interface for PriorityScheduler to allow AgingManager to update job priorities
+ */
+export interface IPriorityScheduler {
+  updateJobPriority(jobId: string, newPriority: RequestPriority): Promise<boolean>;
+  getWaitingJobs(): Promise<Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>>;
+}
+
+export class AgingManager {
+  private scheduler: IPriorityScheduler;
+  private intervalId: NodeJS.Timeout | null = null;
+  private agingCount: Map<string, number> = new Map(); // Track promotions per job
+
+  constructor(scheduler: IPriorityScheduler) {
+    this.scheduler = scheduler;
+  }
+
+  /**
+   * Start the aging process
+   */
+  async start(): Promise<void> {
+    if (this.intervalId) {
+      console.warn('AgingManager already started');
+      return;
+    }
+
+    console.log('Starting AgingManager (interval: ' + AGING_INTERVAL_MS + 'ms)');
+
+    // Run aging immediately on start
+    await this.runAging();
+
+    // Schedule periodic aging
+    this.intervalId = setInterval(async () => {
+      await this.runAging();
+    }, AGING_INTERVAL_MS);
+  }
+
+  /**
+   * Stop the aging process
+   */
+  async stop(): Promise<void> {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+    this.agingCount.clear();
+    console.log('AgingManager stopped');
+  }
+
+  /**
+   * Run aging process - promote long-waiting jobs
+   */
+  private async runAging(): Promise<void> {
+    try {
+      const now = Date.now();
+      const waitingJobs = await this.scheduler.getWaitingJobs();
+      
+      let promotedCount = 0;
+
+      for (const job of waitingJobs) {
+        const waitTime = now - job.queuedAt.getTime();
+
+        // Only age jobs that have waited beyond threshold
+        if (waitTime > AGING_THRESHOLD_MS) {
+          // Calculate potential new priority
+          const currentPromotions = this.agingCount.get(job.jobId) || 0;
+          
+          if (currentPromotions < MAX_AGE_PROMOTIONS && job.priority < RequestPriority.URGENT) {
+            const newPriority = this.promotePriority(job.priority, currentPromotions);
+            
+            if (newPriority !== job.priority) {
+              const success = await this.scheduler.updateJobPriority(job.jobId, newPriority);
+              
+              if (success) {
+                this.agingCount.set(job.jobId, currentPromotions + 1);
+                promotedCount++;
+                console.log('Aging: Promoted job ' + job.jobId + ' from ' + 
+                  RequestPriority[job.priority] + ' to ' + RequestPriority[newPriority] +
+                  ' (wait time: ' + Math.round(waitTime / 1000) + 's)');
+              }
+            }
+          }
+        }
+      }
+
+      if (promotedCount > 0) {
+        console.log('Aging cycle complete: promoted ' + promotedCount + ' jobs');
+      }
+    } catch (error) {
+      console.error('Aging cycle failed:', error);
+    }
+  }
+
+  /**
+   * Calculate promoted priority based on current priority and promotion count
+   */
+  private promotePriority(currentPriority: RequestPriority, promotionCount: number): RequestPriority {
+    // Each promotion increases priority by one level
+    // MAX_AGE_PROMOTIONS limits how many levels a job can be promoted
+    const newLevel = Math.min(
+      currentPriority + promotionCount + 1,
+      RequestPriority.URGENT
+    );
+    return newLevel as RequestPriority;
+  }
+
+  /**
+   * Reset aging count for a job (called when job is processed)
+   */
+  resetJobAging(jobId: string): void {
+    this.agingCount.delete(jobId);
+  }
+}

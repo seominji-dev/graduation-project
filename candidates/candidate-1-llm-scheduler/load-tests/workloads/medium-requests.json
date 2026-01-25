@@ -1,0 +1,47 @@
+{
+  "name": "Medium Request Workload",
+  "description": "Medium complexity LLM calls that take 1-5 seconds",
+  "expectedDuration": "1-5s",
+  "requests": [
+    {
+      "prompt": "Explain recursion in programming with an example.",
+      "category": "concept"
+    },
+    {
+      "prompt": "What is the difference between TCP and UDP?",
+      "category": "comparison"
+    },
+    {
+      "prompt": "Write a JavaScript function to reverse a string.",
+      "category": "coding"
+    },
+    {
+      "prompt": "Explain the concept of Big O notation.",
+      "category": "concept"
+    },
+    {
+      "prompt": "What are the pros and cons of NoSQL databases?",
+      "category": "analysis"
+    },
+    {
+      "prompt": "Describe how HTTP requests work.",
+      "category": "explanation"
+    },
+    {
+      "prompt": "Compare React and Vue.js frameworks.",
+      "category": "comparison"
+    },
+    {
+      "prompt": "Explain the MVC architecture pattern.",
+      "category": "pattern"
+    },
+    {
+      "prompt": "What is a RESTful API?",
+      "category": "definition"
+    },
+    {
+      "prompt": "Write a SQL query to find duplicates.",
+      "category": "coding"
+    }
+  ]
+}

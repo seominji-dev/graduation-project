@@ -139,3 +139,55 @@ $RECYCLE.BIN/
 # ============================================
 .coverage
 .nyc_output/
+# Python Cache & Bytecode
+# Credential patterns in environment files
+# Purpose: Essential patterns for user projects
+.uv_cache/
+.claude/skills/*/secrets/
+# ===========================================
+# Build Tools & Frameworks
+.claude/skills/*/*/*key*
+.claude/.env.local*
+.claude/plans/
+# Skill-specific credentials
+# Deployment & CI/CD
+# Private keys (specific patterns to avoid false positives)
+*-key.*
+# Test Coverage
+# Updated: 2026-01-10
+# Environment files
+# Claude Code Configuration
+# Mac
+.claude/skills/*/*/*token*
+*.key.*
+.claude/skills/*/.env*
+secret-key-*
+dist-ssr/
+env/
+secret-*.*
+*.pyc
+*-api-key.*
+.claude/local/
+!.env.example
+.#*
+.claude/skills/*/*/*secret*
+.tscache/
+# Version: 0.33.0
+# Backups
+.uv-cache/
+# Secrets and Credentials (CRITICAL)
+*.backup/
+*.dbm
+# FIXED: Issue #237 - Replaced overly broad *key* and *secret* patterns
+[Dd]esktop.ini
+# Logs & Temporary Files
+.claude/settings.local.*.json
+# Build Artifacts & Distribution
+# Virtual Environments
+# Node.js (for docs/Nextra)
+# MoAI-ADK Package Distribution .gitignore
+.claude/settings.local.json
+# Certificate files
+.env.*
+# Cloud provider credentials
+.env/

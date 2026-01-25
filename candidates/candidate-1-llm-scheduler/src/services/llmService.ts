@@ -1,0 +1,131 @@
+/**
+ * LLM Service
+ * Handles communication with LLM providers (Ollama, OpenAI)
+ */
+
+import { LLMProvider } from '../domain/models';
+import { config } from '../config';
+import ollama from 'ollama';
+import OpenAI from 'openai';
+
+export interface LLMResponse {
+  content: string;
+  tokensUsed?: number;
+  model: string;
+}
+
+export class LLMService {
+  private ollamaClient: typeof ollama;
+  private openaiClient: OpenAI | null = null;
+
+  constructor() {
+    this.ollamaClient = ollama;
+
+    // Initialize OpenAI client if API key is provided
+    if (config.llm.openai.apiKey) {
+      this.openaiClient = new OpenAI({
+        apiKey: config.llm.openai.apiKey,
+      });
+    }
+  }
+
+  /**
+   * Process a prompt with the specified provider
+   */
+  async process(prompt: string, provider: LLMProvider): Promise<string> {
+    try {
+      switch (provider.name) {
+        case 'ollama':
+          return await this.processOllama(prompt, provider.model || 'llama2');
+        case 'openai':
+          return await this.processOpenAI(prompt, provider.model || 'gpt-3.5-turbo');
+        default:
+          throw new Error('Unsupported provider: ' + provider.name);
+      }
+    } catch (error) {
+      console.error('LLM processing error:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new Error('LLM processing failed: ' + errorMsg);
+    }
+  }
+
+  /**
+   * Process with Ollama (local LLM)
+   */
+  private async processOllama(prompt: string, model: string): Promise<string> {
+    try {
+      const response = await this.ollamaClient.generate({
+        model: model || 'llama2',
+        prompt: prompt,
+      });
+
+      return response.response;
+    } catch (error) {
+      console.error('Ollama error:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new Error('Ollama processing failed: ' + errorMsg);
+    }
+  }
+
+  /**
+   * Process with OpenAI API
+   */
+  private async processOpenAI(prompt: string, model: string): Promise<string> {
+    if (!this.openaiClient) {
+      throw new Error('OpenAI client not initialized (missing API key)');
+    }
+
+    try {
+      const response = await this.openaiClient.chat.completions.create({
+        model: model || 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+
+      return response.choices[0]?.message?.content || '';
+    } catch (error) {
+      console.error('OpenAI error:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      throw new Error('OpenAI processing failed: ' + errorMsg);
+    }
+  }
+
+  /**
+   * Health check for available providers
+   */
+  async healthCheck(): Promise<{
+    ollama: boolean;
+    openai: boolean;
+  }> {
+    const results = {
+      ollama: false,
+      openai: false,
+    };
+
+    // Check Ollama
+    try {
+      await this.ollamaClient.list();
+      results.ollama = true;
+    } catch (error) {
+      console.error('Ollama health check failed:', error);
+    }
+
+    // Check OpenAI
+    if (this.openaiClient) {
+      try {
+        await this.openaiClient.models.list();
+        results.openai = true;
+      } catch (error) {
+        console.error('OpenAI health check failed:', error);
+      }
+    }
+
+    return results;
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "deadlock-detector",
+  "version": "1.0.0",
+  "description": "Deadlock Detection and Recovery for Multi-Agent Systems using Wait-For Graph",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "keywords": [
+    "deadlock",
+    "detection",
+    "recovery",
+    "multi-agent",
+    "wait-for-graph",
+    "bankers-algorithm"
+  ],
+  "author": "Hongik University CS Graduation Project",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "mongoose": "^8.0.3",
+    "redis": "^4.6.12",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.1",
+    "@vitest/coverage-v8": "^1.1.1",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^6.0.2"
+  }
+}

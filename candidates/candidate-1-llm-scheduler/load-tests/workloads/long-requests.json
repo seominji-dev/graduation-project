@@ -1,0 +1,47 @@
+{
+  "name": "Long Request Workload",
+  "description": "Complex LLM calls that take more than 5 seconds",
+  "expectedDuration": ">5s",
+  "requests": [
+    {
+      "prompt": "Explain the complete architecture of modern operating systems including kernel, memory management, process scheduling, and I/O management.",
+      "category": "architecture"
+    },
+    {
+      "prompt": "Compare and contrast supervised learning, unsupervised learning, and reinforcement learning with detailed examples for each.",
+      "category": "ml-theory"
+    },
+    {
+      "prompt": "Describe the history of artificial intelligence from the 1950s to present day, including key milestones and breakthrough technologies.",
+      "category": "history"
+    },
+    {
+      "prompt": "Explain microservices architecture in detail, including service discovery, load balancing, API gateway, and inter-service communication patterns.",
+      "category": "architecture"
+    },
+    {
+      "prompt": "Provide a comprehensive comparison of SQL and NoSQL databases, covering data models, consistency models, and use cases.",
+      "category": "database"
+    },
+    {
+      "prompt": "Explain blockchain technology, including distributed ledgers, consensus algorithms, smart contracts, and cryptographic foundations.",
+      "category": "blockchain"
+    },
+    {
+      "prompt": "Describe the complete process of training a large language model, from data collection and preprocessing to fine-tuning and deployment.",
+      "category": "llm"
+    },
+    {
+      "prompt": "Compare cloud computing service models (IaaS, PaaS, SaaS) with examples and typical use cases for each.",
+      "category": "cloud"
+    },
+    {
+      "prompt": "Explain containerization and orchestration technologies like Docker and Kubernetes in detail.",
+      "category": "devops"
+    },
+    {
+      "prompt": "Provide a comprehensive overview of cybersecurity threats, vulnerabilities, and defense strategies for modern web applications.",
+      "category": "security"
+    }
+  ]
+}
