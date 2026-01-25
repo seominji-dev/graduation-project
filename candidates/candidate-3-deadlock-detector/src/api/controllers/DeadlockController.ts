@@ -3,11 +3,33 @@
  */
 
 import { Request, Response } from 'express';
-import { AgentState, WaitForGraph, createWaitForGraph, createAgent, createResource, createWaitForEdge, createDetectionResult } from '../../domain/models.js';
+import { AgentState, WaitForGraph, ResourceType, createWaitForGraph, createAgent, createResource, createWaitForEdge, createDetectionResult } from '../../domain/models.js';
 import { CycleDetector } from '../../detectors/CycleDetector.js';
 import { VictimSelector, VictimSelectionStrategy } from '../../recovery/VictimSelector.js';
 import { RollbackManager } from '../../recovery/RollbackManager.js';
 import { BankersAlgorithm } from '../../avoiders/BankersAlgorithm.js';
+
+// Request body type definitions for type safety
+interface AddAgentBody {
+  name: string;
+  priority?: number;
+}
+
+interface AddResourceBody {
+  name: string;
+  type?: ResourceType;
+  instances?: number;
+}
+
+interface ResourceRequestBody {
+  agentId: string;
+  resourceId: string;
+}
+
+interface SelectVictimBody {
+  cycleId?: string;
+  strategy?: VictimSelectionStrategy;
+}
 
 class DeadlockController {
   private wfg: WaitForGraph;
@@ -35,8 +57,9 @@ class DeadlockController {
   };
 
   public addAgent = (req: Request, res: Response): void => {
-    const { name, priority = 5 } = req.body;
-    
+    const body = req.body as AddAgentBody;
+    const { name, priority = 5 } = body;
+
     const agent = createAgent(name, priority);
     this.wfg.agents.set(agent.id, agent);
 
@@ -52,8 +75,9 @@ class DeadlockController {
   };
 
   public addResource = (req: Request, res: Response): void => {
-    const { name, type = 'custom', instances = 1 } = req.body;
-    
+    const body = req.body as AddResourceBody;
+    const { name, type = 'custom' as ResourceType, instances = 1 } = body;
+
     const resource = createResource(name, type, instances);
     this.wfg.resources.set(resource.id, resource);
 
@@ -69,8 +93,9 @@ class DeadlockController {
   };
 
   public requestResource = (req: Request, res: Response): void => {
-    const { agentId, resourceId } = req.body;
-    
+    const body = req.body as ResourceRequestBody;
+    const { agentId, resourceId } = body;
+
     const agent = this.wfg.agents.get(agentId);
     const resource = this.wfg.resources.get(resourceId);
 
@@ -108,8 +133,9 @@ class DeadlockController {
   };
 
   public releaseResource = (req: Request, res: Response): void => {
-    const { agentId, resourceId } = req.body;
-    
+    const body = req.body as ResourceRequestBody;
+    const { agentId, resourceId } = body;
+
     const agent = this.wfg.agents.get(agentId);
     const resource = this.wfg.resources.get(resourceId);
 
@@ -193,7 +219,8 @@ class DeadlockController {
   };
 
   public selectVictim = (req: Request, res: Response): void => {
-    const { cycleId, strategy = 'lowest_priority' } = req.body;
+    const body = req.body as SelectVictimBody;
+    const { cycleId, strategy = 'lowest_priority' as VictimSelectionStrategy } = body;
 
     this.detector = new CycleDetector(this.wfg);
     const cycles = this.detector.detect();
@@ -208,7 +235,7 @@ class DeadlockController {
       return;
     }
 
-    this.victimSelector.setStrategy(strategy as VictimSelectionStrategy);
+    this.victimSelector.setStrategy(strategy);
     const selection = this.victimSelector.selectVictim(targetCycle, this.wfg.agents);
 
     res.json({

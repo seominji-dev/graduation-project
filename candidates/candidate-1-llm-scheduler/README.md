@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-[![Test Coverage](https://img.shields.io/badge/coverage-79.7%25-yellow)](https://github.com/YOUR_USERNAME/llm-scheduler)
+[![Test Coverage](https://img.shields.io/badge/coverage-97.08%25-brightgreen)](https://github.com/YOUR_USERNAME/llm-scheduler)
 
 > OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 오픈소스 프로젝트
 
@@ -95,7 +95,7 @@ npm test
 # 커버리지 확인
 npm run test:coverage
 
-# 테스트 결과: 76/95 통과 (79.7% 커버리지)
+# 테스트 결과: 97.08% 커버리지
 ```
 
 ## 성능 비교

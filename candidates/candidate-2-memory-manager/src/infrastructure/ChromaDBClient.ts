@@ -14,10 +14,12 @@ import logger from '../utils/logger';
  * while embeddings are passed directly via add/update/query operations.
  */
 class ExternalEmbeddingFunction implements IEmbeddingFunction {
-  async generate(_texts: string[]): Promise<number[][]> {
-    throw new Error(
-      'ExternalEmbeddingFunction should not be called. ' +
-        'Embeddings must be provided directly when adding or querying documents.',
+  generate(_texts: string[]): Promise<number[][]> {
+    return Promise.reject(
+      new Error(
+        'ExternalEmbeddingFunction should not be called. ' +
+          'Embeddings must be provided directly when adding or querying documents.',
+      ),
     );
   }
 }

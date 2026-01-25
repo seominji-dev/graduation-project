@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
-[![Test Coverage](https://img.shields.io/badge/coverage-50.66%25-yellow)](https://github.com/YOUR_USERNAME/checkpointing)
+[![Test Coverage](https://img.shields.io/badge/coverage-85.44%25-brightgreen)](https://github.com/YOUR_USERNAME/checkpointing)
 
 > OS 프로세스 체크포인팅을 AI 에이전트에 적용한 장애 복구 시스템
 
@@ -231,7 +231,7 @@ npm run test:coverage    # 커버리지 보고서
 ```
 Test Suites: 3 passed, 3 total
 Tests:       46 passed, 46 total
-Coverage:    50.66%
+Coverage:    85.44%
 ```
 
 ---
@@ -293,7 +293,7 @@ candidate-4-checkpointing/
 
 | 항목 | 점수 | 설명 |
 |------|------|------|
-| Tested | 90/100 | 46/46 테스트 통과, 50.66% 커버리지 |
+| Tested | 90/100 | 46/46 테스트 통과, 85.44% 커버리지 |
 | Readable | 95/100 | TypeScript 타입 안전성, 명확한 네이밍 |
 | Unified | 90/100 | 일관된 코드 스타일 |
 | Secured | 85/100 | Zod 검증, 무결성 검증 |
