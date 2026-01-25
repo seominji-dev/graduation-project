@@ -1,8 +1,19 @@
 # Memory Manager - OS Paging for AI Agents
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-94.44%25-brightgreen)](https://github.com/YOUR_USERNAME/memory-manager)
+
+> Applies Operating Systems paging and virtual memory concepts to AI agent context management
+
+[![Star us on GitHub](https://img.shields.io/badge/⭐-Star%20us%20on%20GitHub-yellow?style=social)](https://github.com/YOUR_USERNAME/memory-manager)
+
+---
+
 ## Overview
 
-Applies Operating Systems paging and virtual memory concepts to AI agent context management. Implements a three-tier hierarchical memory architecture with LRU cache eviction, page fault handling, and semantic search.
+Implements a three-tier hierarchical memory architecture with LRU cache eviction, page fault handling, and semantic search for AI agents.
 
 **Status:** ✅ Complete - All 57 tests passing (94.44% coverage)
 
@@ -53,7 +64,7 @@ Applies Operating Systems paging and virtual memory concepts to AI agent context
 
 ### Installation
 
-\`\`\`bash
+```bash
 # Clone and navigate
 cd candidates/candidate-2-memory-manager
 
@@ -68,14 +79,14 @@ ollama pull nomic-embed-text
 
 # Start API server
 npm run dev
-\`\`\`
+```
 
 ### Usage
 
-\`\`\`bash
+```bash
 # Store a value
-curl -X POST http://localhost:3001/api/memory/put \\
-  -H "Content-Type: application/json" \\
+curl -X POST http://localhost:3001/api/memory/put \
+  -H "Content-Type: application/json" \
   -d '{
     "agentId": "agent-001",
     "key": "conversation:123",
@@ -83,16 +94,16 @@ curl -X POST http://localhost:3001/api/memory/put \\
   }'
 
 # Retrieve a value
-curl -X POST http://localhost:3001/api/memory/get \\
-  -H "Content-Type: application/json" \\
+curl -X POST http://localhost:3001/api/memory/get \
+  -H "Content-Type: application/json" \
   -d '{
     "agentId": "agent-001",
     "key": "conversation:123"
   }'
 
 # Semantic search
-curl -X POST http://localhost:3001/api/memory/search \\
-  -H "Content-Type: application/json" \\
+curl -X POST http://localhost:3001/api/memory/search \
+  -H "Content-Type: application/json" \
   -d '{
     "agentId": "agent-001",
     "query": "weather discussion",
@@ -101,7 +112,7 @@ curl -X POST http://localhost:3001/api/memory/search \\
 
 # Get statistics
 curl http://localhost:3001/api/stats
-\`\`\`
+```
 
 ## API Endpoints
 
@@ -117,7 +128,7 @@ curl http://localhost:3001/api/stats
 
 ## Testing
 
-\`\`\`bash
+```bash
 # Run all tests
 npm test
 
@@ -126,7 +137,7 @@ npm run test:coverage
 
 # Watch mode
 npm run test:watch
-\`\`\`
+```
 
 ### Test Results
 
@@ -150,7 +161,7 @@ npm run test:watch
 
 Environment variables (`.env`):
 
-\`\`\`bash
+```bash
 # L1 Cache (Redis)
 REDIS_HOST=localhost
 REDIS_PORT=6379
@@ -168,11 +179,11 @@ MONGODB_DB_NAME=memory_manager
 # Embeddings (Ollama)
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
-\`\`\`
+```
 
 ## Project Structure
 
-\`\`\`
+```
 src/
 ├── domain/
 │   └── models.ts              # Domain models & schemas
@@ -200,7 +211,7 @@ tests/
 │       └── LRUCache.test.ts   # LRU cache tests
 └── integration/
     └── memory-manager.test.ts # Integration tests
-\`\`\`
+```
 
 ## Performance
 
@@ -218,34 +229,27 @@ tests/
 - **Hit Rate Target**: >80% for optimal performance
 - **Page Fault Rate**: <20% acceptable
 
-## Requirements Traceability
+## Contributing
 
-| REQ | Description | Status |
-|-----|-------------|--------|
-| REQ-MEM-001 | Three-tier memory hierarchy | ✅ |
-| REQ-MEM-002 | Page as unit of memory | ✅ |
-| REQ-MEM-003 | Page table for address translation | ✅ |
-| REQ-MEM-004 | Page fault handling | ✅ |
-| REQ-MEM-005 | LRU eviction policy | ✅ |
-| REQ-MEM-006 | Update access order on read | ✅ |
-| REQ-MEM-007 | Evict LRU when full | ✅ |
-| REQ-MEM-008 | Vector similarity search | ✅ |
-| REQ-MEM-009 | Store semantic vectors | ✅ |
-| REQ-MEM-010 | Retrieve by semantic similarity | ✅ |
-| REQ-MEM-011 | Persistent storage for evicted pages | ✅ |
-| REQ-MEM-012 | High-speed cache for hot data | ✅ |
-| REQ-MEM-013 | Generate embeddings for context | ✅ |
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-## Comparison with LLM Scheduler
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit (`git commit -m 'feat: add amazing feature'`)
+4. Push (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-| Aspect | LLM Scheduler | Memory Manager |
-|--------|---------------|----------------|
-| **OS Concept** | CPU Scheduling | Memory Management |
-| **Algorithm** | FCFS/Priority/MLFQ/WFQ | LRU Cache |
-| **Data Structure** | Queue (BullMQ) | Hierarchy (3 levels) |
-| **Key Metric** | Throughput, latency | Hit rate, page faults |
-| **Test Coverage** | 79.7% (76/95) | 94.44% (57/57) |
-| **Use Case** | Request ordering | Context retrieval |
+## Security
+
+For security concerns, please see [SECURITY.md](SECURITY.md) and report vulnerabilities responsibly.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 ## Technologies
 
@@ -265,11 +269,7 @@ tests/
 - [Domain Models](./src/domain/models.ts) - Core data structures
 - [API Endpoints](./src/server.ts) - REST API documentation
 
-## License
-
-MIT
-
----
+## Acknowledgments
 
 **Part of:** 2025 Hongik University Computer Science Graduation Project  
 **Topic:** OS Concepts Applied to AI/LLM Agents  

@@ -1,6 +1,14 @@
 # Deadlock Detector for Multi-Agent Systems
 
-데드락 감지 및 회복 시스템 - Wait-For Graph 기반 다중 에이전트 시스템용 데드락 감지 및 회복
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+
+> 데드락 감지 및 회복 시스템 - Wait-For Graph 기반 다중 에이전트 시스템용 데드락 감지 및 회복
+
+[![Star us on GitHub](https://img.shields.io/badge/⭐-Star%20us%20on%20GitHub-yellow?style=social)](https://github.com/YOUR_USERNAME/deadlock-detector)
+
+---
 
 ## 개요
 
@@ -9,34 +17,31 @@
 ## 핵심 기능
 
 ### 1. Wait-For Graph (WFG) 기반 사이클 탐지
+
 - DFS(Depth-First Search)를 사용한 사이클 탐지
 - O(V + E) 시간 복잡도 (V: 에이전트 수, E: 엣지 수)
 - 다중 사이클 동시 감지
 
 ### 2. 희생자 선택 전략
+
 - **우선순위 기반**: 가장 낮은 우선순위 에이전트 선택
 - **나이 기반**: 가장 최근에 생성된 에이전트 선택
 - **자원 보유량 기반**: 가장 많은 자원을 보유한 에이전트 선택
 - **의존성 최소화**: 가장 적은 자원을 보유한 에이전트 선택
 
 ### 3. 체크포인트 기반 롤백
+
 - 에이전트 상태 저장 및 복구
 - 자원 해제를 통한 데드락 해결
 
 ### 4. 은행원 알고리즘 (Banker's Algorithm)
+
 - 데드락 회피(avoidance) 기법
 - 안전 상태 검사를 통한 자원 할당
 
-## 기술 스택
+## 시작하기
 
-- **런타임**: Node.js 20 LTS
-- **언어**: TypeScript 5.9
-- **API**: Express.js + Socket.IO
-- **데이터베이스**: MongoDB 7.0
-- **캐싱**: Redis 7.2
-- **테스트**: Vitest
-
-## 설치 및 실행
+### 설치
 
 ```bash
 # 의존성 설치
@@ -163,15 +168,36 @@ tests/
 3. 안전하지 않으면 대기열에 추가
 4. 안전하면 자원 할당
 
+## 기술 스택
+
+- **런타임**: Node.js 20 LTS
+- **언어**: TypeScript 5.9
+- **API**: Express.js + Socket.IO
+- **데이터베이스**: MongoDB 7.0
+- **캐싱**: Redis 7.2
+- **테스트**: Vitest
+
 ## 학술적 가치
 
 1. **OS 이론의 AI 응용**: 운영체제 데드락 이론을 다중 에이전트 시스템에 적용
 2. **실용적 해결책**: 실제 AI 서비스에서 발생하는 자원 경합 문제 해결
 3. **성능 비교**: 다양한 감지/회복 전략의 성능 분석
 
+## 기여하기
+
+기여를 환영합니다! [CONTRIBUTING.md](CONTRIBUTING.md)를 참조해 주세요.
+
+## 보안
+
+보안 취약점을 발견하시면 [SECURITY.md](SECURITY.md)를 참조하여 보고해 주세요.
+
+## 변경 내역
+
+[CHANGELOG.md](CHANGELOG.md)를 참조하세요.
+
 ## 라이선스
 
-MIT License
+이 프로젝트는 [MIT 라이선스](LICENSE) 하에 배포됩니다.
 
 ## 저자
 

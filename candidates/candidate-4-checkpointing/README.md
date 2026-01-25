@@ -1,6 +1,15 @@
 # 에이전트 체크포인팅 시스템
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-50.66%25-yellow)](https://github.com/YOUR_USERNAME/checkpointing)
+
 > OS 프로세스 체크포인팅을 AI 에이전트에 적용한 장애 복구 시스템
+
+[![Star us on GitHub](https://img.shields.io/badge/⭐-Star%20us%20on%20GitHub-yellow?style=social)](https://github.com/YOUR_USERNAME/checkpointing)
+
+---
 
 **SPEC:** SPEC-CHECK-001 | **상태:** ✅ 완료 | **TRUST 5:** 91/100
 
@@ -301,16 +310,26 @@ candidate-4-checkpointing/
 
 ---
 
+## 기여하기
+
+기여를 환영합니다! [CONTRIBUTING.md](CONTRIBUTING.md)를 참조해 주세요.
+
+## 보안
+
+보안 취약점을 발견하시면 [SECURITY.md](SECURITY.md)를 참조하여 보고해 주세요.
+
+## 변경 내역
+
+[CHANGELOG.md](CHANGELOG.md)를 참조하세요.
+
 ## 문서
 
 - [구현 보고서](./IMPLEMENTATION_REPORT.md) - 상세 기술 문서
 - [SPEC 문서](../.moai/specs/SPEC-CHECK-001/spec.md) - 요구사항 정의
 
----
-
 ## 라이선스
 
-MIT
+이 프로젝트는 [MIT 라이선스](LICENSE) 하에 배포됩니다.
 
 ---
 
