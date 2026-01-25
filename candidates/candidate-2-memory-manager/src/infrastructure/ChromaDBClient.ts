@@ -4,9 +4,23 @@
  * REQ-MEM-008: Vector similarity search for context retrieval
  */
 
-import { ChromaClient, Collection } from 'chromadb';
+import { ChromaClient, Collection, IEmbeddingFunction } from 'chromadb';
 import { MemoryPage, MemoryLevel, PageStatus } from '../domain/models';
 import logger from '../utils/logger';
+
+/**
+ * No-op embedding function for collections that handle embeddings externally.
+ * This satisfies the IEmbeddingFunction interface requirement for getCollection()
+ * while embeddings are passed directly via add/update/query operations.
+ */
+class ExternalEmbeddingFunction implements IEmbeddingFunction {
+  async generate(_texts: string[]): Promise<number[][]> {
+    throw new Error(
+      'ExternalEmbeddingFunction should not be called. ' +
+        'Embeddings must be provided directly when adding or querying documents.',
+    );
+  }
+}
 
 export interface ChromaDBConfig {
   host?: string;
@@ -22,11 +36,13 @@ export class ChromaDBVectorStore {
   private collection: Collection | null = null;
   private collectionName: string;
   private initialized: boolean = false;
+  private embeddingFunction: IEmbeddingFunction;
 
   constructor(config: ChromaDBConfig = {}) {
     const host = config.host ? `${config.host}:${config.port || 8000}` : undefined;
     this.client = new ChromaClient({ path: host });
     this.collectionName = config.collectionName || 'agent_contexts';
+    this.embeddingFunction = new ExternalEmbeddingFunction();
   }
 
   /**
@@ -38,14 +54,13 @@ export class ChromaDBVectorStore {
       try {
         this.collection = await this.client.getCollection({
           name: this.collectionName,
-          embeddingFunction: undefined as unknown as undefined,
+          embeddingFunction: this.embeddingFunction,
         });
       } catch (_error) {
         // Collection doesn't exist, create it
         this.collection = await this.client.createCollection({
           name: this.collectionName,
           metadata: { description: 'AI Agent Context Vectors' },
-          embeddingFunction: undefined as unknown as undefined,
         });
       }
 
@@ -268,7 +283,6 @@ export class ChromaDBVectorStore {
       this.collection = await this.client.createCollection({
         name: this.collectionName,
         metadata: { description: 'AI Agent Context Vectors' },
-        embeddingFunction: undefined as unknown as undefined,
       });
     } catch (error) {
       logger.error('Failed to clear ChromaDB:', error);
