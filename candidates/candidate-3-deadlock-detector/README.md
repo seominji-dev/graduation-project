@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-87.76%25-brightgreen)](https://github.com/YOUR_USERNAME/deadlock-detector)
 
 > 데드락 감지 및 회복 시스템 - Wait-For Graph 기반 다중 에이전트 시스템용 데드락 감지 및 회복
 
