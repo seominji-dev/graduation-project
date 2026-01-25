@@ -3,6 +3,8 @@
  */
 
 import {
+  AgentState,
+  RecoveryActionType,
   Agent,
   Resource,
   RecoveryAction,
@@ -150,7 +152,7 @@ export class RollbackManager {
     }
 
     agent.heldResources = [...checkpoint.heldResources];
-    agent.state = checkpoint.state as any;
+    agent.state = checkpoint.state as AgentState;
     agent.waitingFor = null;
     agent.updatedAt = new Date();
 
@@ -207,7 +209,7 @@ export class RollbackManager {
     result: RollbackResult,
   ): RecoveryAction {
     return createRecoveryAction(
-      'rollback' as any,
+      RecoveryActionType.ROLLBACK,
       result.agentId,
       result.resourcesReleased,
       result.success ? RecoveryResult.SUCCESS : RecoveryResult.FAILED,

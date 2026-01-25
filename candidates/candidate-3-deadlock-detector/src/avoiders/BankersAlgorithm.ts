@@ -105,7 +105,7 @@ export class BankersAlgorithm {
 
     if (!isSafe) {
       // Update agent state to waiting
-      agent.state = 'waiting' as any;
+      agent.state = AgentState.WAITING;
       agent.waitingFor = request.resourceId;
       
       // Add to resource wait queue
@@ -141,7 +141,7 @@ export class BankersAlgorithm {
     }
     
     resource.heldBy = request.agentId;
-    agent.state = 'active' as any;
+    agent.state = AgentState.ACTIVE;
     agent.waitingFor = null;
     agent.updatedAt = new Date();
 

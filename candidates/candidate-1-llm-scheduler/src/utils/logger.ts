@@ -5,6 +5,8 @@
  * Provides structured logging for the LLM Scheduler application.
  */
 
+/* eslint-disable no-console -- Logger utility intentionally uses console methods for output */
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,

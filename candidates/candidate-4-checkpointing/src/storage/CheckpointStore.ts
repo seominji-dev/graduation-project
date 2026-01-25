@@ -3,7 +3,7 @@
  * Handles persistence of checkpoints to MongoDB
  */
 
-import { CheckpointModel } from './CheckpointSchema.js';
+import { CheckpointModel, CheckpointDocument } from './CheckpointSchema.js';
 import { Checkpoint, CheckpointType, CheckpointStatus } from '../domain/models.js';
 import { logger } from '../utils/logger.js';
 
@@ -266,7 +266,7 @@ export class CheckpointStore {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  private documentToCheckpoint(doc: any): Checkpoint {
+  private documentToCheckpoint(doc: CheckpointDocument): Checkpoint {
     return {
       _id: doc._id?.toString(),
       agentId: doc.agentId,

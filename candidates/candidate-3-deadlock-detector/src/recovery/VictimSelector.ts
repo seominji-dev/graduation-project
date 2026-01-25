@@ -72,40 +72,45 @@ export class VictimSelector {
     let score: number;
 
     switch (this.strategy) {
-      case VictimSelectionStrategy.LOWEST_PRIORITY:
+      case VictimSelectionStrategy.LOWEST_PRIORITY: {
         const result = this.selectByLowestPriority(cycleAgents);
         victim = result.victim;
         reason = result.reason;
         score = result.score;
         break;
+      }
 
-      case VictimSelectionStrategy.YOUNGEST:
+      case VictimSelectionStrategy.YOUNGEST: {
         const youngestResult = this.selectByYoungest(cycleAgents);
         victim = youngestResult.victim;
         reason = youngestResult.reason;
         score = youngestResult.score;
         break;
+      }
 
-      case VictimSelectionStrategy.MOST_RESOURCES:
+      case VictimSelectionStrategy.MOST_RESOURCES: {
         const mostResourcesResult = this.selectByMostResources(cycleAgents);
         victim = mostResourcesResult.victim;
         reason = mostResourcesResult.reason;
         score = mostResourcesResult.score;
         break;
+      }
 
-      case VictimSelectionStrategy.MINIMUM_DEPENDENCIES:
+      case VictimSelectionStrategy.MINIMUM_DEPENDENCIES: {
         const minDepsResult = this.selectByMinimumDependencies(cycleAgents);
         victim = minDepsResult.victim;
         reason = minDepsResult.reason;
         score = minDepsResult.score;
         break;
+      }
 
-      case VictimSelectionStrategy.RANDOM:
+      case VictimSelectionStrategy.RANDOM: {
         const randomResult = this.selectRandom(cycleAgents);
         victim = randomResult.victim;
         reason = randomResult.reason;
         score = randomResult.score;
         break;
+      }
 
       default:
         victim = cycleAgents[0];

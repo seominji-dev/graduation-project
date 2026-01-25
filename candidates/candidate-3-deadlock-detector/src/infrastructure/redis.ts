@@ -83,7 +83,7 @@ export async function cacheWFG(graph: WaitForGraph): Promise<void> {
 /**
  * Get cached Wait-For Graph from Redis
  */
-export async function getCachedWFG(): Promise<unknown | null> {
+export async function getCachedWFG(): Promise<unknown> {
   if (!redisClient) {
     return null;
   }
@@ -93,7 +93,7 @@ export async function getCachedWFG(): Promise<unknown | null> {
     const data = await redisClient.get(key);
 
     if (data) {
-      return JSON.parse(data);
+      return JSON.parse(data) as unknown;
     }
 
     return null;

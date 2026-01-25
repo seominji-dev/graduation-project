@@ -5,7 +5,7 @@
 import mongoose, { Schema, Model, Document } from 'mongoose';
 import { Checkpoint } from '../domain/models.js';
 
-interface CheckpointDocument extends Document, Omit<Checkpoint, '_id'> {}
+export interface CheckpointDocument extends Document, Omit<Checkpoint, '_id'> {}
 
 const MessageSchema = new Schema({
   role: { type: String, enum: ['user', 'assistant', 'system'], required: true },

@@ -4,7 +4,7 @@
  */
 
 import { CheckpointStore } from './CheckpointStore.js';
-import { Checkpoint, AgentState, CheckpointType } from '../domain/models.js';
+import { Checkpoint, AgentState, CheckpointType, StateDiff } from '../domain/models.js';
 
 export interface StateQueryOptions {
   includeDeleted?: boolean;
@@ -113,7 +113,7 @@ export class StateRepository {
    */
   private applyDiffToState(
     baseState: AgentState,
-    diff: any
+    diff: StateDiff
   ): AgentState {
     const newState: AgentState = JSON.parse(JSON.stringify(baseState));
 

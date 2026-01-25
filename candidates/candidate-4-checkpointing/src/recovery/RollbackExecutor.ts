@@ -109,7 +109,7 @@ export class RollbackExecutor {
     return {
       messages: [],
       variables: {},
-      status: 'idle' as any,
+      status: 'idle',
       lastActivity: new Date(),
     };
   }

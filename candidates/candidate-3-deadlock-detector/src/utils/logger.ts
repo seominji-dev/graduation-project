@@ -83,7 +83,7 @@ class Logger {
     }
   }
 
-  public error(message: string, error?: Error | unknown, context?: Record<string, unknown>): void {
+  public error(message: string, error?: unknown, context?: Record<string, unknown>): void {
     if (this.shouldLog(LogLevel.ERROR)) {
       const errorContext =
         error instanceof Error

@@ -227,8 +227,8 @@ export class SafetyChecker {
     maximumDemand: Map<string, Map<string, number>>,
   ): Map<string, number> {
     const need = new Map<string, number>();
-    const alloc = allocation.get(agentId) || new Map();
-    const max = maximumDemand.get(agentId) || new Map();
+    const alloc = allocation.get(agentId) || new Map<string, number>();
+    const max = maximumDemand.get(agentId) || new Map<string, number>();
 
     // Get all resources from either allocation or max
     const allResources = new Set([
