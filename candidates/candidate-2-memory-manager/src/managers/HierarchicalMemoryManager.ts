@@ -434,12 +434,28 @@ export class HierarchicalMemoryManager {
 
   /**
    * Get memory manager statistics
+   * Fetches actual counts from L2 (ChromaDB) and L3 (MongoDB)
    */
-  getStats(): MemoryManagerStats {
+  async getStats(): Promise<MemoryManagerStats> {
     // Update current sizes
     this.stats.l1Size = this.l1Cache.getStats().size;
     this.stats.hitRate =
       this.stats.totalAccesses > 0 ? (this.stats.hits / this.stats.totalAccesses) * 100 : 0;
+
+    // Fetch L2 and L3 sizes from their respective stores
+    if (this.initialized) {
+      try {
+        const [l2Stats, l3Stats] = await Promise.all([
+          this.l2Store.getStats(),
+          this.l3Store.getStats(),
+        ]);
+        this.stats.l2Size = l2Stats.count;
+        this.stats.l3Size = l3Stats.count;
+      } catch (error) {
+        logger.error('Failed to fetch L2/L3 stats:', error);
+        // Keep existing values on error
+      }
+    }
 
     return { ...this.stats };
   }

@@ -36,7 +36,6 @@ import { createLogger } from '../utils/logger';
 
 const logger = createLogger('WFQScheduler');
 
-const DEFAULT_ESTIMATED_SERVICE_TIME = 5000;
 
 interface WFQStats extends SchedulerStats {
   tenantCount: number;
@@ -139,7 +138,7 @@ export class WFQScheduler implements IScheduler {
     const weight = tenant.weight;
 
     const estimatedServiceTime = request.metadata?.estimatedServiceTime as number ||
-                                  DEFAULT_ESTIMATED_SERVICE_TIME;
+                                  DEFAULT_ESTIMATED_SERVICE_TIME_MS;
 
     const virtualFinishTime = this.virtualTimeTracker.calculateVirtualFinishTime(
       request.id,

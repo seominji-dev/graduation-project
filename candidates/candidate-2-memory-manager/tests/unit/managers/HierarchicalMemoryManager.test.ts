@@ -371,7 +371,7 @@ describe('HierarchicalMemoryManager - Unit Tests', () => {
     });
 
     it('should return initial statistics', () => {
-      const stats = manager.getStats();
+      const stats = await manager.getStats();
 
       expect(stats.l1Size).toBe(0);
       expect(stats.totalAccesses).toBe(0);
@@ -394,7 +394,7 @@ describe('HierarchicalMemoryManager - Unit Tests', () => {
         operation: 'get',
       });
 
-      const stats = manager.getStats();
+      const stats = await manager.getStats();
 
       expect(stats.totalAccesses).toBe(1);
       expect(stats.hits).toBe(1);
@@ -407,7 +407,7 @@ describe('HierarchicalMemoryManager - Unit Tests', () => {
         operation: 'get',
       });
 
-      const stats = manager.getStats();
+      const stats = await manager.getStats();
 
       expect(stats.totalAccesses).toBe(1);
       expect(stats.misses).toBe(1);
@@ -433,7 +433,7 @@ describe('HierarchicalMemoryManager - Unit Tests', () => {
       expect(mockChromaStore.clear).toHaveBeenCalled();
       expect(mockMongoStore.clear).toHaveBeenCalled();
 
-      const stats = manager.getStats();
+      const stats = await manager.getStats();
       expect(stats.totalAccesses).toBe(0);
     });
 
@@ -469,7 +469,7 @@ describe('HierarchicalMemoryManager - Unit Tests', () => {
         operation: 'put',
       });
 
-      const stats = manager.getStats();
+      const stats = await manager.getStats();
 
       // Eviction should have occurred
       expect(stats.evictions).toBeGreaterThanOrEqual(1);

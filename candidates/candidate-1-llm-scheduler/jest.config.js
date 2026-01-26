@@ -9,7 +9,7 @@ module.exports = {
     '!src/index.ts'
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
   moduleNameMapper: {
     '^bullmq$': '<rootDir>/tests/__mocks__/bullmq.ts',
     '^@/(.*)$': '<rootDir>/src/$1'

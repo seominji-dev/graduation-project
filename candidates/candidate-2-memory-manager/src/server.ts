@@ -246,10 +246,13 @@ app.post(
 );
 
 // Get statistics (public - no auth required)
-app.get('/api/stats', (_req: Request, res: Response) => {
-  const stats = memoryManager.getStats();
-  res.json(stats);
-});
+app.get(
+  '/api/stats',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const stats = await memoryManager.getStats();
+    res.json(stats);
+  }),
+);
 
 // Clear all memory
 app.post(
