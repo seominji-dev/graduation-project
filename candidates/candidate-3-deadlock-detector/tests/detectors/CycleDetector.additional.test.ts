@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { CycleDetector, GraphBasedCycleDetector } from '../../src/detectors/CycleDetector';
 import { 
   createWaitForGraph, 
   createAgent, 
-  createWaitForEdge 
+  createWaitForEdge, 
 } from '../../src/domain/models';
 
 describe('CycleDetector - Additional Coverage', () => {

@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import client, {
+import {
   Registry,
   Counter,
   Histogram,

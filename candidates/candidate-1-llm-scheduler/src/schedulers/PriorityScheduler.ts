@@ -2,7 +2,6 @@ import {
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
   DEFAULT_JOB_WEIGHT,
-  MAX_WAITING_JOBS_FETCH,
 } from '../config/constants.js';
 
 /**

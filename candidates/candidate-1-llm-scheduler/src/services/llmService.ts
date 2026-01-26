@@ -1,8 +1,6 @@
 import {
   DEFAULT_LLM_TEMPERATURE,
   DEFAULT_LLM_MAX_TOKENS,
-  DEFAULT_OLLAMA_MODEL,
-  DEFAULT_OPENAI_MODEL,
 } from '../config/constants.js';
 
 /**

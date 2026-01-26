@@ -1,7 +1,4 @@
 import {
-  MLFQ_QUEUE_LEVELS,
-  MLFQ_TIME_QUANTA,
-  MLFQ_QUEUE_NAMES,
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
 } from '../config/constants.js';

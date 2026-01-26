@@ -74,7 +74,7 @@ export function getRequestContext(): RequestContext | undefined {
 export function correlationIdMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   // Extract correlation ID from request header or generate a new one
   const incomingCorrelationId = req.get(CORRELATION_ID_HEADER);
@@ -107,7 +107,7 @@ export function correlationIdMiddleware(
  */
 export async function runWithCorrelationId<T>(
   correlationId: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<T> {
   const context: RequestContext = {
     correlationId,

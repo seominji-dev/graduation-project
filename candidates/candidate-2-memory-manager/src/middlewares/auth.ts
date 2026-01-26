@@ -29,7 +29,7 @@ const PUBLIC_PATHS = [
  */
 function isPublicPath(path: string): boolean {
   return PUBLIC_PATHS.some(publicPath =>
-    path === publicPath || path.startsWith(publicPath + '/')
+    path === publicPath || path.startsWith(publicPath + '/'),
   );
 }
 
@@ -88,7 +88,7 @@ function isValidApiKey(providedKey: string, expectedKey: string): boolean {
 export function authMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   // Skip authentication for public paths
   if (isPublicPath(req.path)) {
@@ -142,7 +142,7 @@ export function authMiddleware(
 export function authMiddlewareOptional(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   if (isPublicPath(req.path)) {
     return next();

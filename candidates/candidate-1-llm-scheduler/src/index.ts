@@ -176,7 +176,7 @@ class LLMSchedulerServer {
     const apiRoutes = createRoutes(requestController);
 
     // Prometheus metrics endpoint
-    this.app.get('/metrics', metricsHandler);
+    this.app.get('/metrics', (req, res) => { void metricsHandler(req, res); });
 
     this.app.use('/api', apiRoutes);
   }

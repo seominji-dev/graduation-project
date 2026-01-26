@@ -3,7 +3,10 @@
  * IP-based request rate limiting for API protection
  */
 
-import rateLimit from 'express-rate-limit';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
+import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
 import { Request, Response } from 'express';
 
 /**
@@ -11,11 +14,11 @@ import { Request, Response } from 'express';
  */
 const RATE_LIMIT_WINDOW_MS = parseInt(
   process.env.RATE_LIMIT_WINDOW_MS || '900000', // Default: 15 minutes
-  10
+  10,
 );
 const RATE_LIMIT_MAX = parseInt(
   process.env.RATE_LIMIT_MAX || '100', // Default: 100 requests per window
-  10
+  10,
 );
 
 /**
@@ -31,7 +34,7 @@ interface RateLimitErrorResponse {
  * API Rate Limiter
  * Limits requests per IP address within the configured time window
  */
-export const apiRateLimiter = rateLimit({
+export const apiRateLimiter: RateLimitRequestHandler = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: RATE_LIMIT_MAX,
   standardHeaders: true, // Return rate limit info in the RateLimit-* headers
@@ -62,7 +65,7 @@ export const apiRateLimiter = rateLimit({
 /**
  * Stricter rate limiter for sensitive endpoints (e.g., auth, submit)
  */
-export const strictRateLimiter = rateLimit({
+export const strictRateLimiter: RateLimitRequestHandler = rateLimit({
   windowMs: RATE_LIMIT_WINDOW_MS,
   max: Math.floor(RATE_LIMIT_MAX / 5), // 5x stricter (default: 20 requests)
   standardHeaders: true,

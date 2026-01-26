@@ -86,7 +86,7 @@ app.use(
     ieNoOpen: true,
     // X-Permitted-Cross-Domain-Policies
     permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-  })
+  }),
 );
 
 // Prometheus metrics middleware
@@ -121,7 +121,10 @@ const memoryManager = new HierarchicalMemoryManager({
 });
 
 // Prometheus metrics endpoint (public - no auth required)
-app.get('/metrics', metricsHandler);
+// Wrap async handler to avoid Promise<void> being returned where void is expected
+app.get('/metrics', (req: Request, res: Response): void => {
+  void metricsHandler(req, res);
+});
 
 // Health check endpoint (public - no auth required)
 app.get('/api/health', (_req: Request, res: Response) => {

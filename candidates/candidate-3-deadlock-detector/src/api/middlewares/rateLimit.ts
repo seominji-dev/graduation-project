@@ -11,11 +11,11 @@ import { Request, Response } from 'express';
  */
 const RATE_LIMIT_WINDOW_MS = parseInt(
   process.env.RATE_LIMIT_WINDOW_MS || '900000', // Default: 15 minutes
-  10
+  10,
 );
 const RATE_LIMIT_MAX = parseInt(
   process.env.RATE_LIMIT_MAX || '100', // Default: 100 requests per window
-  10
+  10,
 );
 
 /**

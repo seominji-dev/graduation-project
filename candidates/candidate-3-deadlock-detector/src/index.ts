@@ -98,7 +98,7 @@ app.use(
     ieNoOpen: true,
     // X-Permitted-Cross-Domain-Policies
     permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-  })
+  }),
 );
 
 // Prometheus metrics middleware
@@ -121,7 +121,7 @@ app.use((req, _res, next) => {
 });
 
 // Prometheus metrics endpoint (public - no auth required)
-app.get('/metrics', metricsHandler);
+app.get('/metrics', (req, res) => { void metricsHandler(req, res); });
 
 // API Routes with authentication
 // Health endpoint is excluded in the auth middleware itself

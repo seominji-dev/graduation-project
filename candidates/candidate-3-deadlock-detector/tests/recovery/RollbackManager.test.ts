@@ -209,7 +209,7 @@ describe('RollbackManager - Additional Coverage', () => {
       // Acquire resource and create second checkpoint
       agent.heldResources.push(r1.id);
       r1.heldBy = agent.id;
-      const cp2 = manager.createCheckpoint(agent);
+      const _cp2 = manager.createCheckpoint(agent);
       
       // Acquire more state change
       agent.heldResources.push('R2');

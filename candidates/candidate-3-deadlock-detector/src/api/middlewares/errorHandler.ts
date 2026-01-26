@@ -4,7 +4,7 @@
  * Uses shared error classes for consistent error handling across all projects.
  */
 
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import {
   AppError,
   ValidationError,
@@ -25,7 +25,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   // Log error with project-specific logger
   const isAppError = AppError.isAppError(err);

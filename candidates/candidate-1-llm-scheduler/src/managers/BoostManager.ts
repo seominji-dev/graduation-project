@@ -1,4 +1,4 @@
-import { BOOST_INTERVAL_MS, MAX_BOOST_JOBS_FETCH } from '../config/constants.js';
+import { BOOST_INTERVAL_MS } from '../config/constants.js';
 
 /**
  * Boost Manager for MLFQ Scheduler

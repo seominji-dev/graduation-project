@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import client, {
+import {
   Registry,
   Counter,
   Histogram,
@@ -169,7 +169,7 @@ const deadlocksPreventedTotal = new Counter({
 export function metricsMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   const startTime = process.hrtime.bigint();
 
@@ -203,7 +203,7 @@ export function metricsMiddleware(
  */
 export async function metricsHandler(
   _req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> {
   try {
     res.set('Content-Type', register.contentType);
@@ -223,7 +223,7 @@ export async function metricsHandler(
  */
 export function recordDeadlockDetected(
   detectionMethod: 'cycle_detection' | 'timeout' | 'manual',
-  severity: 'low' | 'medium' | 'high' | 'critical'
+  severity: 'low' | 'medium' | 'high' | 'critical',
 ): void {
   deadlocksDetectedTotal.labels(detectionMethod, severity).inc();
 }
@@ -234,7 +234,7 @@ export function recordDeadlockDetected(
 export function observeDeadlockRecoveryDuration(
   recoveryStrategy: 'rollback' | 'abort' | 'preempt',
   success: boolean,
-  durationSeconds: number
+  durationSeconds: number,
 ): void {
   deadlockRecoveryDuration
     .labels(recoveryStrategy, success.toString())
@@ -268,7 +268,7 @@ export function updateWaitForGraphMetrics(edges: number, nodes: number): void {
  */
 export function observeCycleDetectionDuration(
   algorithm: 'dfs' | 'tarjan' | 'kosaraju',
-  durationSeconds: number
+  durationSeconds: number,
 ): void {
   cycleDetectionDuration.labels(algorithm).observe(durationSeconds);
 }
@@ -278,7 +278,7 @@ export function observeCycleDetectionDuration(
  */
 export function recordVictimSelection(
   selectionStrategy: 'youngest' | 'oldest' | 'lowest_priority' | 'minimum_cost',
-  agentId: string
+  agentId: string,
 ): void {
   victimSelectionsTotal.labels(selectionStrategy, agentId).inc();
 }
@@ -287,7 +287,7 @@ export function recordVictimSelection(
  * Record deadlock prevented
  */
 export function recordDeadlockPrevented(
-  preventionMethod: 'bankers_algorithm' | 'resource_ordering' | 'timeout'
+  preventionMethod: 'bankers_algorithm' | 'resource_ordering' | 'timeout',
 ): void {
   deadlocksPreventedTotal.labels(preventionMethod).inc();
 }

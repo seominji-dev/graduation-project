@@ -1,4 +1,3 @@
-import { TENANT_TIER_WEIGHTS } from '../config/constants.js';
 
 /**
  * Tenant Registry

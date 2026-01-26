@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import client, {
+import {
   Registry,
   Counter,
   Histogram,
@@ -135,9 +135,9 @@ export function metricsMiddleware(
     const endTime = process.hrtime.bigint();
     const durationInSeconds = Number(endTime - startTime) / 1e9;
 
-    const route = req.route?.path || req.path || 'unknown';
-    const method = req.method;
-    const statusCode = res.statusCode.toString();
+    const route: string = (req.route as { path?: string } | undefined)?.path || req.path || 'unknown';
+    const method: string = req.method;
+    const statusCode: string = res.statusCode.toString();
 
     // Record request count
     httpRequestsTotal.labels(method, route, statusCode).inc();

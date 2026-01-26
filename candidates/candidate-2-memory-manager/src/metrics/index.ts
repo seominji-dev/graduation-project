@@ -3,8 +3,13 @@
  * Collects HTTP request metrics and memory management specific metrics
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { Request, Response, NextFunction } from 'express';
-import client, {
+import {
   Registry,
   Counter,
   Histogram,
@@ -13,7 +18,7 @@ import client, {
 } from 'prom-client';
 
 // Create a custom registry
-const register = new Registry();
+const register: Registry = new Registry();
 
 // Add default metrics (CPU, memory, event loop, etc.)
 collectDefaultMetrics({ register });
@@ -26,7 +31,7 @@ collectDefaultMetrics({ register });
  * HTTP Request Counter
  * Counts total number of HTTP requests by method, route, and status code
  */
-const httpRequestsTotal = new Counter({
+const httpRequestsTotal: Counter<string> = new Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
   labelNames: ['method', 'route', 'status_code'],
@@ -37,7 +42,7 @@ const httpRequestsTotal = new Counter({
  * HTTP Request Duration Histogram
  * Measures response time in seconds
  */
-const httpRequestDuration = new Histogram({
+const httpRequestDuration: Histogram<string> = new Histogram({
   name: 'http_request_duration_seconds',
   help: 'Duration of HTTP requests in seconds',
   labelNames: ['method', 'route', 'status_code'],
@@ -49,7 +54,7 @@ const httpRequestDuration = new Histogram({
  * HTTP Errors Counter
  * Counts total number of HTTP errors (4xx and 5xx)
  */
-const httpErrorsTotal = new Counter({
+const httpErrorsTotal: Counter<string> = new Counter({
   name: 'http_errors_total',
   help: 'Total number of HTTP errors',
   labelNames: ['method', 'route', 'status_code', 'error_type'],
@@ -64,14 +69,14 @@ const httpErrorsTotal = new Counter({
  * Cache Hit Rate Tracking
  * Separate counters for hits and misses to calculate rate
  */
-const cacheHitsTotal = new Counter({
+const cacheHitsTotal: Counter<string> = new Counter({
   name: 'cache_hits_total',
   help: 'Total number of cache hits',
   labelNames: ['cache_level', 'agent_id'],
   registers: [register],
 });
 
-const cacheMissesTotal = new Counter({
+const cacheMissesTotal: Counter<string> = new Counter({
   name: 'cache_misses_total',
   help: 'Total number of cache misses',
   labelNames: ['cache_level', 'agent_id'],
@@ -82,7 +87,7 @@ const cacheMissesTotal = new Counter({
  * Cache Hit Rate Gauge (calculated)
  * Current cache hit rate (0-1)
  */
-const cacheHitRate = new Gauge({
+const cacheHitRate: Gauge<string> = new Gauge({
   name: 'cache_hit_rate',
   help: 'Current cache hit rate (0-1)',
   labelNames: ['cache_level'],
@@ -93,7 +98,7 @@ const cacheHitRate = new Gauge({
  * Memory Usage Gauges
  * Memory usage by level (L1, L2, L3)
  */
-const memoryUsageBytes = new Gauge({
+const memoryUsageBytes: Gauge<string> = new Gauge({
   name: 'memory_usage_bytes',
   help: 'Memory usage in bytes by cache level',
   labelNames: ['cache_level', 'type'],
@@ -104,7 +109,7 @@ const memoryUsageBytes = new Gauge({
  * Cache Entry Count
  * Number of entries in each cache level
  */
-const cacheEntryCount = new Gauge({
+const cacheEntryCount: Gauge<string> = new Gauge({
   name: 'cache_entry_count',
   help: 'Number of entries in each cache level',
   labelNames: ['cache_level'],
@@ -115,7 +120,7 @@ const cacheEntryCount = new Gauge({
  * Page Faults Counter
  * Counts page faults (cache misses requiring disk/network access)
  */
-const pageFaultsTotal = new Counter({
+const pageFaultsTotal: Counter<string> = new Counter({
   name: 'page_faults_total',
   help: 'Total number of page faults',
   labelNames: ['fault_type', 'agent_id'],
@@ -126,7 +131,7 @@ const pageFaultsTotal = new Counter({
  * Memory Operations Duration
  * Time taken for memory operations
  */
-const memoryOperationDuration = new Histogram({
+const memoryOperationDuration: Histogram<string> = new Histogram({
   name: 'memory_operation_duration_seconds',
   help: 'Duration of memory operations in seconds',
   labelNames: ['operation', 'cache_level'],
@@ -138,7 +143,7 @@ const memoryOperationDuration = new Histogram({
  * Eviction Counter
  * Counts cache evictions by level
  */
-const cacheEvictionsTotal = new Counter({
+const cacheEvictionsTotal: Counter<string> = new Counter({
   name: 'cache_evictions_total',
   help: 'Total number of cache evictions',
   labelNames: ['cache_level', 'reason'],
@@ -156,7 +161,7 @@ const cacheEvictionsTotal = new Counter({
 export function metricsMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   const startTime = process.hrtime.bigint();
 
@@ -164,7 +169,7 @@ export function metricsMiddleware(
     const endTime = process.hrtime.bigint();
     const durationInSeconds = Number(endTime - startTime) / 1e9;
 
-    const route = req.route?.path || req.path || 'unknown';
+    const route = (req.route?.path as string | undefined) || req.path || 'unknown';
     const method = req.method;
     const statusCode = res.statusCode.toString();
 
@@ -190,13 +195,13 @@ export function metricsMiddleware(
  */
 export async function metricsHandler(
   _req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> {
   try {
     res.set('Content-Type', register.contentType);
     const metrics = await register.metrics();
     res.end(metrics);
-  } catch (error) {
+  } catch (_error) {
     res.status(500).end('Error collecting metrics');
   }
 }
@@ -253,7 +258,7 @@ export function recordPageFault(faultType: 'soft' | 'hard', agentId: string = 'u
 export function observeMemoryOperationDuration(
   operation: 'get' | 'put' | 'delete' | 'search',
   cacheLevel: string,
-  durationSeconds: number
+  durationSeconds: number,
 ): void {
   memoryOperationDuration.labels(operation, cacheLevel).observe(durationSeconds);
 }

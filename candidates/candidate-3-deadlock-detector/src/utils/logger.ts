@@ -79,7 +79,7 @@ export interface ILogger {
  * Parse log level from string
  */
 function parseLogLevel(level?: string): LogLevel | undefined {
-  if (!level) return undefined;
+  if (!level) {return undefined;}
   const upperLevel = level.toUpperCase();
   switch (upperLevel) {
     case 'DEBUG':

@@ -63,7 +63,7 @@ function validateEnv() {
       'Invalid environment configuration:\n' +
         result.error.issues
           .map((i) => '  ' + i.path.join('.') + ': ' + i.message)
-          .join('\n')
+          .join('\n'),
     );
   }
 
