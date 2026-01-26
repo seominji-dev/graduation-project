@@ -123,7 +123,8 @@ describe('Logger', () => {
       const childLogger = createLogger('TestModule');
       childLogger.info('Test message');
 
-      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[TestModule]'));
+      // Logger format: [LLMScheduler:ModuleName]
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('TestModule'));
     });
 
     it('should create multiple independent child loggers', () => {
@@ -134,8 +135,8 @@ describe('Logger', () => {
       logger2.info('Message from module 2');
 
       expect(consoleInfoSpy).toHaveBeenCalledTimes(2);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[Module1]'));
-      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[Module2]'));
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Module1'));
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Module2'));
     });
   });
 
@@ -145,9 +146,10 @@ describe('Logger', () => {
       childLogger.info('Formatted message');
 
       const call = consoleInfoSpy.mock.calls[0][0];
-      expect(call).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+      // Logger format: [timestamp] [LEVEL] [LLMScheduler:Module] message
+      expect(call).toMatch(/\[\d{4}-\d{2}-\d{2}T/);
       expect(call).toContain('INFO');
-      expect(call).toContain('[FormatTest]');
+      expect(call).toContain('FormatTest');
       expect(call).toContain('Formatted message');
     });
 

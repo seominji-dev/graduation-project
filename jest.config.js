@@ -18,6 +18,7 @@ module.exports = {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   // Fix worker teardown issues
+  setupFiles: ['<rootDir>/tests/jest.setup.ts'],
   testTimeout: 10000,
   forceExit: true,
   detectOpenHandles: false,
