@@ -1,15 +1,17 @@
-# Checkpointing System 아키텍처 문서
+= Checkpointing System 아키텍처 문서
+<checkpointing-system-아키텍처-문서>
+== 시스템 개요
+<시스템-개요>
+Checkpointing System은 운영체제의 프로세스 체크포인팅(Checkpointing)
+기법을 AI 에이전트의 장애 복구에 적용한 시스템입니다. 에이전트 상태
+저장, 복구, 증분 백업을 통해 안정적인 AI 서비스 운영을 지원합니다.
 
-## 시스템 개요
+#line(length: 100%)
 
-Checkpointing System은 운영체제의 프로세스 체크포인팅(Checkpointing) 기법을 AI 에이전트의 장애 복구에 적용한 시스템입니다. 에이전트 상태 저장, 복구, 증분 백업을 통해 안정적인 AI 서비스 운영을 지원합니다.
-
----
-
-## 1. 시스템 아키텍처
-
-### 1.1 전체 구조
-
+== 1. 시스템 아키텍처
+<시스템-아키텍처>
+=== 1.1 전체 구조
+<전체-구조>
 ```mermaid
 graph LR
     subgraph "AI Agent"
@@ -51,8 +53,8 @@ graph LR
     style RM fill:#66bb6a
 ```
 
-### 1.2 상태 저장 파이프라인
-
+=== 1.2 상태 저장 파이프라인
+<상태-저장-파이프라인>
 ```mermaid
 sequenceDiagram
     participant A as Agent
@@ -77,22 +79,17 @@ sequenceDiagram
     CM-->>A: checkpointId
 ```
 
----
+#line(length: 100%)
 
-## 2. 체크포인트 타입
-
-### 2.1 전체 체크포인트 (Full Checkpoint)
-
+== 2. 체크포인트 타입
+<체크포인트-타입>
+=== 2.1 전체 체크포인트 (Full Checkpoint)
+<전체-체크포인트-full-checkpoint>
 에이전트의 전체 상태를 저장합니다.
 
-**장점**:
-- 독립적인 복구 가능
-- 복잡한 의존성 없음
-- 이해하기 쉬움
+#strong[장점]: - 독립적인 복구 가능 - 복잡한 의존성 없음 - 이해하기 쉬움
 
-**단점**:
-- 저장 공간 많이 사용
-- 생성 시간이 김
+#strong[단점]: - 저장 공간 많이 사용 - 생성 시간이 김
 
 ```typescript
 {
@@ -106,19 +103,14 @@ sequenceDiagram
 }
 ```
 
-### 2.2 증분 체크포인트 (Incremental Checkpoint)
-
+=== 2.2 증분 체크포인트 (Incremental Checkpoint)
+<증분-체크포인트-incremental-checkpoint>
 이전 체크포인트와의 차이만 저장합니다.
 
-**장점**:
-- 저장 공간 절약 (80-90% 감소)
-- 빠른 생성 속도
-- 네트워크 전송 최적화
+#strong[장점]: - 저장 공간 절약 (80-90% 감소) - 빠른 생성 속도 -
+네트워크 전송 최적화
 
-**단점**:
-- 기본 체크포인트 필요
-- 복잡한 복구 과정
-- 순차적 의존성
+#strong[단점]: - 기본 체크포인트 필요 - 복잡한 복구 과정 - 순차적 의존성
 
 ```typescript
 {
@@ -133,12 +125,12 @@ sequenceDiagram
 }
 ```
 
----
+#line(length: 100%)
 
-## 3. 상태 직렬화 (State Serialization)
-
-### 3.1 직렬화 프로세스
-
+== 3. 상태 직렬화 (State Serialization)
+<상태-직렬화-state-serialization>
+=== 3.1 직렬화 프로세스
+<직렬화-프로세스>
 ```mermaid
 graph LR
     Start[State Object] --> Validate[Validate Serializable]
@@ -156,8 +148,8 @@ graph LR
     style GZip fill:#ef5350
 ```
 
-### 3.2 직렬화 구현
-
+=== 3.2 직렬화 구현
+<직렬화-구현>
 ```typescript
 class StateSerializer {
   private maxSize: number;
@@ -222,12 +214,12 @@ class StateSerializer {
 }
 ```
 
----
+#line(length: 100%)
 
-## 4. 무결성 검증 (Integrity Verification)
-
-### 4.1 해시 기반 검증
-
+== 4. 무결성 검증 (Integrity Verification)
+<무결성-검증-integrity-verification>
+=== 4.1 해시 기반 검증
+<해시-기반-검증>
 ```mermaid
 graph LR
     Load[Load Checkpoint] --> Extract[Extract Data & Hash]
@@ -241,8 +233,8 @@ graph LR
     style Corrupt fill:#ef5350
 ```
 
-### 4.2 검증 구현
-
+=== 4.2 검증 구현
+<검증-구현>
 ```typescript
 class IntegrityVerifier {
   verify(checkpoint: Checkpoint): VerificationResult {
@@ -285,12 +277,12 @@ class IntegrityVerifier {
 }
 ```
 
----
+#line(length: 100%)
 
-## 5. 복구 프로세스 (Recovery Process)
-
-### 5.1 복구 흐름
-
+== 5. 복구 프로세스 (Recovery Process)
+<복구-프로세스-recovery-process>
+=== 5.1 복구 흐름
+<복구-흐름>
 ```mermaid
 graph LR
     Start[Recovery Request] --> GetCheckpoint[Get Checkpoint]
@@ -310,8 +302,8 @@ graph LR
     style Error fill:#ef5350
 ```
 
-### 5.2 복구 매니저
-
+=== 5.2 복구 매니저
+<복구-매니저>
 ```typescript
 class RecoveryManager {
   constructor(
@@ -390,12 +382,12 @@ class RecoveryManager {
 }
 ```
 
----
+#line(length: 100%)
 
-## 6. 주기적 체크포인트 (Periodic Checkpointing)
-
-### 6.1 주기적 저장 전략
-
+== 6. 주기적 체크포인트 (Periodic Checkpointing)
+<주기적-체크포인트-periodic-checkpointing>
+=== 6.1 주기적 저장 전략
+<주기적-저장-전략>
 ```mermaid
 graph LR
     Start[Start Periodic] --> Init[Initialize Timer]
@@ -415,8 +407,8 @@ graph LR
     style Adjust fill:#66bb6a
 ```
 
-### 6.2 주기적 매니저
-
+=== 6.2 주기적 매니저
+<주기적-매니저>
 ```typescript
 class PeriodicCheckpointManager {
   private timers: Map<string, NodeJS.Timeout> = new Map();
@@ -504,12 +496,12 @@ class PeriodicCheckpointManager {
 }
 ```
 
----
+#line(length: 100%)
 
-## 7. 성능 최적화
-
-### 7.1 압축 전략
-
+== 7. 성능 최적화
+<성능-최적화>
+=== 7.1 압축 전략
+<압축-전략>
 ```typescript
 class CompressionStrategy {
   compress(buffer: Buffer): Buffer {
@@ -531,8 +523,8 @@ class CompressionStrategy {
 }
 ```
 
-### 7.2 체크포인트 정책
-
+=== 7.2 체크포인트 정책
+<체크포인트-정책>
 ```typescript
 class CheckpointPolicy {
   async enforceMaxCheckpoints(
@@ -563,33 +555,46 @@ class CheckpointPolicy {
 }
 ```
 
----
+#line(length: 100%)
 
-## 8. 기술 스택
+== 8. 기술 스택
+<기술-스택>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([계층], [기술], [버전], [용도],),
+    table.hline(),
+    [언어], [TypeScript], [5.3+], [타입 안전성],
+    [런타임], [Node.js], [20 LTS], [서버 런타임],
+    [웹 프레임워크], [Express.js], [4.x], [REST API],
+    [데이터베이스], [MongoDB], [7.0+], [영구 저장],
+    [검증], [Zod], [3.x], [스키마 검증],
+    [테스트], [Jest], [29.x], [단위/통합 테스트],
+  )]
+  , kind: table
+  )
 
-| 계층 | 기술 | 버전 | 용도 |
-|------|------|------|------|
-| 언어 | TypeScript | 5.3+ | 타입 안전성 |
-| 런타임 | Node.js | 20 LTS | 서버 런타임 |
-| 웹 프레임워크 | Express.js | 4.x | REST API |
-| 데이터베이스 | MongoDB | 7.0+ | 영구 저장 |
-| 검증 | Zod | 3.x | 스키마 검증 |
-| 테스트 | Jest | 29.x | 단위/통합 테스트 |
+#line(length: 100%)
 
----
+== 9. OS 개념 매핑
+<os-개념-매핑>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([OS 개념], [적용], [구현],),
+    table.hline(),
+    [Process State], [Agent State], [에이전트 상태],
+    [Checkpoint], [Checkpoint], [상태 스냅샷],
+    [Restore], [Recovery], [상태 복원],
+    [Incremental Backup], [Incremental Checkpoint], [차이 저장],
+    [Integrity Check], [Hash Verification], [무결성 검증],
+  )]
+  , kind: table
+  )
 
-## 9. OS 개념 매핑
+#line(length: 100%)
 
-| OS 개념 | 적용 | 구현 |
-|---------|------|------|
-| Process State | Agent State | 에이전트 상태 |
-| Checkpoint | Checkpoint | 상태 스냅샷 |
-| Restore | Recovery | 상태 복원 |
-| Incremental Backup | Incremental Checkpoint | 차이 저장 |
-| Integrity Check | Hash Verification | 무결성 검증 |
-
----
-
-**문서 버전**: 1.0.0
-**최종 업데이트**: 2025-01-25
-**유지보수 담당자**: Checkpointing 팀
+#strong[문서 버전]: 1.0.0 #strong[최종 업데이트]: 2025-01-25
+#strong[유지보수 담당자]: Checkpointing 팀

@@ -1,15 +1,17 @@
-# LLM Scheduler 아키텍처 문서
+= LLM Scheduler 아키텍처 문서
+<llm-scheduler-아키텍처-문서>
+== 시스템 개요
+<시스템-개요>
+LLM Scheduler는 운영체제의 프로세스 스케줄링 알고리즘을 LLM API 요청
+관리에 적용한 시스템입니다. 대기열 관리, 우선순위 처리, 부하 분산 기능을
+제공하여 효율적인 LLM API 호출을 가능하게 합니다.
 
-## 시스템 개요
+#line(length: 100%)
 
-LLM Scheduler는 운영체제의 프로세스 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 시스템입니다. 대기열 관리, 우선순위 처리, 부하 분산 기능을 제공하여 효율적인 LLM API 호출을 가능하게 합니다.
-
----
-
-## 1. 시스템 아키텍처
-
-### 1.1 전체 구조
-
+== 1. 시스템 아키텍처
+<시스템-아키텍처>
+=== 1.1 전체 구조
+<전체-구조>
 ```mermaid
 graph LR
     subgraph "클라이언트 계층"
@@ -80,42 +82,48 @@ graph LR
     style Redis fill:#fff8e1
 ```
 
-### 1.2 계층별 설명
+=== 1.2 계층별 설명
+<계층별-설명>
+==== 1.2.1 클라이언트 계층
+<클라이언트-계층>
+- #strong[클라이언트 응용프로그램]: LLM 요청을 보내는各类 클라이언트
+- #strong[모니터링 대시보드]: 실시간 대기열 상태 및 메트릭 시각화
 
-#### 1.2.1 클라이언트 계층
-- **클라이언트 응용프로그램**: LLM 요청을 보내는各类 클라이언트
-- **모니터링 대시보드**: 실시간 대기열 상태 및 메트릭 시각화
+==== 1.2.2 API 계층
+<api-계층>
+- #strong[REST API]: 요청 제출, 상태 조회, 스케줄러 제어 엔드포인트
+- #strong[WebSocket Server]: 실시간 업데이트 및 푸시 알림
 
-#### 1.2.2 API 계층
-- **REST API**: 요청 제출, 상태 조회, 스케줄러 제어 엔드포인트
-- **WebSocket Server**: 실시간 업데이트 및 푸시 알림
+==== 1.2.3 스케줄링 계층
+<스케줄링-계층>
+- #strong[스케줄러 팩토리]: 알고리즘 선택 및 스케줄러 인스턴스 생성
+- #strong[FCFS]: First-Come, First-Served 스케줄링
+- #strong[Priority Queue]: 우선순위 기반 스케줄링
+- #strong[MLFQ]: Multi-Level Feedback Queue 스케줄링
+- #strong[WFQ]: Weighted Fair Queuing 스케줄링
 
-#### 1.2.3 스케줄링 계층
-- **스케줄러 팩토리**: 알고리즘 선택 및 스케줄러 인스턴스 생성
-- **FCFS**: First-Come, First-Served 스케줄링
-- **Priority Queue**: 우선순위 기반 스케줄링
-- **MLFQ**: Multi-Level Feedback Queue 스케줄링
-- **WFQ**: Weighted Fair Queuing 스케줄링
+==== 1.2.4 큐 계층
+<큐-계층>
+- #strong[Redis Queue]: BullMQ를 위한 Redis 기반 지속형 대기열
+- #strong[BullMQ 관리자]: 작업 처리, 재시도, 실패 처리
 
-#### 1.2.4 큐 계층
-- **Redis Queue**: BullMQ를 위한 Redis 기반 지속형 대기열
-- **BullMQ 관리자**: 작업 처리, 재시도, 실패 처리
+==== 1.2.5 LLM 서비스 계층
+<llm-서비스-계층>
+- #strong[LLM Service]: 통합된 LLM 추론 인터페이스
+- #strong[Ollama]: 로컬 LLM 추론 지원
+- #strong[OpenAI API]: 클라우드 기반 LLM 추론 지원
 
-#### 1.2.5 LLM 서비스 계층
-- **LLM Service**: 통합된 LLM 추론 인터페이스
-- **Ollama**: 로컬 LLM 추론 지원
-- **OpenAI API**: 클라우드 기반 LLM 추론 지원
+==== 1.2.6 데이터 계층
+<데이터-계층>
+- #strong[MongoDB]: 요청 기록, 메트릭, 설정 저장
+- #strong[Redis Cache]: 실시간 상태, 세션 정보
 
-#### 1.2.6 데이터 계층
-- **MongoDB**: 요청 기록, 메트릭, 설정 저장
-- **Redis Cache**: 실시간 상태, 세션 정보
+#line(length: 100%)
 
----
-
-## 2. 스케줄링 알고리즘
-
-### 2.1 알고리즘 비교
-
+== 2. 스케줄링 알고리즘
+<스케줄링-알고리즘>
+=== 2.1 알고리즘 비교
+<알고리즘-비교>
 ```mermaid
 graph LR
     subgraph "FCFS"
@@ -139,14 +147,13 @@ graph LR
     end
 ```
 
-### 2.2 FCFS (First-Come, First-Served)
+=== 2.2 FCFS (First-Come, First-Served)
+<fcfs-first-come-first-served>
+#strong[특징]: - 가장 간단한 스케줄링 알고리즘 - 요청 도착 순서대로 처리
+\- 공폸하지만 긴 요청이 대기시간을 증가시킴
 
-**특징**:
-- 가장 간단한 스케줄링 알고리즘
-- 요청 도착 순서대로 처리
-- 공폸하지만 긴 요청이 대기시간을 증가시킴
+#strong[구현]:
 
-**구현**:
 ```typescript
 class FCFSScheduler implements IScheduler {
   private queue: Queue<QueueJob>;
@@ -165,23 +172,17 @@ class FCFSScheduler implements IScheduler {
 }
 ```
 
-**장점**:
-- 구현이 간단함
-- 기아 현상 없음
-- 예측 가능한 동작
+#strong[장점]: - 구현이 간단함 - 기아 현상 없음 - 예측 가능한 동작
 
-**단점**:
-- 평균 대기시간이 김
-- 우선순위 처리 불가능
+#strong[단점]: - 평균 대기시간이 김 - 우선순위 처리 불가능
 
-### 2.3 Priority Queue
+=== 2.3 Priority Queue
+<priority-queue>
+#strong[특징]: - 우선순위가 높은 요청 먼저 처리 - 정적 우선순위 할당 -
+기아 현상 가능성
 
-**특징**:
-- 우선순위가 높은 요청 먼저 처리
-- 정적 우선순위 할당
-- 기아 현상 가능성
+#strong[구현]:
 
-**구현**:
 ```typescript
 class PriorityScheduler implements IScheduler {
   async submit(request: LLMRequest): Promise<string> {
@@ -204,22 +205,17 @@ class PriorityScheduler implements IScheduler {
 }
 ```
 
-**장점**:
-- 중요한 요청 우선 처리
-- 평균 대기시간 개선
+#strong[장점]: - 중요한 요청 우선 처리 - 평균 대기시간 개선
 
-**단점**:
-- 낮은 우선순위 요청 기아 현상
-- 우선순위 결정 복잡도
+#strong[단점]: - 낮은 우선순위 요청 기아 현상 - 우선순위 결정 복잡도
 
-### 2.4 MLFQ (Multi-Level Feedback Queue)
+=== 2.4 MLFQ (Multi-Level Feedback Queue)
+<mlfq-multi-level-feedback-queue>
+#strong[특징]: - 여러 우선순위 큐 사용 - CPU 집중도/대기시간 기반 큐
+이동 - 공정성과 응답성 균형
 
-**특징**:
-- 여러 우선순위 큐 사용
-- CPU 집중도/대기시간 기반 큐 이동
-- 공정성과 응답성 균형
+#strong[구현]:
 
-**구현**:
 ```typescript
 class MLFQScheduler implements IScheduler {
   private queues: Map<number, Queue<QueueJob>>;
@@ -259,28 +255,22 @@ class MLFQScheduler implements IScheduler {
 }
 ```
 
-**큐 이동 규칙**:
-1. **승격**: 요청이 시간 퀀텀 내에 완료되면 상위 큐로
-2. **강등**: 요청이 시간 퀀텀을 초과하면 하위 큐로
-3. **부스팅**: 일정 시간마다 모든 요청을 최상위 큐로
+#strong[큐 이동 규칙]: 1. #strong[승격]: 요청이 시간 퀀텀 내에 완료되면
+상위 큐로 2. #strong[강등]: 요청이 시간 퀀텀을 초과하면 하위 큐로 3.
+#strong[부스팅]: 일정 시간마다 모든 요청을 최상위 큐로
 
-**장점**:
-- 공정성과 응답성 균형
-- 짧은 요청 빠른 처리
-- 기아 현상 최소화
+#strong[장점]: - 공정성과 응답성 균형 - 짧은 요청 빠른 처리 - 기아 현상
+최소화
 
-**단점**:
-- 구현 복잡도
-- 파라미터 튜닝 필요
+#strong[단점]: - 구현 복잡도 - 파라미터 튜닝 필요
 
-### 2.5 WFQ (Weighted Fair Queuing)
+=== 2.5 WFQ (Weighted Fair Queuing)
+<wfq-weighted-fair-queuing>
+#strong[특징]: - 테넌트/클래스별 가중치 할당 - 공정한 대역폭 분배 -
+멀티테넌트 환경에 적합
 
-**특징**:
-- 테넌트/클래스별 가중치 할당
-- 공정한 대역폭 분배
-- 멀티테넌트 환경에 적합
+#strong[구현]:
 
-**구현**:
 ```typescript
 class WFQScheduler implements IScheduler {
   private queues: Map<string, Queue<QueueJob>>;
@@ -317,21 +307,17 @@ class WFQScheduler implements IScheduler {
 }
 ```
 
-**장점**:
-- 공정한 자원 분배
-- QoS(서비스 품질) 보장
-- 멀티테넌트 최적화
+#strong[장점]: - 공정한 자원 분배 - QoS(서비스 품질) 보장 - 멀티테넌트
+최적화
 
-**단점**:
-- 복잡한 가중치 계산
-- 낮은 가중치 테넌트 성능 저하
+#strong[단점]: - 복잡한 가중치 계산 - 낮은 가중치 테넌트 성능 저하
 
----
+#line(length: 100%)
 
-## 3. 데이터 흐름
-
-### 3.1 요청 처리 흐름
-
+== 3. 데이터 흐름
+<데이터-흐름>
+=== 3.1 요청 처리 흐름
+<요청-처리-흐름>
 ```mermaid
 sequenceDiagram
     participant C as 클라이언트
@@ -359,8 +345,8 @@ sequenceDiagram
     Q-->>C: WebSocket 업데이트
 ```
 
-### 3.2 상태 변환
-
+=== 3.2 상태 변환
+<상태-변환>
 ```mermaid
 stateDiagram-v2
     [*] --> Queued: 요청 제출
@@ -384,12 +370,12 @@ stateDiagram-v2
     end note
 ```
 
----
+#line(length: 100%)
 
-## 4. 컴포넌트 상세 설계
-
-### 4.1 도메인 모델
-
+== 4. 컴포넌트 상세 설계
+<컴포넌트-상세-설계>
+=== 4.1 도메인 모델
+<도메인-모델>
 ```typescript
 // LLM 요청 모델
 interface LLMRequest {
@@ -424,8 +410,8 @@ interface SchedulerStats {
 }
 ```
 
-### 4.2 API 컨트롤러
-
+=== 4.2 API 컨트롤러
+<api-컨트롤러>
 ```typescript
 class RequestController {
   constructor(private scheduler: IScheduler) {}
@@ -460,8 +446,8 @@ class RequestController {
 }
 ```
 
-### 4.3 LLM 서비스
-
+=== 4.3 LLM 서비스
+<llm-서비스>
 ```typescript
 class LLMService {
   private ollamaClient: OllamaClient;
@@ -487,8 +473,8 @@ class LLMService {
 }
 ```
 
-### 4.4 메트릭 수집기
-
+=== 4.4 메트릭 수집기
+<메트릭-수집기>
 ```typescript
 class MetricsCollector {
   private metrics: Map<string, number[]> = new Map();
@@ -540,12 +526,12 @@ class MetricsCollector {
 }
 ```
 
----
+#line(length: 100%)
 
-## 5. 배포 아키텍처
-
-### 5.1 단일 서버 배포
-
+== 5. 배포 아키텍처
+<배포-아키텍처>
+=== 5.1 단일 서버 배포
+<단일-서버-배포>
 ```mermaid
 graph LR
     subgraph "단일 서버"
@@ -568,8 +554,8 @@ graph LR
     style Ollama fill:#66bb6a
 ```
 
-### 5.2 분산 배포 (스케일아웃)
-
+=== 5.2 분산 배포 (스케일아웃)
+<분산-배포-스케일아웃>
 ```mermaid
 graph LR
     subgraph "로드 밸런서"
@@ -622,12 +608,12 @@ graph LR
     style MongoDB fill:#ef5350
 ```
 
----
+#line(length: 100%)
 
-## 6. 성능 최적화
-
-### 6.1 병렬 처리 설정
-
+== 6. 성능 최적화
+<성능-최적화>
+=== 6.1 병렬 처리 설정
+<병렬-처리-설정>
 ```typescript
 const schedulerConfig = {
   concurrency: {
@@ -644,8 +630,8 @@ const schedulerConfig = {
 };
 ```
 
-### 6.2 캐싱 전략
-
+=== 6.2 캐싱 전략
+<캐싱-전략>
 ```typescript
 class CacheManager {
   private redis: Redis;
@@ -667,25 +653,32 @@ class CacheManager {
 }
 ```
 
----
+#line(length: 100%)
 
-## 7. 모니터링 및 로깅
+== 7. 모니터링 및 로깅
+<모니터링-및-로깅>
+=== 7.1 모니터링 메트릭
+<모니터링-메트릭>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([카테고리], [메트릭], [설명],),
+    table.hline(),
+    [대기열], [waiting], [대기 중인 요청 수],
+    [대기열], [active], [활성 요청 수],
+    [대기열], [depth], [대기열 깊이],
+    [성능], [avg\_wait\_time], [평균 대기시간],
+    [성능], [p95\_wait\_time], [95번째 백분위수 대기시간],
+    [성능], [throughput], [처리량 (요청/초)],
+    [실패], [error\_rate], [에러율],
+    [실패], [retry\_rate], [재시도율],
+  )]
+  , kind: table
+  )
 
-### 7.1 모니터링 메트릭
-
-| 카테고리 | 메트릭 | 설명 |
-|---------|--------|------|
-| 대기열 | waiting | 대기 중인 요청 수 |
-| 대기열 | active | 활성 요청 수 |
-| 대기열 | depth | 대기열 깊이 |
-| 성능 | avg_wait_time | 평균 대기시간 |
-| 성능 | p95_wait_time | 95번째 백분위수 대기시간 |
-| 성능 | throughput | 처리량 (요청/초) |
-| 실패 | error_rate | 에러율 |
-| 실패 | retry_rate | 재시도율 |
-
-### 7.2 로그 전략
-
+=== 7.2 로그 전략
+<로그-전략>
 ```typescript
 class Logger {
   private winston: winston.Logger;
@@ -733,69 +726,75 @@ class Logger {
 }
 ```
 
----
+#line(length: 100%)
 
-## 8. 보안 고려사항
+== 8. 보안 고려사항
+<보안-고려사항>
+=== 8.1 API 보안
+<api-보안>
+- #strong[속도 제한]: 분당 100개 요청 제한
+- #strong[입력 검증]: Zod 스키마 검증
+- #strong[SQL/NoSQL 인젝션 방지]: 매개변수화된 쿼리
+- #strong[CORS 설정]: 허용된 출처만 접근
 
-### 8.1 API 보안
+=== 8.2 데이터 보안
+<데이터-보안>
+- #strong[민감 정보 암호화]: API 키, 사용자 데이터
+- #strong[접근 제어]: 사용자별 리소스 격리
+- #strong[감사 로그]: 모든 API 호출 기록
 
-- **속도 제한**: 분당 100개 요청 제한
-- **입력 검증**: Zod 스키마 검증
-- **SQL/NoSQL 인젝션 방지**: 매개변수화된 쿼리
-- **CORS 설정**: 허용된 출처만 접근
+#line(length: 100%)
 
-### 8.2 데이터 보안
+== 9. 확장성 고려사항
+<확장성-고려사항>
+=== 9.1 수평적 확장
+<수평적-확장>
+- #strong[Stateless 앱]: 상태를 Redis에 저장하여 앱 인스턴스 추가 가능
+- #strong[공유 큐]: Redis Cluster를 사용한 대기열 공유
+- #strong[로드 밸런싱]: Nginx 또는 HAProxy를 통한 부하 분산
 
-- **민감 정보 암호화**: API 키, 사용자 데이터
-- **접근 제어**: 사용자별 리소스 격리
-- **감사 로그**: 모든 API 호출 기록
+=== 9.2 수직적 확장
+<수직적-확장>
+- #strong[Worker 프로세스]: CPU 코어 수에 맞춰 Worker 증설
+- #strong[메모리]: 대기열 크기 및 캐시 용량 증설
+- #strong[네트워크]: 대역폭 확장을 통한 병목 해소
 
----
+#line(length: 100%)
 
-## 9. 확장성 고려사항
+== 10. 기술 스택
+<기술-스택>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([계층], [기술], [버전],),
+    table.hline(),
+    [언어], [TypeScript], [5.9],
+    [런타임], [Node.js], [20 LTS],
+    [웹 프레임워크], [Express.js], [4.18],
+    [큐], [BullMQ], [5.0],
+    [캐시], [Redis], [7.2],
+    [데이터베이스], [MongoDB], [7.0],
+    [WebSocket], [Socket.IO], [4.7],
+    [검증], [Zod], [3.22],
+    [테스트], [Jest], [29.7],
+    [LLM], [Ollama], [Latest],
+    [API 클라이언트], [OpenAI SDK], [4.x],
+  )]
+  , kind: table
+  )
 
-### 9.1 수평적 확장
+#line(length: 100%)
 
-- **Stateless 앱**: 상태를 Redis에 저장하여 앱 인스턴스 추가 가능
-- **공유 큐**: Redis Cluster를 사용한 대기열 공유
-- **로드 밸런싱**: Nginx 또는 HAProxy를 통한 부하 분산
+== 11. 참고 자료
+<참고-자료>
+- #link("https://docs.bullmq.io/")[BullMQ 문서]
+- #link("https://redis.io/docs/")[Redis 문서]
+- #link("https://docs.mongodb.com/")[MongoDB 문서]
+- #link("https://expressjs.com/")[Express.js 문서]
+- #link("https://socket.io/docs/")[Socket.IO 문서]
 
-### 9.2 수직적 확장
+#line(length: 100%)
 
-- **Worker 프로세스**: CPU 코어 수에 맞춰 Worker 증설
-- **메모리**: 대기열 크기 및 캐시 용량 증설
-- **네트워크**: 대역폭 확장을 통한 병목 해소
-
----
-
-## 10. 기술 스택
-
-| 계층 | 기술 | 버전 |
-|------|------|------|
-| 언어 | TypeScript | 5.9 |
-| 런타임 | Node.js | 20 LTS |
-| 웹 프레임워크 | Express.js | 4.18 |
-| 큐 | BullMQ | 5.0 |
-| 캐시 | Redis | 7.2 |
-| 데이터베이스 | MongoDB | 7.0 |
-| WebSocket | Socket.IO | 4.7 |
-| 검증 | Zod | 3.22 |
-| 테스트 | Jest | 29.7 |
-| LLM | Ollama | Latest |
-| API 클라이언트 | OpenAI SDK | 4.x |
-
----
-
-## 11. 참고 자료
-
-- [BullMQ 문서](https://docs.bullmq.io/)
-- [Redis 문서](https://redis.io/docs/)
-- [MongoDB 문서](https://docs.mongodb.com/)
-- [Express.js 문서](https://expressjs.com/)
-- [Socket.IO 문서](https://socket.io/docs/)
-
----
-
-**문서 버전**: 1.0.0
-**최종 업데이트**: 2025-01-25
-**유지보수 담당자**: LLM Scheduler 팀
+#strong[문서 버전]: 1.0.0 #strong[최종 업데이트]: 2025-01-25
+#strong[유지보수 담당자]: LLM Scheduler 팀

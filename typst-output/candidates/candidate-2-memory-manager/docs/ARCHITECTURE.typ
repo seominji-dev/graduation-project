@@ -1,15 +1,18 @@
-# Memory Manager 아키텍처 문서
+= Memory Manager 아키텍처 문서
+<memory-manager-아키텍처-문서>
+== 시스템 개요
+<시스템-개요>
+Memory Manager는 운영체제의 페이징(Paging)과 가상 메모리(Virtual Memory)
+개념을 AI 에이전트의 컨텍스트 관리에 적용한 시스템입니다. 3계층 계층형
+메모리 아키텍처를 통해 효율적인 메모리 관리와 의미론적 검색을
+제공합니다.
 
-## 시스템 개요
+#line(length: 100%)
 
-Memory Manager는 운영체제의 페이징(Paging)과 가상 메모리(Virtual Memory) 개념을 AI 에이전트의 컨텍스트 관리에 적용한 시스템입니다. 3계층 계층형 메모리 아키텍처를 통해 효율적인 메모리 관리와 의미론적 검색을 제공합니다.
-
----
-
-## 1. 시스템 아키텍처
-
-### 1.1 전체 구조
-
+== 1. 시스템 아키텍처
+<시스템-아키텍처>
+=== 1.1 전체 구조
+<전체-구조>
 ```mermaid
 graph LR
     subgraph "AI Agent Application"
@@ -60,19 +63,17 @@ graph LR
     style LRU fill:#ab47bc
 ```
 
-### 1.2 계층별 상세 설계
+=== 1.2 계층별 상세 설계
+<계층별-상세-설계>
+==== L1 캐시 계층 (Redis)
+<l1-캐시-계층-redis>
+#strong[목적]: 가장 빈번하게 접근하는 데이터의 고속 캐싱
 
-#### L1 캐시 계층 (Redis)
+#strong[특징]: - 접근 시간: \~1ms - 용량: 100페이지 (기본값) - 교체
+정책: LRU (Least Recently Used) - TTL: 5분 (300,000ms)
 
-**목적**: 가장 빈번하게 접근하는 데이터의 고속 캐싱
+#strong[데이터 구조]:
 
-**특징**:
-- 접근 시간: ~1ms
-- 용량: 100페이지 (기본값)
-- 교체 정책: LRU (Least Recently Used)
-- TTL: 5분 (300,000ms)
-
-**데이터 구조**:
 ```
 Key: memory:{agentId}:{key}
 Value: {
@@ -88,17 +89,15 @@ Value: {
 TTL: 300000ms
 ```
 
-#### L2 벡터 계층 (ChromaDB)
+==== L2 벡터 계층 (ChromaDB)
+<l2-벡터-계층-chromadb>
+#strong[목적]: 의미론적 검색과 중요도 중간 데이터 저장
 
-**목적**: 의미론적 검색과 중요도 중간 데이터 저장
+#strong[특징]: - 접근 시간: \~10ms - 용량: 무제한 (디스크 기반) - 검색:
+코사인 유사도 (Cosine Similarity) - 임베딩: nomic-embed-text (768차원)
 
-**특징**:
-- 접근 시간: ~10ms
-- 용량: 무제한 (디스크 기반)
-- 검색: 코사인 유사도 (Cosine Similarity)
-- 임베딩: nomic-embed-text (768차원)
+#strong[컬렉션 구조]:
 
-**컬렉션 구조**:
 ```javascript
 {
   ids: ["uuid-1", "uuid-2"],
@@ -111,17 +110,15 @@ TTL: 300000ms
 }
 ```
 
-#### L3 저장소 계층 (MongoDB)
+==== L3 저장소 계층 (MongoDB)
+<l3-저장소-계층-mongodb>
+#strong[목적]: 영구적 저장과 찾기 힘든 데이터 보관
 
-**목적**: 영구적 저장과 찾기 힘든 데이터 보관
+#strong[특징]: - 접근 시간: \~50ms - 용량: 무제한 - 저장 방식: 영구 저장
+\- Page Fault: L3 접근 시 자동 승격
 
-**특징**:
-- 접근 시간: ~50ms
-- 용량: 무제한
-- 저장 방식: 영구 저장
-- Page Fault: L3 접근 시 자동 승격
+#strong[도큐먼트 구조]:
 
-**도큐먼트 구조**:
 ```javascript
 {
   _id: ObjectId("..."),
@@ -142,12 +139,12 @@ TTL: 300000ms
 }
 ```
 
----
+#line(length: 100%)
 
-## 2. 메모리 관리 알고리즘
-
-### 2.1 LRU (Least Recently Used) 캐시
-
+== 2. 메모리 관리 알고리즘
+<메모리-관리-알고리즘>
+=== 2.1 LRU (Least Recently Used) 캐시
+<lru-least-recently-used-캐시>
 ```mermaid
 graph LR
     A[Access] --> B{In Cache?}
@@ -163,7 +160,8 @@ graph LR
     E --> J
 ```
 
-**구현**:
+#strong[구현]:
+
 ```typescript
 class LRUCache<K, V> {
   private capacity: number;
@@ -193,8 +191,8 @@ class LRUCache<K, V> {
 }
 ```
 
-### 2.2 페이지 부족(Page Fault) 처리
-
+=== 2.2 페이지 부족(Page Fault) 처리
+<페이지-부족page-fault-처리>
 ```mermaid
 sequenceDiagram
     participant Client
@@ -222,17 +220,17 @@ sequenceDiagram
     end
 ```
 
-**페이지 부족 해결 단계**:
+#strong[페이지 부족 해결 단계]:
 
-1. **L1 Cache Miss**: L2에서 검색
-2. **L2 Vector Miss**: L3에서 검색
-3. **L3 Storage Hit**: 데이터 반환
-4. **임베딩 생성**: Ollama로 벡터 생성
-5. **L2에 저장**: 벡터와 함께 저장
-6. **L1에 승격**: 자주 사용될 것으로 예상
++ #strong[L1 Cache Miss]: L2에서 검색
++ #strong[L2 Vector Miss]: L3에서 검색
++ #strong[L3 Storage Hit]: 데이터 반환
++ #strong[임베딩 생성]: Ollama로 벡터 생성
++ #strong[L2에 저장]: 벡터와 함께 저장
++ #strong[L1에 승격]: 자주 사용될 것으로 예상
 
-### 2.3 자동 승격/강등 (Auto Promotion/Demotion)
-
+=== 2.3 자동 승격/강등 (Auto Promotion/Demotion)
+<자동-승격강등-auto-promotiondemotion>
 ```mermaid
 stateDiagram-v2
     [*] --> L3: Initial Write
@@ -262,20 +260,19 @@ stateDiagram-v2
     end note
 ```
 
-**승격 조건**:
-- L3 → L2: `accessCount > 5`
-- L2 → L1: `accessCount > 10` AND `recentAccesses < 1hour`
+#strong[승격 조건]: - L3 → L2: `accessCount > 5` - L2 → L1:
+`accessCount > 10` AND `recentAccesses < 1hour`
 
-**강등 조건**:
-- L1 → L2: `accessCount < 3` AND `timeSinceLastAccess > 10min`
-- L2 → L3: `accessCount < 1` AND `timeSinceLastAccess > 1hour`
+#strong[강등 조건]: - L1 → L2: `accessCount < 3` AND
+`timeSinceLastAccess > 10min` - L2 → L3: `accessCount < 1` AND
+`timeSinceLastAccess > 1hour`
 
----
+#line(length: 100%)
 
-## 3. 의미론적 검색 (Semantic Search)
-
-### 3.1 임베딩 파이프라인
-
+== 3. 의미론적 검색 (Semantic Search)
+<의미론적-검색-semantic-search>
+=== 3.1 임베딩 파이프라인
+<임베딩-파이프라인>
 ```mermaid
 graph LR
     Input[Input Text] --> Ollama[Ollama<br/>nomic-embed-text]
@@ -285,7 +282,8 @@ graph LR
     Search --> Results[Top K Results]
 ```
 
-**임베딩 생성**:
+#strong[임베딩 생성]:
+
 ```typescript
 class OllamaEmbeddingService {
   async embed(text: string): Promise<number[]> {
@@ -304,9 +302,10 @@ class OllamaEmbeddingService {
 }
 ```
 
-### 3.2 유사도 검색 알고리즘
+=== 3.2 유사도 검색 알고리즘
+<유사도-검색-알고리즘>
+#strong[코사인 유사도]:
 
-**코사인 유사도**:
 ```
 similarity(A, B) = (A · B) / (||A|| * ||B||)
 
@@ -315,18 +314,16 @@ where:
   ||A|| = √(Σ(Ai²))   (magnitude)
 ```
 
-**검색 프로세스**:
-1. 쿼리 텍스트를 임베딩으로 변환
-2. ChromaDB에서 유사한 벡터 검색
-3. 상위 K개 결과 반환 (기본값: 5)
-4. 유사도 점수 필터링 (기본값: > 0.5)
+#strong[검색 프로세스]: 1. 쿼리 텍스트를 임베딩으로 변환 2. ChromaDB에서
+유사한 벡터 검색 3. 상위 K개 결과 반환 (기본값: 5) 4. 유사도 점수 필터링
+(기본값: \> 0.5)
 
----
+#line(length: 100%)
 
-## 4. 데이터 흐름
-
-### 4.1 읽기(READ) 작업 흐름
-
+== 4. 데이터 흐름
+<데이터-흐름>
+=== 4.1 읽기(READ) 작업 흐름
+<읽기read-작업-흐름>
 ```mermaid
 sequenceDiagram
     participant A as AI Agent
@@ -362,8 +359,8 @@ sequenceDiagram
     end
 ```
 
-### 4.2 쓰기(WRITE) 작업 흐름
-
+=== 4.2 쓰기(WRITE) 작업 흐름
+<쓰기write-작업-흐름>
 ```mermaid
 sequenceDiagram
     participant A as AI Agent
@@ -392,12 +389,12 @@ sequenceDiagram
     M-->>A: Success (level=L1)
 ```
 
----
+#line(length: 100%)
 
-## 5. 도메인 모델
-
-### 5.1 핵심 도메인
-
+== 5. 도메인 모델
+<도메인-모델>
+=== 5.1 핵심 도메인
+<핵심-도메인>
 ```typescript
 // 메모리 페이지 (기본 단위)
 interface MemoryPage {
@@ -442,8 +439,8 @@ interface MemoryManagerStats {
 }
 ```
 
-### 5.2 계층형 메모리 관리자
-
+=== 5.2 계층형 메모리 관리자
+<계층형-메모리-관리자>
 ```typescript
 class HierarchicalMemoryManager {
   private l1Cache: LRUCache<string, MemoryPage>;
@@ -542,18 +539,17 @@ class HierarchicalMemoryManager {
 }
 ```
 
----
+#line(length: 100%)
 
-## 6. 성능 최적화
+== 6. 성능 최적화
+<성능-최적화>
+=== 6.1 캐시 전략
+<캐시-전략>
+#strong[다단계 캐싱]: - L1: 자주 접근하는 데이터 (1ms) - L2: 의미론적
+검색 가능한 데이터 (10ms) - L3: 영구 저장소 (50ms)
 
-### 6.1 캐시 전략
+#strong[캐시 워밍]:
 
-**다단계 캐싱**:
-- L1: 자주 접근하는 데이터 (1ms)
-- L2: 의미론적 검색 가능한 데이터 (10ms)
-- L3: 영구 저장소 (50ms)
-
-**캐시 워밍**:
 ```typescript
 async function warmCache(agentId: string) {
   const hotKeys = await identifyHotKeys(agentId);
@@ -563,8 +559,8 @@ async function warmCache(agentId: string) {
 }
 ```
 
-### 6.2 배치 처리
-
+=== 6.2 배치 처리
+<배치-처리>
 ```typescript
 async function batchGet(agentId: string, keys: string[]): Promise<MemoryPage[]> {
   const promises = keys.map(key => memoryManager.get(agentId, key));
@@ -572,9 +568,10 @@ async function batchGet(agentId: string, keys: string[]): Promise<MemoryPage[]> 
 }
 ```
 
-### 6.3 압축
-
+=== 6.3 압축
+<압축>
 큰 데이터는 압축하여 저장:
+
 ```typescript
 import { gzip, ungzip } from 'zlib';
 
@@ -588,12 +585,12 @@ async function decompress(buffer: Buffer): Promise<string> {
 }
 ```
 
----
+#line(length: 100%)
 
-## 7. 동시성 제어
-
-### 7.1 낙관적 잠금 (Optimistic Locking)
-
+== 7. 동시성 제어
+<동시성-제어>
+=== 7.1 낙관적 잠금 (Optimistic Locking)
+<낙관적-잠금-optimistic-locking>
 ```typescript
 interface VersionedPage extends MemoryPage {
   version: number;
@@ -618,8 +615,8 @@ async putWithVersion(
 }
 ```
 
-### 7.2 분산 잠금 (Redlock)
-
+=== 7.2 분산 잠금 (Redlock)
+<분산-잠금-redlock>
 ```typescript
 import Redlock from 'redlock';
 
@@ -632,22 +629,29 @@ try {
 }
 ```
 
----
+#line(length: 100%)
 
-## 8. 모니터링 및 메트릭
+== 8. 모니터링 및 메트릭
+<모니터링-및-메트릭>
+=== 8.1 핵심 메트릭
+<핵심-메트릭>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([메트릭], [설명], [목표치],),
+    table.hline(),
+    [hitRate], [L1 + L2 적중률], [\> 80%],
+    [pageFaultRate], [L3 접근 비율], [\< 20%],
+    [avgAccessTime], [평균 접근 시간], [\< 10ms],
+    [l1Utilization], [L1 사용률], [70-90%],
+    [evictionRate], [교체 비율], [\< 10%],
+  )]
+  , kind: table
+  )
 
-### 8.1 핵심 메트릭
-
-| 메트릭 | 설명 | 목표치 |
-|--------|------|--------|
-| hitRate | L1 + L2 적중률 | > 80% |
-| pageFaultRate | L3 접근 비율 | < 20% |
-| avgAccessTime | 평균 접근 시간 | < 10ms |
-| l1Utilization | L1 사용률 | 70-90% |
-| evictionRate | 교체 비율 | < 10% |
-
-### 8.2 메트릭 수집
-
+=== 8.2 메트릭 수집
+<메트릭-수집>
 ```typescript
 class MetricsCollector {
   private prometheus = require('prom-client');
@@ -675,12 +679,12 @@ class MetricsCollector {
 }
 ```
 
----
+#line(length: 100%)
 
-## 9. 배포 아키텍처
-
-### 9.1 단일 노드 배포
-
+== 9. 배포 아키텍처
+<배포-아키텍처>
+=== 9.1 단일 노드 배포
+<단일-노드-배포>
 ```mermaid
 graph LR
     subgraph "Single Server"
@@ -697,8 +701,8 @@ graph LR
     Chroma --> Ollama
 ```
 
-### 9.2 분산 배포
-
+=== 9.2 분산 배포
+<분산-배포>
 ```mermaid
 graph LR
     subgraph "Load Balancer"
@@ -742,18 +746,18 @@ graph LR
     ChromaCluster --> Ollama2
 ```
 
----
+#line(length: 100%)
 
-## 10. OS 개념 매핑 상세
+== 10. OS 개념 매핑 상세
+<os-개념-매핑-상세>
+=== 10.1 페이징 (Paging)
+<페이징-paging>
+#strong[가상 메모리 시스템]: - #strong[논리 주소]: `agentId:key` 형식의
+키 - #strong[물리 주소]: 실제 저장 위치 (Redis, ChromaDB, MongoDB) -
+#strong[페이지 크기]: 가변 (JSON 직렬화 크기)
 
-### 10.1 페이징 (Paging)
+#strong[페이지 테이블]:
 
-**가상 메모리 시스템**:
-- **논리 주소**: `agentId:key` 형식의 키
-- **물리 주소**: 실제 저장 위치 (Redis, ChromaDB, MongoDB)
-- **페이지 크기**: 가변 (JSON 직렬화 크기)
-
-**페이지 테이블**:
 ```typescript
 interface PageTable {
   entries: Map<string, PageTableEntry>;
@@ -773,9 +777,10 @@ interface PageTable {
 }
 ```
 
-### 10.2 스래싱(Thrashing) 방지
+=== 10.2 스래싱(Thrashing) 방지
+<스래싱thrashing-방지>
+#strong[스래싱 감지]:
 
-**스래싱 감지**:
 ```typescript
 class ThrashingDetector {
   private recentPageFaults: number[] = [];
@@ -789,39 +794,44 @@ class ThrashingDetector {
 }
 ```
 
-**해결책**:
-1. **워킹 세트 모델**: 자주 접근하는 페이지 집합 유지
-2. **L1 용량 증설**: 더 많은 핫 데이터 유지
-3. **접근 패턴 분석**: 예측적 프리패칭
+#strong[해결책]: 1. #strong[워킹 세트 모델]: 자주 접근하는 페이지 집합
+유지 2. #strong[L1 용량 증설]: 더 많은 핫 데이터 유지 3. #strong[접근
+패턴 분석]: 예측적 프리패칭
 
----
+#line(length: 100%)
 
-## 11. 기술 스택
+== 11. 기술 스택
+<기술-스택>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([계층], [기술], [버전], [용도],),
+    table.hline(),
+    [언어], [TypeScript], [5.9], [타입 안전성],
+    [런타임], [Node.js], [20 LTS], [서버 런타임],
+    [웹 프레임워크], [Express.js], [4.18], [REST API],
+    [L1 캐시], [Redis], [7.2], [고속 캐싱],
+    [L2 벡터 DB], [ChromaDB], [0.4+], [의미론적 검색],
+    [L3 저장소], [MongoDB], [7.0], [영구 저장],
+    [임베딩], [Ollama], [Latest], [로컬 임베딩],
+    [검증], [Zod], [3.22], [스키마 검증],
+    [테스트], [Jest], [29.7], [단위/통합 테스트],
+  )]
+  , kind: table
+  )
 
-| 계층 | 기술 | 버전 | 용도 |
-|------|------|------|------|
-| 언어 | TypeScript | 5.9 | 타입 안전성 |
-| 런타임 | Node.js | 20 LTS | 서버 런타임 |
-| 웹 프레임워크 | Express.js | 4.18 | REST API |
-| L1 캐시 | Redis | 7.2 | 고속 캐싱 |
-| L2 벡터 DB | ChromaDB | 0.4+ | 의미론적 검색 |
-| L3 저장소 | MongoDB | 7.0 | 영구 저장 |
-| 임베딩 | Ollama | Latest | 로컬 임베딩 |
-| 검증 | Zod | 3.22 | 스키마 검증 |
-| 테스트 | Jest | 29.7 | 단위/통합 테스트 |
+#line(length: 100%)
 
----
+== 12. 참고 자료
+<참고-자료>
+- #link("https://www.ostheory.org/paging")[OS Concepts: Paging and Virtual Memory]
+- #link("https://docs.trychroma.com/")[ChromaDB Documentation]
+- #link("https://redis.io/docs/")[Redis Documentation]
+- #link("https://docs.mongodb.com/")[MongoDB Documentation]
+- #link("https://ollama.ai/")[Ollama Documentation]
 
-## 12. 참고 자료
+#line(length: 100%)
 
-- [OS Concepts: Paging and Virtual Memory](https://www.ostheory.org/paging)
-- [ChromaDB Documentation](https://docs.trychroma.com/)
-- [Redis Documentation](https://redis.io/docs/)
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Ollama Documentation](https://ollama.ai/)
-
----
-
-**문서 버전**: 1.0.0
-**최종 업데이트**: 2025-01-25
-**유지보수 담당자**: Memory Manager 팀
+#strong[문서 버전]: 1.0.0 #strong[최종 업데이트]: 2025-01-25
+#strong[유지보수 담당자]: Memory Manager 팀

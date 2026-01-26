@@ -1,15 +1,18 @@
-# Deadlock Detector 아키텍처 문서
+= Deadlock Detector 아키텍처 문서
+<deadlock-detector-아키텍처-문서>
+== 시스템 개요
+<시스템-개요>
+Deadlock Detector는 운영체제의 데드락 감지 및 회복 알고리즘을 AI/LLM
+다중 에이전트 시스템에 적용한 시스템입니다. Wait-For Graph 기반 사이클
+탐지, 다양한 희생자 선택 전략, 은행원 알고리즘을 통한 데드락 회피를
+제공합니다.
 
-## 시스템 개요
+#line(length: 100%)
 
-Deadlock Detector는 운영체제의 데드락 감지 및 회복 알고리즘을 AI/LLM 다중 에이전트 시스템에 적용한 시스템입니다. Wait-For Graph 기반 사이클 탐지, 다양한 희생자 선택 전략, 은행원 알고리즘을 통한 데드락 회피를 제공합니다.
-
----
-
-## 1. 시스템 아키텍처
-
-### 1.1 전체 구조
-
+== 1. 시스템 아키텍처
+<시스템-아키텍처>
+=== 1.1 전체 구조
+<전체-구조>
 ```mermaid
 graph LR
     subgraph "에이전트 계층"
@@ -75,12 +78,11 @@ graph LR
     style BA fill:#42a5f5
 ```
 
-### 1.2 Wait-For Graph 구조
-
-**그래프 구성**:
-- **노드 (Nodes)**: 에이전트와 자원
-- **엣지 (Edges)**: 대기 관계 (Waiting) 또는 보유 관계 (Holding)
-- **사이클 (Cycle)**: 데드락 상태를 나타내는 순환 경로
+=== 1.2 Wait-For Graph 구조
+<wait-for-graph-구조>
+#strong[그래프 구성]: - #strong[노드 (Nodes)]: 에이전트와 자원 -
+#strong[엣지 (Edges)]: 대기 관계 (Waiting) 또는 보유 관계 (Holding) -
+#strong[사이클 (Cycle)]: 데드락 상태를 나타내는 순환 경로
 
 ```mermaid
 graph LR
@@ -96,12 +98,12 @@ graph LR
     style A3 fill:#ef5350
 ```
 
----
+#line(length: 100%)
 
-## 2. 데드락 감지 알고리즘
-
-### 2.1 사이클 탐지 (Cycle Detection)
-
+== 2. 데드락 감지 알고리즘
+<데드락-감지-알고리즘>
+=== 2.1 사이클 탐지 (Cycle Detection)
+<사이클-탐지-cycle-detection>
 ```mermaid
 graph LR
     Start[Start Detection] --> Build[Build Wait-For Graph]
@@ -127,8 +129,8 @@ graph LR
     style Found fill:#ef5350
 ```
 
-### 2.2 DFS 기반 사이클 탐지 구현
-
+=== 2.2 DFS 기반 사이클 탐지 구현
+<dfs-기반-사이클-탐지-구현>
 ```typescript
 class CycleDetector {
   detect(graph: WaitForGraph): Cycle[] {
@@ -199,18 +201,18 @@ class CycleDetector {
 }
 ```
 
-### 2.3 시간 복잡도
+=== 2.3 시간 복잡도
+<시간-복잡도>
+- #strong[최악의 경우]: O(V + E) - V는 노드 수, E는 엣지 수
+- #strong[평균 경우]: O(V + E) - DFS의 효율적 구현
+- #strong[최적의 경우]: O(V) - 사이클이 없는 경우
 
-- **최악의 경우**: O(V + E) - V는 노드 수, E는 엣지 수
-- **평균 경우**: O(V + E) - DFS의 효율적 구현
-- **최적의 경우**: O(V) - 사이클이 없는 경우
+#line(length: 100%)
 
----
-
-## 3. 희생자 선택 전략 (Victim Selection)
-
-### 3.1 전략 비교
-
+== 3. 희생자 선택 전략 (Victim Selection)
+<희생자-선택-전략-victim-selection>
+=== 3.1 전략 비교
+<전략-비교>
 ```mermaid
 graph LR
     subgraph "우선순위 기반"
@@ -230,10 +232,10 @@ graph LR
     end
 ```
 
-### 3.2 전략별 구현
-
-#### 3.2.1 우선순위 기반 (Lowest Priority)
-
+=== 3.2 전략별 구현
+<전략별-구현>
+==== 3.2.1 우선순위 기반 (Lowest Priority)
+<우선순위-기반-lowest-priority>
 가장 낮은 우선순위를 가진 에이전트를 선택합니다.
 
 ```typescript
@@ -250,16 +252,13 @@ class LowestPrioritySelector {
 }
 ```
 
-**장점**:
-- 비즈니스 로직에 맞는 선택
-- 중요한 에이전트 보호
-- 구현이 간단함
+#strong[장점]: - 비즈니스 로직에 맞는 선택 - 중요한 에이전트 보호 -
+구현이 간단함
 
-**단점**:
-- 낮은 우선순위 에이전트의 기아 현상
+#strong[단점]: - 낮은 우선순위 에이전트의 기아 현상
 
-#### 3.2.2 나이 기반 (Youngest)
-
+==== 3.2.2 나이 기반 (Youngest)
+<나이-기반-youngest>
 가장 최근에 생성된 에이전트를 선택합니다.
 
 ```typescript
@@ -278,15 +277,13 @@ class YoungestSelector {
 }
 ```
 
-**장점**:
-- 진행 중인 작업이 최소인 에이전트 선택
-- 롤백 비용이 낮음
+#strong[장점]: - 진행 중인 작업이 최소인 에이전트 선택 - 롤백 비용이
+낮음
 
-**단점**:
-- 새로운 에이전트의 불리함
+#strong[단점]: - 새로운 에이전트의 불리함
 
-#### 3.2.3 자원 보유량 기반 (Most Resources)
-
+==== 3.2.3 자원 보유량 기반 (Most Resources)
+<자원-보유량-기반-most-resources>
 가장 많은 자원을 보유한 에이전트를 선택합니다.
 
 ```typescript
@@ -303,15 +300,12 @@ class MostResourcesSelector {
 }
 ```
 
-**장점**:
-- 자원 해제 효과가 큼
-- 많은 에이전트가 혜택
+#strong[장점]: - 자원 해제 효과가 큼 - 많은 에이전트가 혜택
 
-**단점**:
-- 중요한 에이전트가 희생될 수 있음
+#strong[단점]: - 중요한 에이전트가 희생될 수 있음
 
-#### 3.2.4 의존성 최소화 (Least Dependencies)
-
+==== 3.2.4 의존성 최소화 (Least Dependencies)
+<의존성-최소화-least-dependencies>
 가장 적은 수의 다른 에이전트가 의존하는 에이전트를 선택합니다.
 
 ```typescript
@@ -332,19 +326,16 @@ class LeastDependenciesSelector {
 }
 ```
 
-**장점**:
-- 부작용(side effect) 최소화
-- 시스템 안정성 유지
+#strong[장점]: - 부작용(side effect) 최소화 - 시스템 안정성 유지
 
-**단점**:
-- 의존성 계산의 복잡도
+#strong[단점]: - 의존성 계산의 복잡도
 
----
+#line(length: 100%)
 
-## 4. 은행원 알고리즘 (Banker's Algorithm)
-
-### 4.1 안전 상태 검사
-
+== 4. 은행원 알고리즘 (Banker's Algorithm)
+<은행원-알고리즘-bankers-algorithm>
+=== 4.1 안전 상태 검사
+<안전-상태-검사>
 ```mermaid
 graph LR
     Start[Request Resources] --> Check1{Request ≤ Available?}
@@ -363,8 +354,8 @@ graph LR
     style Allocate fill:#66bb6a
 ```
 
-### 4.2 안전 상태 검사 구현
-
+=== 4.2 안전 상태 검사 구현
+<안전-상태-검사-구현>
 ```typescript
 class SafetyChecker {
   isSafe(
@@ -429,12 +420,12 @@ class SafetyChecker {
 }
 ```
 
----
+#line(length: 100%)
 
-## 5. 체크포인트 및 롤백 (Checkpoint & Rollback)
-
-### 5.1 체크포인트 프로세스
-
+== 5. 체크포인트 및 롤백 (Checkpoint & Rollback)
+<체크포인트-및-롤백-checkpoint-rollback>
+=== 5.1 체크포인트 프로세스
+<체크포인트-프로세스>
 ```mermaid
 sequenceDiagram
     participant A as Agent
@@ -458,8 +449,8 @@ sequenceDiagram
     CM-->>A: Restored State
 ```
 
-### 5.2 상태 직렬화
-
+=== 5.2 상태 직렬화
+<상태-직렬화>
 ```typescript
 class StateSerializer {
   serialize(state: any): Buffer {
@@ -486,12 +477,12 @@ class StateSerializer {
 }
 ```
 
----
+#line(length: 100%)
 
-## 6. 데이터 흐름
-
-### 6.1 데드락 감지 흐름
-
+== 6. 데이터 흐름
+<데이터-흐름>
+=== 6.1 데드락 감지 흐름
+<데드락-감지-흐름>
 ```mermaid
 sequenceDiagram
     participant M as Main System
@@ -525,8 +516,8 @@ sequenceDiagram
     end
 ```
 
-### 6.2 자원 요청 흐름
-
+=== 6.2 자원 요청 흐름
+<자원-요청-흐름>
 ```mermaid
 sequenceDiagram
     participant A as Agent
@@ -551,12 +542,12 @@ sequenceDiagram
     end
 ```
 
----
+#line(length: 100%)
 
-## 7. 도메인 모델
-
-### 7.1 핵심 도메인
-
+== 7. 도메인 모델
+<도메인-모델>
+=== 7.1 핵심 도메인
+<핵심-도메인>
 ```typescript
 // 에이전트
 interface Agent {
@@ -606,12 +597,12 @@ interface VictimSelection {
 }
 ```
 
----
+#line(length: 100%)
 
-## 8. 성능 최적화
-
-### 8.1 그래프 최적화
-
+== 8. 성능 최적화
+<성능-최적화>
+=== 8.1 그래프 최적화
+<그래프-최적화>
 ```typescript
 class OptimizedWaitForGraph {
   private adjacencyList: Map<string, Set<string>> = new Map();
@@ -633,8 +624,8 @@ class OptimizedWaitForGraph {
 }
 ```
 
-### 8.2 캐싱 전략
-
+=== 8.2 캐싱 전략
+<캐싱-전략>
 ```typescript
 class GraphCache {
   private cache: Map<string, { graph: WaitForGraph; timestamp: number }> = new Map();
@@ -661,35 +652,49 @@ class GraphCache {
 }
 ```
 
----
+#line(length: 100%)
 
-## 9. 기술 스택
+== 9. 기술 스택
+<기술-스택>
+#figure(
+  align(center)[#table(
+    columns: 4,
+    align: (auto,auto,auto,auto,),
+    table.header([계층], [기술], [버전], [용도],),
+    table.hline(),
+    [언어], [TypeScript], [5.9], [타입 안전성],
+    [런타임], [Node.js], [20 LTS], [서버 런타임],
+    [웹 프레임워크], [Express.js], [4.18], [REST API],
+    [실시간 통신], [Socket.IO], [4.7], [WebSocket],
+    [데이터베이스], [MongoDB], [7.0], [영구 저장],
+    [캐싱], [Redis], [7.2], [그래프 캐싱],
+    [테스트], [Vitest], [Latest], [단위/통합 테스트],
+  )]
+  , kind: table
+  )
 
-| 계층 | 기술 | 버전 | 용도 |
-|------|------|------|------|
-| 언어 | TypeScript | 5.9 | 타입 안전성 |
-| 런타임 | Node.js | 20 LTS | 서버 런타임 |
-| 웹 프레임워크 | Express.js | 4.18 | REST API |
-| 실시간 통신 | Socket.IO | 4.7 | WebSocket |
-| 데이터베이스 | MongoDB | 7.0 | 영구 저장 |
-| 캐싱 | Redis | 7.2 | 그래프 캐싱 |
-| 테스트 | Vitest | Latest | 단위/통합 테스트 |
+#line(length: 100%)
 
----
+== 10. OS 개념 매핑 상세
+<os-개념-매핑-상세>
+#figure(
+  align(center)[#table(
+    columns: 3,
+    align: (auto,auto,auto,),
+    table.header([OS 개념], [적용], [구현],),
+    table.hline(),
+    [Deadlock], [Resource Competition], [다중 에이전트 자원 경합],
+    [Wait-For Graph], [Dependency Graph], [에이전트-자원 대기 그래프],
+    [Cycle Detection], [DFS], [O(V + E) 사이클 탐지],
+    [Victim Selection], [Process Termination], [4가지 선택 전략],
+    [Banker's Algorithm], [Deadlock Avoidance], [안전 상태 기반 자원
+    할당],
+    [Checkpoint/Restore], [State Recovery], [에이전트 상태 저장/복구],
+  )]
+  , kind: table
+  )
 
-## 10. OS 개념 매핑 상세
+#line(length: 100%)
 
-| OS 개념 | 적용 | 구현 |
-|---------|------|------|
-| Deadlock | Resource Competition | 다중 에이전트 자원 경합 |
-| Wait-For Graph | Dependency Graph | 에이전트-자원 대기 그래프 |
-| Cycle Detection | DFS | O(V + E) 사이클 탐지 |
-| Victim Selection | Process Termination | 4가지 선택 전략 |
-| Banker's Algorithm | Deadlock Avoidance | 안전 상태 기반 자원 할당 |
-| Checkpoint/Restore | State Recovery | 에이전트 상태 저장/복구 |
-
----
-
-**문서 버전**: 1.0.0
-**최종 업데이트**: 2025-01-25
-**유지보수 담당자**: Deadlock Detector 팀
+#strong[문서 버전]: 1.0.0 #strong[최종 업데이트]: 2025-01-25
+#strong[유지보수 담당자]: Deadlock Detector 팀
