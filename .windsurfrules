@@ -1,3 +1,93 @@
-# AI 에이전트 가이드
+# LLM Request Scheduler - Windsurf AI Rules
 
-이 프로젝트의 AI 에이전트 가이드는 `AGENTS.md` 파일을 참고하세요.
+You are an expert TypeScript developer working on an LLM Request Scheduler project that applies OS scheduling concepts to LLM API request management.
+
+## Project Overview
+
+- **Name**: LLM Request Scheduler
+- **Purpose**: Apply OS scheduling algorithms (FCFS, Priority, MLFQ, WFQ) to optimize LLM API request handling
+- **Tech Stack**: TypeScript, Node.js 20+, Express, BullMQ, MongoDB, Redis, Socket.io
+
+## Project Structure
+
+```
+src/
+├── schedulers/           # Scheduling algorithms
+│   ├── types.ts          # Scheduler interfaces and types
+│   ├── FCFSScheduler.ts  # First-Come-First-Served
+│   ├── PriorityScheduler.ts # Priority-based scheduling
+│   ├── MLFQScheduler.ts  # Multi-Level Feedback Queue
+│   └── WFQScheduler.ts   # Weighted Fair Queuing
+├── managers/             # Management components
+│   ├── TenantRegistry.ts # Tenant (user) management
+│   ├── FairnessCalculator.ts # Fairness metrics calculation
+│   ├── BoostManager.ts   # Dynamic priority adjustment
+│   ├── AgingManager.ts   # Starvation prevention
+│   └── VirtualTimeTracker.ts # WFQ virtual time tracking
+├── services/             # Business logic
+│   ├── schedulerFactory.ts # Scheduler instantiation
+│   └── llmService.ts     # LLM provider integration
+├── api/                  # REST API layer
+│   ├── routes/           # Route definitions
+│   └── controllers/      # Request handlers
+├── middlewares/          # Express middlewares
+├── infrastructure/       # External services (Redis, MongoDB)
+├── config/               # Configuration management
+├── domain/               # Domain models
+├── metrics/              # Prometheus metrics
+└── utils/                # Utility functions
+
+tests/                    # Jest unit and integration tests
+```
+
+## Coding Standards
+
+### TypeScript Conventions
+- Use TypeScript strict mode
+- Functions/variables: camelCase (e.g., `processRequest`, `queueLength`)
+- Classes: PascalCase (e.g., `FCFSScheduler`, `TenantRegistry`)
+- Interfaces: Descriptive names or `I` prefix (e.g., `IScheduler`, `RequestPayload`)
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_QUEUE_SIZE`, `DEFAULT_TIMEOUT`)
+- Enums: PascalCase with PascalCase members
+
+### File Naming
+- Use kebab-case or PascalCase.ts format
+- Test files: `*.spec.ts` or `*.test.ts`
+- One primary export per file
+
+### Code Quality
+- Add JSDoc comments for public APIs
+- Use async/await consistently (no mixing with .then())
+- Create custom error classes for domain-specific errors
+- Keep functions small and focused (< 50 lines preferred)
+
+## Key Commands
+
+```bash
+npm run dev          # Development server with hot reload
+npm run build        # TypeScript compilation
+npm test             # Run tests with coverage
+npm run lint         # ESLint check
+npm run format       # Prettier formatting
+```
+
+## When Making Changes
+
+1. Run `npm run lint` to check for linting errors
+2. Run `npm test` to verify all tests pass
+3. Follow existing code patterns in the codebase
+4. Update relevant tests when modifying functionality
+5. Keep the 97%+ test coverage
+
+## Domain Knowledge
+
+### Scheduling Algorithms
+- **FCFS**: Simple queue, baseline for comparison
+- **Priority**: Tenant priority with aging to prevent starvation
+- **MLFQ**: Dynamic priority based on request behavior
+- **WFQ**: Proportional fairness based on tenant weights
+
+### Key Metrics
+- Wait time, turnaround time, throughput
+- Fairness index (Jain's fairness index)
+- Starvation prevention effectiveness

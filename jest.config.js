@@ -12,7 +12,10 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
   moduleNameMapper: {
     '^bullmq$': '<rootDir>/tests/__mocks__/bullmq.ts',
-    '^@/(.*)$': '<rootDir>/src/$1'
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@shared/errors$': '<rootDir>/shared/errors/dist/index.js',
+    '^@shared/logger$': '<rootDir>/shared/logger/dist/index.js',
+    '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   // Fix worker teardown issues
   testTimeout: 10000,
