@@ -24,7 +24,6 @@
   "license": "MIT",
   "dependencies": {
     "@shared/errors": "file:../../shared/errors",
-    "@shared/middlewares": "file:../../shared/middlewares",
     "bullmq": "^5.1.8",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
