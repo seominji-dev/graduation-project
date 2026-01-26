@@ -1,3 +1,5 @@
+import { BOOST_INTERVAL_MS, MAX_BOOST_JOBS_FETCH } from '../config/constants.js';
+
 /**
  * Boost Manager for MLFQ Scheduler
  * 
@@ -14,7 +16,6 @@ const logger = createLogger('BoostManager');
 /**
  * Boost configuration
  */
-const BOOST_INTERVAL_MS = 5000; // 5 seconds - boost all jobs to Q0
 
 /**
  * Interface for MLFQScheduler to allow BoostManager to reset queue levels

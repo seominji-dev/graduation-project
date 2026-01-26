@@ -1,3 +1,5 @@
+import { DEFAULT_MAX_CHECKPOINTS_PER_AGENT } from '../config/constants.js';
+
 /**
  * Checkpoint Manager
  * Manages checkpoint creation and lifecycle (REQ-CHECK-010 through REQ-CHECK-017)
@@ -39,7 +41,7 @@ export class CheckpointManager {
   constructor(
     store: CheckpointStore,
     serializer: StateSerializer,
-    maxCheckpointsPerAgent: number = 10
+    maxCheckpointsPerAgent: number = DEFAULT_MAX_CHECKPOINTS_PER_AGENT
   ) {
     this.store = store;
     this.serializer = serializer;

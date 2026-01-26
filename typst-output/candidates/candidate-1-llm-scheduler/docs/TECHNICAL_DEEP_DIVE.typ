@@ -19,7 +19,7 @@
 #line(length: 100%)
 
 == 1. 개요
-<개요>
+<1-개요>
 === 1.1 OS 스케줄링과 LLM 스케줄링의 매핑
 <os-스케줄링과-llm-스케줄링의-매핑>
 운영체제의 프로세스 스케줄링 개념을 LLM API 요청 관리에 적용하면 다음과
@@ -46,7 +46,7 @@
 #line(length: 100%)
 
 == 2. FCFS 알고리즘 상세 분석
-<fcfs-알고리즘-상세-분석>
+<2-fcfs-알고리즘-상세-분석>
 === 2.1 알고리즘 원리
 <알고리즘-원리>
 #strong[First-Come, First-Served (FCFS)]는 가장 단순한 스케줄링
@@ -82,7 +82,7 @@
 #line(length: 100%)
 
 == 3. Priority 알고리즘 상세 분석
-<priority-알고리즘-상세-분석>
+<3-priority-알고리즘-상세-분석>
 === 3.1 알고리즘 원리
 <알고리즘-원리-1>
 #strong[Priority Scheduling]은 각 요청에 우선순위를 부여하고, 높은
@@ -131,7 +131,7 @@
 #line(length: 100%)
 
 == 4. MLFQ 알고리즘 상세 분석
-<mlfq-알고리즘-상세-분석>
+<4-mlfq-알고리즘-상세-분석>
 === 4.1 알고리즘 원리
 <알고리즘-원리-2>
 #strong[Multi-Level Feedback Queue (MLFQ)]는 여러 우선순위 큐를
@@ -192,7 +192,7 @@
 #line(length: 100%)
 
 == 5. WFQ 알고리즘 상세 분석
-<wfq-알고리즘-상세-분석>
+<5-wfq-알고리즘-상세-분석>
 === 5.1 알고리즘 원리
 <알고리즘-원리-3>
 #strong[Weighted Fair Queuing (WFQ)]는 GPS(Generalized Processor
@@ -260,7 +260,7 @@ J = (sum x_i)^2 / (n * sum x_i^2)
 #line(length: 100%)
 
 == 6. 성능 비교 분석
-<성능-비교-분석>
+<6-성능-비교-분석>
 === 6.1 정량적 비교
 <정량적-비교>
 #figure(
@@ -298,7 +298,7 @@ J = (sum x_i)^2 / (n * sum x_i^2)
 #line(length: 100%)
 
 == 7. 알고리즘 선택 가이드
-<알고리즘-선택-가이드>
+<7-알고리즘-선택-가이드>
 === 7.1 의사결정 매트릭스
 <의사결정-매트릭스>
 #figure(

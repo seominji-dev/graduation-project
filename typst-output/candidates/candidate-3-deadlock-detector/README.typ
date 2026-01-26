@@ -1,16 +1,16 @@
 = Deadlock Detector for Multi-Agent Systems
 <deadlock-detector-for-multi-agent-systems>
-#link("https://opensource.org/licenses/MIT")[#box(image("https://img.shields.io/badge/License-MIT-blue.svg"))]
-#link("https://nodejs.org")[#box(image("https://img.shields.io/badge/node->=20.0.0-brightgreen"))]
-#link("https://www.typescriptlang.org/")[#box(image("https://img.shields.io/badge/TypeScript-5.9-blue"))]
-#link("https://github.com/YOUR_USERNAME/deadlock-detector")[#box(image("https://img.shields.io/badge/coverage-87.76%-brightgreen"))]
+#strong[MIT License]
+#strong[Node.js >= 20.0.0]
+#strong[TypeScript 5.9]
+#strong[Coverage: 97.08%]
 
 #quote(block: true)[
 데드락 감지 및 회복 시스템 - Wait-For Graph 기반 다중 에이전트 시스템용
 데드락 감지 및 회복
 ]
 
-#link("https://github.com/YOUR_USERNAME/deadlock-detector")[#box(image("https://img.shields.io/badge/⭐-Star us on GitHub-yellow?style=social"))]
+#link("https://github.com")[Star on GitHub]
 
 #line(length: 100%)
 

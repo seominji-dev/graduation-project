@@ -1,3 +1,10 @@
+import {
+  DEFAULT_HOST,
+  DEFAULT_REDIS_PORT,
+  DEFAULT_REDIS_DB,
+  DEFAULT_REDIS_KEY_PREFIX,
+} from '../config/constants.js';
+
 /**
  * Redis Client for L1 Cache
  * Fast in-memory storage for frequently accessed pages
@@ -26,12 +33,12 @@ export class RedisCacheStore {
 
   constructor(config: RedisConfig = {}) {
     this.client = new Redis({
-      host: config.host || 'localhost',
-      port: config.port || 6379,
+      host: config.host || DEFAULT_HOST,
+      port: config.port || DEFAULT_REDIS_PORT,
       password: config.password,
-      db: config.db || 0,
+      db: config.db || DEFAULT_REDIS_DB,
     });
-    this.keyPrefix = config.keyPrefix || 'memory:';
+    this.keyPrefix = config.keyPrefix || DEFAULT_REDIS_KEY_PREFIX;
   }
 
   /**

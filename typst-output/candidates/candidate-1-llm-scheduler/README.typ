@@ -1,15 +1,15 @@
 = LLM 추론 요청 스케줄러
 <llm-추론-요청-스케줄러>
-#link("https://opensource.org/licenses/MIT")[#box(image("https://img.shields.io/badge/License-MIT-blue.svg"))]
-#link("https://nodejs.org")[#box(image("https://img.shields.io/badge/node->=20.0.0-brightgreen"))]
-#link("https://www.typescriptlang.org/")[#box(image("https://img.shields.io/badge/TypeScript-5.9-blue"))]
-#link("https://github.com/YOUR_USERNAME/llm-scheduler")[#box(image("https://img.shields.io/badge/coverage-97.08%-brightgreen"))]
+#strong[MIT License]
+#strong[Node.js >= 20.0.0]
+#strong[TypeScript 5.9]
+#strong[Coverage: 97.08%]
 
 #quote(block: true)[
 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 오픈소스 프로젝트
 ]
 
-#link("https://github.com/YOUR_USERNAME/llm-scheduler")[#box(image("https://img.shields.io/badge/⭐-Star us on GitHub-yellow?style=social"))]
+#link("https://github.com")[Star on GitHub]
 
 #line(length: 100%)
 

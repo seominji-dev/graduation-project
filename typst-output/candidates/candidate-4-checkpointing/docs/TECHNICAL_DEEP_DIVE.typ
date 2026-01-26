@@ -20,7 +20,7 @@ In-Depth Technical Analysis of OS Checkpointing for AI Agents
 #line(length: 100%)
 
 == 1. OS Process Checkpointing Concepts
-<os-process-checkpointing-concepts>
+<1-os-process-checkpointing-concepts>
 === 1.1 Historical Background
 <historical-background>
 Process checkpointing originated in high-performance computing (HPC)
@@ -109,7 +109,7 @@ phase.
 #line(length: 100%)
 
 == 2. State Serialization Strategies
-<state-serialization-strategies>
+<2-state-serialization-strategies>
 === 2.1 JSON Serialization Architecture
 <json-serialization-architecture>
 The StateSerializer class implements a multi-phase serialization
@@ -212,7 +212,7 @@ balances storage vs.~recovery complexity
 #line(length: 100%)
 
 == 3. Integrity Verification
-<integrity-verification>
+<3-integrity-verification>
 === 3.1 Verification Layers
 <verification-layers>
 The system implements multiple verification layers:
@@ -277,7 +277,7 @@ Checkpoint corruption is detected through:
 #line(length: 100%)
 
 == 4. Recovery Algorithms
-<recovery-algorithms>
+<4-recovery-algorithms>
 === 4.1 Recovery Manager Architecture
 <recovery-manager-architecture>
 #strong[RecoveryManager Components:]
@@ -384,7 +384,7 @@ valid checkpoint - Agent status set to paused for manual review
 #line(length: 100%)
 
 == 5. Performance Optimization
-<performance-optimization>
+<5-performance-optimization>
 === 5.1 Serialization Performance
 <serialization-performance>
 #strong[Bottleneck Analysis:]

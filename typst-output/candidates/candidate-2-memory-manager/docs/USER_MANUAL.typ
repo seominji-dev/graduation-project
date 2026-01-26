@@ -56,7 +56,7 @@ curl http://localhost:3001/api/health
 #line(length: 100%)
 
 == 1. Installation and Setup
-<installation-and-setup>
+<1-installation-and-setup>
 === 1.1 System Requirements
 <system-requirements>
 #figure(
@@ -130,7 +130,7 @@ ollama pull nomic-embed-text
 #line(length: 100%)
 
 == 2. Configuration
-<configuration>
+<2-configuration>
 === 2.1 Environment Variables
 <environment-variables>
 Create a `.env` file in the project root:
@@ -187,7 +187,7 @@ hit rate via `/api/stats`
 #line(length: 100%)
 
 == 3. API Reference
-<api-reference>
+<3-api-reference>
 === 3.1 Base URL
 <base-url>
 ```
@@ -357,7 +357,7 @@ GET /api/stats
 #line(length: 100%)
 
 == 4. Usage Examples
-<usage-examples>
+<4-usage-examples>
 === 4.1 Basic Usage with cURL
 <basic-usage-with-curl>
 ```bash
@@ -470,7 +470,7 @@ result = memory.retrieve("conversation:001")
 #line(length: 100%)
 
 == 5. RAG System Integration
-<rag-system-integration>
+<5-rag-system-integration>
 === 5.1 What is RAG?
 <what-is-rag>
 #strong[RAG (Retrieval-Augmented Generation)] enhances LLM responses by
@@ -524,7 +524,7 @@ response = agent.query("What did we discuss about Python?")
 #line(length: 100%)
 
 == 6. Troubleshooting
-<troubleshooting>
+<6-troubleshooting>
 === 6.1 Common Issues
 <common-issues>
 ==== Connection Refused Errors

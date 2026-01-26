@@ -1,3 +1,5 @@
+import { MS_PER_SECOND } from '../config/constants.js';
+
 /**
  * Victim Selector for Deadlock Recovery
  * 
@@ -152,7 +154,7 @@ export class VictimSelector {
     const victim = sorted[0];
     
     const ageMs = Date.now() - victim.createdAt.getTime();
-    const ageSeconds = Math.floor(ageMs / 1000);
+    const ageSeconds = Math.floor(ageMs / MS_PER_SECOND);
     
     return {
       victim,

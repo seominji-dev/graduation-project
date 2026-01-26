@@ -1,97 +1,76 @@
 /**
- * Logger Utility
- * Production-ready logging for Memory Manager
+ * Logger Utility for Memory Manager
+ *
+ * Re-exports shared logger with project-specific default prefix.
+ * Enhanced with Correlation ID support for distributed tracing.
  */
 
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-}
+import {
+  Logger as SharedLogger,
+  createLogger as sharedCreateLogger,
+  LogLevel,
+  LOG_LEVEL_NAMES,
+} from '@shared/logger';
+import type { LoggerConfig, LogEntry, ILogger } from '@shared/logger';
+import { getCorrelationId } from '../middlewares/correlationId';
 
-interface LoggerConfig {
-  level: LogLevel;
-  prefix?: string;
-  timestamp?: boolean;
-}
+/**
+ * Enhanced Logger class that includes Correlation ID in all log messages
+ */
+export class Logger implements ILogger {
+  private baseLogger: SharedLogger;
 
-const defaultConfig: LoggerConfig = {
-  level: LogLevel.INFO,
-  prefix: '[MemoryManager]',
-  timestamp: true,
-};
-
-class Logger {
-  private config: LoggerConfig;
-
-  constructor(config: Partial<LoggerConfig> = {}) {
-    this.config = { ...defaultConfig, ...config };
+  constructor(prefix: string) {
+    this.baseLogger = sharedCreateLogger(prefix);
   }
 
-  private formatMessage(level: string, message: string): string {
-    const parts: string[] = [];
-
-    if (this.config.timestamp) {
-      parts.push(new Date().toISOString());
-    }
-
-    if (this.config.prefix) {
-      parts.push(this.config.prefix);
-    }
-
-    parts.push(`[${level}]`);
-    parts.push(message);
-
-    return parts.join(' ');
+  /**
+   * Get metadata with correlation ID included
+   */
+  private getEnhancedMeta(meta?: unknown): Record<string, unknown> {
+    const correlationId = getCorrelationId();
+    const baseMeta = meta !== undefined ? { data: meta } : {};
+    return {
+      correlationId,
+      ...baseMeta,
+    };
   }
 
-  debug(message: string, ...args: unknown[]): void {
-    if (this.config.level <= LogLevel.DEBUG) {
-      // eslint-disable-next-line no-console
-      console.debug(this.formatMessage('DEBUG', message), ...args);
-    }
+  debug(message: string, meta?: unknown): void {
+    this.baseLogger.debug(message, this.getEnhancedMeta(meta));
   }
 
-  info(message: string, ...args: unknown[]): void {
-    if (this.config.level <= LogLevel.INFO) {
-      // eslint-disable-next-line no-console
-      console.info(this.formatMessage('INFO', message), ...args);
-    }
+  info(message: string, meta?: unknown): void {
+    this.baseLogger.info(message, this.getEnhancedMeta(meta));
   }
 
-  warn(message: string, ...args: unknown[]): void {
-    if (this.config.level <= LogLevel.WARN) {
-      // eslint-disable-next-line no-console
-      console.warn(this.formatMessage('WARN', message), ...args);
-    }
+  warn(message: string, meta?: unknown): void {
+    this.baseLogger.warn(message, this.getEnhancedMeta(meta));
   }
 
-  error(message: string, ...args: unknown[]): void {
-    if (this.config.level <= LogLevel.ERROR) {
-      // eslint-disable-next-line no-console
-      console.error(this.formatMessage('ERROR', message), ...args);
-    }
-  }
-
-  setLevel(level: LogLevel): void {
-    this.config.level = level;
+  error(message: string, meta?: unknown): void {
+    this.baseLogger.error(message, this.getEnhancedMeta(meta));
   }
 
   child(prefix: string): Logger {
-    return new Logger({
-      ...this.config,
-      prefix: this.config.prefix ? `${this.config.prefix}${prefix}` : prefix,
-    });
+    const currentPrefix = (this.baseLogger as unknown as { config: { prefix: string } }).config?.prefix || 'MemoryManager';
+    return new Logger(`${currentPrefix}:${prefix}`);
+  }
+
+  setLevel(level: LogLevel): void {
+    this.baseLogger.setLevel(level);
+  }
+
+  getLevel(): LogLevel {
+    return this.baseLogger.getLevel();
   }
 }
 
-// Default logger instance
-const logger = new Logger({
-  level: process.env.LOG_LEVEL
-    ? (LogLevel[process.env.LOG_LEVEL as keyof typeof LogLevel] ?? LogLevel.INFO)
-    : LogLevel.INFO,
-});
+// Create project-specific logger instance
+export const logger = new Logger('MemoryManager');
 
-export { Logger, logger };
+// Re-export types and utilities
+export { LogLevel, LOG_LEVEL_NAMES };
+export type { LoggerConfig, LogEntry, ILogger };
+
 export default logger;

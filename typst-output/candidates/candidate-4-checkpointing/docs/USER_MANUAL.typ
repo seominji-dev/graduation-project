@@ -19,7 +19,7 @@ Complete Guide to Installation, Configuration, and Usage
 #line(length: 100%)
 
 == 1. Installation and Setup
-<installation-and-setup>
+<1-installation-and-setup>
 === 1.1 Prerequisites
 <prerequisites>
 Before installation, ensure you have:
@@ -156,7 +156,7 @@ candidate-4-checkpointing/
 #line(length: 100%)
 
 == 2. API Reference
-<api-reference>
+<2-api-reference>
 === 2.1 API Overview
 <api-overview>
 #figure(
@@ -525,7 +525,7 @@ curl -X DELETE http://localhost:3002/api/checkpoints/123e4567-e89b-12d3-a456-426
 #line(length: 100%)
 
 == 3. Recovery Scenarios
-<recovery-scenarios>
+<3-recovery-scenarios>
 === 3.1 Scenario: Simple Recovery (Latest Checkpoint)
 <scenario-simple-recovery-latest-checkpoint>
 #strong[Situation:] Agent crashed, need to recover from most recent
@@ -591,7 +591,7 @@ the periodic manager 4. Stop when done
 #line(length: 100%)
 
 == 4. Troubleshooting
-<troubleshooting>
+<4-troubleshooting>
 === 4.1 Connection Issues
 <connection-issues>
 ==== Problem: MongoDB connection failed

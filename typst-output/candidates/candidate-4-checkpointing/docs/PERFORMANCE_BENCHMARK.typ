@@ -21,7 +21,7 @@ Comprehensive Performance Analysis of Agent Checkpointing System
 #line(length: 100%)
 
 == 1. Checkpoint Creation Time
-<checkpoint-creation-time>
+<1-checkpoint-creation-time>
 === 1.1 Benchmark Setup
 <benchmark-setup>
 #strong[Test Configuration:] - Machine: Apple M2 Pro, 16GB RAM / Intel
@@ -118,7 +118,7 @@ Small (100 vars), Medium (500 vars), Large (1000 vars)
 #line(length: 100%)
 
 == 2. Storage Space Analysis
-<storage-space-analysis>
+<2-storage-space-analysis>
 === 2.1 State Size Distribution
 <state-size-distribution>
 #figure(
@@ -234,7 +234,7 @@ practice)
 #line(length: 100%)
 
 == 3. Recovery Time
-<recovery-time>
+<3-recovery-time>
 === 3.1 Full Checkpoint Recovery
 <full-checkpoint-recovery>
 #figure(
@@ -332,7 +332,7 @@ costs.
 #line(length: 100%)
 
 == 4. Incremental vs Full Comparison
-<incremental-vs-full-comparison>
+<4-incremental-vs-full-comparison>
 === 4.1 Creation Performance
 <creation-performance>
 #figure(
@@ -429,7 +429,7 @@ Create full checkpoints every N incremental checkpoints:
 #line(length: 100%)
 
 == 5. Scalability Analysis
-<scalability-analysis>
+<5-scalability-analysis>
 === 5.1 Concurrent Agent Scaling
 <concurrent-agent-scaling>
 #figure(

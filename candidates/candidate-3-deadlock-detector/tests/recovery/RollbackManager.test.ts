@@ -174,3 +174,138 @@ describe('RollbackManager', () => {
     });
   });
 });
+
+describe('RollbackManager - Additional Coverage', () => {
+  let manager: RollbackManager;
+  let agent: ReturnType<typeof createAgent>;
+
+  beforeEach(() => {
+    manager = new RollbackManager(5);
+    agent = createAgent('Test-Agent', 5);
+  });
+
+  describe('Rollback with specific checkpoint ID', () => {
+    it('should fail when specific checkpoint ID does not exist', () => {
+      // Create a checkpoint first
+      manager.createCheckpoint(agent);
+      
+      const agents = new Map([[agent.id, agent]]);
+      const resources = new Map();
+
+      // Try to rollback to a checkpoint that doesn't exist
+      const result = manager.rollback(agent.id, 'non-existent-cp-id', agents, resources);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Checkpoint not found');
+      expect(result.checkpointId).toBe('non-existent-cp-id');
+    });
+
+    it('should rollback to a specific checkpoint by ID', () => {
+      const r1 = createResource('R1');
+      
+      // First checkpoint with no resources
+      const cp1 = manager.createCheckpoint(agent);
+      
+      // Acquire resource and create second checkpoint
+      agent.heldResources.push(r1.id);
+      r1.heldBy = agent.id;
+      const cp2 = manager.createCheckpoint(agent);
+      
+      // Acquire more state change
+      agent.heldResources.push('R2');
+      
+      const agents = new Map([[agent.id, agent]]);
+      const resources = new Map([[r1.id, r1]]);
+
+      // Rollback to first checkpoint (no resources)
+      const result = manager.rollback(agent.id, cp1.id, agents, resources);
+
+      expect(result.success).toBe(true);
+      expect(result.checkpointId).toBe(cp1.id);
+      expect(agent.heldResources).toEqual([]);
+    });
+  });
+
+  describe('createRecoveryActionResult static method', () => {
+    it('should create recovery action from successful rollback result', () => {
+      const rollbackResult = {
+        success: true,
+        agentId: 'agent-1',
+        checkpointId: 'cp-1',
+        resourcesReleased: ['r1', 'r2'],
+        timestamp: new Date(),
+      };
+
+      const action = RollbackManager.createRecoveryActionResult(rollbackResult);
+
+      expect(action.agentId).toBe('agent-1');
+      expect(action.resourcesReleased).toEqual(['r1', 'r2']);
+      expect(action.result).toBe('success');
+    });
+
+    it('should create recovery action from failed rollback result', () => {
+      const rollbackResult = {
+        success: false,
+        agentId: 'agent-1',
+        checkpointId: 'cp-1',
+        resourcesReleased: [],
+        timestamp: new Date(),
+        error: 'Agent not found',
+      };
+
+      const action = RollbackManager.createRecoveryActionResult(rollbackResult);
+
+      expect(action.agentId).toBe('agent-1');
+      expect(action.result).toBe('failed');
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle agent with empty checkpoints array explicitly', () => {
+      const agents = new Map([[agent.id, agent]]);
+      const resources = new Map();
+
+      // No checkpoints created
+      const result = manager.rollbackToLatest(agent.id, agents, resources);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('No checkpoints found for agent');
+    });
+
+    it('should properly clear checkpoints and sequence', () => {
+      manager.createCheckpoint(agent);
+      manager.createCheckpoint(agent);
+      
+      expect(manager.getCheckpoints(agent.id)).toHaveLength(2);
+      
+      manager.clearCheckpoints(agent.id);
+      
+      expect(manager.getCheckpoints(agent.id)).toHaveLength(0);
+      
+      // Create new checkpoint after clearing - should start from sequence 1
+      const newCp = manager.createCheckpoint(agent);
+      expect(newCp.sequenceNumber).toBe(1);
+    });
+
+    it('should handle multiple agents correctly', () => {
+      const agent2 = createAgent('Agent-2');
+      const agent3 = createAgent('Agent-3');
+      
+      manager.createCheckpoint(agent);
+      manager.createCheckpoint(agent);
+      manager.createCheckpoint(agent2);
+      manager.createCheckpoint(agent3);
+      manager.createCheckpoint(agent3);
+      manager.createCheckpoint(agent3);
+      
+      expect(manager.getTotalCheckpointCount()).toBe(6);
+      
+      manager.clearCheckpoints(agent2.id);
+      
+      expect(manager.getTotalCheckpointCount()).toBe(5);
+      expect(manager.getCheckpoints(agent2.id)).toHaveLength(0);
+      expect(manager.getCheckpoints(agent.id)).toHaveLength(2);
+      expect(manager.getCheckpoints(agent3.id)).toHaveLength(3);
+    });
+  });
+});

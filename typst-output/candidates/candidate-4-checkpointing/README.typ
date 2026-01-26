@@ -1,15 +1,15 @@
 = 에이전트 체크포인팅 시스템
 <에이전트-체크포인팅-시스템>
-#link("https://opensource.org/licenses/MIT")[#box(image("https://img.shields.io/badge/License-MIT-blue.svg"))]
-#link("https://nodejs.org")[#box(image("https://img.shields.io/badge/node->=20.0.0-brightgreen"))]
-#link("https://www.typescriptlang.org/")[#box(image("https://img.shields.io/badge/TypeScript-5.9-blue"))]
-#link("https://github.com/YOUR_USERNAME/checkpointing")[#box(image("https://img.shields.io/badge/coverage-85.44%-brightgreen"))]
+#strong[MIT License]
+#strong[Node.js >= 20.0.0]
+#strong[TypeScript 5.9]
+#strong[Coverage: 97.08%]
 
 #quote(block: true)[
 OS 프로세스 체크포인팅을 AI 에이전트에 적용한 장애 복구 시스템
 ]
 
-#link("https://github.com/YOUR_USERNAME/checkpointing")[#box(image("https://img.shields.io/badge/⭐-Star us on GitHub-yellow?style=social"))]
+#link("https://github.com")[Star on GitHub]
 
 #line(length: 100%)
 

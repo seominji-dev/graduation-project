@@ -1,8 +1,17 @@
 /**
- * Logger Utility
- * Production-ready logging with log levels and structured output
+ * Logger Utility for Checkpointing
+ *
+ * Standalone logger implementation for project-specific logging.
+ * Enhanced with Correlation ID support for distributed tracing.
  */
 
+/* eslint-disable no-console -- Logger utility intentionally uses console methods for output */
+
+import { getCorrelationId } from '../middlewares/correlationId.js';
+
+/**
+ * Log levels with numeric values for comparison
+ */
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -10,118 +19,240 @@ export enum LogLevel {
   ERROR = 3,
 }
 
-interface LogEntry {
-  timestamp: string;
-  level: string;
-  context: string;
-  message: string;
-  data?: unknown;
+/**
+ * Log level name mapping
+ */
+export const LOG_LEVEL_NAMES: Record<LogLevel, string> = {
+  [LogLevel.DEBUG]: 'DEBUG',
+  [LogLevel.INFO]: 'INFO',
+  [LogLevel.WARN]: 'WARN',
+  [LogLevel.ERROR]: 'ERROR',
+};
+
+/**
+ * Logger configuration options
+ */
+export interface LoggerConfig {
+  /** Minimum log level to output */
+  level: LogLevel;
+  /** Component/module prefix for log messages */
+  prefix?: string;
+  /** Include timestamp in log output (default: true) */
+  timestamp?: boolean;
+  /** Use JSON format for structured logging (default: auto based on NODE_ENV) */
+  jsonFormat?: boolean;
 }
 
-class Logger {
-  private level: LogLevel;
-  private context: string;
+/**
+ * Structured log entry for JSON output
+ */
+export interface LogEntry {
+  timestamp: string;
+  level: string;
+  correlationId: string;
+  prefix?: string;
+  message: string;
+  meta?: unknown;
+}
 
-  constructor(context: string = 'App', level?: LogLevel) {
-    this.context = context;
-    this.level = level ?? this.getLogLevelFromEnv();
+/**
+ * Logger interface for consistent logging
+ */
+export interface ILogger {
+  /** Log debug level message */
+  debug(message: string, meta?: unknown): void;
+  /** Log info level message */
+  info(message: string, meta?: unknown): void;
+  /** Log warn level message */
+  warn(message: string, meta?: unknown): void;
+  /** Log error level message */
+  error(message: string, meta?: unknown): void;
+  /** Create a child logger with a specific prefix */
+  child(prefix: string): ILogger;
+  /** Set log level dynamically */
+  setLevel(level: LogLevel): void;
+  /** Get current log level */
+  getLevel(): LogLevel;
+}
+
+/**
+ * Parse log level from string
+ */
+function parseLogLevel(level?: string): LogLevel | undefined {
+  if (!level) return undefined;
+  const upperLevel = level.toUpperCase();
+  switch (upperLevel) {
+    case 'DEBUG':
+      return LogLevel.DEBUG;
+    case 'INFO':
+      return LogLevel.INFO;
+    case 'WARN':
+      return LogLevel.WARN;
+    case 'ERROR':
+      return LogLevel.ERROR;
+    default:
+      return undefined;
   }
+}
 
-  private getLogLevelFromEnv(): LogLevel {
-    const envLevel = process.env.LOG_LEVEL?.toUpperCase();
-    switch (envLevel) {
-      case 'DEBUG':
-        return LogLevel.DEBUG;
-      case 'INFO':
-        return LogLevel.INFO;
-      case 'WARN':
-        return LogLevel.WARN;
-      case 'ERROR':
-        return LogLevel.ERROR;
-      default:
-        return process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG;
-    }
+/**
+ * Get default log level based on environment
+ */
+function getDefaultLogLevel(): LogLevel {
+  const envLevel = parseLogLevel(process.env.LOG_LEVEL);
+  if (envLevel !== undefined) {
+    return envLevel;
   }
+  return process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG;
+}
 
-  private formatMessage(level: string, message: string, data?: unknown): LogEntry {
-    return {
-      timestamp: new Date().toISOString(),
-      level,
-      context: this.context,
-      message,
-      ...(data !== undefined && { data }),
+/**
+ * Check if running in production environment
+ */
+function isProduction(): boolean {
+  return process.env.NODE_ENV === 'production';
+}
+
+/**
+ * Logger class implementing ILogger interface
+ */
+export class Logger implements ILogger {
+  private config: Required<LoggerConfig>;
+
+  constructor(config: Partial<LoggerConfig> = {}) {
+    this.config = {
+      level: config.level ?? getDefaultLogLevel(),
+      prefix: config.prefix ?? '',
+      timestamp: config.timestamp ?? true,
+      jsonFormat: config.jsonFormat ?? isProduction(),
     };
   }
 
-  private log(level: LogLevel, levelName: string, message: string, data?: unknown): void {
-    if (level < this.level) {
-      return;
+  /**
+   * Check if the given log level should be logged
+   */
+  private shouldLog(level: LogLevel): boolean {
+    return level >= this.config.level;
+  }
+
+  /**
+   * Format message for output
+   */
+  private formatMessage(level: LogLevel, message: string, meta?: unknown): string {
+    const timestamp = new Date().toISOString();
+    const levelName = LOG_LEVEL_NAMES[level];
+    const correlationId = getCorrelationId();
+
+    if (this.config.jsonFormat) {
+      const entry: LogEntry = {
+        timestamp,
+        level: levelName,
+        correlationId,
+        message,
+        ...(this.config.prefix && { prefix: this.config.prefix }),
+        ...(meta !== undefined && { meta }),
+      };
+      return JSON.stringify(entry);
     }
 
-    const entry = this.formatMessage(levelName, message, data);
+    const parts: string[] = [];
+    if (this.config.timestamp) {
+      parts.push(`[${timestamp}]`);
+    }
+    parts.push(`[${levelName}]`);
+    parts.push(`[${correlationId}]`);
+    if (this.config.prefix) {
+      parts.push(`[${this.config.prefix}]`);
+    }
+    parts.push(message);
+    if (meta !== undefined) {
+      parts.push(JSON.stringify(meta));
+    }
 
-    if (process.env.NODE_ENV === 'production') {
-      // Structured JSON output for production
-      const output = JSON.stringify(entry);
-      if (level >= LogLevel.ERROR) {
-        process.stderr.write(output + '\n');
-      } else {
-        process.stdout.write(output + '\n');
-      }
-    } else {
-      // Human-readable output for development
-      const prefix = `[${entry.timestamp}] [${levelName}] [${this.context}]`;
-      if (level >= LogLevel.ERROR) {
-        if (data !== undefined) {
-          // eslint-disable-next-line no-console
-          console.error(`${prefix} ${message}`, data);
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(`${prefix} ${message}`);
-        }
-      } else if (level >= LogLevel.WARN) {
-        if (data !== undefined) {
-          // eslint-disable-next-line no-console
-          console.warn(`${prefix} ${message}`, data);
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(`${prefix} ${message}`);
-        }
-      } else {
-        if (data !== undefined) {
-          // eslint-disable-next-line no-console
-          console.log(`${prefix} ${message}`, data);
-        } else {
-          // eslint-disable-next-line no-console
-          console.log(`${prefix} ${message}`);
-        }
-      }
+    return parts.join(' ');
+  }
+
+  /**
+   * Log debug level message
+   */
+  debug(message: string, meta?: unknown): void {
+    if (this.shouldLog(LogLevel.DEBUG)) {
+      console.debug(this.formatMessage(LogLevel.DEBUG, message, meta));
     }
   }
 
-  debug(message: string, data?: unknown): void {
-    this.log(LogLevel.DEBUG, 'DEBUG', message, data);
+  /**
+   * Log info level message
+   */
+  info(message: string, meta?: unknown): void {
+    if (this.shouldLog(LogLevel.INFO)) {
+      console.info(this.formatMessage(LogLevel.INFO, message, meta));
+    }
   }
 
-  info(message: string, data?: unknown): void {
-    this.log(LogLevel.INFO, 'INFO', message, data);
+  /**
+   * Log warn level message
+   */
+  warn(message: string, meta?: unknown): void {
+    if (this.shouldLog(LogLevel.WARN)) {
+      console.warn(this.formatMessage(LogLevel.WARN, message, meta));
+    }
   }
 
-  warn(message: string, data?: unknown): void {
-    this.log(LogLevel.WARN, 'WARN', message, data);
+  /**
+   * Log error level message
+   */
+  error(message: string, meta?: unknown): void {
+    if (this.shouldLog(LogLevel.ERROR)) {
+      // Handle Error objects specially
+      let errorMeta = meta;
+      if (meta instanceof Error) {
+        errorMeta = {
+          name: meta.name,
+          message: meta.message,
+          stack: meta.stack,
+        };
+      }
+      console.error(this.formatMessage(LogLevel.ERROR, message, errorMeta));
+    }
   }
 
-  error(message: string, data?: unknown): void {
-    this.log(LogLevel.ERROR, 'ERROR', message, data);
+  /**
+   * Create a child logger with a specific prefix
+   */
+  child(prefix: string): Logger {
+    const childPrefix = this.config.prefix
+      ? `${this.config.prefix}:${prefix}`
+      : prefix;
+    return new Logger({
+      ...this.config,
+      prefix: childPrefix,
+    });
   }
 
-  child(context: string): Logger {
-    return new Logger(`${this.context}:${context}`, this.level);
+  /**
+   * Set log level dynamically
+   */
+  setLevel(level: LogLevel): void {
+    this.config.level = level;
+  }
+
+  /**
+   * Get current log level
+   */
+  getLevel(): LogLevel {
+    return this.config.level;
   }
 }
 
-// Create default logger instance
-export const logger = new Logger('Checkpointing');
+/**
+ * Create a new logger instance with the given prefix
+ */
+export function createLogger(prefix: string, config?: Partial<LoggerConfig>): Logger {
+  return new Logger({ ...config, prefix });
+}
 
-// Export Logger class for creating child loggers
-export { Logger };
+// Create project-specific logger instance
+export const logger = createLogger('Checkpointing');
+
+export default logger;

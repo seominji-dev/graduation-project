@@ -1,3 +1,5 @@
+import { DEFAULT_MAX_RETRIES } from '../config/constants.js';
+
 /**
  * Recovery Manager
  * Handles agent recovery from checkpoints (REQ-CHECK-024 through REQ-CHECK-032)
@@ -45,7 +47,7 @@ export class RecoveryManager {
     options: RecoveryOptions = {}
   ): Promise<RecoveryResult> {
     const startTime = Date.now();
-    const maxRetries = options.maxRetries || 3;
+    const maxRetries = options.maxRetries || DEFAULT_MAX_RETRIES;
 
     // Find checkpoint to restore from
     let checkpoint: Checkpoint | null = null;
@@ -173,7 +175,7 @@ export class RecoveryManager {
     return await this.recover(agentId, {
       verifyIntegrity: true,
       fallbackToLatest: true,
-      maxRetries: 3,
+      maxRetries: DEFAULT_MAX_RETRIES,
     });
   }
 

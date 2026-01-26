@@ -15,7 +15,7 @@
 #line(length: 100%)
 
 == 1. 설치 및 설정
-<설치-및-설정>
+<1-설치-및-설정>
 === 1.1 시스템 요구사항
 <시스템-요구사항>
 #figure(
@@ -156,7 +156,7 @@ docker-compose up -d
 #line(length: 100%)
 
 == 2. API 사용법
-<api-사용법>
+<2-api-사용법>
 === 2.1 기본 URL
 <기본-url>
 ```
@@ -464,7 +464,7 @@ GET /api/graph
 #line(length: 100%)
 
 == 3. 모니터링 대시보드
-<모니터링-대시보드>
+<3-모니터링-대시보드>
 === 3.1 WebSocket 연결
 <websocket-연결>
 ```javascript
@@ -591,7 +591,7 @@ function DeadlockMonitor() {
 #line(length: 100%)
 
 == 4. 트러블슈팅
-<트러블슈팅>
+<4-트러블슈팅>
 === 4.1 자주 발생하는 문제
 <자주-발생하는-문제>
 ==== 문제: 서버가 시작되지 않음

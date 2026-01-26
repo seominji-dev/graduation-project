@@ -1,3 +1,19 @@
+import {
+  DEFAULT_L1_CAPACITY,
+  DEFAULT_L1_TTL,
+  DEFAULT_CHROMA_COLLECTION,
+  DEFAULT_MONGODB_DB_NAME,
+  DEFAULT_MONGODB_COLLECTION_NAME,
+  DEFAULT_EMBEDDING_MODEL,
+  DEFAULT_HOST,
+  DEFAULT_REDIS_PORT,
+  DEFAULT_CHROMA_PORT,
+  DEFAULT_MONGODB_URI,
+  DEFAULT_OLLAMA_BASE_URL,
+  ACCESS_TIME_SMOOTHING_FACTOR,
+  DEFAULT_SEMANTIC_SEARCH_TOP_K,
+} from '../config/constants.js';
+
 /**
  * Hierarchical Memory Manager
  * Implements OS paging with three-tier memory hierarchy
@@ -96,18 +112,18 @@ export class HierarchicalMemoryManager {
 
   constructor(config: HierarchicalMemoryConfig = {}) {
     this.config = {
-      l1Capacity: config.l1Capacity ?? 100,
-      l1Ttl: config.l1Ttl ?? 0,
-      l2CollectionName: config.l2CollectionName ?? 'agent_contexts',
-      l3DbName: config.l3DbName ?? 'memory_manager',
-      l3CollectionName: config.l3CollectionName ?? 'archived_contexts',
-      embeddingModel: config.embeddingModel ?? 'nomic-embed-text',
-      redisHost: config.redisHost ?? 'localhost',
-      redisPort: config.redisPort ?? 6379,
-      chromaHost: config.chromaHost ?? 'localhost',
-      chromaPort: config.chromaPort ?? 8000,
-      mongoUri: config.mongoUri ?? 'mongodb://localhost:27017',
-      ollamaBaseUrl: config.ollamaBaseUrl ?? 'http://localhost:11434',
+      l1Capacity: config.l1Capacity ?? DEFAULT_L1_CAPACITY,
+      l1Ttl: config.l1Ttl ?? DEFAULT_L1_TTL,
+      l2CollectionName: config.l2CollectionName ?? DEFAULT_CHROMA_COLLECTION,
+      l3DbName: config.l3DbName ?? DEFAULT_MONGODB_DB_NAME,
+      l3CollectionName: config.l3CollectionName ?? DEFAULT_MONGODB_COLLECTION_NAME,
+      embeddingModel: config.embeddingModel ?? DEFAULT_EMBEDDING_MODEL,
+      redisHost: config.redisHost ?? DEFAULT_HOST,
+      redisPort: config.redisPort ?? DEFAULT_REDIS_PORT,
+      chromaHost: config.chromaHost ?? DEFAULT_HOST,
+      chromaPort: config.chromaPort ?? DEFAULT_CHROMA_PORT,
+      mongoUri: config.mongoUri ?? DEFAULT_MONGODB_URI,
+      ollamaBaseUrl: config.ollamaBaseUrl ?? DEFAULT_OLLAMA_BASE_URL,
     };
 
     // Initialize components
@@ -391,7 +407,7 @@ export class HierarchicalMemoryManager {
   async semanticSearch(
     agentId: string,
     query: string,
-    topK: number = 5,
+    topK: number = DEFAULT_SEMANTIC_SEARCH_TOP_K,
   ): Promise<Array<{ key: string; value: string; similarity: number; level: MemoryLevel }>> {
     if (!this.initialized) {
       throw new Error('Memory Manager not initialized');
@@ -514,7 +530,7 @@ export class HierarchicalMemoryManager {
    * Update average access time (exponential moving average)
    */
   private updateAverageAccessTime(newTime: number): void {
-    const alpha = 0.2; // Smoothing factor
+    const alpha = ACCESS_TIME_SMOOTHING_FACTOR; // Smoothing factor
     if (this.stats.averageAccessTime === 0) {
       this.stats.averageAccessTime = newTime;
     } else {

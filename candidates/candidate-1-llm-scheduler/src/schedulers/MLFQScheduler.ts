@@ -1,3 +1,11 @@
+import {
+  MLFQ_QUEUE_LEVELS,
+  MLFQ_TIME_QUANTA,
+  MLFQ_QUEUE_NAMES,
+  DEFAULT_JOB_ATTEMPTS,
+  DEFAULT_BACKOFF_DELAY_MS,
+} from '../config/constants.js';
+
 /**
  * MLFQ (Multi-Level Feedback Queue) Scheduler
  * 
@@ -106,10 +114,10 @@ export class MLFQScheduler implements IScheduler {
       const queue = new Queue(QUEUE_NAMES[level], {
         connection: bullmqConnection,
         defaultJobOptions: {
-          attempts: 3,
+          attempts: DEFAULT_JOB_ATTEMPTS,
           backoff: {
             type: 'exponential',
-            delay: 1000,
+            delay: DEFAULT_BACKOFF_DELAY_MS,
           },
         },
       });

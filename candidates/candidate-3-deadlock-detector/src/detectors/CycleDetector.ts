@@ -1,3 +1,8 @@
+import {
+  DFS_INITIAL_DISCOVERY_TIME,
+  DFS_INITIAL_LOW_LINK,
+} from '../config/constants.js';
+
 /**
  * Cycle Detector for Deadlock Detection
  * 
@@ -74,8 +79,8 @@ export class CycleDetector {
       this.dfsNodes.set(agentId, {
         agentId,
         state: NodeState.UNVISITED,
-        discoveryTime: -1,
-        lowLink: -1,
+        discoveryTime: DFS_INITIAL_DISCOVERY_TIME,
+        lowLink: DFS_INITIAL_LOW_LINK,
         parent: null,
       });
     }

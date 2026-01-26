@@ -1,117 +1,81 @@
 /**
- * Logger Utility
+ * Logger Utility for LLM Scheduler
  *
- * Production-grade logging utility with configurable log levels.
- * Provides structured logging for the LLM Scheduler application.
+ * Re-exports shared logger with project-specific default prefix.
+ * Enhanced with Correlation ID support for distributed tracing.
  */
 
-/* eslint-disable no-console -- Logger utility intentionally uses console methods for output */
+import {
+  Logger as SharedLogger,
+  createLogger as sharedCreateLogger,
+  LogLevel,
+  LOG_LEVEL_NAMES,
+} from '@shared/logger';
+import type { LoggerConfig, LogEntry, ILogger } from '@shared/logger';
+import { getCorrelationId } from '../middlewares/correlationId';
 
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-}
+/**
+ * Enhanced Logger class that includes Correlation ID in all log messages
+ */
+export class Logger implements ILogger {
+  private baseLogger: SharedLogger;
 
-interface LoggerConfig {
-  level: LogLevel;
-  prefix?: string;
-}
+  constructor(prefix: string) {
+    this.baseLogger = sharedCreateLogger(prefix);
+  }
 
-const LOG_LEVEL_NAMES: Record<LogLevel, string> = {
-  [LogLevel.DEBUG]: 'DEBUG',
-  [LogLevel.INFO]: 'INFO',
-  [LogLevel.WARN]: 'WARN',
-  [LogLevel.ERROR]: 'ERROR',
-};
-
-class Logger {
-  private config: LoggerConfig;
-
-  constructor(config: Partial<LoggerConfig> = {}) {
-    this.config = {
-      level: this.parseLogLevel(process.env.LOG_LEVEL) ?? LogLevel.INFO,
-      prefix: config.prefix,
+  /**
+   * Get metadata with correlation ID included
+   */
+  private getEnhancedMeta(meta?: unknown): Record<string, unknown> {
+    const correlationId = getCorrelationId();
+    const baseMeta = meta !== undefined ? { data: meta } : {};
+    return {
+      correlationId,
+      ...baseMeta,
     };
   }
 
-  private parseLogLevel(level?: string): LogLevel | undefined {
-    if (!level) return undefined;
-    const upperLevel = level.toUpperCase();
-    switch (upperLevel) {
-      case 'DEBUG':
-        return LogLevel.DEBUG;
-      case 'INFO':
-        return LogLevel.INFO;
-      case 'WARN':
-        return LogLevel.WARN;
-      case 'ERROR':
-        return LogLevel.ERROR;
-      default:
-        return undefined;
-    }
-  }
-
-  private formatMessage(level: LogLevel, message: string, meta?: unknown): string {
-    const timestamp = new Date().toISOString();
-    const levelName = LOG_LEVEL_NAMES[level];
-    const prefix = this.config.prefix ? '[' + this.config.prefix + '] ' : '';
-    const metaStr = meta !== undefined ? ' ' + JSON.stringify(meta) : '';
-    return timestamp + ' ' + levelName + ' ' + prefix + message + metaStr;
-  }
-
-  private shouldLog(level: LogLevel): boolean {
-    return level >= this.config.level;
-  }
-
   debug(message: string, meta?: unknown): void {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage(LogLevel.DEBUG, message, meta));
-    }
+    this.baseLogger.debug(message, this.getEnhancedMeta(meta));
   }
 
   info(message: string, meta?: unknown): void {
-    if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage(LogLevel.INFO, message, meta));
-    }
+    this.baseLogger.info(message, this.getEnhancedMeta(meta));
   }
 
   warn(message: string, meta?: unknown): void {
-    if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage(LogLevel.WARN, message, meta));
-    }
+    this.baseLogger.warn(message, this.getEnhancedMeta(meta));
   }
 
   error(message: string, meta?: unknown): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage(LogLevel.ERROR, message, meta));
-    }
+    this.baseLogger.error(message, this.getEnhancedMeta(meta));
   }
 
-  /**
-   * Create a child logger with a specific prefix
-   */
   child(prefix: string): Logger {
-    const childLogger = new Logger({ prefix });
-    childLogger.config.level = this.config.level;
-    return childLogger;
+    const currentPrefix = (this.baseLogger as unknown as { config: { prefix: string } }).config?.prefix || 'LLMScheduler';
+    return new Logger(`${currentPrefix}:${prefix}`);
   }
 
-  /**
-   * Set log level dynamically
-   */
   setLevel(level: LogLevel): void {
-    this.config.level = level;
+    this.baseLogger.setLevel(level);
+  }
+
+  getLevel(): LogLevel {
+    return this.baseLogger.getLevel();
   }
 }
 
-// Export singleton instance
-export const logger = new Logger();
+// Create project-specific logger instance
+export const logger = new Logger('LLMScheduler');
 
 // Export for creating module-specific loggers
 export const createLogger = (prefix: string): Logger => {
-  return logger.child(prefix);
+  return new Logger(`LLMScheduler:${prefix}`);
 };
+
+// Re-export types and utilities
+export { LogLevel, LOG_LEVEL_NAMES };
+export type { LoggerConfig, LogEntry, ILogger };
 
 export default logger;

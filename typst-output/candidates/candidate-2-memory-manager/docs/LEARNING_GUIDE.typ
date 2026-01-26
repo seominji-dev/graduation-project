@@ -27,7 +27,7 @@ algorithms (LRU) 4. Apply these concepts to AI agent development
 #line(length: 100%)
 
 == 1. Memory Hierarchy Basics
-<memory-hierarchy-basics>
+<1-memory-hierarchy-basics>
 === 1.1 The Speed vs.~Capacity Trade-off
 <the-speed-vs.-capacity-trade-off>
 Imagine you're studying for an exam. You have: - Your desk (fast access,
@@ -94,7 +94,7 @@ read consecutive pages
 #line(length: 100%)
 
 == 2. Understanding Paging
-<understanding-paging>
+<2-understanding-paging>
 === 2.1 What is a Page?
 <what-is-a-page>
 A #strong[page] is a fixed-size chunk of memory. Instead of managing
@@ -138,7 +138,7 @@ doesn't exist
 #line(length: 100%)
 
 == 3. LRU Cache Algorithm
-<lru-cache-algorithm>
+<3-lru-cache-algorithm>
 === 3.1 The Cache Problem
 <the-cache-problem>
 When the cache is full and you need to add a new item, which item do you
@@ -193,7 +193,7 @@ tail if full - #strong[evict():] Remove tail node + delete from HashMap
 #line(length: 100%)
 
 == 4. Applying to AI Agents
-<applying-to-ai-agents>
+<4-applying-to-ai-agents>
 === 4.1 The AI Agent Memory Problem
 <the-ai-agent-memory-problem>
 AI agents like ChatGPT have limited #strong[context windows] (the amount
@@ -283,7 +283,7 @@ concepts have similar vectors 3. Find the k nearest vectors to query
 #line(length: 100%)
 
 == 5. Hands-On Exercises
-<hands-on-exercises>
+<5-hands-on-exercises>
 === Exercise 1: Trace LRU Operations
 <exercise-1-trace-lru-operations>
 Given an LRU cache with capacity 3, trace the state after each
@@ -347,7 +347,7 @@ Hit Rate: 3/9 = 33.3%
 #line(length: 100%)
 
 == 6. Practice Problems
-<practice-problems>
+<6-practice-problems>
 === Problem 1: Page Table Lookup (Easy)
 <problem-1-page-table-lookup-easy>
 Given this page table:

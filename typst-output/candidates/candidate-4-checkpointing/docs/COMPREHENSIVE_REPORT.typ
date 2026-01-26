@@ -22,7 +22,7 @@ OS Process Checkpointing Applied to AI Agent Fault Recovery
 #line(length: 100%)
 
 == 1. Executive Summary
-<executive-summary>
+<1-executive-summary>
 === Problem Statement
 <problem-statement>
 AI agents performing long-running tasks face a critical challenge: when
@@ -64,7 +64,7 @@ agents, enabling:
 #line(length: 100%)
 
 == 2. Project Overview
-<project-overview>
+<2-project-overview>
 === 2.1 Motivation
 <motivation>
 Long-running AI agents (e.g., autonomous coding assistants, research
@@ -124,7 +124,7 @@ The project is organized into the following directories:
 #line(length: 100%)
 
 == 3. Checkpointing Architecture
-<checkpointing-architecture>
+<3-checkpointing-architecture>
 === 3.1 System Overview
 <system-overview>
 The system architecture consists of:
@@ -208,7 +208,7 @@ Apply diff operations sequentially - Validate final state integrity
 #line(length: 100%)
 
 == 4. Full vs Incremental Checkpoints
-<full-vs-incremental-checkpoints>
+<4-full-vs-incremental-checkpoints>
 === 4.1 Full Checkpoints
 <full-checkpoints>
 A full checkpoint stores the complete agent state.
@@ -269,7 +269,7 @@ The system automatically decides checkpoint type based on:
 #line(length: 100%)
 
 == 5. Recovery Mechanism
-<recovery-mechanism>
+<5-recovery-mechanism>
 === 5.1 Recovery Flow
 <recovery-flow>
 + Crash Detected
@@ -335,7 +335,7 @@ needed - Gradual warm-up - Error investigation
 #line(length: 100%)
 
 == 6. Test Results
-<test-results>
+<6-test-results>
 === 6.1 Test Summary
 <test-summary>
 - Test Suites: 3 passed, 3 total
@@ -405,7 +405,7 @@ Retry Logic: 2 tests - Multi-attempt recovery - Incremental Resolution:
 #line(length: 100%)
 
 == 7. Conclusions
-<conclusions>
+<7-conclusions>
 === 7.1 Achievements
 <achievements>
 This project successfully demonstrates:

@@ -1,3 +1,9 @@
+import {
+  DEFAULT_ESTIMATED_SERVICE_TIME_MS,
+  DEFAULT_JOB_ATTEMPTS,
+  DEFAULT_BACKOFF_DELAY_MS,
+} from '../config/constants.js';
+
 /**
  * WFQ (Weighted Fair Queuing) Scheduler
  *
@@ -82,10 +88,10 @@ export class WFQScheduler implements IScheduler {
     this.queue = new Queue(this.config.name, {
       connection: bullmqConnection,
       defaultJobOptions: {
-        attempts: 3,
+        attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
           type: 'exponential',
-          delay: 1000,
+          delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
     });

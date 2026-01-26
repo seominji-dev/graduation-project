@@ -22,7 +22,7 @@ their implementation details.
 #line(length: 100%)
 
 == 1. OS Memory Management Fundamentals
-<os-memory-management-fundamentals>
+<1-os-memory-management-fundamentals>
 === 1.1 The Memory Hierarchy Problem
 <the-memory-hierarchy-problem>
 Modern computer systems face a fundamental challenge: fast memory is
@@ -87,7 +87,7 @@ AI agents face the same challenge with context management:
 #line(length: 100%)
 
 == 2. Paging and Virtual Memory
-<paging-and-virtual-memory>
+<2-paging-and-virtual-memory>
 === 2.1 Virtual Memory Concept
 <virtual-memory-concept>
 In traditional OS, #strong[virtual memory] allows processes to use more
@@ -184,7 +184,7 @@ A #strong[page fault] occurs when requested data is not in the cache:
 #line(length: 100%)
 
 == 3. LRU Cache Algorithm Analysis
-<lru-cache-algorithm-analysis>
+<3-lru-cache-algorithm-analysis>
 === 3.1 Algorithm Overview
 <algorithm-overview>
 #strong[LRU (Least Recently Used)] is a page replacement algorithm that
@@ -248,7 +248,7 @@ front - #strong[PUT]: HashMap insert + add to front + evict tail if full
 #line(length: 100%)
 
 == 4. Redis Layer Deep Dive
-<redis-layer-deep-dive>
+<4-redis-layer-deep-dive>
 === 4.1 Why Redis for L1?
 <why-redis-for-l1>
 #figure(
@@ -299,7 +299,7 @@ memory:agent:{agentId}:pages -> Set of page keys for agent
 #line(length: 100%)
 
 == 5. ChromaDB Vector Search Implementation
-<chromadb-vector-search-implementation>
+<5-chromadb-vector-search-implementation>
 === 5.1 Vector Database Concepts
 <vector-database-concepts>
 #strong[Vector Embedding]: Numerical representation of text that
@@ -356,7 +356,7 @@ Layer 0:  A-C-E-B-F-D-G-H
 #line(length: 100%)
 
 == 6. MongoDB Persistent Storage
-<mongodb-persistent-storage>
+<6-mongodb-persistent-storage>
 === 6.1 Why MongoDB for L3?
 <why-mongodb-for-l3>
 #figure(
@@ -400,7 +400,7 @@ MemoryPageSchema.index({ agentId: 1, lastAccessedAt: -1 });
 #line(length: 100%)
 
 == 7. Vector Embedding Implementation
-<vector-embedding-implementation>
+<7-vector-embedding-implementation>
 === 7.1 Embedding Fundamentals
 <embedding-fundamentals>
 #strong[What are embeddings?] - Dense vector representations of text -
@@ -436,7 +436,7 @@ calculateSimilarity(vec1: number[], vec2: number[]): number {
 #line(length: 100%)
 
 == 8. System Integration
-<system-integration>
+<8-system-integration>
 === 8.1 Initialization Flow
 <initialization-flow>
 ```typescript

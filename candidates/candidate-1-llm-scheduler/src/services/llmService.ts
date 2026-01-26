@@ -1,3 +1,10 @@
+import {
+  DEFAULT_LLM_TEMPERATURE,
+  DEFAULT_LLM_MAX_TOKENS,
+  DEFAULT_OLLAMA_MODEL,
+  DEFAULT_OPENAI_MODEL,
+} from '../config/constants.js';
+
 /**
  * LLM Service
  * Handles communication with LLM providers (Ollama, OpenAI)
@@ -87,8 +94,8 @@ export class LLMService {
             content: prompt,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
+        temperature: DEFAULT_LLM_TEMPERATURE,
+        max_tokens: DEFAULT_LLM_MAX_TOKENS,
       });
 
       return response.choices[0]?.message?.content || '';

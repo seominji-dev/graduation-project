@@ -20,7 +20,7 @@ A Beginner-Friendly Introduction to Checkpointing Concepts
 #line(length: 100%)
 
 == 1. Introduction: Why Checkpointing?
-<introduction-why-checkpointing>
+<1-introduction-why-checkpointing>
 === 1.1 The Problem: Lost Progress
 <the-problem-lost-progress>
 Imagine you are writing a long essay on your computer. You have been
@@ -73,7 +73,7 @@ resume and continue!
 #line(length: 100%)
 
 == 2. OS Checkpointing Concepts
-<os-checkpointing-concepts>
+<2-os-checkpointing-concepts>
 === 2.1 What is a Process?
 <what-is-a-process>
 In an operating system, a #strong[process] is a running program. It has:
@@ -133,7 +133,7 @@ scientific computations - Fault tolerance in clusters
 #line(length: 100%)
 
 == 3. AI Agent State Management
-<ai-agent-state-management>
+<3-ai-agent-state-management>
 === 3.1 What is Agent State?
 <what-is-agent-state>
 An AI agent's state includes everything it needs to continue working:
@@ -237,7 +237,7 @@ Loading state is the reverse process:
 #line(length: 100%)
 
 == 4. Hands-On Examples
-<hands-on-examples>
+<4-hands-on-examples>
 === 4.1 Example: Basic Checkpoint Creation
 <example-basic-checkpoint-creation>
 Let us trace through creating a checkpoint step by step:
@@ -333,7 +333,7 @@ Final state matches what we had before crash: { a: 1, b: 2, c: 4, d: 5 }
 #line(length: 100%)
 
 == 5. Practice Exercises
-<practice-exercises>
+<5-practice-exercises>
 === Exercise 1: Understanding State (Beginner)
 <exercise-1-understanding-state-beginner>
 #strong[Question:] Given this agent state, what would be included in a

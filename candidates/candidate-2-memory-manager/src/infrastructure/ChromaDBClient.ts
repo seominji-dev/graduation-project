@@ -1,3 +1,9 @@
+import {
+  DEFAULT_CHROMA_PORT,
+  DEFAULT_CHROMA_COLLECTION,
+  DEFAULT_SEMANTIC_SEARCH_TOP_K,
+} from '../config/constants.js';
+
 /**
  * ChromaDB Client for L2 Vector Storage
  * Provides semantic search capabilities for agent context
@@ -41,9 +47,9 @@ export class ChromaDBVectorStore {
   private embeddingFunction: IEmbeddingFunction;
 
   constructor(config: ChromaDBConfig = {}) {
-    const host = config.host ? `${config.host}:${config.port || 8000}` : undefined;
+    const host = config.host ? `${config.host}:${config.port || DEFAULT_CHROMA_PORT}` : undefined;
     this.client = new ChromaClient({ path: host });
-    this.collectionName = config.collectionName || 'agent_contexts';
+    this.collectionName = config.collectionName || DEFAULT_CHROMA_COLLECTION;
     this.embeddingFunction = new ExternalEmbeddingFunction();
   }
 
@@ -142,7 +148,7 @@ export class ChromaDBVectorStore {
   async semanticSearch(
     agentId: string,
     queryEmbedding: number[],
-    topK: number = 5,
+    topK: number = DEFAULT_SEMANTIC_SEARCH_TOP_K,
   ): Promise<Array<{ page: MemoryPage; similarity: number }>> {
     if (!this.initialized || !this.collection) {
       throw new Error('ChromaDB not initialized');

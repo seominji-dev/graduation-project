@@ -24,7 +24,7 @@ tests passing) #strong[TRUST 5 Score:] 90/100
 #line(length: 100%)
 
 == 1. Project Overview
-<project-overview>
+<1-project-overview>
 === 1.1 Background
 <background>
 Modern AI agents require efficient context management to maintain
@@ -87,7 +87,7 @@ to solve this problem:
 #line(length: 100%)
 
 == 2. Three-Tier Memory Architecture
-<three-tier-memory-architecture>
+<2-three-tier-memory-architecture>
 === 2.1 Architecture Overview
 <architecture-overview>
 ```
@@ -218,7 +218,7 @@ data. Serves as the source of truth and backup for cache failures.
 #line(length: 100%)
 
 == 3. Implementation Details
-<implementation-details>
+<3-implementation-details>
 === 3.1 Domain Models
 <domain-models>
 All domain models are defined with Zod schemas for runtime validation:
@@ -338,7 +338,7 @@ future access
 #line(length: 100%)
 
 == 4. Test Results
-<test-results>
+<4-test-results>
 === 4.1 Test Summary
 <test-summary>
 #figure(
@@ -399,7 +399,7 @@ managers      |   93.65 |    79.31 |     100 |   93.65 |
 #line(length: 100%)
 
 == 5. Performance Analysis
-<performance-analysis>
+<5-performance-analysis>
 === 5.1 Expected Access Times
 <expected-access-times>
 #figure(
@@ -458,7 +458,7 @@ managers      |   93.65 |    79.31 |     100 |   93.65 |
 #line(length: 100%)
 
 == 6. Conclusions
-<conclusions>
+<6-conclusions>
 === 6.1 Achievements
 <achievements>
 + #strong[OS Concepts Successfully Applied]: The three-tier hierarchy

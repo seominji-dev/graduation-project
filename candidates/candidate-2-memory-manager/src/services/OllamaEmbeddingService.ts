@@ -1,3 +1,8 @@
+import {
+  DEFAULT_OLLAMA_BASE_URL,
+  DEFAULT_EMBEDDING_MODEL,
+} from '../config/constants.js';
+
 /**
  * Ollama Embedding Service
  * Generates vector embeddings for semantic search
@@ -21,8 +26,8 @@ export class OllamaEmbeddingService {
   private initialized: boolean = false;
 
   constructor(config: EmbeddingConfig = {}) {
-    this.ollama = new OllamaClass({ host: config.baseUrl || 'http://localhost:11434' });
-    this.model = config.model || 'nomic-embed-text';
+    this.ollama = new OllamaClass({ host: config.baseUrl || DEFAULT_OLLAMA_BASE_URL });
+    this.model = config.model || DEFAULT_EMBEDDING_MODEL;
   }
 
   /**

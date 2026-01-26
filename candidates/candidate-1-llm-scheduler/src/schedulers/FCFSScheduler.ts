@@ -1,3 +1,9 @@
+import {
+  DEFAULT_JOB_ATTEMPTS,
+  DEFAULT_BACKOFF_DELAY_MS,
+  DEFAULT_JOB_WEIGHT,
+} from '../config/constants.js';
+
 /**
  * FCFS (First-Come, First-Served) Scheduler
  * 
@@ -57,10 +63,10 @@ export class FCFSScheduler implements IScheduler {
     this.queue = new Queue(this.config.name, {
       connection: bullmqConnection,
       defaultJobOptions: {
-        attempts: 3,
+        attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
           type: 'exponential',
-          delay: 1000,
+          delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
     });
@@ -110,7 +116,7 @@ export class FCFSScheduler implements IScheduler {
     // Create queue job data
     const jobData: QueueJob = {
         tenantId: 'default',
-        weight: 10,
+        weight: DEFAULT_JOB_WEIGHT,
       requestId: request.id,
       prompt: request.prompt,
       provider: request.provider,

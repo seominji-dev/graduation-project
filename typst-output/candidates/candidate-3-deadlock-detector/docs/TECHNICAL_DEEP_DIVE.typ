@@ -16,7 +16,7 @@
 #line(length: 100%)
 
 == 1. 데드락 개념 및 조건
-<데드락-개념-및-조건>
+<1-데드락-개념-및-조건>
 === 1.1 데드락의 정의
 <데드락의-정의>
 데드락(Deadlock)은 두 개 이상의 프로세스(또는 에이전트)가 서로가 가진
@@ -115,7 +115,7 @@ Agent-3 → (waits for) → Resource-C → (held by) → Agent-1
 #line(length: 100%)
 
 == 2. DFS 기반 사이클 탐지 알고리즘
-<dfs-기반-사이클-탐지-알고리즘>
+<2-dfs-기반-사이클-탐지-알고리즘>
 === 2.1 알고리즘 개요
 <알고리즘-개요>
 Wait-For Graph에서 사이클을 탐지하기 위해 깊이 우선 탐색(DFS)을
@@ -309,7 +309,7 @@ class GraphBasedCycleDetector {
 #line(length: 100%)
 
 == 3. 희생자 선택 전략 심층 비교
-<희생자-선택-전략-심층-비교>
+<3-희생자-선택-전략-심층-비교>
 === 3.1 전략별 알고리즘 분석
 <전략별-알고리즘-분석>
 ==== Lowest Priority First
@@ -459,7 +459,7 @@ class CompositeVictimSelector {
 #line(length: 100%)
 
 == 4. 롤백 메커니즘
-<롤백-메커니즘>
+<4-롤백-메커니즘>
 === 4.1 체크포인트 아키텍처
 <체크포인트-아키텍처>
 ```mermaid
@@ -587,7 +587,7 @@ public rollback(
 #line(length: 100%)
 
 == 5. 예방 vs 탐지 비교
-<예방-vs-탐지-비교>
+<5-예방-vs-탐지-비교>
 === 5.1 데드락 예방 (Prevention)
 <데드락-예방-prevention>
 4가지 Coffman 조건 중 하나를 제거하여 데드락 자체가 발생하지 않도록

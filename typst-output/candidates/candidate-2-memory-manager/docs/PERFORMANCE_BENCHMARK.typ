@@ -25,7 +25,7 @@ Hit rates above 80% achievable with proper cache sizing
 #line(length: 100%)
 
 == 1. Benchmark Methodology
-<benchmark-methodology>
+<1-benchmark-methodology>
 === 1.1 Test Environment
 <test-environment>
 #figure(
@@ -74,7 +74,7 @@ Hit rates above 80% achievable with proper cache sizing
 #line(length: 100%)
 
 == 2. Layer-by-Layer Latency Analysis
-<layer-by-layer-latency-analysis>
+<2-layer-by-layer-latency-analysis>
 === 2.1 L1 In-Memory Cache Performance
 <l1-in-memory-cache-performance>
 #strong[Test:] 10,000 GET operations on cached keys
@@ -210,7 +210,7 @@ pooling reduces overhead
 #line(length: 100%)
 
 == 3. Cache Hit Rate Analysis
-<cache-hit-rate-analysis>
+<3-cache-hit-rate-analysis>
 === 3.1 Hit Rate by Access Pattern
 <hit-rate-by-access-pattern>
 #figure(
@@ -286,7 +286,7 @@ workloads.
 #line(length: 100%)
 
 == 4. Memory Usage Analysis
-<memory-usage-analysis>
+<4-memory-usage-analysis>
 === 4.1 L1 In-Memory Cache
 <l1-in-memory-cache>
 #strong[Memory per page entry:]
@@ -372,7 +372,7 @@ L1 Memory = L1_CACHE_SIZE * (1.3KB + avg_page_size)
 #line(length: 100%)
 
 == 5. Scalability Testing
-<scalability-testing>
+<5-scalability-testing>
 === 5.1 Concurrent Client Performance
 <concurrent-client-performance>
 #strong[Test:] Fixed workload with varying client count
@@ -437,7 +437,7 @@ logarithmically (HNSW algorithm)
 #line(length: 100%)
 
 == 6. Optimization Recommendations
-<optimization-recommendations>
+<6-optimization-recommendations>
 === 6.1 Cache Size Tuning
 <cache-size-tuning>
 #strong[Rule of Thumb:]

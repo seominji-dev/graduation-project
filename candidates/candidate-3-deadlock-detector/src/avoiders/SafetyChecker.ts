@@ -1,3 +1,8 @@
+import {
+  DEFAULT_RESOURCE_REQUEST_COUNT,
+  DEFAULT_MAX_DEMAND_OFFSET,
+} from '../config/constants.js';
+
 /**
  * Safety Checker for Banker's Algorithm
  * 
@@ -125,7 +130,7 @@ export class SafetyChecker {
       for (const resourceId of agent.heldResources) {
         agentAlloc.set(resourceId, 1);
         // Assume maximum demand is current + 1 (simplified)
-        agentMax.set(resourceId, 2);
+        agentMax.set(resourceId, DEFAULT_MAX_DEMAND_OFFSET);
       }
       
       // If agent is waiting for a resource, add to maximum demand
@@ -252,7 +257,7 @@ export class SafetyChecker {
   public createRequest(
     agentId: string,
     resourceId: string,
-    count: number = 1,
+    count: number = DEFAULT_RESOURCE_REQUEST_COUNT,
   ): ResourceRequest {
     return {
       agentId,

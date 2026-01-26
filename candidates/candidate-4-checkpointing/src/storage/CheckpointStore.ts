@@ -1,3 +1,9 @@
+import {
+  MAX_CHECKPOINT_SAVE_RETRIES,
+  EXPONENTIAL_BACKOFF_BASE_MS,
+  DEFAULT_CHECKPOINT_QUERY_LIMIT,
+} from '../config/constants.js';
+
 /**
  * Checkpoint Store
  * Handles persistence of checkpoints to MongoDB
@@ -24,7 +30,7 @@ export class CheckpointStore {
    * Save checkpoint to database (with retry for REQ-CHECK-043)
    */
   async save(checkpoint: Checkpoint): Promise<StoreResult> {
-    const maxRetries = 3;
+    const maxRetries = MAX_CHECKPOINT_SAVE_RETRIES;
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -44,7 +50,7 @@ export class CheckpointStore {
 
         if (attempt < maxRetries) {
           // Exponential backoff
-          await this.delay(Math.pow(2, attempt) * 100);
+          await this.delay(Math.pow(2, attempt) * EXPONENTIAL_BACKOFF_BASE_MS);
         }
       }
     }
@@ -92,7 +98,7 @@ export class CheckpointStore {
    */
   async findByAgentId(
     agentId: string,
-    limit: number = 10
+    limit: number = DEFAULT_CHECKPOINT_QUERY_LIMIT
   ): Promise<Checkpoint[]> {
     try {
       const docs = await CheckpointModel

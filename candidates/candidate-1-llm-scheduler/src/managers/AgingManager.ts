@@ -1,3 +1,9 @@
+import {
+  AGING_INTERVAL_MS,
+  AGING_THRESHOLD_MS,
+  MAX_AGE_PROMOTIONS,
+} from '../config/constants.js';
+
 /**
  * Aging Manager
  * 
@@ -15,9 +21,6 @@ const logger = createLogger('AgingManager');
 /**
  * Aging configuration
  */
-const AGING_INTERVAL_MS = 60000; // 60 seconds
-const AGING_THRESHOLD_MS = 120000; // 2 minutes - start aging after this wait time
-const MAX_AGE_PROMOTIONS = 2; // Maximum number of priority promotions
 
 /**
  * Interface for PriorityScheduler to allow AgingManager to update job priorities

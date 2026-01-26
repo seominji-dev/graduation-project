@@ -1,3 +1,8 @@
+import {
+  DEFAULT_CHECKPOINT_INTERVAL_MS,
+  IMPORTANT_TASK_INTERVAL_DIVISOR,
+} from '../config/constants.js';
+
 /**
  * Periodic Checkpoint Manager
  * Manages automatic periodic checkpoint creation (REQ-CHECK-033 through REQ-CHECK-039)
@@ -41,7 +46,7 @@ export class PeriodicCheckpointManager {
     this.globalTimer = null;
 
     this.config = {
-      intervalMs: config.intervalMs || 30000, // 30 seconds default
+      intervalMs: config.intervalMs || DEFAULT_CHECKPOINT_INTERVAL_MS, // 30 seconds default
       idleCheckpointsEnabled: config.idleCheckpointsEnabled ?? true,
       adaptiveInterval: config.adaptiveInterval ?? false,
     };
@@ -276,7 +281,7 @@ export class PeriodicCheckpointManager {
     if (tracker.intervalOverride !== null) {
       interval = tracker.intervalOverride;
     } else if (this.config.adaptiveInterval && tracker.isImportantTask) {
-      interval = interval / 2;
+      interval = interval / IMPORTANT_TASK_INTERVAL_DIVISOR;
     }
 
     const timer = setInterval(async () => {

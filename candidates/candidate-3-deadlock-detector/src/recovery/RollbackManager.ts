@@ -1,3 +1,5 @@
+import { DEFAULT_MAX_CHECKPOINTS_PER_AGENT } from '../config/constants.js';
+
 /**
  * Rollback Manager for Deadlock Recovery
  */
@@ -35,7 +37,7 @@ export class RollbackManager {
   private currentSequence: Map<string, number>;
   private maxCheckpointsPerAgent: number;
 
-  constructor(maxCheckpointsPerAgent: number = 10) {
+  constructor(maxCheckpointsPerAgent: number = DEFAULT_MAX_CHECKPOINTS_PER_AGENT) {
     this.checkpoints = new Map();
     this.currentSequence = new Map();
     this.maxCheckpointsPerAgent = maxCheckpointsPerAgent;

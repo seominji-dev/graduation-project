@@ -1,3 +1,10 @@
+import {
+  DEFAULT_JOB_ATTEMPTS,
+  DEFAULT_BACKOFF_DELAY_MS,
+  DEFAULT_JOB_WEIGHT,
+  MAX_WAITING_JOBS_FETCH,
+} from '../config/constants.js';
+
 /**
  * Priority Scheduler (Non-Preemptive)
  *
@@ -62,10 +69,10 @@ export class PriorityScheduler implements IScheduler {
     this.queue = new Queue(this.config.name, {
       connection: bullmqConnection,
       defaultJobOptions: {
-        attempts: 3,
+        attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
           type: 'exponential',
-          delay: 1000,
+          delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
     });
@@ -119,7 +126,7 @@ export class PriorityScheduler implements IScheduler {
 
     const jobData: QueueJob = {
         tenantId: 'default',
-        weight: 10,
+        weight: DEFAULT_JOB_WEIGHT,
       requestId: request.id,
       prompt: request.prompt,
       provider: request.provider,
