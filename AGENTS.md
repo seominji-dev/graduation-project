@@ -32,33 +32,31 @@ Ollama (로컬 LLM) 또는 OpenAI API
 ## 프로젝트 구조
 
 ```
-src/
-├── schedulers/           # 스케줄링 알고리즘
-│   ├── types.ts          # 인터페이스 정의
-│   ├── FCFSScheduler.ts  # FCFS 구현
-│   ├── PriorityScheduler.ts # 우선순위 스케줄러
-│   ├── MLFQScheduler.ts  # MLFQ 구현
-│   └── WFQScheduler.ts   # WFQ 구현
-├── managers/             # 관리 컴포넌트
-│   ├── TenantRegistry.ts # 테넌트 관리
-│   ├── FairnessCalculator.ts # 공정성 계산
-│   ├── BoostManager.ts   # 동적 우선순위 조정
-│   ├── AgingManager.ts   # 기아 방지
-│   └── VirtualTimeTracker.ts # WFQ 가상 시간
-├── services/             # 비즈니스 로직
-│   ├── schedulerFactory.ts # 스케줄러 팩토리
-│   └── llmService.ts     # LLM 연동
-├── api/                  # REST API
-│   ├── routes/           # 라우트 정의
-│   └── controllers/      # 컨트롤러
-├── middlewares/          # Express 미들웨어
-├── infrastructure/       # Redis, MongoDB
-├── config/               # 환경 설정
-├── domain/               # 도메인 모델
-├── metrics/              # Prometheus 메트릭
-└── utils/                # 유틸리티
-
-tests/                    # Jest 테스트
+llm-scheduler/
+├── src/                      # 소스 코드
+│   ├── schedulers/           # 스케줄링 알고리즘
+│   ├── managers/             # 관리 컴포넌트
+│   ├── services/             # 비즈니스 로직
+│   ├── api/                  # REST API
+│   ├── middlewares/          # Express 미들웨어
+│   ├── infrastructure/       # Redis, MongoDB
+│   ├── config/               # 환경 설정
+│   ├── domain/               # 도메인 모델
+│   ├── metrics/              # Prometheus 메트릭
+│   └── utils/                # 유틸리티
+├── tests/                    # Jest 테스트
+├── shared/                   # 공유 라이브러리
+├── docs/                     # 프로젝트 문서
+├── archive/                  # 아카이브 (참조용)
+│   ├── graduation-docs/      # 졸업 프로젝트 문서
+│   ├── candidate-*/          # 다른 후보 프로젝트
+│   └── tools/                # 유틸리티 스크립트
+├── AGENTS.md                 # AI 에이전트 가이드 (이 파일)
+├── CLAUDE.md                 # Claude Code 설정
+├── README.md                 # 프로젝트 소개
+├── .cursorrules              # Cursor AI 규칙
+├── .clinerules               # Cline AI 규칙
+└── .windsurfrules            # Windsurf AI 규칙
 ```
 
 ## 주요 명령어
@@ -67,7 +65,7 @@ tests/                    # Jest 테스트
 npm install          # 의존성 설치
 npm run dev          # 개발 서버 실행
 npm run build        # TypeScript 빌드
-npm test             # 테스트 실행
+npm test             # 테스트 실행 (707개, 100% 통과)
 npm run lint         # ESLint 검사
 npm run format       # Prettier 포맷팅
 ```
@@ -79,7 +77,7 @@ npm run format       # Prettier 포맷팅
 - 클래스: `PascalCase`
 - 상수: `UPPER_SNAKE_CASE`
 - 파일: `PascalCase.ts`
-- 테스트: `*.spec.ts`
+- 테스트: `*.spec.ts` 또는 `*.test.ts`
 
 ### TypeScript
 - strict mode 필수
@@ -97,36 +95,27 @@ POST   /api/scheduler/algorithm # 스케줄러 변경
 GET    /api/tenants/:id       # 테넌트 정보
 ```
 
+## AI 에이전트 설정 파일
+
+| 파일 | 대상 AI | 설명 |
+|------|---------|------|
+| `CLAUDE.md` | Claude Code | MoAI-ADK 기반 상세 설정 |
+| `.cursorrules` | Cursor AI | 프로젝트 규칙 및 컨텍스트 |
+| `.clinerules` | Cline | VS Code 확장 설정 |
+| `.windsurfrules` | Windsurf | Windsurf AI 설정 |
+| `.github/copilot-instructions.md` | GitHub Copilot | Copilot 가이드라인 |
+
 ## 문서 작성 스타일
 
 ### 톤앤매너
-
 - 대학생 3학년 수준으로 작성
 - 자연스러운 한국어 사용
 - 적당히 학술적이되 읽기 편하게
-- 과도한 수식어 남발 금지
 
-### 체크리스트
-
-- [ ] 대학생이 쓴 것처럼 자연스러운가?
-- [ ] 기술 용어를 적절히 설명했는가?
-- [ ] 코드 변경 시 테스트를 업데이트했는가?
-- [ ] 97%+ 커버리지를 유지하는가?
-
-## 참고 자료
-
-| 문서 | 설명 |
-|------|------|
-| `README.md` | 프로젝트 소개 및 시작 가이드 |
-| `TODO.md` | 다음 단계 액션 아이템 |
-| `CHANGELOG.md` | 변경 내역 |
-| `docs/` | 양식, 이미지 등 |
-
-## 대상 독자
-
-- 졸업 프로젝트 준비하는 학생들
-- 지도교수님 (운영체제 전공)
-- 취업 준비용 포트폴리오
+### 품질 기준
+- 테스트 커버리지 97%+ 유지
+- 린트 에러 0개
+- 코드 변경 시 테스트 업데이트
 
 ---
 

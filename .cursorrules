@@ -12,24 +12,10 @@ You are an expert TypeScript developer working on an LLM Request Scheduler proje
 
 ```
 src/
-├── schedulers/           # Scheduling algorithms
-│   ├── types.ts          # Scheduler interfaces and types
-│   ├── FCFSScheduler.ts  # First-Come-First-Served
-│   ├── PriorityScheduler.ts # Priority-based scheduling
-│   ├── MLFQScheduler.ts  # Multi-Level Feedback Queue
-│   └── WFQScheduler.ts   # Weighted Fair Queuing
-├── managers/             # Management components
-│   ├── TenantRegistry.ts # Tenant (user) management
-│   ├── FairnessCalculator.ts # Fairness metrics calculation
-│   ├── BoostManager.ts   # Dynamic priority adjustment
-│   ├── AgingManager.ts   # Starvation prevention
-│   └── VirtualTimeTracker.ts # WFQ virtual time tracking
-├── services/             # Business logic
-│   ├── schedulerFactory.ts # Scheduler instantiation
-│   └── llmService.ts     # LLM provider integration
-├── api/                  # REST API layer
-│   ├── routes/           # Route definitions
-│   └── controllers/      # Request handlers
+├── schedulers/           # Scheduling algorithms (FCFS, Priority, MLFQ, WFQ)
+├── managers/             # Management components (Tenant, Fairness, Aging, Boost)
+├── services/             # Business logic (schedulerFactory, llmService)
+├── api/                  # REST API (routes, controllers)
 ├── middlewares/          # Express middlewares
 ├── infrastructure/       # External services (Redis, MongoDB)
 ├── config/               # Configuration management
@@ -38,6 +24,9 @@ src/
 └── utils/                # Utility functions
 
 tests/                    # Jest unit and integration tests
+shared/                   # Shared libraries (@shared/errors, @shared/logger)
+docs/                     # Project documentation
+archive/                  # Archived files (reference only)
 ```
 
 ## Coding Standards
@@ -46,12 +35,12 @@ tests/                    # Jest unit and integration tests
 - Use TypeScript strict mode
 - Functions/variables: camelCase (e.g., `processRequest`, `queueLength`)
 - Classes: PascalCase (e.g., `FCFSScheduler`, `TenantRegistry`)
-- Interfaces: Descriptive names or `I` prefix (e.g., `IScheduler`, `RequestPayload`)
+- Interfaces: Descriptive names (e.g., `IScheduler`, `RequestPayload`)
 - Constants: UPPER_SNAKE_CASE (e.g., `MAX_QUEUE_SIZE`, `DEFAULT_TIMEOUT`)
 - Enums: PascalCase with PascalCase members
 
 ### File Naming
-- Use kebab-case or PascalCase.ts format
+- Source files: PascalCase.ts (e.g., `MLFQScheduler.ts`)
 - Test files: `*.spec.ts` or `*.test.ts`
 - One primary export per file
 
@@ -66,7 +55,7 @@ tests/                    # Jest unit and integration tests
 ```bash
 npm run dev          # Development server with hot reload
 npm run build        # TypeScript compilation
-npm test             # Run tests with coverage
+npm test             # Run tests with coverage (707 tests)
 npm run lint         # ESLint check
 npm run format       # Prettier formatting
 ```
