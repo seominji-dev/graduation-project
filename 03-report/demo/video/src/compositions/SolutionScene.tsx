@@ -37,7 +37,7 @@ export const SolutionScene: React.FC = () => {
     },
   ];
 
-  const headerOpacity = interpolate(frame, [0, 15], [0, 1], {
+  const headerOpacity = interpolate(frame, [0, 0.5 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -103,13 +103,13 @@ export const SolutionScene: React.FC = () => {
         }}
       >
         {schedulers.map((scheduler, index) => {
-          // 타이밍 조정: 0.4x 스케일
-          const cardDelay = 24 + index * 24;
-          const cardOpacity = interpolate(frame, [cardDelay, cardDelay + 12], [0, 1], {
+          // fps 기반 타이밍
+          const cardDelay = Math.round(0.8 * fps) + index * Math.round(0.8 * fps);
+          const cardOpacity = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [0, 1], {
             extrapolateRight: 'clamp',
           });
           const cardX = index % 2 === 0 ? -50 : 50;
-          const cardTranslateX = interpolate(frame, [cardDelay, cardDelay + 12], [cardX, 0], {
+          const cardTranslateX = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [cardX, 0], {
             extrapolateRight: 'clamp',
           });
 
@@ -162,11 +162,11 @@ export const SolutionScene: React.FC = () => {
               {/* 기능 태그 */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {scheduler.features.map((feature, featureIndex) => {
-                  // 타이밍 조정: 0.4x 스케일
-                  const featureDelay = cardDelay + 16 + featureIndex * 6;
+                  // fps 기반 타이밍
+                  const featureDelay = cardDelay + Math.round(0.53 * fps) + featureIndex * Math.round(0.2 * fps);
                   const featureOpacity = interpolate(
                     frame,
-                    [featureDelay, featureDelay + 6],
+                    [featureDelay, featureDelay + Math.round(0.2 * fps)],
                     [0, 1],
                     { extrapolateRight: 'clamp' }
                   );
@@ -194,8 +194,8 @@ export const SolutionScene: React.FC = () => {
         })}
       </div>
 
-      {/* 하단 요약 - 타이밍 조정: 360 -> 144 */}
-      <Sequence from={144}>
+      {/* 하단 요약 - fps 기반 타이밍 (4.8초) */}
+      <Sequence from={Math.round(4.8 * fps)} premountFor={Math.round(0.5 * fps)}>
         <div
           style={{
             marginTop: '32px',

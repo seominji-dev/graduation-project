@@ -6,7 +6,7 @@ export const ProblemScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const headerOpacity = interpolate(frame, [0, 15], [0, 1], {
+  const headerOpacity = interpolate(frame, [0, 0.5 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -86,12 +86,12 @@ export const ProblemScene: React.FC = () => {
       {/* 문제 카드들 */}
       <div style={{ display: 'flex', gap: '24px' }}>
         {problems.map((problem, index) => {
-          // 타이밍 조정: 0.4x 스케일
-          const cardDelay = 24 + index * 18;
-          const cardOpacity = interpolate(frame, [cardDelay, cardDelay + 12], [0, 1], {
+          // fps 기반 타이밍
+          const cardDelay = Math.round(0.8 * fps) + index * Math.round(0.6 * fps);
+          const cardOpacity = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [0, 1], {
             extrapolateRight: 'clamp',
           });
-          const cardY = interpolate(frame, [cardDelay, cardDelay + 12], [40, 0], {
+          const cardY = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [40, 0], {
             extrapolateRight: 'clamp',
           });
           const cardScale = spring({
@@ -159,8 +159,8 @@ export const ProblemScene: React.FC = () => {
         })}
       </div>
 
-      {/* 하단 강조 텍스트 - 타이밍 조정: 240 -> 96 */}
-      <Sequence from={96}>
+      {/* 하단 강조 텍스트 - fps 기반 타이밍 (3.2초) */}
+      <Sequence from={Math.round(3.2 * fps)} premountFor={Math.round(0.5 * fps)}>
         <div
           style={{
             marginTop: '36px',

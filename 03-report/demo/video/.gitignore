@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build output
+out/
+dist/
+
+# Other AI agent directories (keep only .agents and .claude)
+.agent/
+.cline/
+.codex/
+.continue/
+.gemini/
+.opencode/
+.windsurf/

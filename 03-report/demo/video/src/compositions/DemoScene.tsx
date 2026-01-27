@@ -7,11 +7,11 @@ export const DemoScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const headerOpacity = interpolate(frame, [0, 15], [0, 1], {
+  const headerOpacity = interpolate(frame, [0, 0.5 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
-  // 터미널 명령어 시퀀스 - 타이밍 조정
+  // 터미널 명령어 시퀀스 - fps 기반 타이밍
   const terminalCommands = [
     {
       prompt: '$ ',
@@ -101,8 +101,8 @@ export const DemoScene: React.FC = () => {
 
       {/* 메인 컨텐츠 */}
       <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-        {/* 터미널 섹션 */}
-        <Sequence from={15}>
+        {/* 터미널 섹션 - 0.5초 후 */}
+        <Sequence from={Math.round(0.5 * fps)} premountFor={Math.round(0.5 * fps)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Step 1 설명 */}
             <div
@@ -125,8 +125,8 @@ export const DemoScene: React.FC = () => {
           </div>
         </Sequence>
 
-        {/* 응답 시각화 - 타이밍 조정: 300 -> 125 */}
-        <Sequence from={125}>
+        {/* 응답 시각화 - 4.17초 후 */}
+        <Sequence from={Math.round(4.17 * fps)} premountFor={Math.round(0.5 * fps)}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Step 2 설명 */}
             <div
@@ -165,21 +165,21 @@ export const DemoScene: React.FC = () => {
                 Response Details
               </h4>
 
-              {/* 메트릭스 - 타이밍 조정 */}
+              {/* 메트릭스 - fps 기반 타이밍 */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <MetricRow label="Request ID" value="req_001" color="#6366f1" frame={frame} delay={137} />
-                <MetricRow label="Scheduler" value="MLFQ" color="#06b6d4" frame={frame} delay={150} />
-                <MetricRow label="Wait Time" value="12ms" color="#10b981" frame={frame} delay={162} />
-                <MetricRow label="Processing" value="234ms" color="#f59e0b" frame={frame} delay={175} />
-                <MetricRow label="Status" value="Completed" color="#22c55e" frame={frame} delay={187} />
+                <MetricRow label="Request ID" value="req_001" color="#6366f1" frame={frame} delay={Math.round(4.57 * fps)} fps={fps} />
+                <MetricRow label="Scheduler" value="MLFQ" color="#06b6d4" frame={frame} delay={Math.round(5 * fps)} fps={fps} />
+                <MetricRow label="Wait Time" value="12ms" color="#10b981" frame={frame} delay={Math.round(5.4 * fps)} fps={fps} />
+                <MetricRow label="Processing" value="234ms" color="#f59e0b" frame={frame} delay={Math.round(5.83 * fps)} fps={fps} />
+                <MetricRow label="Status" value="Completed" color="#22c55e" frame={frame} delay={Math.round(6.23 * fps)} fps={fps} />
               </div>
             </div>
           </div>
         </Sequence>
       </div>
 
-      {/* 하단 스케줄러 상태 - 타이밍 조정: 500 -> 208 */}
-      <Sequence from={208}>
+      {/* 하단 스케줄러 상태 - 6.93초 후 */}
+      <Sequence from={Math.round(6.93 * fps)} premountFor={Math.round(0.5 * fps)}>
         <div
           style={{
             marginTop: '36px',
@@ -187,10 +187,10 @@ export const DemoScene: React.FC = () => {
             gap: '24px',
           }}
         >
-          <SchedulerStatus name="FCFS" requests={45} color="#3b82f6" frame={frame} delay={208} />
-          <SchedulerStatus name="Priority" requests={128} color="#8b5cf6" frame={frame} delay={220} />
-          <SchedulerStatus name="MLFQ" requests={312} color="#06b6d4" frame={frame} delay={233} />
-          <SchedulerStatus name="WFQ" requests={89} color="#10b981" frame={frame} delay={245} />
+          <SchedulerStatus name="FCFS" requests={45} color="#3b82f6" frame={frame} delay={Math.round(6.93 * fps)} fps={fps} />
+          <SchedulerStatus name="Priority" requests={128} color="#8b5cf6" frame={frame} delay={Math.round(7.33 * fps)} fps={fps} />
+          <SchedulerStatus name="MLFQ" requests={312} color="#06b6d4" frame={frame} delay={Math.round(7.77 * fps)} fps={fps} />
+          <SchedulerStatus name="WFQ" requests={89} color="#10b981" frame={frame} delay={Math.round(8.17 * fps)} fps={fps} />
         </div>
       </Sequence>
     </div>
@@ -204,8 +204,9 @@ const MetricRow: React.FC<{
   color: string;
   frame: number;
   delay: number;
-}> = ({ label, value, color, frame, delay }) => {
-  const opacity = interpolate(frame, [delay, delay + 10], [0, 1], {
+  fps: number;
+}> = ({ label, value, color, frame, delay, fps }) => {
+  const opacity = interpolate(frame, [delay, delay + Math.round(0.33 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -234,11 +235,12 @@ const SchedulerStatus: React.FC<{
   color: string;
   frame: number;
   delay: number;
-}> = ({ name, requests, color, frame, delay }) => {
-  const opacity = interpolate(frame, [delay, delay + 10], [0, 1], {
+  fps: number;
+}> = ({ name, requests, color, frame, delay, fps }) => {
+  const opacity = interpolate(frame, [delay, delay + Math.round(0.33 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
-  const scale = interpolate(frame, [delay, delay + 10], [0.8, 1], {
+  const scale = interpolate(frame, [delay, delay + Math.round(0.33 * fps)], [0.8, 1], {
     extrapolateRight: 'clamp',
   });
 

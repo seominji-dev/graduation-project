@@ -6,31 +6,31 @@ export const TitleScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 애니메이션 값들 (타이밍 조정: 0.533x 스케일)
-  const titleOpacity = interpolate(frame, [0, 16], [0, 1], {
+  // 애니메이션 값들 (fps 기반 타이밍)
+  const titleOpacity = interpolate(frame, [0, Math.round(0.53 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
-  const titleY = interpolate(frame, [0, 16], [50, 0], {
+  const titleY = interpolate(frame, [0, Math.round(0.53 * fps)], [50, 0], {
     extrapolateRight: 'clamp',
   });
 
-  const subtitleOpacity = interpolate(frame, [16, 32], [0, 1], {
+  const subtitleOpacity = interpolate(frame, [Math.round(0.53 * fps), Math.round(1.07 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
-  const universityOpacity = interpolate(frame, [32, 48], [0, 1], {
+  const universityOpacity = interpolate(frame, [Math.round(1.07 * fps), Math.round(1.6 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
   const yearScale = spring({
-    frame: frame - 48,
+    frame: frame - Math.round(1.6 * fps),
     fps,
     config: { damping: 12 },
   });
 
   // 배경 그라데이션 애니메이션
-  const gradientAngle = interpolate(frame, [0, 240], [135, 180], {
+  const gradientAngle = interpolate(frame, [0, 8 * fps], [135, 180], {
     extrapolateRight: 'clamp',
   });
 

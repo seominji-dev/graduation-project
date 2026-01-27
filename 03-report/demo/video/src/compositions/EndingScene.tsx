@@ -6,8 +6,8 @@ export const EndingScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // 타이밍 조정: 0.533x 스케일
-  const mainOpacity = interpolate(frame, [0, 16], [0, 1], {
+  // fps 기반 타이밍
+  const mainOpacity = interpolate(frame, [0, Math.round(0.53 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -17,11 +17,11 @@ export const EndingScene: React.FC = () => {
     config: { damping: 12 },
   });
 
-  const githubOpacity = interpolate(frame, [32, 48], [0, 1], {
+  const githubOpacity = interpolate(frame, [Math.round(1.07 * fps), Math.round(1.6 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
-  const thanksOpacity = interpolate(frame, [64, 80], [0, 1], {
+  const thanksOpacity = interpolate(frame, [Math.round(2.13 * fps), Math.round(2.67 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -52,7 +52,7 @@ export const EndingScene: React.FC = () => {
       {particlePositions.map((particle, i) => {
         const particleOpacity = interpolate(
           frame,
-          [particle.delay, particle.delay + 16],
+          [particle.delay, particle.delay + Math.round(0.53 * fps)],
           [0, 0.3],
           { extrapolateRight: 'clamp' }
         );

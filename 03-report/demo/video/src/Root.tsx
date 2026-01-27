@@ -31,6 +31,9 @@ const DEMO_START = SOLUTION_START + SOLUTION_FRAMES;
 const RESULTS_START = DEMO_START + DEMO_FRAMES;
 const ENDING_START = RESULTS_START + RESULTS_FRAMES;
 
+// Premount 설정 (0.5초 premount for smooth transitions)
+const PREMOUNT_FRAMES = Math.round(0.5 * FPS);
+
 // 전체 데모 비디오 컴포넌트
 const DemoVideo: React.FC = () => {
   return (
@@ -41,27 +44,27 @@ const DemoVideo: React.FC = () => {
       </Sequence>
 
       {/* Scene 2: 문제 제기 (0:08-0:20) */}
-      <Sequence from={PROBLEM_START} durationInFrames={PROBLEM_FRAMES}>
+      <Sequence from={PROBLEM_START} durationInFrames={PROBLEM_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <ProblemScene />
       </Sequence>
 
       {/* Scene 3: 해결책 (0:20-0:38) */}
-      <Sequence from={SOLUTION_START} durationInFrames={SOLUTION_FRAMES}>
+      <Sequence from={SOLUTION_START} durationInFrames={SOLUTION_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <SolutionScene />
       </Sequence>
 
       {/* Scene 4: 데모 (0:38-1:03) */}
-      <Sequence from={DEMO_START} durationInFrames={DEMO_FRAMES}>
+      <Sequence from={DEMO_START} durationInFrames={DEMO_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <DemoScene />
       </Sequence>
 
       {/* Scene 5: 결과 (1:03-1:18) */}
-      <Sequence from={RESULTS_START} durationInFrames={RESULTS_FRAMES}>
+      <Sequence from={RESULTS_START} durationInFrames={RESULTS_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <ResultsScene />
       </Sequence>
 
       {/* Scene 6: 엔딩 (1:18-1:26) */}
-      <Sequence from={ENDING_START} durationInFrames={ENDING_FRAMES}>
+      <Sequence from={ENDING_START} durationInFrames={ENDING_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <EndingScene />
       </Sequence>
     </div>

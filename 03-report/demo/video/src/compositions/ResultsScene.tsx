@@ -7,7 +7,7 @@ export const ResultsScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const headerOpacity = interpolate(frame, [0, 15], [0, 1], {
+  const headerOpacity = interpolate(frame, [0, 0.5 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
 
@@ -63,10 +63,10 @@ export const ResultsScene: React.FC = () => {
         </p>
       </div>
 
-      {/* 메인 통계 - 타이밍 조정: 0.5x 스케일 */}
+      {/* 메인 통계 - fps 기반 타이밍 */}
       <div style={{ display: 'flex', gap: '60px', alignItems: 'center', marginBottom: '36px' }}>
-        {/* 테스트 통과 - 타이밍 조정: 30 -> 15 */}
-        <Sequence from={15}>
+        {/* 테스트 통과 - 0.5초 후 */}
+        <Sequence from={Math.round(0.5 * fps)} premountFor={Math.round(0.5 * fps)}>
           <div style={{ textAlign: 'center' }}>
             <CircularProgress
               value={100}
@@ -83,8 +83,8 @@ export const ResultsScene: React.FC = () => {
           </div>
         </Sequence>
 
-        {/* 코드 커버리지 - 타이밍 조정: 60 -> 30 */}
-        <Sequence from={30}>
+        {/* 코드 커버리지 - 1초 후 */}
+        <Sequence from={Math.round(1 * fps)} premountFor={Math.round(0.5 * fps)}>
           <div style={{ textAlign: 'center' }}>
             <CircularProgress
               value={96.27}
@@ -100,8 +100,8 @@ export const ResultsScene: React.FC = () => {
           </div>
         </Sequence>
 
-        {/* TRUST 5 점수 - 타이밍 조정: 90 -> 45 */}
-        <Sequence from={45}>
+        {/* TRUST 5 점수 - 1.5초 후 */}
+        <Sequence from={Math.round(1.5 * fps)} premountFor={Math.round(0.5 * fps)}>
           <div style={{ textAlign: 'center' }}>
             <CircularProgress
               value={88}
@@ -118,8 +118,8 @@ export const ResultsScene: React.FC = () => {
         </Sequence>
       </div>
 
-      {/* 상세 통계 카드 - 타이밍 조정: 150 -> 75 */}
-      <Sequence from={75}>
+      {/* 상세 통계 카드 - 2.5초 후 */}
+      <Sequence from={Math.round(2.5 * fps)} premountFor={Math.round(0.5 * fps)}>
         <div style={{ display: 'flex', gap: '24px' }}>
           <StatCardItem
             value="4"
@@ -127,7 +127,8 @@ export const ResultsScene: React.FC = () => {
             sublabel="FCFS, Priority, MLFQ, WFQ"
             color="#3b82f6"
             frame={frame}
-            delay={75}
+            delay={Math.round(2.5 * fps)}
+            fps={fps}
           />
           <StatCardItem
             value="< 50ms"
@@ -135,7 +136,8 @@ export const ResultsScene: React.FC = () => {
             sublabel="P99 latency"
             color="#8b5cf6"
             frame={frame}
-            delay={90}
+            delay={Math.round(3 * fps)}
+            fps={fps}
           />
           <StatCardItem
             value="156"
@@ -143,7 +145,8 @@ export const ResultsScene: React.FC = () => {
             sublabel="처리량"
             color="#06b6d4"
             frame={frame}
-            delay={105}
+            delay={Math.round(3.5 * fps)}
+            fps={fps}
           />
           <StatCardItem
             value="100%"
@@ -151,13 +154,14 @@ export const ResultsScene: React.FC = () => {
             sublabel="OpenAI Compatible"
             color="#10b981"
             frame={frame}
-            delay={120}
+            delay={Math.round(4 * fps)}
+            fps={fps}
           />
         </div>
       </Sequence>
 
-      {/* TRUST 5 배지 - 타이밍 조정: 300 -> 150 */}
-      <Sequence from={150}>
+      {/* TRUST 5 배지 - 5초 후 */}
+      <Sequence from={Math.round(5 * fps)} premountFor={Math.round(0.5 * fps)}>
         <div
           style={{
             marginTop: '36px',
@@ -170,11 +174,11 @@ export const ResultsScene: React.FC = () => {
             gap: '32px',
           }}
         >
-          <TrustBadge letter="T" label="Tested" color="#10b981" frame={frame} delay={165} />
-          <TrustBadge letter="R" label="Readable" color="#3b82f6" frame={frame} delay={180} />
-          <TrustBadge letter="U" label="Unified" color="#8b5cf6" frame={frame} delay={195} />
-          <TrustBadge letter="S" label="Secured" color="#ef4444" frame={frame} delay={210} />
-          <TrustBadge letter="T" label="Trackable" color="#f59e0b" frame={frame} delay={225} />
+          <TrustBadge letter="T" label="Tested" color="#10b981" frame={frame} delay={Math.round(5.5 * fps)} fps={fps} />
+          <TrustBadge letter="R" label="Readable" color="#3b82f6" frame={frame} delay={Math.round(6 * fps)} fps={fps} />
+          <TrustBadge letter="U" label="Unified" color="#8b5cf6" frame={frame} delay={Math.round(6.5 * fps)} fps={fps} />
+          <TrustBadge letter="S" label="Secured" color="#ef4444" frame={frame} delay={Math.round(7 * fps)} fps={fps} />
+          <TrustBadge letter="T" label="Trackable" color="#f59e0b" frame={frame} delay={Math.round(7.5 * fps)} fps={fps} />
         </div>
       </Sequence>
     </div>
@@ -189,11 +193,12 @@ const StatCardItem: React.FC<{
   color: string;
   frame: number;
   delay: number;
-}> = ({ value, label, sublabel, color, frame, delay }) => {
-  const opacity = interpolate(frame, [delay, delay + 15], [0, 1], {
+  fps: number;
+}> = ({ value, label, sublabel, color, frame, delay, fps }) => {
+  const opacity = interpolate(frame, [delay, delay + 0.5 * fps], [0, 1], {
     extrapolateRight: 'clamp',
   });
-  const translateY = interpolate(frame, [delay, delay + 15], [20, 0], {
+  const translateY = interpolate(frame, [delay, delay + 0.5 * fps], [20, 0], {
     extrapolateRight: 'clamp',
   });
 
@@ -224,11 +229,12 @@ const TrustBadge: React.FC<{
   color: string;
   frame: number;
   delay: number;
-}> = ({ letter, label, color, frame, delay }) => {
-  const opacity = interpolate(frame, [delay, delay + 10], [0, 1], {
+  fps: number;
+}> = ({ letter, label, color, frame, delay, fps }) => {
+  const opacity = interpolate(frame, [delay, delay + Math.round(0.33 * fps)], [0, 1], {
     extrapolateRight: 'clamp',
   });
-  const scale = interpolate(frame, [delay, delay + 10], [0.5, 1], {
+  const scale = interpolate(frame, [delay, delay + Math.round(0.33 * fps)], [0.5, 1], {
     extrapolateRight: 'clamp',
   });
 
