@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  },
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate-pptx.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

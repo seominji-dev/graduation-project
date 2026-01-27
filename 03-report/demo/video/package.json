@@ -1,0 +1,31 @@
+{
+  "name": "llm-scheduler-demo",
+  "version": "1.0.0",
+  "description": "LLM API 요청 최적화 스케줄러 데모 비디오 - 홍익대학교 졸업프로젝트 2025",
+  "scripts": {
+    "studio": "remotion studio",
+    "build": "remotion render src/index.ts DemoVideo out/demo.mp4",
+    "build:gif": "remotion render src/index.ts DemoVideo out/demo.gif --image-format png",
+    "preview": "remotion preview src/index.ts",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/player": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.3.0",
+    "prettier": "^3.2.0"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  }
+}
