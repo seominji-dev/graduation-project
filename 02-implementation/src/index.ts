@@ -12,9 +12,10 @@ import dotenv from 'dotenv';
 import { config } from './config';
 import { mongodbManager } from './infrastructure/mongodb';
 import { LLMService } from './services/llmService';
-import { SchedulerFactory } from './services/schedulerFactory';
-import { FCFSScheduler } from './schedulers/FCFSScheduler';
+import { SchedulerManager } from './services/schedulerManager';
+import { SchedulerType } from './schedulers/types';
 import { RequestController } from './api/controllers/requestController';
+import { SchedulerController } from './api/controllers/schedulerController';
 import { createRoutes } from './api/routes';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { correlationIdMiddleware } from './middlewares/correlationId';
@@ -60,8 +61,7 @@ class LLMSchedulerServer {
   private httpServer: ReturnType<typeof createServer>;
   private io: SocketIOServer;
   private llmService: LLMService;
-  private schedulerFactory: SchedulerFactory;
-  private scheduler: FCFSScheduler;
+  private schedulerManager: SchedulerManager;
 
   constructor() {
     this.app = express();
@@ -75,15 +75,17 @@ class LLMSchedulerServer {
     });
 
     this.llmService = new LLMService();
-    this.schedulerFactory = new SchedulerFactory(this.llmService);
-    
-    // Initialize FCFS scheduler as MVP (SPEC-SCHED-001)
-    this.scheduler = new FCFSScheduler(
+
+    // Initialize SchedulerManager with FCFS as default
+    this.schedulerManager = new SchedulerManager(
+      this.llmService,
+      SchedulerType.FCFS,
       {
-        name: 'fcfs-queue',
+        name: 'llm-scheduler-queue',
         concurrency: 2, // Process 2 requests concurrently
-      },
-      this.llmService
+        agingInterval: 10000, // 10 seconds for Priority scheduler
+        boostInterval: 30000, // 30 seconds for MLFQ scheduler
+      }
     );
 
     this.setupSecurityMiddleware();
@@ -172,8 +174,11 @@ class LLMSchedulerServer {
    * Setup routes
    */
   private setupRoutes(): void {
-    const requestController = new RequestController(this.scheduler);
-    const apiRoutes = createRoutes(requestController);
+    const requestController = new RequestController(
+      this.schedulerManager.getCurrentScheduler()
+    );
+    const schedulerController = new SchedulerController(this.schedulerManager);
+    const apiRoutes = createRoutes(requestController, schedulerController);
 
     // Prometheus metrics endpoint
     this.app.get('/metrics', (req, res) => { void metricsHandler(req, res); });
@@ -213,8 +218,8 @@ class LLMSchedulerServer {
       // Connect to MongoDB
       await mongodbManager.connect();
 
-      // Initialize scheduler
-      await this.scheduler.initialize();
+      // Initialize all schedulers
+      await this.schedulerManager.initialize();
 
       // Start HTTP server
       this.httpServer.listen(config.server.port, () => {
@@ -223,8 +228,10 @@ class LLMSchedulerServer {
         logger.info('='.repeat(50));
         logger.info('Environment: ' + config.server.nodeEnv);
         logger.info('Server running on: http://localhost:' + config.server.port);
-        logger.info('Scheduler type: FCFS (MVP)');
+        logger.info('Scheduler type: ' + this.schedulerManager.getCurrentType() + ' (default)');
+        logger.info('Available schedulers: FCFS, Priority, MLFQ, WFQ');
         logger.info('Health check: http://localhost:' + config.server.port + '/api/health');
+        logger.info('Switch scheduler: POST http://localhost:' + config.server.port + '/api/scheduler/switch');
         logger.info('Security: Helmet.js enabled with CSP');
         logger.info('CORS: Restricted to allowed origins');
         logger.info('Distributed Tracing: Correlation ID enabled');
@@ -247,8 +254,8 @@ class LLMSchedulerServer {
     logger.info('Shutting down gracefully...');
 
     try {
-      // Shutdown scheduler
-      await this.scheduler.shutdown();
+      // Shutdown all schedulers
+      await this.schedulerManager.shutdown();
 
       // Close MongoDB connection
       await mongodbManager.disconnect();

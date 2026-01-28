@@ -5,8 +5,12 @@
 
 import { Router } from 'express';
 import { RequestController } from '../controllers/requestController';
+import { SchedulerController } from '../controllers/schedulerController';
 
-export function createRoutes(requestController: RequestController): Router {
+export function createRoutes(
+  requestController: RequestController,
+  schedulerController: SchedulerController
+): Router {
   const router = Router();
 
   // Health check
@@ -29,9 +33,21 @@ export function createRoutes(requestController: RequestController): Router {
     void requestController.cancelRequest(req, res, next);
   });
 
-  // Scheduler routes
+  // Scheduler management routes
+  router.get('/scheduler/current', (req, res, next) => {
+    void schedulerController.getCurrentScheduler(req, res, next);
+  });
+  router.get('/scheduler/available', (req, res, next) => {
+    void schedulerController.getAvailableSchedulers(req, res, next);
+  });
+  router.post('/scheduler/switch', (req, res, next) => {
+    void schedulerController.switchScheduler(req, res, next);
+  });
   router.get('/scheduler/stats', (req, res, next) => {
-    void requestController.getSchedulerStats(req, res, next);
+    void schedulerController.getSchedulerStats(req, res, next);
+  });
+  router.get('/scheduler/stats/all', (req, res, next) => {
+    void schedulerController.getAllSchedulersStats(req, res, next);
   });
 
   return router;

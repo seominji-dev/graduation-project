@@ -96,6 +96,8 @@ export class MLFQScheduler implements IScheduler {
       name: config.name,
       defaultPriority: config.defaultPriority ?? RequestPriority.NORMAL,
       concurrency: config.concurrency ?? 1,
+      agingInterval: config.agingInterval ?? 10000,
+      boostInterval: config.boostInterval ?? 30000,
     };
     this.llmService = llmService;
   }
