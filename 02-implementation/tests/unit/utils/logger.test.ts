@@ -226,6 +226,82 @@ describe('Logger', () => {
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
   });
+
+  describe('child() method', () => {
+    it('should create child logger with extended prefix', () => {
+      const parentLogger = createLogger('Parent');
+      const childLogger = parentLogger.child('Child');
+
+      childLogger.info('Child message');
+
+      expect(consoleInfoSpy).toHaveBeenCalled();
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Parent'));
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Child'));
+    });
+
+    it('should create multiple levels of child loggers', () => {
+      const parentLogger = createLogger('Level1');
+      const childLogger = parentLogger.child('Level2');
+      const grandchildLogger = childLogger.child('Level3');
+
+      grandchildLogger.info('Nested message');
+
+      expect(consoleInfoSpy).toHaveBeenCalled();
+    });
+
+    it('should allow independent log level from parent', () => {
+      const parentLogger = createLogger('Parent');
+      parentLogger.setLevel(LogLevel.ERROR);
+
+      const childLogger = parentLogger.child('Child');
+      childLogger.setLevel(LogLevel.INFO);
+
+      childLogger.info('Should log in child');
+      expect(consoleInfoSpy).toHaveBeenCalled();
+
+      // Child can have different level than parent
+      expect(childLogger.getLevel()).toBe(LogLevel.INFO);
+    });
+  });
+
+  describe('getLevel() method', () => {
+    it('should return current log level', () => {
+      const testLogger = createLogger('GetLevelTest');
+
+      testLogger.setLevel(LogLevel.DEBUG);
+      expect(testLogger.getLevel()).toBe(LogLevel.DEBUG);
+
+      testLogger.setLevel(LogLevel.INFO);
+      expect(testLogger.getLevel()).toBe(LogLevel.INFO);
+
+      testLogger.setLevel(LogLevel.WARN);
+      expect(testLogger.getLevel()).toBe(LogLevel.WARN);
+
+      testLogger.setLevel(LogLevel.ERROR);
+      expect(testLogger.getLevel()).toBe(LogLevel.ERROR);
+    });
+
+    it('should return default log level if not set', () => {
+      const testLogger = createLogger('DefaultLevelTest');
+      const level = testLogger.getLevel();
+
+      expect(level).toBeDefined();
+      expect([LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR]).toContain(level);
+    });
+  });
+
+  describe('Correlation ID integration', () => {
+    it('should include correlation ID in log messages', () => {
+      // This test verifies that correlationId is included via getEnhancedMeta
+      const testLogger = createLogger('CorrelationTest');
+      testLogger.info('Test with correlation');
+
+      expect(consoleInfoSpy).toHaveBeenCalled();
+      // Correlation ID should be included in the metadata
+      const call = consoleInfoSpy.mock.calls[0][0];
+      expect(call).toContain('correlationId');
+    });
+  });
 });
 
 describe('Logger with Environment Variables', () => {
