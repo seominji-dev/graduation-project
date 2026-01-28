@@ -104,9 +104,9 @@ Phase 2 (구현) → Phase 3 (보고서) → Phase 1 (계획서) 보완
 ## 제출물
 
 - [x] 소스코드 (GitHub Repository)
-- [ ] 최종 논문 (PDF)
-- [ ] 발표자료 (PPT)
-- [ ] 데모 영상
+- [x] 최종 논문 (PDF) - 03-report/paper/final-report.pdf (154KB)
+- [x] 발표자료 (PPT) - 03-report/presentation/graduation-presentation.pptx (457KB)
+- [x] 데모 영상 - 03-report/demo/video/out/demo.mp4 (5.2MB)
 
 ---
 

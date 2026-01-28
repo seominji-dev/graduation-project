@@ -418,11 +418,11 @@ flowchart LR
 | 산출물 | 상태 | 위치 |
 |--------|------|------|
 | 소스코드 (GitHub Repository) | 완료 | 02-implementation/ |
-| 최종 논문 (final-report.md) | 완료 | 03-report/paper/ |
-| 발표자료 구조 (slides-outline.md) | 완료 | 03-report/slides/ |
+| 최종 논문 (final-report.pdf) | 완료 | 03-report/paper/ (154KB) |
+| 발표자료 (PPT) | 완료 | 03-report/presentation/graduation-presentation.pptx (457KB) |
+| 데모 영상 | 완료 | 03-report/demo/video/out/demo.mp4 (5.2MB) |
+| 발표자료 구조 (slides-outline.md) | 완료 | 03-report/presentation/ |
 | 데모 가이드 (demo-guide.md) | 완료 | 03-report/demo/ |
-| 발표자료 (PPT) | 예정 | - |
-| 데모 영상 | 예정 | - |
 
 ---
 
