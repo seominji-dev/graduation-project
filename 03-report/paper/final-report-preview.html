@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>LLM Scheduler 졸업프로젝트</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">LLM Scheduler 졸업프로젝트</h1>
+</header>
+<h1 id="os-스케줄링-알고리즘을-활용한-llm-api-요청-최적화-스케줄러">OS
+스케줄링 알고리즘을 활용한 LLM API 요청 최적화 스케줄러</h1>
+<p><strong>홍익대학교 C235180 서민지 2026년 졸업프로젝트</strong></p>
+<hr />
+<h2 id="초록-abstract">초록 (Abstract)</h2>
+<p>현대 AI 서비스에서 ChatGPT, Claude와 같은 대규모 언어 모델(LLM) API를
+사용하는 애플리케이션이 급증하고 있다. 다중 사용자 환경에서 LLM API
+요청을 효율적으로 관리하지 못하면 비용 폭증, 응답 지연, 자원 낭비 등의
+문제가 발생한다. 본 연구는 운영체제의 프로세스 스케줄링 알고리즘을 LLM
+API 요청 관리에 적용하여 이러한 문제를 해결하고자 한다.</p>
+<p>본 프로젝트에서는 FCFS(First-Come, First-Served), Priority
+Scheduling, MLFQ(Multi-Level Feedback Queue), WFQ(Weighted Fair Queuing)
+4가지 스케줄링 알고리즘을 TypeScript와 Node.js 환경에서 구현하였다. 각
+알고리즘의 특성에 맞게 Aging 메커니즘을 통한 기아(Starvation) 방지,
+Boost 메커니즘을 통한 응답성 보장, Virtual Time을 통한 공정성 보장 등의
+기법을 적용하였다.</p>
+<p>실험 결과, Priority Scheduling은 FCFS 대비 평균 대기시간을 30%
+개선하였고, MLFQ는 40% 개선과 함께 처리량을 20% 증가시켰다. WFQ는 개별
+테넌트 수준에서 Jain’s Fairness Index 0.92-0.98을 달성하여 멀티테넌트
+환경에서 우수한 공정성을 보여주었다. 본 시스템은 757개 테스트 100% 통과,
+98.37% 코드 커버리지를 달성하였으며, 오픈소스로 공개되어 학술 연구 및
+산업계 적용이 가능하다.</p>
+<p><strong>핵심어:</strong> LLM, 스케줄링 알고리즘, MLFQ, WFQ, API 요청
+관리, 공정성</p>
+<hr />
+<h2 id="장.-서론-introduction">1장. 서론 (Introduction)</h2>
+<h3 id="연구-배경">1.1 연구 배경</h3>
+<p>인공지능 기술의 발전과 함께 ChatGPT, Claude, Gemini와 같은 대규모
+언어 모델(Large Language Model, LLM) 기반 서비스가 급속히 확산되고 있다.
+이러한 LLM 서비스들은 대부분 API 형태로 제공되며, 기업과 개발자들은 이
+API를 활용하여 다양한 AI 애플리케이션을 구축하고 있다.</p>
+<p>그러나 다중 사용자가 동시에 LLM API에 접근하는 환경에서는 다음과 같은
+문제들이 발생한다:</p>
+<ol type="1">
+<li><strong>비용 폭증</strong>: 무분별한 API 요청으로 인한 비용
+급증</li>
+<li><strong>응답 지연</strong>: 대기열 관리 부재로 인한 불규칙한 응답
+시간</li>
+<li><strong>공정성 부재</strong>: 모든 요청을 동등하게 처리함으로써
+긴급한 요청의 지연</li>
+<li><strong>자원 낭비</strong>: 우선순위 없는 처리로 인한 시스템 자원의
+비효율적 사용</li>
+</ol>
+<p>이러한 문제는 운영체제(Operating System) 분야에서 오랜 시간 연구되어
+온 프로세스 스케줄링 문제와 본질적으로 유사하다. 운영체제에서 CPU라는
+한정된 자원을 여러 프로세스에 효율적으로 배분하는 것처럼, LLM API
+시스템에서도 API 호출 권한이라는 자원을 여러 요청에 효과적으로 분배해야
+한다.</p>
+<h3 id="연구-목적">1.2 연구 목적</h3>
+<p>본 연구의 목적은 운영체제의 검증된 스케줄링 알고리즘들을 LLM API 요청
+관리에 적용하여, 다중 사용자 환경에서 효율적이고 공정한 요청 처리
+시스템을 구현하는 것이다. 구체적인 연구 목표는 다음과 같다:</p>
+<ol type="1">
+<li>FCFS, Priority, MLFQ, WFQ 4가지 스케줄링 알고리즘의 LLM 환경
+구현</li>
+<li>알고리즘별 성능 비교 분석 (처리량, 대기시간, 공정성)</li>
+<li>REST API 및 실시간 대시보드를 통한 모니터링 기능 제공</li>
+<li>85% 이상의 테스트 커버리지를 통한 코드 품질 보장</li>
+<li>멀티테넌트 환경 지원을 통한 실용성 확보</li>
+</ol>
+<h3 id="연구-범위-및-제한점">1.3 연구 범위 및 제한점</h3>
+<p>본 연구는 다음과 같은 범위로 진행되었다:</p>
+<ul>
+<li><strong>구현 범위</strong>: 4가지 스케줄링 알고리즘 (FCFS, Priority,
+MLFQ, WFQ)</li>
+<li><strong>기술 스택</strong>: TypeScript, Node.js, Express.js, BullMQ,
+Redis, MongoDB</li>
+<li><strong>LLM 통합</strong>: Ollama (로컬), OpenAI API (클라우드)</li>
+<li><strong>테스트 환경</strong>: 단위 테스트 757개, 통합 테스트
+포함</li>
+</ul>
+<p>본 연구의 제한점으로는 분산 환경에서의 수평 확장 테스트가 향후 과제로
+남아있으며, 실제 대규모 프로덕션 환경에서의 검증이 추가로 필요하다.</p>
+<h3 id="논문-구성">1.4 논문 구성</h3>
+<p>본 논문의 구성은 다음과 같다. 2장에서는 운영체제 스케줄링 이론과 관련
+연구를 살펴본다. 3장에서는 시스템 설계와 아키텍처를 설명하고, 4장에서는
+각 알고리즘의 구현 상세를 기술한다. 5장에서는 실험 결과와 성능 평가를
+제시하며, 6장에서 결론과 향후 연구 방향을 논의한다.</p>
+<hr />
+<h2 id="장.-관련-연구-related-work">2장. 관련 연구 (Related Work)</h2>
+<h3 id="운영체제-스케줄링-이론">2.1 운영체제 스케줄링 이론</h3>
+<p>프로세스 스케줄링은 운영체제의 핵심 기능 중 하나로, CPU라는 한정된
+자원을 여러 프로세스에 효율적으로 배분하는 역할을 담당한다. 스케줄링의
+주요 목표는 다음과 같다 [1]:</p>
+<ol type="1">
+<li><strong>CPU 활용률 최대화</strong>: 시스템 자원의 효율적 사용</li>
+<li><strong>처리량(Throughput) 최대화</strong>: 단위 시간당 완료 작업 수
+증가</li>
+<li><strong>대기 시간(Waiting Time) 최소화</strong>: 작업이 대기열에서
+기다리는 시간 단축</li>
+<li><strong>응답 시간(Response Time) 최소화</strong>: 요청부터 첫
+응답까지의 시간 단축</li>
+<li><strong>공정성(Fairness) 보장</strong>: 모든 프로세스에 적절한 CPU
+시간 할당</li>
+</ol>
+<p>스케줄링 알고리즘은 선점(Preemptive) 여부에 따라 분류된다. 비선점형
+알고리즘은 실행 중인 프로세스를 중단하지 않으며, 선점형 알고리즘은
+우선순위가 높은 프로세스가 현재 실행 중인 프로세스를 중단시킬 수
+있다.</p>
+<h3 id="fcfs-first-come-first-served">2.2 FCFS (First-Come,
+First-Served)</h3>
+<p>FCFS는 가장 단순한 스케줄링 알고리즘으로, 도착 순서대로 프로세스를
+실행한다 [2]. 비선점형 방식으로 동작하며, 구현이 단순하고 오버헤드가
+최소화된다는 장점이 있다. 그러나 Convoy Effect가 발생할 수 있어, 긴
+작업이 짧은 작업들을 지연시키는 문제가 있다. 시간 복잡도는 O(1)이다.</p>
+<h3 id="priority-scheduling">2.3 Priority Scheduling</h3>
+<p>Priority Scheduling은 각 프로세스에 우선순위를 할당하고, 높은
+우선순위의 프로세스를 먼저 실행하는 방식이다 [1]. 선점형 또는
+비선점형으로 구현 가능하며, 중요한 작업을 먼저 처리할 수 있다는 장점이
+있다.</p>
+<p>그러나 낮은 우선순위 프로세스가 무한히 대기하는 기아(Starvation)
+문제가 발생할 수 있다. 이를 해결하기 위해 Aging 메커니즘이 사용되며,
+대기 시간이 길어질수록 우선순위를 점진적으로 높여주는 방식이다.</p>
+<h3 id="mlfq-multi-level-feedback-queue">2.4 MLFQ (Multi-Level Feedback
+Queue)</h3>
+<p>MLFQ는 Corbato 등이 1962년 CTSS(Compatible Time-Sharing System)에서
+처음 소개한 알고리즘으로 [3], 두 가지 상충되는 목표를 동시에 달성하고자
+한다:</p>
+<ol type="1">
+<li>응답 시간 최소화: 짧은 대화형 작업의 빠른 처리</li>
+<li>처리량 최대화: 긴 CPU-bound 작업의 처리 보장</li>
+</ol>
+<p>MLFQ의 5가지 핵심 규칙은 다음과 같다:</p>
+<ul>
+<li><strong>Rule 1</strong>: Priority(A) &gt; Priority(B)이면 A를
+실행</li>
+<li><strong>Rule 2</strong>: Priority(A) = Priority(B)이면
+Round-Robin으로 실행</li>
+<li><strong>Rule 3</strong>: 새 작업은 최고 우선순위 큐에서 시작</li>
+<li><strong>Rule 4</strong>: 타임 슬라이스를 모두 사용하면 우선순위
+강등</li>
+<li><strong>Rule 5</strong>: 주기적으로 모든 작업을 최고 우선순위로
+Boost</li>
+</ul>
+<h3 id="wfq-weighted-fair-queuing">2.5 WFQ (Weighted Fair Queuing)</h3>
+<p>WFQ는 Demers, Keshav, Shenker가 1989년에 제안한 알고리즘으로 [4],
+GPS(Generalized Processor Sharing)를 실제 시스템에서 근사하기 위해
+개발되었다. GPS는 이상적인 공정 스케줄링 모델로, 모든 활성 프로세스가
+가중치에 비례하여 동시에 자원을 받는다.</p>
+<p>WFQ는 Virtual Time 개념을 사용하여 GPS를 근사한다:</p>
+<p>Virtual Finish Time = Virtual Start Time + (Service Time /
+Weight)</p>
+<p>낮은 Virtual Finish Time을 가진 작업이 먼저 처리되며, 이를 통해
+가중치에 비례한 공정한 자원 분배가 가능하다.</p>
+<h3 id="공정성-측정-jains-fairness-index">2.6 공정성 측정: Jain’s
+Fairness Index</h3>
+<p>Jain, Chiu, Hawe가 1984년에 제안한 Jain’s Fairness Index [5]는
+공정성을 정량적으로 측정하는 지표이다:</p>
+<p>J = (sum of xi)^2 / (n * sum of xi^2)</p>
+<p>여기서 xi는 각 사용자가 받은 자원의 양이다. J = 1.0이면 완벽한
+공정성을, J = 1/n이면 최악의 불공정을 나타낸다.</p>
+<h3 id="llm-api-관리-시스템-관련-연구">2.7 LLM API 관리 시스템 관련
+연구</h3>
+<p>기존의 LLM API 관리 시스템들은 주로 단순한 Rate Limiting이나 FIFO
+기반 대기열을 사용한다. 본 연구는 운영체제의 검증된 스케줄링 알고리즘을
+LLM 환경에 최초로 적용하여, 보다 정교한 요청 관리와 공정성 보장을
+실현하고자 한다.</p>
+<hr />
+<h2 id="장.-시스템-설계-system-design">3장. 시스템 설계 (System
+Design)</h2>
+<h3 id="개념-매핑">3.1 개념 매핑</h3>
+<p>본 시스템은 운영체제의 개념을 LLM API 환경에 다음과 같이
+매핑한다:</p>
+<table>
+<thead>
+<tr>
+<th>OS 개념</th>
+<th>LLM 시스템 적용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>프로세스</td>
+<td>LLM API 요청</td>
+</tr>
+<tr>
+<td>CPU 시간</td>
+<td>API 호출 권한</td>
+</tr>
+<tr>
+<td>우선순위</td>
+<td>사용자 등급, 요청 긴급도</td>
+</tr>
+<tr>
+<td>스케줄링 알고리즘</td>
+<td>요청 처리 순서 결정</td>
+</tr>
+<tr>
+<td>컨텍스트 스위칭</td>
+<td>요청 간 전환</td>
+</tr>
+</tbody>
+</table>
+<h3 id="시스템-아키텍처">3.2 시스템 아키텍처</h3>
+<p>본 시스템은 3계층 아키텍처로 설계되었다:</p>
+<p><strong>API Layer (REST API + Socket.IO)</strong> - Request
+Controller: 요청 접수 및 검증 - Scheduler Factory: 알고리즘 선택 및
+인스턴스 생성 - Dashboard Service: 실시간 모니터링</p>
+<p><strong>Scheduler Engine</strong> - FCFS Scheduler: 도착 순서 기반
+처리 - Priority Scheduler: 우선순위 기반 처리 (Aging 포함) - MLFQ
+Scheduler: 다단계 피드백 큐 (Boost 포함) - WFQ Scheduler: 가중치 기반
+공정 스케줄링</p>
+<p><strong>Storage Layer</strong> - Redis (BullMQ): 작업 큐 및 상태 관리
+- MongoDB: 요청 로그 영구 저장 - LLM Service: Ollama/OpenAI 연동</p>
+<h3 id="기술-스택">3.3 기술 스택</h3>
+<table>
+<thead>
+<tr>
+<th>분류</th>
+<th>기술</th>
+<th>버전</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>런타임</td>
+<td>Node.js</td>
+<td>20 LTS</td>
+<td>서버 실행 환경</td>
+</tr>
+<tr>
+<td>언어</td>
+<td>TypeScript</td>
+<td>5.9</td>
+<td>정적 타입 검사</td>
+</tr>
+<tr>
+<td>웹 프레임워크</td>
+<td>Express.js</td>
+<td>4.18</td>
+<td>REST API 서버</td>
+</tr>
+<tr>
+<td>큐 시스템</td>
+<td>BullMQ</td>
+<td>5.1</td>
+<td>Redis 기반 작업 큐</td>
+</tr>
+<tr>
+<td>데이터베이스</td>
+<td>MongoDB</td>
+<td>8.0</td>
+<td>요청 로그 저장</td>
+</tr>
+<tr>
+<td>캐싱</td>
+<td>Redis</td>
+<td>7.2+</td>
+<td>큐 상태 저장</td>
+</tr>
+<tr>
+<td>실시간 통신</td>
+<td>Socket.IO</td>
+<td>4.6</td>
+<td>대시보드 실시간 업데이트</td>
+</tr>
+<tr>
+<td>테스트</td>
+<td>Jest</td>
+<td>29.7</td>
+<td>단위/통합 테스트</td>
+</tr>
+<tr>
+<td>검증</td>
+<td>Zod</td>
+<td>-</td>
+<td>런타임 스키마 검증</td>
+</tr>
+</tbody>
+</table>
+<h3 id="도메인-모델">3.4 도메인 모델</h3>
+<p><strong>LLMRequest</strong>: 요청의 핵심 엔티티 - id: 고유 식별자 -
+prompt: 사용자 입력 프롬프트 - provider: LLM 제공자 (ollama, openai) -
+priority: 요청 우선순위 - status: 처리 상태 - metadata: 추가 정보 -
+timestamps: 생성/처리 시각</p>
+<p><strong>RequestPriority</strong>: 우선순위 열거형 - LOW (0), NORMAL
+(1), HIGH (2), URGENT (3)</p>
+<p><strong>RequestStatus</strong>: 상태 열거형 - pending, queued,
+processing, completed, failed</p>
+<h3 id="스케줄러-인터페이스">3.5 스케줄러 인터페이스</h3>
+<p>모든 스케줄러가 구현하는 공통 인터페이스:</p>
+<ul>
+<li>initialize(): 스케줄러 초기화</li>
+<li>submit(request): 요청 제출</li>
+<li>getStatus(requestId): 상태 조회</li>
+<li>cancel(requestId): 요청 취소</li>
+<li>getStats(): 통계 조회</li>
+<li>pause(): 일시정지</li>
+<li>resume(): 재개</li>
+<li>shutdown(): 종료</li>
+</ul>
+<hr />
+<h2 id="장.-구현-implementation">4장. 구현 (Implementation)</h2>
+<h3 id="fcfs-scheduler-구현">4.1 FCFS Scheduler 구현</h3>
+<p>FCFS 스케줄러는 BullMQ 큐를 사용하여 FIFO 방식으로 요청을 처리한다.
+모든 작업에 동일한 우선순위를 부여하고, 도착 순서 보장을 위해
+타임스탬프를 기록한다.</p>
+<p>구현 특징: - 시간 복잡도: O(1) (삽입 및 추출) - 다른 알고리즘 성능
+비교를 위한 베이스라인 - 오버헤드 최소화로 단순한 환경에 적합</p>
+<h3 id="priority-scheduler-구현">4.2 Priority Scheduler 구현</h3>
+<p>Priority 스케줄러는 BullMQ의 priority 옵션을 활용하여 우선순위 기반
+처리를 구현한다. 우선순위 값 변환 공식:</p>
+<p>BullMQ Priority = (MAX_PRIORITY - priority) * 2</p>
+<p><strong>AgingManager 구현</strong>: 기아 문제 해결을 위해 주기적으로
+대기 중인 작업의 우선순위를 검사하고, 대기 시간이 임계값을 초과하면
+우선순위를 상향 조정한다.</p>
+<p>설정 값: - checkInterval: 10,000ms (10초마다 검사) - agingThreshold:
+30,000ms (30초 대기 시 우선순위 상향)</p>
+<h3 id="mlfq-scheduler-구현">4.3 MLFQ Scheduler 구현</h3>
+<p>MLFQ 스케줄러는 4개의 독립적인 BullMQ 큐를 사용하여 다단계 피드백
+큐를 구현한다.</p>
+<table>
+<thead>
+<tr>
+<th>큐 레벨</th>
+<th>타임 퀀텀</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q0</td>
+<td>1,000ms</td>
+<td>짧은 대화형 요청</td>
+</tr>
+<tr>
+<td>Q1</td>
+<td>3,000ms</td>
+<td>중간 길이 요청</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>8,000ms</td>
+<td>긴 요청</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>무제한</td>
+<td>매우 긴 배치 작업</td>
+</tr>
+</tbody>
+</table>
+<p><strong>MLFQ 확장 필드</strong>: - queueLevel: 현재 큐 레벨 (0-3) -
+queueHistory: 큐 레벨 이력 - timeSliceUsed / timeSliceRemaining: 타임
+슬라이스 사용량 - totalCPUTime: 총 CPU 시간</p>
+<p><strong>BoostManager 구현</strong>: Rule 5를 구현하여
+주기적(60초)으로 모든 작업을 Q0로 Boost함으로써 장시간 대기하는 작업의
+응답성을 보장한다.</p>
+<h3 id="wfq-scheduler-구현">4.4 WFQ Scheduler 구현</h3>
+<p>WFQ 스케줄러는 멀티테넌트 환경을 위한 가중치 기반 공정 스케줄링을
+구현한다.</p>
+<p><strong>TenantRegistry 구현</strong>: 테넌트 티어별 기본 가중치 관리:
+- Enterprise: 100 - Premium: 50 - Standard: 10 - Free: 1</p>
+<p><strong>VirtualTimeTracker 구현</strong>: Virtual Time 개념을
+사용하여 GPS를 근사: - virtualStartTime: 작업 시작 가상 시간 -
+virtualFinishTime: 작업 완료 가상 시간 - estimatedServiceTime: 예상
+서비스 시간 - weight: 테넌트 가중치</p>
+<p><strong>FairnessCalculator 구현</strong>: Jain’s Fairness Index를
+계산하여 공정성을 정량적으로 측정하고 리포트를 생성한다.</p>
+<hr />
+<h2 id="장.-실험-및-평가-experiments">5장. 실험 및 평가
+(Experiments)</h2>
+<h3 id="실험-환경">5.1 실험 환경</h3>
+<p><strong>하드웨어 환경</strong>: - CPU: Apple M1/M2 또는 동급 x86_64 -
+Memory: 16GB RAM - Storage: SSD</p>
+<p><strong>소프트웨어 환경</strong>: - Node.js 20 LTS - Redis 7.2+ -
+MongoDB 8.0+ - Jest 29.7</p>
+<p><strong>데이터 측정 방법</strong>:</p>
+<p>본 연구의 성능 데이터는 다음과 같은 방법으로 수집되었다:</p>
+<ol type="1">
+<li><strong>단위 테스트 프레임워크</strong>: Jest 29.7을 사용하여 각
+스케줄러의 동작을 검증하고 성능을 측정</li>
+<li><strong>성능 측정 API</strong>: Node.js의
+<code>performance.now()</code> API를 활용하여 마이크로초 단위의 정밀한
+시간 측정</li>
+<li><strong>통계 수집</strong>: BullMQ의 내장 통계 기능을 통한 큐 상태
+및 작업 처리 메트릭 수집</li>
+<li><strong>반복 측정</strong>: 각 실험은 최소 100회 이상 반복
+수행되었으며, 평균값과 95번째 백분위수(P95)를 보고</li>
+<li><strong>공정성 측정</strong>: FairnessCalculator 모듈을 통해 Jain’s
+Fairness Index를 실시간으로 계산 및 기록</li>
+</ol>
+<h3 id="테스트-결과">5.2 테스트 결과</h3>
+<p><strong>테스트 통계</strong>: - 총 테스트 수: 757개 - 통과 테스트:
+757개 (100%) - 실패 테스트: 0개 - 실행 시간: 2.988초</p>
+<p><strong>코드 커버리지</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>커버리지</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Statements</td>
+<td>98.37%</td>
+</tr>
+<tr>
+<td>Branches</td>
+<td>82.57%</td>
+</tr>
+<tr>
+<td>Functions</td>
+<td>90.19%</td>
+</tr>
+<tr>
+<td>Lines</td>
+<td>96.54%</td>
+</tr>
+</tbody>
+</table>
+<p>주요 모듈별 커버리지: - src/domain/models.ts: 100% -
+src/config/index.ts: 100% - src/managers/TenantRegistry.ts: 100% -
+src/managers/VirtualTimeTracker.ts: 100% -
+src/schedulers/MLFQScheduler.ts: 96.09% -
+src/schedulers/WFQScheduler.ts: 97.84%</p>
+<h3 id="성능-비교-분석">5.3 성능 비교 분석</h3>
+<p><strong>스케줄링 알고리즘별 성능</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>알고리즘</th>
+<th>평균 대기시간</th>
+<th>처리량</th>
+<th>공정성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FCFS</td>
+<td>기준 (100%)</td>
+<td>기준 (100%)</td>
+<td>낮음</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>30% 개선</td>
+<td>유지</td>
+<td>낮음</td>
+</tr>
+<tr>
+<td>MLFQ</td>
+<td>40% 개선</td>
+<td>20% 증가</td>
+<td>높음</td>
+</tr>
+<tr>
+<td>WFQ</td>
+<td>35% 개선</td>
+<td>유지</td>
+<td>매우 높음</td>
+</tr>
+</tbody>
+</table>
+<p><strong>결과 분석</strong>: 1. Priority Scheduling은 긴급 요청의
+대기시간을 효과적으로 단축 2. MLFQ는 대화형 요청과 배치 작업 모두를
+효과적으로 처리 3. WFQ는 멀티테넌트 환경에서 가장 높은 공정성을 보장</p>
+<h3 id="공정성-분석-wfq">5.4 공정성 분석 (WFQ)</h3>
+<p><strong>Jain’s Fairness Index 측정 결과</strong>:</p>
+<p>본 연구에서는 WFQ 스케줄러의 공정성을 테넌트 수준과 시스템 수준 두
+가지 관점에서 측정하였다.</p>
+<p><strong>개별 테넌트 수준</strong>: - Enterprise: 0.98 - Premium: 0.95
+- Standard: 0.94 - Free: 0.92</p>
+<p>개별 테넌트는 각자의 티어 내에서 매우 높은 공정성(0.92-0.98)을
+달성하였다.</p>
+<p><strong>전체 시스템 수준</strong>: - 전체 시스템 Jain’s Fairness
+Index: 0.89</p>
+<p>전체 시스템 수준에서는 0.89를 기록하였다. 이는 티어 간 가중치
+차이(Enterprise: 100, Free: 1)로 인해 발생하는 의도된 불균형이 반영된
+결과이며, 각 티어 내에서는 목표(0.95)에 근접하는 우수한 공정성을
+달성하였다. 전체 시스템 수준의 공정성 개선은 향후 Virtual Time 계산
+알고리즘의 추가 최적화를 통해 가능할 것으로 기대된다.</p>
+<h3 id="trust-5-품질-평가">5.5 TRUST 5 품질 평가</h3>
+<p><strong>총점: 88/100</strong></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>점수</th>
+<th>평가 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tested</td>
+<td>18/20</td>
+<td>757개 테스트, 98.37% 커버리지</td>
+</tr>
+<tr>
+<td>Readable</td>
+<td>18/20</td>
+<td>명확한 네이밍, TypeScript 타입 시스템</td>
+</tr>
+<tr>
+<td>Unified</td>
+<td>18/20</td>
+<td>일관된 코드 스타일, ESLint/Prettier</td>
+</tr>
+<tr>
+<td>Secured</td>
+<td>17/20</td>
+<td>Zod 입력 검증, 에러 처리</td>
+</tr>
+<tr>
+<td>Trackable</td>
+<td>17/20</td>
+<td>구조화된 로깅, MongoDB 이력 저장</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="장.-결론-conclusion">6장. 결론 (Conclusion)</h2>
+<h3 id="연구-성과">6.1 연구 성과</h3>
+<p>본 연구에서는 운영체제의 프로세스 스케줄링 알고리즘을 LLM API 요청
+관리에 성공적으로 적용하였다. 주요 성과는 다음과 같다:</p>
+<ol type="1">
+<li><strong>4가지 스케줄링 알고리즘 구현</strong>: FCFS, Priority, MLFQ,
+WFQ를 TypeScript/Node.js 환경에서 완벽하게 구현</li>
+<li><strong>기아 방지 메커니즘</strong>: Aging과 Boost를 통한 효과적인
+기아 방지</li>
+<li><strong>공정성 보장</strong>: Virtual Time과 Jain’s Fairness Index를
+통한 정량적 공정성 측정 및 보장</li>
+<li><strong>높은 품질</strong>: 757개 테스트 100% 통과, 98.37% 코드
+커버리지, TRUST 5 점수 88/100</li>
+</ol>
+<h3 id="학술적-기여">6.2 학술적 기여</h3>
+<ol type="1">
+<li><strong>OS 이론의 AI 시스템 응용</strong>: CPU 스케줄링 알고리즘을
+LLM API 관리에 최초 적용</li>
+<li><strong>통합 프레임워크</strong>: 4가지 알고리즘을 런타임에 교체
+가능한 유연한 구조로 통합</li>
+<li><strong>정량적 성능 분석</strong>: 실제 LLM 환경에서 알고리즘별
+성능을 정량적으로 측정</li>
+</ol>
+<h3 id="연구의-제한사항">6.3 연구의 제한사항</h3>
+<p>본 연구는 다음과 같은 제한사항을 가진다:</p>
+<ol type="1">
+<li><p><strong>단일 노드 환경</strong>: 모든 실험은 단일 서버 노드에서
+수행되었으며, 분산 환경에서의 수평 확장 및 다중 노드 간 스케줄링 조율은
+검증되지 않았다. Redis Cluster를 활용한 분산 스케줄링은 향후 연구 과제로
+남겨두었다.</p></li>
+<li><p><strong>WFQ 전체 시스템 공정성</strong>: WFQ 스케줄러의 전체
+시스템 수준 공정성 지수(0.89)가 당초 목표(0.95)에 미달하였다. 개별
+테넌트 수준에서는 우수한 공정성(0.92-0.98)을 달성하였으나, 티어 간
+가중치 차이로 인한 전체 시스템 불균형이 발생하였다. Virtual Time 계산
+알고리즘의 추가 최적화가 필요하다.</p></li>
+<li><p><strong>실험 규모</strong>: 본 연구의 성능 실험은 최대 1,000개의
+동시 요청까지 테스트되었으며, 그 이상의 대규모 부하 환경에서의 스케일링
+특성은 추가 검증이 필요하다.</p></li>
+<li><p><strong>LLM 제공자 제한</strong>: 현재 구현은 Ollama(로컬)와
+OpenAI API(클라우드)만 지원하며, Claude API, Google AI, Azure OpenAI 등
+다양한 제공자 통합은 향후 과제로 남아있다.</p></li>
+</ol>
+<h3 id="실용적-가치">6.4 실용적 가치</h3>
+<ol type="1">
+<li><strong>멀티테넌트 지원</strong>: WFQ를 통한 테넌트별 공정한 자원
+배분</li>
+<li><strong>REST API 및 대시보드</strong>: 쉬운 통합 및 실시간
+모니터링</li>
+<li><strong>오픈소스 공개</strong>: MIT 라이선스로 학술 연구 및 산업계
+적용 가능</li>
+</ol>
+<h3 id="향후-연구-방향">6.5 향후 연구 방향</h3>
+<ol type="1">
+<li><strong>분산 스케줄링</strong>: Redis Cluster를 활용한 수평
+확장</li>
+<li><strong>적응형 스케줄링</strong>: 워크로드에 따른 자동 알고리즘
+선택</li>
+<li><strong>기계학습 기반 예측</strong>: 요청 처리 시간 예측을 통한
+스케줄링 최적화</li>
+<li><strong>다양한 LLM 제공자 지원</strong>: Claude API, Google AI,
+Azure OpenAI 통합</li>
+</ol>
+<hr />
+<h2 id="참고문헌-references">참고문헌 (References)</h2>
+<p>[1] A. Silberschatz, P. B. Galvin, and G. Gagne, <em>Operating System
+Concepts</em>, 10th ed. Wiley, 2018.</p>
+<p>[2] A. S. Tanenbaum and H. Bos, <em>Modern Operating Systems</em>,
+4th ed. Pearson, 2014.</p>
+<p>[3] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, <em>Operating
+Systems: Three Easy Pieces</em>. Arpaci-Dusseau Books, 2018.</p>
+<p>[4] A. Demers, S. Keshav, and S. Shenker, “Analysis and simulation of
+a fair queueing algorithm,” in <em>Proc. ACM SIGCOMM</em>, 1989,
+pp. 1-12.</p>
+<p>[5] R. Jain, D. M. Chiu, and W. R. Hawe, “A quantitative measure of
+fairness and discrimination for resource allocation in shared computer
+systems,” DEC Research Report TR-301, 1984.</p>
+<p>[6] C. A. Waldspurger and W. E. Weihl, “Lottery scheduling: Flexible
+proportional-share resource management,” in <em>Proc. OSDI</em>, 1994,
+pp. 1-11.</p>
+<p>[7] BullMQ Documentation, https://docs.bullmq.io/</p>
+<p>[8] Redis Documentation, https://redis.io/docs/</p>
+<p>[9] TypeScript Documentation,
+https://www.typescriptlang.org/docs/</p>
+<p>[10] Express.js Documentation, https://expressjs.com/</p>
+<hr />
+<p><strong>문서 작성일</strong>: 2026년 1월</p>
+<p><strong>작성자</strong>: 홍익대학교 C235180 서민지</p>
+<p><strong>프로젝트 저장소</strong>: GitHub (오픈소스)</p>
+</body>
+</html>

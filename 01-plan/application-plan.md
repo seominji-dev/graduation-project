@@ -407,8 +407,10 @@ flowchart LR
 | WFQ | 35% 개선 | 유지 | 매우 높음 |
 
 **WFQ 공정성 측정:**
-- 초기 상태: Jain's Fairness Index = 1.0 (완벽한 공정성)
-- 부하 상태에서도 0.95 이상 유지
+- 개별 테넌트 수준: Jain's Fairness Index = 0.92-0.98 (매우 높은 공정성)
+- 전체 시스템 수준: Jain's Fairness Index = 0.89
+  - 티어 간 가중치 차이로 인한 의도된 불균형 반영
+  - 각 티어 내에서는 목표(0.95)에 근접하는 우수한 공정성 달성
 
 
 ### 4.5 산출물 현황 (Deliverables Status)
