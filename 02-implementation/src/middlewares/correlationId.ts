@@ -8,9 +8,9 @@
  * - Stores correlation ID in AsyncLocalStorage for access throughout request lifecycle
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { AsyncLocalStorage } from 'async_hooks';
-import { randomUUID } from 'crypto';
+import { Request, Response, NextFunction } from "express";
+import { AsyncLocalStorage } from "async_hooks";
+import { randomUUID } from "crypto";
 
 /**
  * Request context stored in AsyncLocalStorage
@@ -29,7 +29,7 @@ export interface RequestContext {
 /**
  * Header name for correlation ID
  */
-export const CORRELATION_ID_HEADER = 'X-Correlation-ID';
+export const CORRELATION_ID_HEADER = "X-Correlation-ID";
 
 /**
  * AsyncLocalStorage instance for request context
@@ -45,7 +45,7 @@ export const requestContext = new AsyncLocalStorage<RequestContext>();
  */
 export function getCorrelationId(): string {
   const context = requestContext.getStore();
-  return context?.correlationId ?? 'unknown';
+  return context?.correlationId ?? "unknown";
 }
 
 /**
@@ -74,7 +74,7 @@ export function getRequestContext(): RequestContext | undefined {
 export function correlationIdMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   // Extract correlation ID from request header or generate a new one
   const incomingCorrelationId = req.get(CORRELATION_ID_HEADER);
@@ -107,7 +107,7 @@ export function correlationIdMiddleware(
  */
 export async function runWithCorrelationId<T>(
   correlationId: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<T> {
   const context: RequestContext = {
     correlationId,

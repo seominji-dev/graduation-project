@@ -3,10 +3,10 @@
  * Centralized environment variable management with type safety
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { createLogger } from '../utils/logger';
-const logger = createLogger('EnvConfig');
+import { createLogger } from "../utils/logger";
+const logger = createLogger("EnvConfig");
 // =============================================================================
 // Environment Schema Definition
 // =============================================================================
@@ -15,18 +15,18 @@ const envSchema = z.object({
   // Server Configuration
   PORT: z
     .string()
-    .default('3000')
+    .default("3000")
     .transform((val) => parseInt(val, 10))
     .pipe(z.number().min(1).max(65535)),
   NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+    .enum(["development", "production", "test"])
+    .default("development"),
 
   // Redis Configuration (BullMQ)
-  REDIS_HOST: z.string().default('localhost'),
+  REDIS_HOST: z.string().default("localhost"),
   REDIS_PORT: z
     .string()
-    .default('6379')
+    .default("6379")
     .transform((val) => parseInt(val, 10))
     .pipe(z.number().min(1).max(65535)),
   REDIS_PASSWORD: z.string().optional(),
@@ -35,18 +35,20 @@ const envSchema = z.object({
   MONGODB_URI: z
     .string()
     .url()
-    .default('mongodb://localhost:27017/llm-scheduler'),
+    .default("mongodb://localhost:27017/llm-scheduler"),
 
   // LLM Provider Configuration
-  LLM_PROVIDER: z.enum(['ollama', 'openai']).default('ollama'),
-  OLLAMA_BASE_URL: z.string().url().default('http://localhost:11434'),
+  LLM_PROVIDER: z.enum(["ollama", "openai"]).default("ollama"),
+  OLLAMA_BASE_URL: z.string().url().default("http://localhost:11434"),
   OPENAI_API_KEY: z.string().optional(),
 
   // Socket.io Configuration
-  SOCKET_CORS_ORIGIN: z.string().url().default('http://localhost:3000'),
+  SOCKET_CORS_ORIGIN: z.string().url().default("http://localhost:3000"),
 
   // Authentication Configuration
-  API_KEY: z.string().min(32, 'API_KEY must be at least 32 characters for security'),
+  API_KEY: z
+    .string()
+    .min(32, "API_KEY must be at least 32 characters for security"),
 });
 
 // =============================================================================
@@ -57,16 +59,16 @@ function validateEnv() {
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {
-    logger.error('Environment validation failed:');
+    logger.error("Environment validation failed:");
     for (const issue of result.error.issues) {
-      const path = issue.path.join('.');
-      logger.error('  - ' + path + ': ' + issue.message);
+      const path = issue.path.join(".");
+      logger.error("  - " + path + ": " + issue.message);
     }
     throw new Error(
-      'Invalid environment configuration:\n' +
+      "Invalid environment configuration:\n" +
         result.error.issues
-          .map((i) => '  ' + i.path.join('.') + ': ' + i.message)
-          .join('\n')
+          .map((i) => "  " + i.path.join(".") + ": " + i.message)
+          .join("\n"),
     );
   }
 
@@ -88,9 +90,9 @@ export const config = {
   server: {
     port: env.PORT,
     nodeEnv: env.NODE_ENV,
-    isDevelopment: env.NODE_ENV === 'development',
-    isProduction: env.NODE_ENV === 'production',
-    isTest: env.NODE_ENV === 'test',
+    isDevelopment: env.NODE_ENV === "development",
+    isProduction: env.NODE_ENV === "production",
+    isTest: env.NODE_ENV === "test",
   },
   redis: {
     host: env.REDIS_HOST,

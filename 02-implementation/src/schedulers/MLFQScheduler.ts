@@ -1,20 +1,20 @@
 import {
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * MLFQ (Multi-Level Feedback Queue) Scheduler
- * 
+ *
  * Implements OS-style multi-level feedback queue scheduling for LLM requests.
- * 
+ *
  * SPEC-SCHED-003: MLFQ implementation with 5 rules:
  * Rule 1: If Priority(A) > Priority(B), A runs (B doesn't)
  * Rule 2: If Priority(A) = Priority(B), A & B run in round-robin
  * Rule 3: When job enters system, placed at highest priority (Q0)
  * Rule 4: If job uses full time slice, lower priority; if gives up CPU, stay same
  * Rule 5: After time S, boost all jobs to highest priority
- * 
+ *
  * Queue Configuration:
  * - Q0: 1000ms time quantum (highest priority, shortest quantum)
  * - Q1: 3000ms time quantum
@@ -22,34 +22,30 @@ import {
  * - Q3: Infinity (lowest priority, FCFS behavior)
  */
 
-import { Queue, Job, Worker } from 'bullmq';
+import { Queue, Job, Worker } from "bullmq";
 
-import { redisManager } from '../infrastructure/redis';
-import { RequestLog } from '../infrastructure/models/RequestLog';
-import { mongodbManager } from '../infrastructure/mongodb';
+import { redisManager } from "../infrastructure/redis";
+import { RequestLog } from "../infrastructure/models/RequestLog";
+import { mongodbManager } from "../infrastructure/mongodb";
 import {
   LLMRequest,
   QueueJob,
   RequestStatus,
   RequestPriority,
-} from '../domain/models';
-import {
-  IScheduler,
-  SchedulerConfig,
-  SchedulerStats,
-} from './types';
-import { LLMService } from '../services/llmService';
-import { BoostManager } from '../managers/BoostManager';
-import { createLogger } from '../utils/logger';
+} from "../domain/models";
+import { IScheduler, SchedulerConfig, SchedulerStats } from "./types";
+import { LLMService } from "../services/llmService";
+import { BoostManager } from "../managers/BoostManager";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('MLFQScheduler');
+const logger = createLogger("MLFQScheduler");
 
 /**
  * MLFQ Configuration
  */
 const QUEUE_LEVELS = 4;
 const TIME_QUANTA = [1000, 3000, 8000, Infinity] as const; // milliseconds
-const QUEUE_NAMES = ['mlfq-q0', 'mlfq-q1', 'mlfq-q2', 'mlfq-q3'] as const;
+const QUEUE_NAMES = ["mlfq-q0", "mlfq-q1", "mlfq-q2", "mlfq-q3"] as const;
 
 /**
  * Extended QueueJob with MLFQ metadata
@@ -83,14 +79,14 @@ export class MLFQScheduler implements IScheduler {
   private llmService: LLMService;
   private config: Required<SchedulerConfig>;
   private boostManager: BoostManager | null = null;
-  
+
   // Track job timings and metadata
   private jobTimings: Map<string, { queued: Date; started?: Date }> = new Map();
   private jobMetadata: Map<string, MLFQQueueJob> = new Map();
-  
+
   // Track current queue being serviced (for round-robin within same level)
   private currentQueueIndex: number = 0;
-  
+
   constructor(config: SchedulerConfig, llmService: LLMService) {
     this.config = {
       name: config.name,
@@ -115,7 +111,7 @@ export class MLFQScheduler implements IScheduler {
         defaultJobOptions: {
           attempts: DEFAULT_JOB_ATTEMPTS,
           backoff: {
-            type: 'exponential',
+            type: "exponential",
             delay: DEFAULT_BACKOFF_DELAY_MS,
           },
         },
@@ -131,31 +127,47 @@ export class MLFQScheduler implements IScheduler {
         {
           connection: bullmqConnection,
           concurrency: this.config.concurrency,
-        }
+        },
       );
       this.workers.push(worker);
 
       // Worker event handlers
-      worker.on('completed', (job: Job<MLFQQueueJob>) => {
-        logger.info('Job ' + job.id + ' completed from Q' + level);
+      worker.on("completed", (job: Job<MLFQQueueJob>) => {
+        logger.info("Job " + job.id + " completed from Q" + level);
         this.cleanupJobMetadata(job.data.requestId);
       });
 
-      worker.on('failed', (job: Job<MLFQQueueJob> | undefined, error: Error) => {
-        logger.error('Job ' + (job?.id || 'unknown') + ' failed from Q' + level + ':', error);
-        if (job) {
-          this.cleanupJobMetadata(job.data.requestId);
-        }
-      });
+      worker.on(
+        "failed",
+        (job: Job<MLFQQueueJob> | undefined, error: Error) => {
+          logger.error(
+            "Job " + (job?.id || "unknown") + " failed from Q" + level + ":",
+            error,
+          );
+          if (job) {
+            this.cleanupJobMetadata(job.data.requestId);
+          }
+        },
+      );
     }
 
     // Start boost manager (Rule 5: Periodic boosting)
     this.boostManager = new BoostManager(this);
     this.boostManager.start();
 
-    logger.info('MLFQ Scheduler "' + this.config.name + '" initialized with ' + 
-      QUEUE_LEVELS + ' queues (Q0: ' + TIME_QUANTA[0] + 'ms, Q1: ' + 
-      TIME_QUANTA[1] + 'ms, Q2: ' + TIME_QUANTA[2] + 'ms, Q3: Infinity)');
+    logger.info(
+      'MLFQ Scheduler "' +
+        this.config.name +
+        '" initialized with ' +
+        QUEUE_LEVELS +
+        " queues (Q0: " +
+        TIME_QUANTA[0] +
+        "ms, Q1: " +
+        TIME_QUANTA[1] +
+        "ms, Q2: " +
+        TIME_QUANTA[2] +
+        "ms, Q3: Infinity)",
+    );
     return Promise.resolve();
   }
 
@@ -173,7 +185,7 @@ export class MLFQScheduler implements IScheduler {
       provider: request.provider,
       priority: request.priority,
       attempts: 0,
-      tenantId: 'default',
+      tenantId: "default",
       weight: 10,
       queueLevel: 0, // Start at Q0 (highest priority)
       queueHistory: [0],
@@ -185,12 +197,12 @@ export class MLFQScheduler implements IScheduler {
 
     // Add to Q0 (highest priority queue)
     const job = await this.queues[0].add(
-      'llm-request-' + request.id,
+      "llm-request-" + request.id,
       mlfqJobData,
       {
         jobId: request.id,
         priority: 0, // All jobs in Q0 have same priority for round-robin
-      }
+      },
     );
 
     // Log to MongoDB with queue level
@@ -208,16 +220,16 @@ export class MLFQScheduler implements IScheduler {
       const job = await this.queues[level].getJob(requestId);
       if (job) {
         const state = await job.getState();
-        
+
         switch (state) {
-          case 'waiting':
-          case 'delayed':
+          case "waiting":
+          case "delayed":
             return RequestStatus.QUEUED;
-          case 'active':
+          case "active":
             return RequestStatus.PROCESSING;
-          case 'completed':
+          case "completed":
             return RequestStatus.COMPLETED;
-          case 'failed':
+          case "failed":
             return RequestStatus.FAILED;
           default:
             return RequestStatus.PENDING;
@@ -275,7 +287,7 @@ export class MLFQScheduler implements IScheduler {
           waiting,
           active,
         };
-      })
+      }),
     );
 
     return {
@@ -295,7 +307,7 @@ export class MLFQScheduler implements IScheduler {
    */
   async pause(): Promise<void> {
     if (this.queues.length === 0) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     for (const queue of this.queues) {
       await queue.pause();
@@ -307,7 +319,7 @@ export class MLFQScheduler implements IScheduler {
    */
   async resume(): Promise<void> {
     if (this.queues.length === 0) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     for (const queue of this.queues) {
       await queue.resume();
@@ -350,7 +362,11 @@ export class MLFQScheduler implements IScheduler {
     // Move jobs from Q1, Q2, Q3 to Q0
     for (let sourceLevel = 1; sourceLevel < QUEUE_LEVELS; sourceLevel++) {
       if (!this.queues[sourceLevel]) continue;
-      const jobs = await this.queues[sourceLevel].getJobs(['waiting', 'delayed'], 0, 1000);
+      const jobs = await this.queues[sourceLevel].getJobs(
+        ["waiting", "delayed"],
+        0,
+        1000,
+      );
 
       for (const job of jobs) {
         try {
@@ -371,22 +387,22 @@ export class MLFQScheduler implements IScheduler {
             this.jobMetadata.set(jobData.requestId, metadata);
 
             // Add to Q0
-            await this.queues[0].add(
-              job.name,
-              metadata,
-              {
-                jobId: job.id,
-                priority: 0,
-              }
-            );
+            await this.queues[0].add(job.name, metadata, {
+              jobId: job.id,
+              priority: 0,
+            });
 
             // Update MongoDB log
-            await this.updateQueueLevel(jobData.requestId, 0, metadata.queueHistory);
+            await this.updateQueueLevel(
+              jobData.requestId,
+              0,
+              metadata.queueHistory,
+            );
 
             boostedCount++;
           }
         } catch (error) {
-          logger.error('Failed to boost job ' + job.id + ':', error);
+          logger.error("Failed to boost job " + job.id + ":", error);
         }
       }
     }
@@ -401,7 +417,8 @@ export class MLFQScheduler implements IScheduler {
     let total = 0;
     for (const queue of this.queues) {
       const counts = await queue.getJobCounts();
-      total += (counts.waiting ?? 0) + (counts.active ?? 0) + (counts.delayed ?? 0);
+      total +=
+        (counts.waiting ?? 0) + (counts.active ?? 0) + (counts.delayed ?? 0);
     }
     return total;
   }
@@ -410,7 +427,10 @@ export class MLFQScheduler implements IScheduler {
    * Process a job with time quantum enforcement
    * Implements Rule 4: Adjust priority based on time slice usage
    */
-  private async processJob(job: Job<MLFQQueueJob>, queueLevel: number): Promise<string> {
+  private async processJob(
+    job: Job<MLFQQueueJob>,
+    queueLevel: number,
+  ): Promise<string> {
     const { requestId, prompt, provider } = job.data;
     const startedAt = new Date();
 
@@ -420,12 +440,13 @@ export class MLFQScheduler implements IScheduler {
       timing.started = startedAt;
     }
 
-    const waitTime = startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
+    const waitTime =
+      startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
 
     // Get job metadata
     const metadata = this.jobMetadata.get(requestId);
     if (!metadata) {
-      throw new Error('Job metadata not found: ' + requestId);
+      throw new Error("Job metadata not found: " + requestId);
     }
 
     const timeQuantum = TIME_QUANTA[queueLevel];
@@ -440,10 +461,13 @@ export class MLFQScheduler implements IScheduler {
       } else {
         // Q0-Q2: Enforce time quantum
         const startTime = Date.now();
-        
+
         // Create timeout promise for time quantum
         const timeoutPromise = new Promise<string>((_, reject) => {
-          setTimeout(() => reject(new Error('Time quantum exceeded')), timeQuantum);
+          setTimeout(
+            () => reject(new Error("Time quantum exceeded")),
+            timeQuantum,
+          );
         });
 
         // Race between LLM processing and timeout
@@ -468,7 +492,7 @@ export class MLFQScheduler implements IScheduler {
         waitTime,
         processingTime,
         completedAt,
-        metadata
+        metadata,
       );
 
       return response;
@@ -478,12 +502,17 @@ export class MLFQScheduler implements IScheduler {
       const errorMsg = error instanceof Error ? error.message : String(error);
 
       // Check if job should be demoted (used full time slice)
-      const shouldDemote = errorMsg === 'Time quantum exceeded' && queueLevel < QUEUE_LEVELS - 1;
+      const shouldDemote =
+        errorMsg === "Time quantum exceeded" && queueLevel < QUEUE_LEVELS - 1;
 
       if (shouldDemote) {
         // Rule 4: Job used full time slice, demote to lower priority queue
         await this.demoteJob(requestId, queueLevel);
-        throw new Error('Job demoted to Q' + (queueLevel + 1) + ' after exceeding time quantum');
+        throw new Error(
+          "Job demoted to Q" +
+            (queueLevel + 1) +
+            " after exceeding time quantum",
+        );
       }
 
       // Log failure
@@ -495,7 +524,7 @@ export class MLFQScheduler implements IScheduler {
         processingTime,
         completedAt,
         metadata,
-        errorMsg
+        errorMsg,
       );
 
       throw error;
@@ -505,7 +534,10 @@ export class MLFQScheduler implements IScheduler {
   /**
    * Demote a job to the next lower priority queue (Rule 4)
    */
-  private async demoteJob(requestId: string, currentLevel: number): Promise<void> {
+  private async demoteJob(
+    requestId: string,
+    currentLevel: number,
+  ): Promise<void> {
     const newLevel = currentLevel + 1;
     if (newLevel >= QUEUE_LEVELS) {
       return; // Already at lowest priority
@@ -518,7 +550,7 @@ export class MLFQScheduler implements IScheduler {
 
     // Get job from current queue
     const job = await this.queues[currentLevel].getJob(requestId);
-    if (!job || (await job.getState()) !== 'active') {
+    if (!job || (await job.getState()) !== "active") {
       return;
     }
 
@@ -527,23 +559,26 @@ export class MLFQScheduler implements IScheduler {
     metadata.queueHistory.push(newLevel);
     metadata.timeSliceRemaining = TIME_QUANTA[newLevel];
     metadata.lastQueueChange = new Date();
-    
+
     this.jobMetadata.set(requestId, metadata);
 
     // Re-add job to lower priority queue
-    await this.queues[newLevel].add(
-      job.name,
-      metadata,
-      {
-        jobId: requestId,
-        priority: newLevel,
-      }
-    );
+    await this.queues[newLevel].add(job.name, metadata, {
+      jobId: requestId,
+      priority: newLevel,
+    });
 
     // Update MongoDB log
     await this.updateQueueLevel(requestId, newLevel, metadata.queueHistory);
 
-    logger.debug('Job ' + requestId + ' demoted from Q' + currentLevel + ' to Q' + newLevel);
+    logger.debug(
+      "Job " +
+        requestId +
+        " demoted from Q" +
+        currentLevel +
+        " to Q" +
+        newLevel,
+    );
   }
 
   /**
@@ -553,7 +588,7 @@ export class MLFQScheduler implements IScheduler {
     request: LLMRequest,
     status: RequestStatus,
     timestamp: Date,
-    queueLevel: number
+    queueLevel: number,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -562,7 +597,7 @@ export class MLFQScheduler implements IScheduler {
         requestId: request.id,
         prompt: request.prompt,
         provider: request.provider.name,
-        modelName: request.provider.model || 'default',
+        modelName: request.provider.model || "default",
         priority: request.priority,
         status,
         processingTime: 0,
@@ -574,7 +609,7 @@ export class MLFQScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      logger.error('Failed to log request:', error);
+      logger.error("Failed to log request:", error);
     }
   }
 
@@ -589,7 +624,7 @@ export class MLFQScheduler implements IScheduler {
     processingTime: number = 0,
     completedAt?: Date,
     metadata?: MLFQQueueJob,
-    error?: string
+    error?: string,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -621,19 +656,20 @@ export class MLFQScheduler implements IScheduler {
         updateData.timeSliceUsed = metadata.timeSliceUsed;
       }
 
-      await RequestLog.updateOne(
-        { requestId },
-        { $set: updateData }
-      );
+      await RequestLog.updateOne({ requestId }, { $set: updateData });
     } catch (logError) {
-      logger.error('Failed to log response:', logError);
+      logger.error("Failed to log response:", logError);
     }
   }
 
   /**
    * Update queue level in MongoDB
    */
-  private async updateQueueLevel(requestId: string, newLevel: number, queueHistory: number[]): Promise<void> {
+  private async updateQueueLevel(
+    requestId: string,
+    newLevel: number,
+    queueHistory: number[],
+  ): Promise<void> {
     try {
       await mongodbManager.connect();
 
@@ -645,10 +681,10 @@ export class MLFQScheduler implements IScheduler {
             queueHistory: queueHistory,
             updatedAt: new Date(),
           },
-        }
+        },
       );
     } catch (error) {
-      logger.error('Failed to update queue level:', error);
+      logger.error("Failed to update queue level:", error);
     }
   }
 

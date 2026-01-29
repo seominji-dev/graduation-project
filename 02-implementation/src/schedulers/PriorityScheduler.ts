@@ -2,7 +2,7 @@ import {
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
   DEFAULT_JOB_WEIGHT,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * Priority Scheduler (Non-Preemptive)
@@ -15,26 +15,22 @@ import {
  * REQ-SCHED-401: Aging mechanism to prevent starvation
  */
 
-import { Queue, Job, Worker } from 'bullmq';
-import { redisManager } from '../infrastructure/redis';
-import { RequestLog } from '../infrastructure/models/RequestLog';
-import { mongodbManager } from '../infrastructure/mongodb';
+import { Queue, Job, Worker } from "bullmq";
+import { redisManager } from "../infrastructure/redis";
+import { RequestLog } from "../infrastructure/models/RequestLog";
+import { mongodbManager } from "../infrastructure/mongodb";
 import {
   LLMRequest,
   QueueJob,
   RequestStatus,
   RequestPriority,
-} from '../domain/models';
-import {
-  IScheduler,
-  SchedulerConfig,
-  SchedulerStats,
-} from './types';
-import { LLMService } from '../services/llmService';
-import { AgingManager } from '../managers/AgingManager';
-import { createLogger } from '../utils/logger';
+} from "../domain/models";
+import { IScheduler, SchedulerConfig, SchedulerStats } from "./types";
+import { LLMService } from "../services/llmService";
+import { AgingManager } from "../managers/AgingManager";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('PriorityScheduler');
+const logger = createLogger("PriorityScheduler");
 
 /**
  * Maximum priority value for calculating BullMQ priority
@@ -72,7 +68,7 @@ export class PriorityScheduler implements IScheduler {
       defaultJobOptions: {
         attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
-          type: 'exponential',
+          type: "exponential",
           delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
@@ -86,19 +82,19 @@ export class PriorityScheduler implements IScheduler {
       {
         connection: bullmqConnection,
         concurrency: this.config.concurrency,
-      }
+      },
     );
 
-    this.worker.on('completed', (job: Job<QueueJob>) => {
-      logger.info('Job ' + job.id + ' completed');
+    this.worker.on("completed", (job: Job<QueueJob>) => {
+      logger.info("Job " + job.id + " completed");
       this.cleanupJobTimings(job.data.requestId);
       if (this.agingManager) {
         this.agingManager.resetJobAging(job.data.requestId);
       }
     });
 
-    this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
-      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
+    this.worker.on("failed", (job: Job<QueueJob> | undefined, error: Error) => {
+      logger.error("Job " + (job?.id || "unknown") + " failed:", error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
         if (this.agingManager) {
@@ -119,15 +115,15 @@ export class PriorityScheduler implements IScheduler {
    */
   async submit(request: LLMRequest): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const queuedAt = new Date();
     this.jobTimings.set(request.id, { queued: queuedAt });
 
     const jobData: QueueJob = {
-        tenantId: 'default',
-        weight: DEFAULT_JOB_WEIGHT,
+      tenantId: "default",
+      weight: DEFAULT_JOB_WEIGHT,
       requestId: request.id,
       prompt: request.prompt,
       provider: request.provider,
@@ -136,14 +132,10 @@ export class PriorityScheduler implements IScheduler {
       queuedAt: queuedAt,
     };
 
-    const job = await this.queue.add(
-      'llm-request-' + request.id,
-      jobData,
-      {
-        jobId: request.id,
-        priority: this.getPriorityValue(request.priority),
-      }
-    );
+    const job = await this.queue.add("llm-request-" + request.id, jobData, {
+      jobId: request.id,
+      priority: this.getPriorityValue(request.priority),
+    });
 
     await this.logRequest(request, RequestStatus.QUEUED, queuedAt);
 
@@ -155,7 +147,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async getStatus(requestId: string): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -166,14 +158,14 @@ export class PriorityScheduler implements IScheduler {
     const state = await job.getState();
 
     switch (state) {
-      case 'waiting':
-      case 'delayed':
+      case "waiting":
+      case "delayed":
         return RequestStatus.QUEUED;
-      case 'active':
+      case "active":
         return RequestStatus.PROCESSING;
-      case 'completed':
+      case "completed":
         return RequestStatus.COMPLETED;
-      case 'failed':
+      case "failed":
         return RequestStatus.FAILED;
       default:
         return RequestStatus.PENDING;
@@ -185,7 +177,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async cancel(requestId: string): Promise<boolean> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -203,7 +195,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async getStats(): Promise<SchedulerStats> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const counts = await this.queue.getJobCounts();
@@ -224,7 +216,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async pause(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.pause();
   }
@@ -234,7 +226,7 @@ export class PriorityScheduler implements IScheduler {
    */
   async resume(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.resume();
   }
@@ -262,7 +254,10 @@ export class PriorityScheduler implements IScheduler {
    * Update job priority (used by AgingManager)
    * Note: BullMQ doesn't support direct priority updates, so we remove and re-add
    */
-  async updateJobPriority(jobId: string, newPriority: RequestPriority): Promise<boolean> {
+  async updateJobPriority(
+    jobId: string,
+    newPriority: RequestPriority,
+  ): Promise<boolean> {
     if (!this.queue) {
       return false;
     }
@@ -274,7 +269,7 @@ export class PriorityScheduler implements IScheduler {
       }
 
       const state = await job.getState();
-      if (state !== 'waiting' && state !== 'delayed') {
+      if (state !== "waiting" && state !== "delayed") {
         return false;
       }
 
@@ -297,12 +292,12 @@ export class PriorityScheduler implements IScheduler {
           ...originalOpts,
           jobId: jobId,
           priority: this.getPriorityValue(newPriority),
-        }
+        },
       );
 
       return true;
     } catch (error) {
-      logger.error('Failed to update job priority:', error);
+      logger.error("Failed to update job priority:", error);
       return false;
     }
   }
@@ -310,13 +305,15 @@ export class PriorityScheduler implements IScheduler {
   /**
    * Get all waiting jobs (used by AgingManager)
    */
-  async getWaitingJobs(): Promise<Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>> {
+  async getWaitingJobs(): Promise<
+    Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>
+  > {
     if (!this.queue) {
       return [];
     }
 
     try {
-      const jobs = await this.queue.getJobs(['waiting', 'delayed'], 0, 100);
+      const jobs = await this.queue.getJobs(["waiting", "delayed"], 0, 100);
       return jobs.map((job) => {
         const jobData = job.data as QueueJob;
         return {
@@ -326,7 +323,7 @@ export class PriorityScheduler implements IScheduler {
         };
       });
     } catch (error) {
-      logger.error('Failed to get waiting jobs:', error);
+      logger.error("Failed to get waiting jobs:", error);
       return [];
     }
   }
@@ -343,7 +340,8 @@ export class PriorityScheduler implements IScheduler {
       timing.started = startedAt;
     }
 
-    const waitTime = startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
+    const waitTime =
+      startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
 
     try {
       const response = await this.llmService.process(prompt, provider);
@@ -356,7 +354,7 @@ export class PriorityScheduler implements IScheduler {
         response,
         waitTime,
         processingTime,
-        completedAt
+        completedAt,
       );
 
       return response;
@@ -372,7 +370,7 @@ export class PriorityScheduler implements IScheduler {
         waitTime,
         processingTime,
         completedAt,
-        errorMsg
+        errorMsg,
       );
 
       throw error;
@@ -394,7 +392,7 @@ export class PriorityScheduler implements IScheduler {
   private async logRequest(
     request: LLMRequest,
     status: RequestStatus,
-    timestamp: Date
+    timestamp: Date,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -403,7 +401,7 @@ export class PriorityScheduler implements IScheduler {
         requestId: request.id,
         prompt: request.prompt,
         provider: request.provider.name,
-        modelName: request.provider.model || 'default',
+        modelName: request.provider.model || "default",
         priority: request.priority,
         status,
         processingTime: 0,
@@ -412,7 +410,7 @@ export class PriorityScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      logger.error('Failed to log request:', error);
+      logger.error("Failed to log request:", error);
     }
   }
 
@@ -426,7 +424,7 @@ export class PriorityScheduler implements IScheduler {
     waitTime: number = 0,
     processingTime: number = 0,
     completedAt?: Date,
-    error?: string
+    error?: string,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -441,10 +439,10 @@ export class PriorityScheduler implements IScheduler {
           completedAt,
           error,
           updatedAt: new Date(),
-        }
+        },
       );
     } catch (logError) {
-      logger.error('Failed to log response:', logError);
+      logger.error("Failed to log response:", logError);
     }
   }
 

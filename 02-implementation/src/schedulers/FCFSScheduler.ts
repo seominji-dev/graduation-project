@@ -2,39 +2,34 @@ import {
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
   DEFAULT_JOB_WEIGHT,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * FCFS (First-Come, First-Served) Scheduler
- * 
+ *
  * Simplest scheduling algorithm - requests are processed in order of arrival.
  * This serves as the baseline for comparing other scheduling algorithms.
- * 
+ *
  * SPEC-SCHED-001: FCFS implementation
  * REQ-SCHED-201: IF request has priority field, THEN respect it (extended FCFS with priority)
  */
 
-import { Queue, Job, Worker } from 'bullmq';
+import { Queue, Job, Worker } from "bullmq";
 
-import { redisManager } from '../infrastructure/redis';
-import { RequestLog } from '../infrastructure/models/RequestLog';
-import { mongodbManager } from '../infrastructure/mongodb';
+import { redisManager } from "../infrastructure/redis";
+import { RequestLog } from "../infrastructure/models/RequestLog";
+import { mongodbManager } from "../infrastructure/mongodb";
 import {
   LLMRequest,
   QueueJob,
   RequestStatus,
   RequestPriority,
-} from '../domain/models';
-import {
-  IScheduler,
-  SchedulerConfig,
-  SchedulerStats,
-  
-} from './types';
-import { LLMService } from '../services/llmService';
-import { createLogger } from '../utils/logger';
+} from "../domain/models";
+import { IScheduler, SchedulerConfig, SchedulerStats } from "./types";
+import { LLMService } from "../services/llmService";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('FCFSScheduler');
+const logger = createLogger("FCFSScheduler");
 
 export class FCFSScheduler implements IScheduler {
   private queue: Queue | null = null;
@@ -67,7 +62,7 @@ export class FCFSScheduler implements IScheduler {
       defaultJobOptions: {
         attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
-          type: 'exponential',
+          type: "exponential",
           delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
@@ -84,17 +79,17 @@ export class FCFSScheduler implements IScheduler {
       {
         connection: bullmqConnection,
         concurrency: this.config.concurrency,
-      }
+      },
     );
 
     // Worker event handlers
-    this.worker.on('completed', (job: Job<QueueJob>) => {
-      logger.info('Job ' + job.id + ' completed');
+    this.worker.on("completed", (job: Job<QueueJob>) => {
+      logger.info("Job " + job.id + " completed");
       this.cleanupJobTimings(job.data.requestId);
     });
 
-    this.worker.on('failed', (job: Job<QueueJob> | undefined, error: Error) => {
-      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
+    this.worker.on("failed", (job: Job<QueueJob> | undefined, error: Error) => {
+      logger.error("Job " + (job?.id || "unknown") + " failed:", error);
       if (job) {
         this.cleanupJobTimings(job.data.requestId);
       }
@@ -109,7 +104,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async submit(request: LLMRequest): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const queuedAt = new Date();
@@ -117,8 +112,8 @@ export class FCFSScheduler implements IScheduler {
 
     // Create queue job data
     const jobData: QueueJob = {
-        tenantId: 'default',
-        weight: DEFAULT_JOB_WEIGHT,
+      tenantId: "default",
+      weight: DEFAULT_JOB_WEIGHT,
       requestId: request.id,
       prompt: request.prompt,
       provider: request.provider,
@@ -128,14 +123,10 @@ export class FCFSScheduler implements IScheduler {
 
     // Add to queue with priority support (REQ-SCHED-201)
     // Higher priority number = higher priority (processed first)
-    const job = await this.queue.add(
-      'llm-request-' + request.id,
-      jobData,
-      {
-        jobId: request.id,
-        priority: this.getPriorityValue(request.priority),
-      }
-    );
+    const job = await this.queue.add("llm-request-" + request.id, jobData, {
+      jobId: request.id,
+      priority: this.getPriorityValue(request.priority),
+    });
 
     // Log to MongoDB (REQ-SCHED-002: Record processing time)
     await this.logRequest(request, RequestStatus.QUEUED, queuedAt);
@@ -148,7 +139,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async getStatus(requestId: string): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -158,17 +149,17 @@ export class FCFSScheduler implements IScheduler {
 
     // Get job state from BullMQ
     const state = await job.getState();
-    
+
     // Map BullMQ job states to RequestStatus
     switch (state) {
-      case 'waiting':
-      case 'delayed':
+      case "waiting":
+      case "delayed":
         return RequestStatus.QUEUED;
-      case 'active':
+      case "active":
         return RequestStatus.PROCESSING;
-      case 'completed':
+      case "completed":
         return RequestStatus.COMPLETED;
-      case 'failed':
+      case "failed":
         return RequestStatus.FAILED;
       default:
         return RequestStatus.PENDING;
@@ -180,7 +171,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async cancel(requestId: string): Promise<boolean> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -198,7 +189,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async getStats(): Promise<SchedulerStats> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const counts = await this.queue.getJobCounts();
@@ -219,7 +210,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async pause(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.pause();
   }
@@ -229,7 +220,7 @@ export class FCFSScheduler implements IScheduler {
    */
   async resume(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.resume();
   }
@@ -262,7 +253,8 @@ export class FCFSScheduler implements IScheduler {
       timing.started = startedAt;
     }
 
-    const waitTime = startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
+    const waitTime =
+      startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
 
     try {
       // Call LLM service
@@ -277,7 +269,7 @@ export class FCFSScheduler implements IScheduler {
         response,
         waitTime,
         processingTime,
-        completedAt
+        completedAt,
       );
 
       return response;
@@ -294,7 +286,7 @@ export class FCFSScheduler implements IScheduler {
         waitTime,
         processingTime,
         completedAt,
-        errorMsg
+        errorMsg,
       );
 
       throw error;
@@ -316,7 +308,7 @@ export class FCFSScheduler implements IScheduler {
   private async logRequest(
     request: LLMRequest,
     status: RequestStatus,
-    timestamp: Date
+    timestamp: Date,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -325,7 +317,7 @@ export class FCFSScheduler implements IScheduler {
         requestId: request.id,
         prompt: request.prompt,
         provider: request.provider.name,
-        modelName: request.provider.model || 'default',
+        modelName: request.provider.model || "default",
         priority: request.priority,
         status,
         processingTime: 0,
@@ -334,7 +326,7 @@ export class FCFSScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      logger.error('Failed to log request:', error);
+      logger.error("Failed to log request:", error);
     }
   }
 
@@ -348,7 +340,7 @@ export class FCFSScheduler implements IScheduler {
     waitTime: number = 0,
     processingTime: number = 0,
     completedAt?: Date,
-    error?: string
+    error?: string,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -363,10 +355,10 @@ export class FCFSScheduler implements IScheduler {
           completedAt,
           error,
           updatedAt: new Date(),
-        }
+        },
       );
     } catch (logError) {
-      logger.error('Failed to log response:', logError);
+      logger.error("Failed to log response:", logError);
     }
   }
 

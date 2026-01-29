@@ -3,13 +3,13 @@
  * Handles scheduler management and switching
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
-import { SchedulerManager } from '../../services/schedulerManager';
-import { SchedulerType } from '../../schedulers/types';
-import { createLogger } from '../../utils/logger';
+import { Request, Response, NextFunction } from "express";
+import { z } from "zod";
+import { SchedulerManager } from "../../services/schedulerManager";
+import { SchedulerType } from "../../schedulers/types";
+import { createLogger } from "../../utils/logger";
 
-const logger = createLogger('SchedulerController');
+const logger = createLogger("SchedulerController");
 
 // Validation schema for scheduler switching
 const SwitchSchedulerSchema = z.object({
@@ -30,7 +30,7 @@ export class SchedulerController {
   getCurrentScheduler = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const currentType = this.schedulerManager.getCurrentType();
@@ -56,7 +56,7 @@ export class SchedulerController {
   getAvailableSchedulers = (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const availableTypes = this.schedulerManager.getAvailableTypes();
@@ -68,10 +68,14 @@ export class SchedulerController {
           available: availableTypes,
           current: currentType,
           descriptions: {
-            [SchedulerType.FCFS]: 'First-Come-First-Served: Process requests in arrival order',
-            [SchedulerType.PRIORITY]: 'Priority-based scheduling with aging mechanism',
-            [SchedulerType.MLFQ]: 'Multi-Level Feedback Queue with dynamic priority adjustment',
-            [SchedulerType.WFQ]: 'Weighted Fair Queuing for multi-tenant environments',
+            [SchedulerType.FCFS]:
+              "First-Come-First-Served: Process requests in arrival order",
+            [SchedulerType.PRIORITY]:
+              "Priority-based scheduling with aging mechanism",
+            [SchedulerType.MLFQ]:
+              "Multi-Level Feedback Queue with dynamic priority adjustment",
+            [SchedulerType.WFQ]:
+              "Weighted Fair Queuing for multi-tenant environments",
           },
         },
       });
@@ -87,7 +91,7 @@ export class SchedulerController {
   switchScheduler = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       // Validate request body
@@ -102,7 +106,7 @@ export class SchedulerController {
       if (!success) {
         res.status(400).json({
           success: false,
-          error: 'Failed to switch scheduler',
+          error: "Failed to switch scheduler",
           message: `Could not switch to ${newType} scheduler`,
         });
         return;
@@ -125,7 +129,7 @@ export class SchedulerController {
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
-          error: 'Validation error',
+          error: "Validation error",
           details: error.errors,
         });
         return;
@@ -141,7 +145,7 @@ export class SchedulerController {
   getSchedulerStats = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const currentScheduler = this.schedulerManager.getCurrentScheduler();
@@ -166,7 +170,7 @@ export class SchedulerController {
   getAllSchedulersStats = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const allStats = await this.schedulerManager.getAllStats();

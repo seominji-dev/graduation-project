@@ -4,7 +4,7 @@
  * Uses shared error classes for consistent error handling across all projects.
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 import {
   AppError,
   ValidationError,
@@ -14,10 +14,10 @@ import {
   errorHandler as sharedErrorHandler,
   notFoundHandler as sharedNotFoundHandler,
   asyncHandler as sharedAsyncHandler,
-} from '@shared/errors';
-import { createLogger } from '../utils/logger';
+} from "@shared/errors";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('ErrorHandler');
+const logger = createLogger("ErrorHandler");
 
 /**
  * Global error handler middleware
@@ -27,7 +27,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   // Log error with project-specific logger
   const isAppError = AppError.isAppError(err);
@@ -41,13 +41,13 @@ export const errorHandler = (
     isOperational,
     url: req.url,
     method: req.method,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   };
 
   if (isOperational) {
-    logger.warn('Operational error:', logData);
+    logger.warn("Operational error:", logData);
   } else {
-    logger.error('System error:', logData);
+    logger.error("System error:", logData);
   }
 
   // Delegate to shared error handler

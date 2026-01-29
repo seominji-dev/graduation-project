@@ -3,15 +3,15 @@
  * Manages multiple schedulers and allows runtime switching
  */
 
-import { IScheduler, SchedulerType } from '../schedulers/types';
-import { FCFSScheduler } from '../schedulers/FCFSScheduler';
-import { PriorityScheduler } from '../schedulers/PriorityScheduler';
-import { MLFQScheduler } from '../schedulers/MLFQScheduler';
-import { WFQScheduler } from '../schedulers/WFQScheduler';
-import { LLMService } from './llmService';
-import { createLogger } from '../utils/logger';
+import { IScheduler, SchedulerType } from "../schedulers/types";
+import { FCFSScheduler } from "../schedulers/FCFSScheduler";
+import { PriorityScheduler } from "../schedulers/PriorityScheduler";
+import { MLFQScheduler } from "../schedulers/MLFQScheduler";
+import { WFQScheduler } from "../schedulers/WFQScheduler";
+import { LLMService } from "./llmService";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('SchedulerManager');
+const logger = createLogger("SchedulerManager");
 
 export interface SchedulerConfig {
   name: string;
@@ -34,11 +34,11 @@ export class SchedulerManager {
   constructor(
     llmService: LLMService,
     initialType: SchedulerType = SchedulerType.FCFS,
-    config?: SchedulerConfig
+    config?: SchedulerConfig,
   ) {
     this.llmService = llmService;
     this.schedulers = new Map();
-    this.config = config || { name: 'default-queue', concurrency: 2 };
+    this.config = config || { name: "default-queue", concurrency: 2 };
 
     // Initialize all schedulers
     this.initializeSchedulers();
@@ -73,8 +73,8 @@ export class SchedulerManager {
           name: `${this.config.name}-fcfs`,
           ...baseConfig,
         },
-        this.llmService
-      )
+        this.llmService,
+      ),
     );
 
     // Priority Scheduler
@@ -85,8 +85,8 @@ export class SchedulerManager {
           name: `${this.config.name}-priority`,
           ...baseConfig,
         },
-        this.llmService
-      )
+        this.llmService,
+      ),
     );
 
     // MLFQ Scheduler
@@ -97,8 +97,8 @@ export class SchedulerManager {
           name: `${this.config.name}-mlfq`,
           ...baseConfig,
         },
-        this.llmService
-      )
+        this.llmService,
+      ),
     );
 
     // WFQ Scheduler
@@ -109,8 +109,8 @@ export class SchedulerManager {
           name: `${this.config.name}-wfq`,
           ...baseConfig,
         },
-        this.llmService
-      )
+        this.llmService,
+      ),
     );
 
     logger.info(`Initialized ${this.schedulers.size} schedulers`);
@@ -120,12 +120,12 @@ export class SchedulerManager {
    * Initialize all schedulers
    */
   async initialize(): Promise<void> {
-    logger.info('Initializing all schedulers...');
+    logger.info("Initializing all schedulers...");
     const promises = Array.from(this.schedulers.values()).map((scheduler) =>
-      scheduler.initialize()
+      scheduler.initialize(),
     );
     await Promise.all(promises);
-    logger.info('All schedulers initialized');
+    logger.info("All schedulers initialized");
   }
 
   /**
@@ -200,7 +200,9 @@ export class SchedulerManager {
         (stats.schedulers as Record<string, unknown>)[type] = schedulerStats;
       } catch (error) {
         logger.error(`Failed to get stats for ${type}: ${String(error)}`);
-        (stats.schedulers as Record<string, unknown>)[type] = { error: String(error) };
+        (stats.schedulers as Record<string, unknown>)[type] = {
+          error: String(error),
+        };
       }
     }
 
@@ -211,12 +213,12 @@ export class SchedulerManager {
    * Shutdown all schedulers
    */
   async shutdown(): Promise<void> {
-    logger.info('Shutting down all schedulers...');
+    logger.info("Shutting down all schedulers...");
     const promises = Array.from(this.schedulers.values()).map((scheduler) =>
-      scheduler.shutdown()
+      scheduler.shutdown(),
     );
     await Promise.all(promises);
-    logger.info('All schedulers shut down');
+    logger.info("All schedulers shut down");
   }
 
   /**

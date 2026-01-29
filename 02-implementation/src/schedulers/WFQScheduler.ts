@@ -2,7 +2,7 @@ import {
   DEFAULT_ESTIMATED_SERVICE_TIME_MS,
   DEFAULT_JOB_ATTEMPTS,
   DEFAULT_BACKOFF_DELAY_MS,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * WFQ (Weighted Fair Queuing) Scheduler
@@ -13,29 +13,31 @@ import {
  * SPEC-SCHED-004: WFQ implementation with per-tenant queues and weights
  */
 
-import { Queue, Job, Worker } from 'bullmq';
-import { redisManager } from '../infrastructure/redis';
-import { RequestLog } from '../infrastructure/models/RequestLog';
-import { mongodbManager } from '../infrastructure/mongodb';
+import { Queue, Job, Worker } from "bullmq";
+import { redisManager } from "../infrastructure/redis";
+import { RequestLog } from "../infrastructure/models/RequestLog";
+import { mongodbManager } from "../infrastructure/mongodb";
 import {
   LLMRequest,
   QueueJob,
   RequestStatus,
   RequestPriority,
-} from '../domain/models';
+} from "../domain/models";
+import { IScheduler, SchedulerConfig, SchedulerStats } from "./types";
+import { LLMService } from "../services/llmService";
 import {
-  IScheduler,
-  SchedulerConfig,
-  SchedulerStats,
-} from './types';
-import { LLMService } from '../services/llmService';
-import { TenantRegistry, TenantTier, DEFAULT_WEIGHTS } from '../managers/TenantRegistry';
-import { VirtualTimeTracker, VirtualFinishTime } from '../managers/VirtualTimeTracker';
-import { FairnessCalculator } from '../managers/FairnessCalculator';
-import { createLogger } from '../utils/logger';
+  TenantRegistry,
+  TenantTier,
+  DEFAULT_WEIGHTS,
+} from "../managers/TenantRegistry";
+import {
+  VirtualTimeTracker,
+  VirtualFinishTime,
+} from "../managers/VirtualTimeTracker";
+import { FairnessCalculator } from "../managers/FairnessCalculator";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('WFQScheduler');
-
+const logger = createLogger("WFQScheduler");
 
 interface WFQStats extends SchedulerStats {
   tenantCount: number;
@@ -91,7 +93,7 @@ export class WFQScheduler implements IScheduler {
       defaultJobOptions: {
         attempts: DEFAULT_JOB_ATTEMPTS,
         backoff: {
-          type: 'exponential',
+          type: "exponential",
           delay: DEFAULT_BACKOFF_DELAY_MS,
         },
       },
@@ -105,49 +107,60 @@ export class WFQScheduler implements IScheduler {
       {
         connection: bullmqConnection,
         concurrency: this.config.concurrency,
-      }
+      },
     );
 
-    this.worker.on('completed', (job: Job<WFQQueueJob>) => {
-      logger.info('Job ' + job.id + ' completed');
+    this.worker.on("completed", (job: Job<WFQQueueJob>) => {
+      logger.info("Job " + job.id + " completed");
       this.cleanupJobMetadata(job.data.requestId);
     });
 
-    this.worker.on('failed', (job: Job<WFQQueueJob> | undefined, error: Error) => {
-      logger.error('Job ' + (job?.id || 'unknown') + ' failed:', error);
-      if (job) {
-        this.cleanupJobMetadata(job.data.requestId);
-      }
-    });
+    this.worker.on(
+      "failed",
+      (job: Job<WFQQueueJob> | undefined, error: Error) => {
+        logger.error("Job " + (job?.id || "unknown") + " failed:", error);
+        if (job) {
+          this.cleanupJobMetadata(job.data.requestId);
+        }
+      },
+    );
 
-    logger.info('WFQ Scheduler "' + this.config.name + '" initialized with ' +
-      this.tenantRegistry.getTenantCount() + ' tenants');
+    logger.info(
+      'WFQ Scheduler "' +
+        this.config.name +
+        '" initialized with ' +
+        this.tenantRegistry.getTenantCount() +
+        " tenants",
+    );
     return Promise.resolve();
   }
 
   async submit(request: LLMRequest): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const queuedAt = new Date();
     this.jobTimings.set(request.id, { queued: queuedAt });
 
-    const tenantId = (request.metadata?.tenantId as string) || 'default';
-    const tenant = this.tenantRegistry.getTenant(tenantId) ||
-                   this.tenantRegistry.getOrCreateDefaultTenant();
+    const tenantId = (request.metadata?.tenantId as string) || "default";
+    const tenant =
+      this.tenantRegistry.getTenant(tenantId) ||
+      this.tenantRegistry.getOrCreateDefaultTenant();
 
     const weight = tenant.weight;
 
-    const estimatedServiceTime = request.metadata?.estimatedServiceTime as number ||
-                                  DEFAULT_ESTIMATED_SERVICE_TIME_MS;
+    const estimatedServiceTime =
+      (request.metadata?.estimatedServiceTime as number) ||
+      DEFAULT_ESTIMATED_SERVICE_TIME_MS;
 
-    const virtualFinishTime = this.virtualTimeTracker.calculateVirtualFinishTime(
-      request.id,
-      tenantId,
-      estimatedServiceTime,
-      weight
-    );
+    const virtualFinishTime =
+      this.virtualTimeTracker.calculateVirtualFinishTime(
+        request.id,
+        tenantId,
+        estimatedServiceTime,
+        weight,
+      );
 
     const wfqJobData: WFQQueueJob = {
       requestId: request.id,
@@ -162,23 +175,26 @@ export class WFQScheduler implements IScheduler {
 
     this.jobMetadata.set(request.id, wfqJobData);
 
-    const job = await this.queue.add(
-      'llm-request-' + request.id,
-      wfqJobData,
-      {
-        jobId: request.id,
-        priority: Math.floor(virtualFinishTime.virtualFinishTime),
-      }
-    );
+    const job = await this.queue.add("llm-request-" + request.id, wfqJobData, {
+      jobId: request.id,
+      priority: Math.floor(virtualFinishTime.virtualFinishTime),
+    });
 
-    await this.logRequest(request, RequestStatus.QUEUED, queuedAt, tenantId, weight, virtualFinishTime);
+    await this.logRequest(
+      request,
+      RequestStatus.QUEUED,
+      queuedAt,
+      tenantId,
+      weight,
+      virtualFinishTime,
+    );
 
     return job.id ?? request.id;
   }
 
   async getStatus(requestId: string): Promise<string> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -189,14 +205,14 @@ export class WFQScheduler implements IScheduler {
     const state = await job.getState();
 
     switch (state) {
-      case 'waiting':
-      case 'delayed':
+      case "waiting":
+      case "delayed":
         return RequestStatus.QUEUED;
-      case 'active':
+      case "active":
         return RequestStatus.PROCESSING;
-      case 'completed':
+      case "completed":
         return RequestStatus.COMPLETED;
-      case 'failed':
+      case "failed":
         return RequestStatus.FAILED;
       default:
         return RequestStatus.PENDING;
@@ -205,7 +221,7 @@ export class WFQScheduler implements IScheduler {
 
   async cancel(requestId: string): Promise<boolean> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const job = await this.queue.getJob(requestId);
@@ -220,7 +236,7 @@ export class WFQScheduler implements IScheduler {
 
   async getStats(): Promise<WFQStats> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
 
     const counts = await this.queue.getJobCounts();
@@ -245,14 +261,14 @@ export class WFQScheduler implements IScheduler {
 
   async pause(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.pause();
   }
 
   async resume(): Promise<void> {
     if (!this.queue) {
-      throw new Error('Scheduler not initialized');
+      throw new Error("Scheduler not initialized");
     }
     await this.queue.resume();
   }
@@ -279,7 +295,8 @@ export class WFQScheduler implements IScheduler {
       timing.started = startedAt;
     }
 
-    const waitTime = startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
+    const waitTime =
+      startedAt.getTime() - (timing?.queued.getTime() || startedAt.getTime());
 
     this.activeTenantWeights.set(tenantId, weight);
     const activeWeightSum = this.getActiveWeightSum();
@@ -289,8 +306,15 @@ export class WFQScheduler implements IScheduler {
       const completedAt = new Date();
       const processingTime = completedAt.getTime() - startedAt.getTime();
 
-      this.virtualTimeTracker.updateVirtualTime(processingTime, activeWeightSum);
-      this.fairnessCalculator.recordRequestCompletion(tenantId, processingTime, waitTime);
+      this.virtualTimeTracker.updateVirtualTime(
+        processingTime,
+        activeWeightSum,
+      );
+      this.fairnessCalculator.recordRequestCompletion(
+        tenantId,
+        processingTime,
+        waitTime,
+      );
 
       await this.logResponse(
         requestId,
@@ -298,7 +322,7 @@ export class WFQScheduler implements IScheduler {
         response,
         waitTime,
         processingTime,
-        completedAt
+        completedAt,
       );
 
       return response;
@@ -307,7 +331,10 @@ export class WFQScheduler implements IScheduler {
       const processingTime = completedAt.getTime() - startedAt.getTime();
       const errorMsg = error instanceof Error ? error.message : String(error);
 
-      this.virtualTimeTracker.updateVirtualTime(processingTime, activeWeightSum);
+      this.virtualTimeTracker.updateVirtualTime(
+        processingTime,
+        activeWeightSum,
+      );
 
       await this.logResponse(
         requestId,
@@ -316,7 +343,7 @@ export class WFQScheduler implements IScheduler {
         waitTime,
         processingTime,
         completedAt,
-        errorMsg
+        errorMsg,
       );
 
       throw error;
@@ -339,7 +366,7 @@ export class WFQScheduler implements IScheduler {
     timestamp: Date,
     tenantId: string,
     weight: number,
-    virtualFinishTime: VirtualFinishTime
+    virtualFinishTime: VirtualFinishTime,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -348,7 +375,7 @@ export class WFQScheduler implements IScheduler {
         requestId: request.id,
         prompt: request.prompt,
         provider: request.provider.name,
-        modelName: request.provider.model || 'default',
+        modelName: request.provider.model || "default",
         priority: request.priority,
         status,
         processingTime: 0,
@@ -360,7 +387,7 @@ export class WFQScheduler implements IScheduler {
         updatedAt: timestamp,
       });
     } catch (error) {
-      logger.error('Failed to log request:', error);
+      logger.error("Failed to log request:", error);
     }
   }
 
@@ -371,7 +398,7 @@ export class WFQScheduler implements IScheduler {
     waitTime: number = 0,
     processingTime: number = 0,
     completedAt?: Date,
-    error?: string
+    error?: string,
   ): Promise<void> {
     try {
       await mongodbManager.connect();
@@ -386,10 +413,10 @@ export class WFQScheduler implements IScheduler {
           completedAt,
           error,
           updatedAt: new Date(),
-        }
+        },
       );
     } catch (logError) {
-      logger.error('Failed to log response:', logError);
+      logger.error("Failed to log response:", logError);
     }
   }
 
@@ -419,7 +446,7 @@ export class WFQScheduler implements IScheduler {
     tenantId: string,
     name: string,
     tier: TenantTier,
-    customWeight?: number
+    customWeight?: number,
   ): void {
     const weight = customWeight ?? DEFAULT_WEIGHTS[tier];
     this.tenantRegistry.registerTenant({

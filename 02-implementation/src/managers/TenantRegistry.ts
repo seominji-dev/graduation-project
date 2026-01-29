@@ -1,4 +1,3 @@
-
 /**
  * Tenant Registry
  *
@@ -8,19 +7,19 @@
  * SPEC-SCHED-004: Weight-based fair queuing for multi-tenant LLM requests
  */
 
-import { createLogger } from '../utils/logger';
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('TenantRegistry');
+const logger = createLogger("TenantRegistry");
 
 /**
  * Default tenant weights based on service tier
  * Higher weight = larger share of processing capacity
  */
 export enum TenantTier {
-  ENTERPRISE = 'enterprise',
-  PREMIUM = 'premium',
-  STANDARD = 'standard',
-  FREE = 'free',
+  ENTERPRISE = "enterprise",
+  PREMIUM = "premium",
+  STANDARD = "standard",
+  FREE = "free",
 }
 
 // Default weights for each tier
@@ -67,19 +66,27 @@ export interface Tenant {
  */
 export class TenantRegistry {
   private tenants: Map<string, Tenant> = new Map();
-  private defaultTenantId: string = 'default';
+  private defaultTenantId: string = "default";
 
   /**
    * Register a new tenant
    */
-  registerTenant(tenant: Omit<Tenant, 'createdAt'>): Tenant {
+  registerTenant(tenant: Omit<Tenant, "createdAt">): Tenant {
     const fullTenant: Tenant = {
       ...tenant,
       createdAt: new Date(),
     };
 
     this.tenants.set(tenant.id, fullTenant);
-    logger.info('Tenant registered: ' + tenant.id + ' (tier: ' + tenant.tier + ', weight: ' + tenant.weight + ')');
+    logger.info(
+      "Tenant registered: " +
+        tenant.id +
+        " (tier: " +
+        tenant.tier +
+        ", weight: " +
+        tenant.weight +
+        ")",
+    );
 
     return fullTenant;
   }
@@ -122,7 +129,7 @@ export class TenantRegistry {
 
     tenant.weight = newWeight;
     this.tenants.set(tenantId, tenant);
-    logger.info('Tenant weight updated: ' + tenantId + ' -> ' + newWeight);
+    logger.info("Tenant weight updated: " + tenantId + " -> " + newWeight);
 
     return true;
   }
@@ -141,7 +148,15 @@ export class TenantRegistry {
     tenant.weight = DEFAULT_WEIGHTS[newTier];
     this.tenants.set(tenantId, tenant);
 
-    logger.info('Tenant tier updated: ' + tenantId + ' (' + oldTier + ' -> ' + newTier + ')');
+    logger.info(
+      "Tenant tier updated: " +
+        tenantId +
+        " (" +
+        oldTier +
+        " -> " +
+        newTier +
+        ")",
+    );
 
     return true;
   }
@@ -178,7 +193,7 @@ export class TenantRegistry {
     if (!this.hasTenant(this.defaultTenantId)) {
       this.registerTenant({
         id: this.defaultTenantId,
-        name: 'Default Tenant',
+        name: "Default Tenant",
         tier: TenantTier.STANDARD,
         weight: DEFAULT_WEIGHTS[TenantTier.STANDARD],
       });
@@ -214,29 +229,29 @@ export class TenantRegistry {
   initializeDefaultTenants(): void {
     // Create sample tenants for each tier
     this.registerTenant({
-      id: 'tenant-enterprise',
-      name: 'Enterprise Client',
+      id: "tenant-enterprise",
+      name: "Enterprise Client",
       tier: TenantTier.ENTERPRISE,
       weight: DEFAULT_WEIGHTS[TenantTier.ENTERPRISE],
     });
 
     this.registerTenant({
-      id: 'tenant-premium',
-      name: 'Premium Client',
+      id: "tenant-premium",
+      name: "Premium Client",
       tier: TenantTier.PREMIUM,
       weight: DEFAULT_WEIGHTS[TenantTier.PREMIUM],
     });
 
     this.registerTenant({
-      id: 'tenant-standard',
-      name: 'Standard Client',
+      id: "tenant-standard",
+      name: "Standard Client",
       tier: TenantTier.STANDARD,
       weight: DEFAULT_WEIGHTS[TenantTier.STANDARD],
     });
 
     this.registerTenant({
-      id: 'tenant-free',
-      name: 'Free Tier Client',
+      id: "tenant-free",
+      name: "Free Tier Client",
       tier: TenantTier.FREE,
       weight: DEFAULT_WEIGHTS[TenantTier.FREE],
     });

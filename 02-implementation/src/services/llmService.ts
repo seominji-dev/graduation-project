@@ -1,20 +1,20 @@
 import {
   DEFAULT_LLM_TEMPERATURE,
   DEFAULT_LLM_MAX_TOKENS,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * LLM Service
  * Handles communication with LLM providers (Ollama, OpenAI)
  */
 
-import { LLMProvider } from '../domain/models';
-import { config } from '../config';
-import ollama from 'ollama';
-import OpenAI from 'openai';
-import { createLogger } from '../utils/logger';
+import { LLMProvider } from "../domain/models";
+import { config } from "../config";
+import ollama from "ollama";
+import OpenAI from "openai";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('LLMService');
+const logger = createLogger("LLMService");
 
 export interface LLMResponse {
   content: string;
@@ -43,17 +43,20 @@ export class LLMService {
   async process(prompt: string, provider: LLMProvider): Promise<string> {
     try {
       switch (provider.name) {
-        case 'ollama':
-          return await this.processOllama(prompt, provider.model || 'llama2');
-        case 'openai':
-          return await this.processOpenAI(prompt, provider.model || 'gpt-3.5-turbo');
+        case "ollama":
+          return await this.processOllama(prompt, provider.model || "llama2");
+        case "openai":
+          return await this.processOpenAI(
+            prompt,
+            provider.model || "gpt-3.5-turbo",
+          );
         default:
-          throw new Error('Unsupported provider: ' + String(provider.name));
+          throw new Error("Unsupported provider: " + String(provider.name));
       }
     } catch (error) {
-      logger.error('LLM processing error:', error);
+      logger.error("LLM processing error:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
-      throw new Error('LLM processing failed: ' + errorMsg);
+      throw new Error("LLM processing failed: " + errorMsg);
     }
   }
 
@@ -63,15 +66,15 @@ export class LLMService {
   private async processOllama(prompt: string, model: string): Promise<string> {
     try {
       const response = await this.ollamaClient.generate({
-        model: model || 'llama2',
+        model: model || "llama2",
         prompt: prompt,
       });
 
       return response.response;
     } catch (error) {
-      logger.error('Ollama error:', error);
+      logger.error("Ollama error:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
-      throw new Error('Ollama processing failed: ' + errorMsg);
+      throw new Error("Ollama processing failed: " + errorMsg);
     }
   }
 
@@ -80,15 +83,15 @@ export class LLMService {
    */
   private async processOpenAI(prompt: string, model: string): Promise<string> {
     if (!this.openaiClient) {
-      throw new Error('OpenAI client not initialized (missing API key)');
+      throw new Error("OpenAI client not initialized (missing API key)");
     }
 
     try {
       const response = await this.openaiClient.chat.completions.create({
-        model: model || 'gpt-3.5-turbo',
+        model: model || "gpt-3.5-turbo",
         messages: [
           {
-            role: 'user',
+            role: "user",
             content: prompt,
           },
         ],
@@ -96,11 +99,11 @@ export class LLMService {
         max_tokens: DEFAULT_LLM_MAX_TOKENS,
       });
 
-      return response.choices[0]?.message?.content || '';
+      return response.choices[0]?.message?.content || "";
     } catch (error) {
-      logger.error('OpenAI error:', error);
+      logger.error("OpenAI error:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
-      throw new Error('OpenAI processing failed: ' + errorMsg);
+      throw new Error("OpenAI processing failed: " + errorMsg);
     }
   }
 
@@ -121,7 +124,7 @@ export class LLMService {
       await this.ollamaClient.list();
       results.ollama = true;
     } catch (error) {
-      logger.warn('Ollama health check failed:', error);
+      logger.warn("Ollama health check failed:", error);
     }
 
     // Check OpenAI
@@ -130,7 +133,7 @@ export class LLMService {
         await this.openaiClient.models.list();
         results.openai = true;
       } catch (error) {
-        logger.warn('OpenAI health check failed:', error);
+        logger.warn("OpenAI health check failed:", error);
       }
     }
 

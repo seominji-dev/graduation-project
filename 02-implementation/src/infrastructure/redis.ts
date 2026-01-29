@@ -3,11 +3,11 @@
  * Manages BullMQ Redis connection for queue system
  */
 
-import Redis from 'ioredis';
-import { config } from '../config';
-import { createLogger } from '../utils/logger';
+import Redis from "ioredis";
+import { config } from "../config";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('Redis');
+const logger = createLogger("Redis");
 
 class RedisManager {
   private client: Redis | null = null;
@@ -30,12 +30,12 @@ class RedisManager {
         },
       });
 
-      this.client.on('error', (err) => {
-        logger.error('Redis connection error:', err);
+      this.client.on("error", (err) => {
+        logger.error("Redis connection error:", err);
       });
 
-      this.client.on('connect', () => {
-        logger.info('Redis connected successfully');
+      this.client.on("connect", () => {
+        logger.info("Redis connected successfully");
       });
     }
 
@@ -56,12 +56,12 @@ class RedisManager {
         enableReadyCheck: false,
       });
 
-      this.bullmqConnection.on('error', (err) => {
-        logger.error('BullMQ Redis connection error:', err);
+      this.bullmqConnection.on("error", (err) => {
+        logger.error("BullMQ Redis connection error:", err);
       });
 
-      this.bullmqConnection.on('connect', () => {
-        logger.info('BullMQ Redis connected successfully');
+      this.bullmqConnection.on("connect", () => {
+        logger.info("BullMQ Redis connected successfully");
       });
     }
 

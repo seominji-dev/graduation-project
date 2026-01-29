@@ -2,7 +2,7 @@
  * Mock RequestLog Model for Unit Tests
  */
 
-import { IRequestLog } from '../RequestLog';
+import { IRequestLog } from "../RequestLog";
 
 // Mock RequestLog model
 class MockRequestLog {
@@ -27,13 +27,13 @@ class MockRequestLog {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(data: any = {}) {
-    this.requestId = data.requestId || 'test-request-id';
-    this.prompt = data.prompt || 'Test prompt';
-    this.provider = data.provider || 'ollama';
-    this.modelName = data.modelName || 'llama2';
+  constructor(data: Partial<IRequestLog> = {}) {
+    this.requestId = data.requestId || "test-request-id";
+    this.prompt = data.prompt || "Test prompt";
+    this.provider = data.provider || "ollama";
+    this.modelName = data.modelName || "llama2";
     this.priority = data.priority || 1;
-    this.status = data.status || 'pending';
+    this.status = data.status || "pending";
     this.processingTime = data.processingTime || 0;
     this.waitTime = data.waitTime || 0;
     this.createdAt = data.createdAt || new Date();
@@ -44,7 +44,7 @@ class MockRequestLog {
     return this;
   }
 
-  static async create(data: any): Promise<MockRequestLog> {
+  static async create(data: Partial<IRequestLog>): Promise<MockRequestLog> {
     return new MockRequestLog(data);
   }
 
@@ -77,5 +77,15 @@ class MockRequestLog {
   }
 }
 
-export const RequestLog = MockRequestLog as any;
+export const RequestLog = MockRequestLog as unknown as typeof MockRequestLog & {
+  create: (data: Partial<IRequestLog>) => Promise<MockRequestLog>;
+  findOne: () => Promise<null>;
+  findById: () => Promise<null>;
+  findByIdAndUpdate: () => Promise<null>;
+  updateOne: () => Promise<{ modifiedCount: number }>;
+  deleteOne: () => Promise<{ deletedCount: number }>;
+  find: () => Promise<{ exec: () => Promise<[]> }>;
+  countDocuments: () => Promise<number>;
+};
+
 export type { IRequestLog };

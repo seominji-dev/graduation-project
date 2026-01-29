@@ -28,18 +28,25 @@ export interface TenantServiceStats {
 }
 
 export class FairnessCalculator {
-  private tenantStats: Map<string, {
-    requestsProcessed: number;
-    totalProcessingTime: number;
-    totalWaitTime: number;
-    firstRequestTime: number;
-    lastRequestTime: number;
-  }> = new Map();
+  private tenantStats: Map<
+    string,
+    {
+      requestsProcessed: number;
+      totalProcessingTime: number;
+      totalWaitTime: number;
+      firstRequestTime: number;
+      lastRequestTime: number;
+    }
+  > = new Map();
 
   private totalRequestsProcessed: number = 0;
   private startTime: number = Date.now();
 
-  recordRequestCompletion(tenantId: string, processingTime: number, waitTime: number): void {
+  recordRequestCompletion(
+    tenantId: string,
+    processingTime: number,
+    waitTime: number,
+  ): void {
     const stats = this.tenantStats.get(tenantId) || {
       requestsProcessed: 0,
       totalProcessingTime: 0,
@@ -84,9 +91,10 @@ export class FairnessCalculator {
       const stats = this.tenantStats.get(tenantId)!;
       const elapsedSeconds = Math.max(1, (Date.now() - this.startTime) / 1000);
       const throughput = stats.requestsProcessed / elapsedSeconds;
-      const avgWaitTime = stats.requestsProcessed > 0
-        ? stats.totalWaitTime / stats.requestsProcessed
-        : 0;
+      const avgWaitTime =
+        stats.requestsProcessed > 0
+          ? stats.totalWaitTime / stats.requestsProcessed
+          : 0;
 
       throughputs.push(throughput);
       tenantThroughput.set(tenantId, throughput);
@@ -96,8 +104,8 @@ export class FairnessCalculator {
     const jainsFairnessIndex = this.calculateJainsFairnessIndex(throughputs);
     const fairnessScore = jainsFairnessIndex * 100;
 
-    let mostFavoredTenant = '';
-    let leastFavoredTenant = '';
+    let mostFavoredTenant = "";
+    let leastFavoredTenant = "";
     let maxThroughput = -1;
     let minThroughput = Infinity;
 
@@ -112,7 +120,8 @@ export class FairnessCalculator {
       }
     }
 
-    const disparityRatio = minThroughput > 0 ? maxThroughput / minThroughput : 0;
+    const disparityRatio =
+      minThroughput > 0 ? maxThroughput / minThroughput : 0;
 
     return {
       jainsFairnessIndex,
@@ -131,14 +140,19 @@ export class FairnessCalculator {
       return null;
     }
 
-    const elapsedSeconds = Math.max(1, (Date.now() - stats.firstRequestTime) / 1000);
+    const elapsedSeconds = Math.max(
+      1,
+      (Date.now() - stats.firstRequestTime) / 1000,
+    );
     const throughput = stats.requestsProcessed / elapsedSeconds;
-    const avgProcessingTime = stats.requestsProcessed > 0
-      ? stats.totalProcessingTime / stats.requestsProcessed
-      : 0;
-    const avgWaitTime = stats.requestsProcessed > 0
-      ? stats.totalWaitTime / stats.requestsProcessed
-      : 0;
+    const avgProcessingTime =
+      stats.requestsProcessed > 0
+        ? stats.totalProcessingTime / stats.requestsProcessed
+        : 0;
+    const avgWaitTime =
+      stats.requestsProcessed > 0
+        ? stats.totalWaitTime / stats.requestsProcessed
+        : 0;
 
     return {
       tenantId,
@@ -202,29 +216,35 @@ export class FairnessCalculator {
     const metrics = this.getFairnessMetrics();
     const lines: string[] = [];
 
-    lines.push('=== Fairness Report ===');
-    lines.push('');
-    lines.push('Overall Metrics:');
-    lines.push("  Jain's Fairness Index: " + metrics.jainsFairnessIndex.toFixed(4));
-    lines.push('  Fairness Score: ' + metrics.fairnessScore.toFixed(2) + '/100');
-    lines.push('  Active Tenants: ' + this.getActiveTenantCount());
-    lines.push('  Total Requests Processed: ' + this.getTotalRequestsProcessed());
-    lines.push('');
-    lines.push('Tenant Performance:');
+    lines.push("=== Fairness Report ===");
+    lines.push("");
+    lines.push("Overall Metrics:");
+    lines.push(
+      "  Jain's Fairness Index: " + metrics.jainsFairnessIndex.toFixed(4),
+    );
+    lines.push(
+      "  Fairness Score: " + metrics.fairnessScore.toFixed(2) + "/100",
+    );
+    lines.push("  Active Tenants: " + this.getActiveTenantCount());
+    lines.push(
+      "  Total Requests Processed: " + this.getTotalRequestsProcessed(),
+    );
+    lines.push("");
+    lines.push("Tenant Performance:");
 
     for (const [tenantId, throughput] of metrics.tenantThroughput) {
       const avgWait = metrics.tenantWaitTime.get(tenantId) || 0;
-      lines.push('  ' + tenantId + ':');
-      lines.push('    Throughput: ' + throughput.toFixed(4) + ' req/s');
-      lines.push('    Avg Wait Time: ' + avgWait.toFixed(2) + 'ms');
+      lines.push("  " + tenantId + ":");
+      lines.push("    Throughput: " + throughput.toFixed(4) + " req/s");
+      lines.push("    Avg Wait Time: " + avgWait.toFixed(2) + "ms");
     }
 
-    lines.push('');
-    lines.push('Fairness Analysis:');
-    lines.push('  Most Favored: ' + metrics.mostFavoredTenant);
-    lines.push('  Least Favored: ' + metrics.leastFavoredTenant);
-    lines.push('  Disparity Ratio: ' + metrics.disparityRatio.toFixed(2) + 'x');
+    lines.push("");
+    lines.push("Fairness Analysis:");
+    lines.push("  Most Favored: " + metrics.mostFavoredTenant);
+    lines.push("  Least Favored: " + metrics.leastFavoredTenant);
+    lines.push("  Disparity Ratio: " + metrics.disparityRatio.toFixed(2) + "x");
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 }

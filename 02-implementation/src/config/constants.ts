@@ -14,7 +14,12 @@ export const MLFQ_QUEUE_LEVELS = 4;
 export const MLFQ_TIME_QUANTA = [1000, 3000, 8000, Infinity] as const;
 
 /** Queue names for MLFQ levels */
-export const MLFQ_QUEUE_NAMES = ['mlfq-q0', 'mlfq-q1', 'mlfq-q2', 'mlfq-q3'] as const;
+export const MLFQ_QUEUE_NAMES = [
+  "mlfq-q0",
+  "mlfq-q1",
+  "mlfq-q2",
+  "mlfq-q3",
+] as const;
 
 // =============================================================================
 // Aging Manager Constants
@@ -89,10 +94,10 @@ export const DEFAULT_LLM_TEMPERATURE = 0.7;
 export const DEFAULT_LLM_MAX_TOKENS = 1000;
 
 /** Default Ollama model */
-export const DEFAULT_OLLAMA_MODEL = 'llama2';
+export const DEFAULT_OLLAMA_MODEL = "llama2";
 
 /** Default OpenAI model */
-export const DEFAULT_OPENAI_MODEL = 'gpt-3.5-turbo';
+export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 
 // =============================================================================
 // Priority Calculation

@@ -3,28 +3,27 @@
  * Handles HTTP requests for LLM scheduling
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { z } from 'zod';
-import { IScheduler } from '../../schedulers/types';
+import { Request, Response, NextFunction } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import { IScheduler } from "../../schedulers/types";
 import {
   LLMRequest,
-  
   RequestPriority,
   RequestStatus,
-} from '../../domain/models';
+} from "../../domain/models";
 
 // Request validation schema
 const CreateRequestSchema = z.object({
-  prompt: z.string().min(1, 'Prompt is required'),
+  prompt: z.string().min(1, "Prompt is required"),
   provider: z.object({
-    name: z.enum(['ollama', 'openai']),
+    name: z.enum(["ollama", "openai"]),
     model: z.string().optional(),
     baseUrl: z.string().optional(),
     apiKey: z.string().optional(),
   }),
   priority: z.nativeEnum(RequestPriority).optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export class RequestController {
@@ -38,7 +37,11 @@ export class RequestController {
    * POST /api/requests
    * Submit a new LLM request (REQ-SCHED-101: Queue and return ID)
    */
-  createRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  createRequest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       // Validate request body
       const validatedData = CreateRequestSchema.parse(req.body);
@@ -68,13 +71,13 @@ export class RequestController {
           priority: request.priority,
           createdAt: request.createdAt,
         },
-        message: 'Request queued successfully',
+        message: "Request queued successfully",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({
           success: false,
-          error: 'Validation error',
+          error: "Validation error",
           details: error.errors,
         });
         return;
@@ -87,7 +90,11 @@ export class RequestController {
    * GET /api/requests/:id
    * Get request status
    */
-  getRequestStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getRequestStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { id } = req.params;
 
@@ -109,7 +116,11 @@ export class RequestController {
    * DELETE /api/requests/:id
    * Cancel a request
    */
-  cancelRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  cancelRequest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { id } = req.params;
 
@@ -118,7 +129,7 @@ export class RequestController {
       if (!cancelled) {
         res.status(404).json({
           success: false,
-          error: 'Request not found or cannot be cancelled',
+          error: "Request not found or cannot be cancelled",
         });
         return;
       }
@@ -129,7 +140,7 @@ export class RequestController {
           requestId: id,
           status: RequestStatus.CANCELLED,
         },
-        message: 'Request cancelled successfully',
+        message: "Request cancelled successfully",
       });
     } catch (error) {
       next(error);
@@ -140,7 +151,11 @@ export class RequestController {
    * GET /api/scheduler/stats
    * Get scheduler statistics
    */
-  getSchedulerStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getSchedulerStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const stats = await this.scheduler.getStats();
 

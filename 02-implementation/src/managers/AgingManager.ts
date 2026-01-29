@@ -2,21 +2,21 @@ import {
   AGING_INTERVAL_MS,
   AGING_THRESHOLD_MS,
   MAX_AGE_PROMOTIONS,
-} from '../config/constants.js';
+} from "../config/constants.js";
 
 /**
  * Aging Manager
- * 
+ *
  * Implements aging mechanism for priority scheduling to prevent starvation.
  * Periodically promotes long-waiting jobs to higher priority levels.
- * 
+ *
  * REQ-SCHED-401: Aging to prevent starvation
  */
 
-import { RequestPriority } from '../domain/models';
-import { createLogger } from '../utils/logger';
+import { RequestPriority } from "../domain/models";
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('AgingManager');
+const logger = createLogger("AgingManager");
 
 /**
  * Aging configuration
@@ -26,8 +26,13 @@ const logger = createLogger('AgingManager');
  * Interface for PriorityScheduler to allow AgingManager to update job priorities
  */
 export interface IPriorityScheduler {
-  updateJobPriority(jobId: string, newPriority: RequestPriority): Promise<boolean>;
-  getWaitingJobs(): Promise<Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>>;
+  updateJobPriority(
+    jobId: string,
+    newPriority: RequestPriority,
+  ): Promise<boolean>;
+  getWaitingJobs(): Promise<
+    Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>
+  >;
 }
 
 export class AgingManager {
@@ -46,11 +51,13 @@ export class AgingManager {
    */
   start(): void {
     if (this.intervalId) {
-      logger.warn('AgingManager already started');
+      logger.warn("AgingManager already started");
       return;
     }
 
-    logger.info('Starting AgingManager (interval: ' + AGING_INTERVAL_MS + 'ms)');
+    logger.info(
+      "Starting AgingManager (interval: " + AGING_INTERVAL_MS + "ms)",
+    );
 
     // Run aging immediately on start
     void this.runAging();
@@ -71,14 +78,14 @@ export class AgingManager {
    */
   stop(): void {
     this.isStopped = true;
-    
+
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
     this.agingCount.clear();
     this.scheduler = null;
-    logger.info('AgingManager stopped');
+    logger.info("AgingManager stopped");
   }
 
   /**
@@ -93,7 +100,7 @@ export class AgingManager {
     try {
       const now = Date.now();
       const waitingJobs = await this.scheduler.getWaitingJobs();
-      
+
       let promotedCount = 0;
 
       for (const job of waitingJobs) {
@@ -103,19 +110,36 @@ export class AgingManager {
         if (waitTime > AGING_THRESHOLD_MS) {
           // Calculate potential new priority
           const currentPromotions = this.agingCount.get(job.jobId) || 0;
-          
-          if (currentPromotions < MAX_AGE_PROMOTIONS && job.priority < RequestPriority.URGENT) {
-            const newPriority = this.promotePriority(job.priority, currentPromotions);
-            
+
+          if (
+            currentPromotions < MAX_AGE_PROMOTIONS &&
+            job.priority < RequestPriority.URGENT
+          ) {
+            const newPriority = this.promotePriority(
+              job.priority,
+              currentPromotions,
+            );
+
             if (newPriority !== job.priority) {
-              const success = await this.scheduler.updateJobPriority(job.jobId, newPriority);
-              
+              const success = await this.scheduler.updateJobPriority(
+                job.jobId,
+                newPriority,
+              );
+
               if (success) {
                 this.agingCount.set(job.jobId, currentPromotions + 1);
                 promotedCount++;
-                logger.debug('Aging: Promoted job ' + job.jobId + ' from ' + 
-                  RequestPriority[job.priority] + ' to ' + RequestPriority[newPriority] +
-                  ' (wait time: ' + Math.round(waitTime / 1000) + 's)');
+                logger.debug(
+                  "Aging: Promoted job " +
+                    job.jobId +
+                    " from " +
+                    RequestPriority[job.priority] +
+                    " to " +
+                    RequestPriority[newPriority] +
+                    " (wait time: " +
+                    Math.round(waitTime / 1000) +
+                    "s)",
+                );
               }
             }
           }
@@ -123,22 +147,27 @@ export class AgingManager {
       }
 
       if (promotedCount > 0) {
-        logger.debug('Aging cycle complete: promoted ' + promotedCount + ' jobs');
+        logger.debug(
+          "Aging cycle complete: promoted " + promotedCount + " jobs",
+        );
       }
     } catch (error) {
-      logger.error('Aging cycle failed:', error);
+      logger.error("Aging cycle failed:", error);
     }
   }
 
   /**
    * Calculate promoted priority based on current priority and promotion count
    */
-  private promotePriority(currentPriority: RequestPriority, promotionCount: number): RequestPriority {
+  private promotePriority(
+    currentPriority: RequestPriority,
+    promotionCount: number,
+  ): RequestPriority {
     // Each promotion increases priority by one level
     // MAX_AGE_PROMOTIONS limits how many levels a job can be promoted
     const newLevel = Math.min(
       currentPriority + promotionCount + 1,
-      RequestPriority.URGENT
+      RequestPriority.URGENT,
     );
     return newLevel as RequestPriority;
   }

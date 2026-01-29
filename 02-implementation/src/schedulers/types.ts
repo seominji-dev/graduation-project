@@ -3,15 +3,15 @@
  * Defines the contract for all scheduling algorithms
  */
 
-import type { Queue as _Queue } from 'bullmq';
-import { LLMRequest, QueueJob } from '../domain/models';
+import type { Queue as _Queue } from "bullmq";
+import { LLMRequest, QueueJob } from "../domain/models";
 
 // Scheduler Type Enum
 export enum SchedulerType {
-  FCFS = 'FCFS',
-  PRIORITY = 'PRIORITY',
-  MLFQ = 'MLFQ',
-  WFQ = 'WFQ',
+  FCFS = "FCFS",
+  PRIORITY = "PRIORITY",
+  MLFQ = "MLFQ",
+  WFQ = "WFQ",
 }
 
 // Scheduler Configuration
@@ -24,17 +24,31 @@ export interface SchedulerConfig {
 }
 
 // Extended config types for specific schedulers
-export type FCFSSchedulerConfig = Required<Pick<SchedulerConfig, 'name' | 'defaultPriority' | 'concurrency'>> &
-  Partial<Pick<SchedulerConfig, 'agingInterval' | 'boostInterval'>>;
+export type FCFSSchedulerConfig = Required<
+  Pick<SchedulerConfig, "name" | "defaultPriority" | "concurrency">
+> &
+  Partial<Pick<SchedulerConfig, "agingInterval" | "boostInterval">>;
 
-export type PrioritySchedulerConfig = Required<Pick<SchedulerConfig, 'name' | 'defaultPriority' | 'concurrency' | 'agingInterval'>> &
-  Partial<Pick<SchedulerConfig, 'boostInterval'>>;
+export type PrioritySchedulerConfig = Required<
+  Pick<
+    SchedulerConfig,
+    "name" | "defaultPriority" | "concurrency" | "agingInterval"
+  >
+> &
+  Partial<Pick<SchedulerConfig, "boostInterval">>;
 
-export type MLFQSchedulerConfig = Required<Pick<SchedulerConfig, 'name' | 'defaultPriority' | 'concurrency' | 'boostInterval'>> &
-  Partial<Pick<SchedulerConfig, 'agingInterval'>>;
+export type MLFQSchedulerConfig = Required<
+  Pick<
+    SchedulerConfig,
+    "name" | "defaultPriority" | "concurrency" | "boostInterval"
+  >
+> &
+  Partial<Pick<SchedulerConfig, "agingInterval">>;
 
-export type WFQSchedulerConfig = Required<Pick<SchedulerConfig, 'name' | 'defaultPriority' | 'concurrency'>> &
-  Partial<Pick<SchedulerConfig, 'agingInterval' | 'boostInterval'>>;
+export type WFQSchedulerConfig = Required<
+  Pick<SchedulerConfig, "name" | "defaultPriority" | "concurrency">
+> &
+  Partial<Pick<SchedulerConfig, "agingInterval" | "boostInterval">>;
 
 // Scheduler Metrics
 export interface SchedulerStats {

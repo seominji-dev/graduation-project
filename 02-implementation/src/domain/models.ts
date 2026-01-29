@@ -3,7 +3,7 @@
  * Core domain entities and value objects
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // Request Priority Enum
 export enum RequestPriority {
@@ -15,17 +15,17 @@ export enum RequestPriority {
 
 // Request Status Enum
 export enum RequestStatus {
-  PENDING = 'pending',
-  QUEUED = 'queued',
-  PROCESSING = 'processing',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELLED = 'cancelled',
+  PENDING = "pending",
+  QUEUED = "queued",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
 }
 
 // LLM Provider Schema
 export const LLMProviderSchema = z.object({
-  name: z.enum(['ollama', 'openai']),
+  name: z.enum(["ollama", "openai"]),
   model: z.string().optional(),
   baseUrl: z.string().optional(),
   apiKey: z.string().optional(),
@@ -40,7 +40,7 @@ export const LLMRequestSchema = z.object({
   provider: LLMProviderSchema,
   priority: z.nativeEnum(RequestPriority).default(RequestPriority.NORMAL),
   status: z.nativeEnum(RequestStatus).default(RequestStatus.PENDING),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -67,7 +67,7 @@ export const QueueJobSchema = z.object({
   priority: z.nativeEnum(RequestPriority),
   attempts: z.number().default(0),
   queuedAt: z.date().optional(), // Timestamp when job was queued (for aging)
-  tenantId: z.string().optional().default('default'), // Tenant ID for WFQ
+  tenantId: z.string().optional().default("default"), // Tenant ID for WFQ
   weight: z.number().optional().default(10), // Tenant weight for WFQ
 });
 

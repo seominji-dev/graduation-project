@@ -4,20 +4,20 @@
  * Provides mock Redis connections for BullMQ Queue and Worker
  */
 
-import { EventEmitter } from 'events';
-import { createLogger } from '../../utils/logger';
+import { EventEmitter } from "events";
+import { createLogger } from "../../utils/logger";
 
-const logger = createLogger('MockRedis');
+const logger = createLogger("MockRedis");
 
 class MockRedisConnection extends EventEmitter {
-  status = 'ready';
+  status = "ready";
   options = {
-    host: 'localhost',
+    host: "localhost",
     port: 6379,
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
   };
-  keyPrefix = 'bull';
+  keyPrefix = "bull";
   _client = this; // Reference to self for BullMQ internal use
   commands: Map<string, unknown> = new Map();
 
@@ -25,22 +25,22 @@ class MockRedisConnection extends EventEmitter {
     return new MockRedisConnection();
   }
   async connect() {
-    this.emit('connect');
+    this.emit("connect");
     return this;
   }
   async disconnect() {
-    this.status = 'closed';
-    return 'OK';
+    this.status = "closed";
+    return "OK";
   }
   async quit() {
-    this.status = 'closed';
-    return 'OK';
+    this.status = "closed";
+    return "OK";
   }
   async get() {
     return null;
   }
   async set() {
-    return 'OK';
+    return "OK";
   }
   async del() {
     return 1;
@@ -64,18 +64,18 @@ class MockRedisConnection extends EventEmitter {
     return [];
   }
   async flushdb() {
-    return 'OK';
+    return "OK";
   }
   async ping() {
-    return 'PONG';
+    return "PONG";
   }
   // Server info method
   async info() {
-    return 'redis_version:7.0.0';
+    return "redis_version:7.0.0";
   }
   // Stream methods for BullMQ
   async xadd() {
-    return '1';
+    return "1";
   }
   async xrange() {
     return [];
@@ -90,7 +90,7 @@ class MockRedisConnection extends EventEmitter {
     return 1;
   }
   async xgroup() {
-    return 'OK';
+    return "OK";
   }
   async xtrim() {
     return 0;
@@ -111,10 +111,10 @@ class MockRedisConnection extends EventEmitter {
     this.commands.set(name, definition);
     (this as Record<string, unknown>)[name] = async () => {
       // Return default values for common BullMQ commands
-      if (name.includes('getCounts') || name.includes('count')) {
+      if (name.includes("getCounts") || name.includes("count")) {
         return [0, 0, 0, 0]; // waiting, active, completed, failed
       }
-      if (name.includes('move') || name.includes('add')) {
+      if (name.includes("move") || name.includes("add")) {
         return 1;
       }
       return [];
@@ -142,7 +142,7 @@ class MockRedisConnection extends EventEmitter {
   }
   // Scan methods
   async scan() {
-    return ['0', []];
+    return ["0", []];
   }
   // Hash methods
   async hget() {
@@ -214,7 +214,7 @@ class MockRedisConnection extends EventEmitter {
     return 0;
   }
   async zincrby() {
-    return '1';
+    return "1";
   }
   async zrank() {
     return null;
@@ -265,13 +265,13 @@ class MockRedisConnection extends EventEmitter {
   }
   // Additional BullMQ required methods
   async client() {
-    return 'OK';
+    return "OK";
   }
   async time() {
-    return [Date.now().toString(), '0'];
+    return [Date.now().toString(), "0"];
   }
   async script() {
-    return 'OK';
+    return "OK";
   }
   async evalsha() {
     return [];
@@ -280,7 +280,7 @@ class MockRedisConnection extends EventEmitter {
     return [1];
   }
   async scriptLoad() {
-    return 'mock-sha';
+    return "mock-sha";
   }
 }
 
@@ -294,11 +294,11 @@ class RedisManager {
   getConnection(): MockRedisConnection {
     if (!this.client) {
       this.client = new MockRedisConnection();
-      this.client.on('error', (err) => {
-        logger.error('Redis connection error:', err);
+      this.client.on("error", (err) => {
+        logger.error("Redis connection error:", err);
       });
-      this.client.on('connect', () => {
-        logger.info('Redis connected successfully');
+      this.client.on("connect", () => {
+        logger.info("Redis connected successfully");
       });
     }
     return this.client;
@@ -311,11 +311,11 @@ class RedisManager {
   getBullMQConnection(): MockRedisConnection {
     if (!this.bullmqConnection) {
       this.bullmqConnection = new MockRedisConnection();
-      this.bullmqConnection.on('error', (err) => {
-        logger.error('BullMQ Redis connection error:', err);
+      this.bullmqConnection.on("error", (err) => {
+        logger.error("BullMQ Redis connection error:", err);
       });
-      this.bullmqConnection.on('connect', () => {
-        logger.info('BullMQ Redis connected successfully');
+      this.bullmqConnection.on("connect", () => {
+        logger.info("BullMQ Redis connected successfully");
       });
     }
     return this.bullmqConnection;

@@ -87,15 +87,16 @@ export class VirtualTimeTracker {
     requestId: string,
     tenantId: string,
     estimatedServiceTime: number,
-    weight: number
+    weight: number,
   ): VirtualFinishTime {
     // Virtual start time is current virtual time
     const virtualStartTime = this.state.currentTime;
 
     // Calculate virtual finish time
     // F_i = max(V(t), P_i) + (service_time / weight_i)
-    const virtualFinishTime = Math.max(this.state.currentTime, virtualStartTime) +
-                              (estimatedServiceTime / weight);
+    const virtualFinishTime =
+      Math.max(this.state.currentTime, virtualStartTime) +
+      estimatedServiceTime / weight;
 
     const finishTime: VirtualFinishTime = {
       requestId,
@@ -157,7 +158,10 @@ export class VirtualTimeTracker {
    * Decrement active weight sum
    */
   decrementActiveWeightSum(weight: number): void {
-    this.state.activeWeightSum = Math.max(0, this.state.activeWeightSum - weight);
+    this.state.activeWeightSum = Math.max(
+      0,
+      this.state.activeWeightSum - weight,
+    );
   }
 
   /**
@@ -191,7 +195,9 @@ export class VirtualTimeTracker {
    * Get sorted request IDs by virtual finish time
    */
   getSortedRequestIds(requestIds: string[]): string[] {
-    return [...requestIds].sort((a, b) => this.compareByVirtualFinishTime(a, b));
+    return [...requestIds].sort((a, b) =>
+      this.compareByVirtualFinishTime(a, b),
+    );
   }
 
   /**
@@ -214,7 +220,7 @@ export class VirtualTimeTracker {
       };
     }
 
-    const values = finishTimes.map(ft => ft.virtualFinishTime);
+    const values = finishTimes.map((ft) => ft.virtualFinishTime);
     const min = Math.min(...values);
     const max = Math.max(...values);
     const avg = values.reduce((sum, val) => sum + val, 0) / values.length;

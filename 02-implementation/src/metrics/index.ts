@@ -3,14 +3,14 @@
  * Collects HTTP request metrics and scheduler-specific metrics
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 import {
   Registry,
   Counter,
   Histogram,
   Gauge,
   collectDefaultMetrics,
-} from 'prom-client';
+} from "prom-client";
 
 // Create a custom registry
 const register = new Registry();
@@ -27,9 +27,9 @@ collectDefaultMetrics({ register });
  * Counts total number of HTTP requests by method, route, and status code
  */
 const httpRequestsTotal = new Counter({
-  name: 'http_requests_total',
-  help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status_code'],
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
   registers: [register],
 });
 
@@ -38,9 +38,9 @@ const httpRequestsTotal = new Counter({
  * Measures response time in seconds
  */
 const httpRequestDuration = new Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  labelNames: ['method', 'route', 'status_code'],
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
   buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
   registers: [register],
 });
@@ -50,9 +50,9 @@ const httpRequestDuration = new Histogram({
  * Counts total number of HTTP errors (4xx and 5xx)
  */
 const httpErrorsTotal = new Counter({
-  name: 'http_errors_total',
-  help: 'Total number of HTTP errors',
-  labelNames: ['method', 'route', 'status_code', 'error_type'],
+  name: "http_errors_total",
+  help: "Total number of HTTP errors",
+  labelNames: ["method", "route", "status_code", "error_type"],
   registers: [register],
 });
 
@@ -65,9 +65,9 @@ const httpErrorsTotal = new Counter({
  * Current number of requests in the scheduling queue
  */
 const schedulerQueueSize = new Gauge({
-  name: 'scheduler_queue_size',
-  help: 'Current number of requests in the scheduling queue',
-  labelNames: ['queue_name', 'priority'],
+  name: "scheduler_queue_size",
+  help: "Current number of requests in the scheduling queue",
+  labelNames: ["queue_name", "priority"],
   registers: [register],
 });
 
@@ -76,9 +76,9 @@ const schedulerQueueSize = new Gauge({
  * Total number of LLM requests processed
  */
 const schedulerRequestsProcessed = new Counter({
-  name: 'scheduler_requests_processed_total',
-  help: 'Total number of LLM requests processed by the scheduler',
-  labelNames: ['tenant_id', 'scheduler_type', 'status'],
+  name: "scheduler_requests_processed_total",
+  help: "Total number of LLM requests processed by the scheduler",
+  labelNames: ["tenant_id", "scheduler_type", "status"],
   registers: [register],
 });
 
@@ -87,9 +87,9 @@ const schedulerRequestsProcessed = new Counter({
  * Time taken to process LLM requests
  */
 const llmRequestDuration = new Histogram({
-  name: 'llm_request_duration_seconds',
-  help: 'Duration of LLM request processing in seconds',
-  labelNames: ['tenant_id', 'model', 'scheduler_type'],
+  name: "llm_request_duration_seconds",
+  help: "Duration of LLM request processing in seconds",
+  labelNames: ["tenant_id", "model", "scheduler_type"],
   buckets: [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120],
   registers: [register],
 });
@@ -99,9 +99,9 @@ const llmRequestDuration = new Histogram({
  * Current number of requests being processed
  */
 const schedulerActiveRequests = new Gauge({
-  name: 'scheduler_active_requests',
-  help: 'Current number of requests being processed',
-  labelNames: ['scheduler_type'],
+  name: "scheduler_active_requests",
+  help: "Current number of requests being processed",
+  labelNames: ["scheduler_type"],
   registers: [register],
 });
 
@@ -110,9 +110,9 @@ const schedulerActiveRequests = new Gauge({
  * Requests per tenant for fairness tracking
  */
 const tenantRequestsTotal = new Counter({
-  name: 'tenant_requests_total',
-  help: 'Total requests per tenant',
-  labelNames: ['tenant_id'],
+  name: "tenant_requests_total",
+  help: "Total requests per tenant",
+  labelNames: ["tenant_id"],
   registers: [register],
 });
 
@@ -127,15 +127,18 @@ const tenantRequestsTotal = new Counter({
 export function metricsMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   const startTime = process.hrtime.bigint();
 
-  res.on('finish', () => {
+  res.on("finish", () => {
     const endTime = process.hrtime.bigint();
     const durationInSeconds = Number(endTime - startTime) / 1e9;
 
-    const route: string = (req.route as { path?: string } | undefined)?.path || req.path || 'unknown';
+    const route: string =
+      (req.route as { path?: string } | undefined)?.path ||
+      req.path ||
+      "unknown";
     const method: string = req.method;
     const statusCode: string = res.statusCode.toString();
 
@@ -143,11 +146,13 @@ export function metricsMiddleware(
     httpRequestsTotal.labels(method, route, statusCode).inc();
 
     // Record request duration
-    httpRequestDuration.labels(method, route, statusCode).observe(durationInSeconds);
+    httpRequestDuration
+      .labels(method, route, statusCode)
+      .observe(durationInSeconds);
 
     // Record errors
     if (res.statusCode >= 400) {
-      const errorType = res.statusCode >= 500 ? 'server_error' : 'client_error';
+      const errorType = res.statusCode >= 500 ? "server_error" : "client_error";
       httpErrorsTotal.labels(method, route, statusCode, errorType).inc();
     }
   });
@@ -161,14 +166,14 @@ export function metricsMiddleware(
  */
 export async function metricsHandler(
   _req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> {
   try {
-    res.set('Content-Type', register.contentType);
+    res.set("Content-Type", register.contentType);
     const metrics = await register.metrics();
     res.end(metrics);
   } catch (error) {
-    res.status(500).end('Error collecting metrics');
+    res.status(500).end("Error collecting metrics");
   }
 }
 
@@ -179,7 +184,11 @@ export async function metricsHandler(
 /**
  * Update queue size metric
  */
-export function setQueueSize(queueName: string, priority: string, size: number): void {
+export function setQueueSize(
+  queueName: string,
+  priority: string,
+  size: number,
+): void {
   schedulerQueueSize.labels(queueName, priority).set(size);
 }
 
@@ -189,7 +198,7 @@ export function setQueueSize(queueName: string, priority: string, size: number):
 export function incProcessedRequests(
   tenantId: string,
   schedulerType: string,
-  status: 'success' | 'failure'
+  status: "success" | "failure",
 ): void {
   schedulerRequestsProcessed.labels(tenantId, schedulerType, status).inc();
 }
@@ -201,9 +210,11 @@ export function observeLLMRequestDuration(
   tenantId: string,
   model: string,
   schedulerType: string,
-  durationSeconds: number
+  durationSeconds: number,
 ): void {
-  llmRequestDuration.labels(tenantId, model, schedulerType).observe(durationSeconds);
+  llmRequestDuration
+    .labels(tenantId, model, schedulerType)
+    .observe(durationSeconds);
 }
 
 /**

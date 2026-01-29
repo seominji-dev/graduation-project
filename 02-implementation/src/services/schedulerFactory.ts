@@ -3,18 +3,18 @@
  * Creates scheduler instances based on configuration
  */
 
-import { FCFSScheduler } from '../schedulers/FCFSScheduler';
-import { PriorityScheduler } from '../schedulers/PriorityScheduler';
-import { MLFQScheduler } from '../schedulers/MLFQScheduler';
-import { WFQScheduler } from '../schedulers/WFQScheduler';
-import { IScheduler, SchedulerConfig } from '../schedulers/types';
-import { LLMService } from './llmService';
+import { FCFSScheduler } from "../schedulers/FCFSScheduler";
+import { PriorityScheduler } from "../schedulers/PriorityScheduler";
+import { MLFQScheduler } from "../schedulers/MLFQScheduler";
+import { WFQScheduler } from "../schedulers/WFQScheduler";
+import { IScheduler, SchedulerConfig } from "../schedulers/types";
+import { LLMService } from "./llmService";
 
 export enum SchedulerType {
-  FCFS = 'fcfs',
-  PRIORITY = 'priority',
-  MLFQ = 'mlfq',
-  WFQ = 'wfq',
+  FCFS = "fcfs",
+  PRIORITY = "priority",
+  MLFQ = "mlfq",
+  WFQ = "wfq",
 }
 
 export class SchedulerFactory {
@@ -43,7 +43,7 @@ export class SchedulerFactory {
 
       default: {
         const _exhaustiveCheck: never = type;
-        throw new Error('Unknown scheduler type: ' + String(_exhaustiveCheck));
+        throw new Error("Unknown scheduler type: " + String(_exhaustiveCheck));
       }
     }
   }

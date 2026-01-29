@@ -2,19 +2,19 @@
  * Mock MongoDB Connection Manager for Unit Tests
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
 class MockMongoConnection extends EventEmitter {
-  status = 'connected';
+  status = "connected";
   async connect() {
-    this.emit('connected');
+    this.emit("connected");
     return this;
   }
   async disconnect() {
-    this.status = 'closed';
+    this.status = "closed";
   }
   async close() {
-    this.status = 'closed';
+    this.status = "closed";
   }
 }
 

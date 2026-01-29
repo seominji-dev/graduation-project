@@ -3,8 +3,8 @@
  * Stores all LLM requests and responses for analytics
  */
 
-import mongoose, { Schema, Document } from 'mongoose';
-import { RequestPriority, RequestStatus } from '../../domain/models';
+import mongoose, { Schema, Document } from "mongoose";
+import { RequestPriority, RequestStatus } from "../../domain/models";
 
 // Request Log Interface
 export interface IRequestLog extends Document {
@@ -99,7 +99,7 @@ const RequestLogSchema = new Schema<IRequestLog>(
     // WFQ-specific fields
     tenantId: {
       type: String,
-      default: 'default',
+      default: "default",
       index: true,
     },
     weight: {
@@ -113,8 +113,8 @@ const RequestLogSchema = new Schema<IRequestLog>(
   },
   {
     timestamps: true,
-    collection: 'request_logs',
-  }
+    collection: "request_logs",
+  },
 );
 
 // Indexes for efficient queries
@@ -126,4 +126,7 @@ RequestLogSchema.index({ tenantId: 1, status: 1 }); // WFQ index
 RequestLogSchema.index({ virtualTime: 1, status: 1 }); // WFQ virtual time index
 
 // Export model
-export const RequestLog = mongoose.model<IRequestLog>('RequestLog', RequestLogSchema);
+export const RequestLog = mongoose.model<IRequestLog>(
+  "RequestLog",
+  RequestLogSchema,
+);

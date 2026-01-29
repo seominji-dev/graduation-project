@@ -10,9 +10,9 @@ import {
   createLogger as sharedCreateLogger,
   LogLevel,
   LOG_LEVEL_NAMES,
-} from '@shared/logger';
-import type { LoggerConfig, LogEntry, ILogger } from '@shared/logger';
-import { getCorrelationId } from '../middlewares/correlationId';
+} from "@shared/logger";
+import type { LoggerConfig, LogEntry, ILogger } from "@shared/logger";
+import { getCorrelationId } from "../middlewares/correlationId";
 
 /**
  * Enhanced Logger class that includes Correlation ID in all log messages
@@ -53,7 +53,9 @@ export class Logger implements ILogger {
   }
 
   child(prefix: string): Logger {
-    const currentPrefix = (this.baseLogger as unknown as { config: { prefix: string } }).config?.prefix || 'LLMScheduler';
+    const currentPrefix =
+      (this.baseLogger as unknown as { config: { prefix: string } }).config
+        ?.prefix || "LLMScheduler";
     return new Logger(`${currentPrefix}:${prefix}`);
   }
 
@@ -67,7 +69,7 @@ export class Logger implements ILogger {
 }
 
 // Create project-specific logger instance
-export const logger = new Logger('LLMScheduler');
+export const logger = new Logger("LLMScheduler");
 
 // Export for creating module-specific loggers
 export const createLogger = (prefix: string): Logger => {

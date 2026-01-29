@@ -1,17 +1,17 @@
-import { BOOST_INTERVAL_MS } from '../config/constants.js';
+import { BOOST_INTERVAL_MS } from "../config/constants.js";
 
 /**
  * Boost Manager for MLFQ Scheduler
- * 
+ *
  * Implements periodic boosting (Rule 5) to prevent starvation in MLFQ.
  * All jobs are moved to the highest priority queue (Q0) at regular intervals.
- * 
+ *
  * SPEC-SCHED-003: MLFQ Rule 5 - Periodic boosting
  */
 
-import { createLogger } from '../utils/logger';
+import { createLogger } from "../utils/logger";
 
-const logger = createLogger('BoostManager');
+const logger = createLogger("BoostManager");
 
 /**
  * Boost configuration
@@ -41,11 +41,13 @@ export class BoostManager {
    */
   start(): void {
     if (this.intervalId) {
-      logger.warn('BoostManager already started');
+      logger.warn("BoostManager already started");
       return;
     }
 
-    logger.info('Starting BoostManager (interval: ' + BOOST_INTERVAL_MS + 'ms)');
+    logger.info(
+      "Starting BoostManager (interval: " + BOOST_INTERVAL_MS + "ms)",
+    );
 
     // Schedule periodic boosting
     this.intervalId = setInterval(() => {
@@ -63,13 +65,13 @@ export class BoostManager {
    */
   stop(): void {
     this.isStopped = true;
-    
+
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
     this.scheduler = null;
-    logger.info('BoostManager stopped (total boosts: ' + this.boostCount + ')');
+    logger.info("BoostManager stopped (total boosts: " + this.boostCount + ")");
   }
 
   /**
@@ -84,10 +86,12 @@ export class BoostManager {
     try {
       const boostedCount = await this.scheduler.boostAllJobs();
       this.boostCount++;
-      
-      logger.info('Boost #' + this.boostCount + ': Moved ' + boostedCount + ' jobs to Q0');
+
+      logger.info(
+        "Boost #" + this.boostCount + ": Moved " + boostedCount + " jobs to Q0",
+      );
     } catch (error) {
-      logger.error('Boost cycle failed:', error);
+      logger.error("Boost cycle failed:", error);
     }
   }
 
