@@ -5,16 +5,23 @@
  * Tests for aging functionality to prevent starvation
  */
 
-import { AgingManager, IPriorityScheduler } from '../../../src/managers/AgingManager';
-import { RequestPriority } from '../../../src/domain/models';
+import {
+  AgingManager,
+  IPriorityScheduler,
+} from "../../../src/managers/AgingManager";
+import { RequestPriority } from "../../../src/domain/models";
 
 // Mock scheduler implementation for testing
 class MockPriorityScheduler implements IPriorityScheduler {
-  private jobs: Map<string, { priority: RequestPriority; queuedAt: Date }> = new Map();
+  private jobs: Map<string, { priority: RequestPriority; queuedAt: Date }> =
+    new Map();
   updateJobPriorityCalled: boolean = false;
   getWaitingJobsCalled: boolean = false;
 
-  async updateJobPriority(jobId: string, newPriority: RequestPriority): Promise<boolean> {
+  async updateJobPriority(
+    jobId: string,
+    newPriority: RequestPriority,
+  ): Promise<boolean> {
     this.updateJobPriorityCalled = true;
     const job = this.jobs.get(jobId);
     if (job) {
@@ -24,7 +31,9 @@ class MockPriorityScheduler implements IPriorityScheduler {
     return false;
   }
 
-  async getWaitingJobs(): Promise<Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>> {
+  async getWaitingJobs(): Promise<
+    Array<{ jobId: string; priority: RequestPriority; queuedAt: Date }>
+  > {
     this.getWaitingJobsCalled = true;
     return Array.from(this.jobs.entries()).map(([jobId, data]) => ({
       jobId,
@@ -43,7 +52,7 @@ class MockPriorityScheduler implements IPriorityScheduler {
   }
 }
 
-describe('AgingManager', () => {
+describe("AgingManager", () => {
   let agingManager: AgingManager;
   let mockScheduler: MockPriorityScheduler;
 
@@ -59,84 +68,94 @@ describe('AgingManager', () => {
     await agingManager.stop();
   });
 
-  describe('Initialization', () => {
-    it('should create AgingManager instance', () => {
+  describe("Initialization", () => {
+    it("should create AgingManager instance", () => {
       expect(agingManager).toBeDefined();
     });
 
-    it('should start aging process', async () => {
-      const startSpy = jest.spyOn(agingManager as any, 'runAging');
+    it("should start aging process", async () => {
+      const startSpy = jest.spyOn(agingManager as any, "runAging");
       await agingManager.start();
       expect(startSpy).toHaveBeenCalled();
     });
 
-    it('should not start if already started', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it("should not start if already started", async () => {
+      const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
       await agingManager.start();
       await agingManager.start();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('AgingManager already started'));
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("AgingManager already started"),
+      );
       consoleWarnSpy.mockRestore();
     });
   });
 
-  describe('Aging Process', () => {
-    it('should promote long-waiting LOW priority jobs', async () => {
+  describe("Aging Process", () => {
+    it("should promote long-waiting LOW priority jobs", async () => {
       // Add a job that has been waiting for more than threshold
       const oldDate = new Date(Date.now() - 150000); // 150 seconds ago ( > 120s threshold)
-      mockScheduler.addJob('job-1', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-1", RequestPriority.LOW, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
       // LOW(0) -> promotion 0 -> NORMAL(1)
       // promotePriority: currentPriority(0) + promotionCount(0) + 1 = 1 (NORMAL)
-      expect(mockScheduler.getJobPriority('job-1')).toBeGreaterThan(RequestPriority.LOW);
+      expect(mockScheduler.getJobPriority("job-1")).toBeGreaterThan(
+        RequestPriority.LOW,
+      );
     });
 
-    it('should promote long-waiting NORMAL priority jobs', async () => {
+    it("should promote long-waiting NORMAL priority jobs", async () => {
       const oldDate = new Date(Date.now() - 150000);
-      mockScheduler.addJob('job-2', RequestPriority.NORMAL, oldDate);
+      mockScheduler.addJob("job-2", RequestPriority.NORMAL, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
       // NORMAL(1) -> promotion 0 -> HIGH(2)
-      expect(mockScheduler.getJobPriority('job-2')).toBeGreaterThan(RequestPriority.NORMAL);
+      expect(mockScheduler.getJobPriority("job-2")).toBeGreaterThan(
+        RequestPriority.NORMAL,
+      );
     });
 
-    it('should promote long-waiting HIGH priority jobs to URGENT', async () => {
+    it("should promote long-waiting HIGH priority jobs to URGENT", async () => {
       const oldDate = new Date(Date.now() - 150000);
-      mockScheduler.addJob('job-3', RequestPriority.HIGH, oldDate);
+      mockScheduler.addJob("job-3", RequestPriority.HIGH, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
-      expect(mockScheduler.getJobPriority('job-3')).toBe(RequestPriority.URGENT);
+      expect(mockScheduler.getJobPriority("job-3")).toBe(
+        RequestPriority.URGENT,
+      );
     });
 
-    it('should not promote jobs that have not waited long enough', async () => {
+    it("should not promote jobs that have not waited long enough", async () => {
       const recentDate = new Date(Date.now() - 30000); // 30 seconds ago ( < 120s threshold)
-      mockScheduler.addJob('job-4', RequestPriority.LOW, recentDate);
+      mockScheduler.addJob("job-4", RequestPriority.LOW, recentDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
-      expect(mockScheduler.getJobPriority('job-4')).toBe(RequestPriority.LOW);
+      expect(mockScheduler.getJobPriority("job-4")).toBe(RequestPriority.LOW);
     });
 
-    it('should not promote URGENT jobs', async () => {
+    it("should not promote URGENT jobs", async () => {
       const oldDate = new Date(Date.now() - 150000);
-      mockScheduler.addJob('job-5', RequestPriority.URGENT, oldDate);
+      mockScheduler.addJob("job-5", RequestPriority.URGENT, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
-      expect(mockScheduler.getJobPriority('job-5')).toBe(RequestPriority.URGENT);
+      expect(mockScheduler.getJobPriority("job-5")).toBe(
+        RequestPriority.URGENT,
+      );
     });
 
-    it('should respect MAX_AGE_PROMOTIONS limit', async () => {
+    it("should respect MAX_AGE_PROMOTIONS limit", async () => {
       const oldDate = new Date(Date.now() - 300000); // 300 seconds ago
-      mockScheduler.addJob('job-6', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-6", RequestPriority.LOW, oldDate);
 
       await agingManager.start();
 
@@ -146,23 +165,29 @@ describe('AgingManager', () => {
       await (agingManager as any).runAging();
 
       // Should not exceed URGENT priority
-      expect(mockScheduler.getJobPriority('job-6')).toBe(RequestPriority.URGENT);
+      expect(mockScheduler.getJobPriority("job-6")).toBe(
+        RequestPriority.URGENT,
+      );
     });
   });
 
-  describe('Stop Process', () => {
-    it('should stop aging process', async () => {
+  describe("Stop Process", () => {
+    it("should stop aging process", async () => {
       await agingManager.start();
       await agingManager.stop();
       expect(true).toBe(true); // Verify stop completes without error
     });
 
-    it('should clear aging counts on stop', async () => {
-      mockScheduler.addJob('job-7', RequestPriority.LOW, new Date(Date.now() - 150000));
+    it("should clear aging counts on stop", async () => {
+      mockScheduler.addJob(
+        "job-7",
+        RequestPriority.LOW,
+        new Date(Date.now() - 150000),
+      );
 
       await agingManager.start();
       await (agingManager as any).runAging();
-      const afterFirstAging = mockScheduler.getJobPriority('job-7');
+      const afterFirstAging = mockScheduler.getJobPriority("job-7");
       await agingManager.stop();
 
       // After stop, aging counts should be cleared
@@ -171,7 +196,7 @@ describe('AgingManager', () => {
       await (agingManager as any).runAging();
 
       // Job should be promoted again since aging count was reset
-      const finalPriority = mockScheduler.getJobPriority('job-7');
+      const finalPriority = mockScheduler.getJobPriority("job-7");
       expect(finalPriority).toBeDefined();
       expect(afterFirstAging).toBeDefined();
       if (finalPriority && afterFirstAging) {
@@ -180,24 +205,24 @@ describe('AgingManager', () => {
     });
   });
 
-  describe('resetJobAging', () => {
-    it('should reset aging count for a specific job', async () => {
+  describe("resetJobAging", () => {
+    it("should reset aging count for a specific job", async () => {
       const oldDate = new Date(Date.now() - 150000);
-      mockScheduler.addJob('job-8', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-8", RequestPriority.LOW, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
       // Job should be promoted
-      const firstPromotion = mockScheduler.getJobPriority('job-8');
+      const firstPromotion = mockScheduler.getJobPriority("job-8");
       expect(firstPromotion).toBeGreaterThan(RequestPriority.LOW);
 
       // Reset aging
-      agingManager.resetJobAging('job-8');
+      agingManager.resetJobAging("job-8");
 
       // Should be able to age again
       await (agingManager as any).runAging();
-      const finalPriority = mockScheduler.getJobPriority('job-8');
+      const finalPriority = mockScheduler.getJobPriority("job-8");
       expect(finalPriority).toBeDefined();
       expect(firstPromotion).toBeDefined();
       if (finalPriority && firstPromotion) {
@@ -205,48 +230,54 @@ describe('AgingManager', () => {
       }
     });
 
-    it('should handle reset for non-existent job', () => {
+    it("should handle reset for non-existent job", () => {
       expect(() => {
-        agingManager.resetJobAging('non-existent-job');
+        agingManager.resetJobAging("non-existent-job");
       }).not.toThrow();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle empty job queue', async () => {
+  describe("Edge Cases", () => {
+    it("should handle empty job queue", async () => {
       await agingManager.start();
       await (agingManager as any).runAging();
       expect(true).toBe(true); // Should complete without error
     });
 
-    it('should handle multiple jobs with different wait times', async () => {
+    it("should handle multiple jobs with different wait times", async () => {
       const veryOldDate = new Date(Date.now() - 200000);
       const oldDate = new Date(Date.now() - 150000);
       const recentDate = new Date(Date.now() - 30000);
 
-      mockScheduler.addJob('job-old1', RequestPriority.LOW, veryOldDate);
-      mockScheduler.addJob('job-old2', RequestPriority.NORMAL, oldDate);
-      mockScheduler.addJob('job-recent', RequestPriority.HIGH, recentDate);
+      mockScheduler.addJob("job-old1", RequestPriority.LOW, veryOldDate);
+      mockScheduler.addJob("job-old2", RequestPriority.NORMAL, oldDate);
+      mockScheduler.addJob("job-recent", RequestPriority.HIGH, recentDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
 
       // Very old jobs should be promoted
-      expect(mockScheduler.getJobPriority('job-old1')).toBeGreaterThan(RequestPriority.LOW);
-      expect(mockScheduler.getJobPriority('job-old2')).toBeGreaterThan(RequestPriority.NORMAL);
+      expect(mockScheduler.getJobPriority("job-old1")).toBeGreaterThan(
+        RequestPriority.LOW,
+      );
+      expect(mockScheduler.getJobPriority("job-old2")).toBeGreaterThan(
+        RequestPriority.NORMAL,
+      );
       // Recent job should not be promoted
-      expect(mockScheduler.getJobPriority('job-recent')).toBe(RequestPriority.HIGH);
+      expect(mockScheduler.getJobPriority("job-recent")).toBe(
+        RequestPriority.HIGH,
+      );
     });
 
-    it('should handle scheduler returning empty jobs list', async () => {
+    it("should handle scheduler returning empty jobs list", async () => {
       await agingManager.start();
       await (agingManager as any).runAging();
       expect(true).toBe(true); // Should complete without error
     });
 
-    it('should handle priority update failures gracefully', async () => {
+    it("should handle priority update failures gracefully", async () => {
       const oldDate = new Date(Date.now() - 150000);
-      mockScheduler.addJob('job-fail', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-fail", RequestPriority.LOW, oldDate);
 
       // Mock updateJobPriority to return false
       const originalMethod = mockScheduler.updateJobPriority;
@@ -256,31 +287,37 @@ describe('AgingManager', () => {
       await (agingManager as any).runAging();
 
       // Should not throw error, job priority should remain unchanged
-      expect(mockScheduler.getJobPriority('job-fail')).toBe(RequestPriority.LOW);
+      expect(mockScheduler.getJobPriority("job-fail")).toBe(
+        RequestPriority.LOW,
+      );
 
       // Restore original method
       mockScheduler.updateJobPriority = originalMethod;
     });
   });
 
-  describe('Promotion Logic', () => {
-    it('should promote LOW to higher priority after two aging cycles', async () => {
+  describe("Promotion Logic", () => {
+    it("should promote LOW to higher priority after two aging cycles", async () => {
       const oldDate = new Date(Date.now() - 300000);
-      mockScheduler.addJob('job-multi', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-multi", RequestPriority.LOW, oldDate);
 
       await agingManager.start();
       await (agingManager as any).runAging();
       // First aging: LOW(0) -> NORMAL(1)
-      expect(mockScheduler.getJobPriority('job-multi')).toBeGreaterThan(RequestPriority.LOW);
+      expect(mockScheduler.getJobPriority("job-multi")).toBeGreaterThan(
+        RequestPriority.LOW,
+      );
 
       await (agingManager as any).runAging();
       // Second aging: Should promote further
-      expect(mockScheduler.getJobPriority('job-multi')).toBeGreaterThan(RequestPriority.LOW);
+      expect(mockScheduler.getJobPriority("job-multi")).toBeGreaterThan(
+        RequestPriority.LOW,
+      );
     });
 
-    it('should cap promotion at URGENT level', async () => {
+    it("should cap promotion at URGENT level", async () => {
       const oldDate = new Date(Date.now() - 500000);
-      mockScheduler.addJob('job-cap', RequestPriority.LOW, oldDate);
+      mockScheduler.addJob("job-cap", RequestPriority.LOW, oldDate);
 
       await agingManager.start();
 
@@ -290,23 +327,29 @@ describe('AgingManager', () => {
       await (agingManager as any).runAging();
       await (agingManager as any).runAging();
 
-      expect(mockScheduler.getJobPriority('job-cap')).toBe(RequestPriority.URGENT);
+      expect(mockScheduler.getJobPriority("job-cap")).toBe(
+        RequestPriority.URGENT,
+      );
     });
   });
 
-  describe('Error Handling', () => {
+  describe("Error Handling", () => {
     let consoleErrorSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      consoleErrorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
     });
 
     afterEach(() => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('should handle getWaitingJobs errors gracefully', async () => {
-      mockScheduler.getWaitingJobs = jest.fn().mockRejectedValue(new Error('Database error'));
+    it("should handle getWaitingJobs errors gracefully", async () => {
+      mockScheduler.getWaitingJobs = jest
+        .fn()
+        .mockRejectedValue(new Error("Database error"));
 
       await agingManager.start();
       await (agingManager as any).runAging();
@@ -314,9 +357,15 @@ describe('AgingManager', () => {
       expect(consoleErrorSpy).toHaveBeenCalled();
     });
 
-    it('should handle updateJobPriority errors gracefully', async () => {
-      mockScheduler.addJob('job-error', RequestPriority.LOW, new Date(Date.now() - 150000));
-      mockScheduler.updateJobPriority = jest.fn().mockRejectedValue(new Error('Update failed'));
+    it("should handle updateJobPriority errors gracefully", async () => {
+      mockScheduler.addJob(
+        "job-error",
+        RequestPriority.LOW,
+        new Date(Date.now() - 150000),
+      );
+      mockScheduler.updateJobPriority = jest
+        .fn()
+        .mockRejectedValue(new Error("Update failed"));
 
       await agingManager.start();
       await (agingManager as any).runAging();

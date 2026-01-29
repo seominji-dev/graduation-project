@@ -5,16 +5,20 @@
  * Focuses on priority calculation, aging integration, and configuration handling.
  */
 
-import { PriorityScheduler } from '../../../src/schedulers/PriorityScheduler';
-import { RequestPriority, RequestStatus, LLMRequest } from '../../../src/domain/models';
-import { SchedulerConfig } from '../../../src/schedulers/types';
-import { LLMService } from '../../../src/services/llmService';
+import { PriorityScheduler } from "../../../src/schedulers/PriorityScheduler";
+import {
+  RequestPriority,
+  RequestStatus,
+  LLMRequest,
+} from "../../../src/domain/models";
+import { SchedulerConfig } from "../../../src/schedulers/types";
+import { LLMService } from "../../../src/services/llmService";
 
-jest.mock('../../../src/infrastructure/redis');
-jest.mock('../../../src/infrastructure/mongodb');
-jest.mock('../../../src/infrastructure/models/RequestLog');
+jest.mock("../../../src/infrastructure/redis");
+jest.mock("../../../src/infrastructure/mongodb");
+jest.mock("../../../src/infrastructure/models/RequestLog");
 
-describe('PriorityScheduler - Business Logic Tests', () => {
+describe("PriorityScheduler - Business Logic Tests", () => {
   let scheduler: PriorityScheduler;
   let mockLLMService: jest.Mocked<LLMService>;
 
@@ -22,11 +26,11 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     jest.clearAllMocks();
 
     mockLLMService = {
-      process: jest.fn().mockResolvedValue('Test response'),
+      process: jest.fn().mockResolvedValue("Test response"),
     } as any;
 
     const config: SchedulerConfig = {
-      name: 'test-priority-scheduler',
+      name: "test-priority-scheduler",
       defaultPriority: RequestPriority.NORMAL,
       concurrency: 1,
     };
@@ -40,29 +44,39 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     }
   });
 
-  describe('getPriorityValue - Priority Mapping', () => {
-    it('should map URGENT to BullMQ priority 0', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+  describe("getPriorityValue - Priority Mapping", () => {
+    it("should map URGENT to BullMQ priority 0", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       expect(getPriorityValue(RequestPriority.URGENT)).toBe(0);
     });
 
-    it('should map HIGH to BullMQ priority 2', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should map HIGH to BullMQ priority 2", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       expect(getPriorityValue(RequestPriority.HIGH)).toBe(2);
     });
 
-    it('should map NORMAL to BullMQ priority 4', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should map NORMAL to BullMQ priority 4", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       expect(getPriorityValue(RequestPriority.NORMAL)).toBe(4);
     });
 
-    it('should map LOW to BullMQ priority 6', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should map LOW to BullMQ priority 6", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       expect(getPriorityValue(RequestPriority.LOW)).toBe(6);
     });
 
-    it('should use formula (MAX_PRIORITY - priority) * 2', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should use formula (MAX_PRIORITY - priority) * 2", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       const MAX_PRIORITY = RequestPriority.URGENT; // 3
 
       // URGENT(3): (3 - 3) * 2 = 0
@@ -78,8 +92,10 @@ describe('PriorityScheduler - Business Logic Tests', () => {
       expect(getPriorityValue(0)).toBe(6);
     });
 
-    it('should produce strictly increasing priorities', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should produce strictly increasing priorities", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
 
       const urgent = getPriorityValue(RequestPriority.URGENT);
       const high = getPriorityValue(RequestPriority.HIGH);
@@ -92,13 +108,13 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('MAX_PRIORITY Constant', () => {
-    it('should be defined as RequestPriority.URGENT', () => {
+  describe("MAX_PRIORITY Constant", () => {
+    it("should be defined as RequestPriority.URGENT", () => {
       const MAX_PRIORITY = RequestPriority.URGENT;
       expect(MAX_PRIORITY).toBe(3);
     });
 
-    it('should be the highest priority value', () => {
+    it("should be the highest priority value", () => {
       const priorities = [
         RequestPriority.LOW,
         RequestPriority.NORMAL,
@@ -111,58 +127,70 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('updateJobPriority - Priority Update Logic', () => {
-    it('should have updateJobPriority method', () => {
-      expect(typeof scheduler.updateJobPriority).toBe('function');
+  describe("updateJobPriority - Priority Update Logic", () => {
+    it("should have updateJobPriority method", () => {
+      expect(typeof scheduler.updateJobPriority).toBe("function");
     });
 
-    it('should return false when queue is not initialized', async () => {
-      const result = await scheduler.updateJobPriority('test-job', RequestPriority.HIGH);
+    it("should return false when queue is not initialized", async () => {
+      const result = await scheduler.updateJobPriority(
+        "test-job",
+        RequestPriority.HIGH,
+      );
       expect(result).toBe(false);
     });
 
-    it('should handle priority updates to same level', async () => {
+    it("should handle priority updates to same level", async () => {
       await scheduler.initialize();
 
       // Update non-existent job should return false
-      const result = await scheduler.updateJobPriority('non-existent', RequestPriority.NORMAL);
+      const result = await scheduler.updateJobPriority(
+        "non-existent",
+        RequestPriority.NORMAL,
+      );
       expect(result).toBe(false);
     });
 
-    it('should handle priority updates to URGENT', async () => {
+    it("should handle priority updates to URGENT", async () => {
       await scheduler.initialize();
 
-      const result = await scheduler.updateJobPriority('test-job', RequestPriority.URGENT);
-      expect(typeof result).toBe('boolean');
+      const result = await scheduler.updateJobPriority(
+        "test-job",
+        RequestPriority.URGENT,
+      );
+      expect(typeof result).toBe("boolean");
     });
 
-    it('should handle priority updates to LOW', async () => {
+    it("should handle priority updates to LOW", async () => {
       await scheduler.initialize();
 
-      const result = await scheduler.updateJobPriority('test-job', RequestPriority.LOW);
-      expect(typeof result).toBe('boolean');
+      const result = await scheduler.updateJobPriority(
+        "test-job",
+        RequestPriority.LOW,
+      );
+      expect(typeof result).toBe("boolean");
     });
   });
 
-  describe('getWaitingJobs - Job Retrieval Logic', () => {
-    it('should have getWaitingJobs method', () => {
-      expect(typeof scheduler.getWaitingJobs).toBe('function');
+  describe("getWaitingJobs - Job Retrieval Logic", () => {
+    it("should have getWaitingJobs method", () => {
+      expect(typeof scheduler.getWaitingJobs).toBe("function");
     });
 
-    it('should return empty array when queue is not initialized', async () => {
+    it("should return empty array when queue is not initialized", async () => {
       const jobs = await scheduler.getWaitingJobs();
       expect(Array.isArray(jobs)).toBe(true);
       expect(jobs).toEqual([]);
     });
 
-    it('should return empty array when no jobs are waiting', async () => {
+    it("should return empty array when no jobs are waiting", async () => {
       await scheduler.initialize();
 
       const jobs = await scheduler.getWaitingJobs();
       expect(Array.isArray(jobs)).toBe(true);
     });
 
-    it('should return jobs with correct structure', async () => {
+    it("should return jobs with correct structure", async () => {
       await scheduler.initialize();
 
       const jobs = await scheduler.getWaitingJobs();
@@ -172,79 +200,85 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('cleanupJobTimings - Timing Cleanup', () => {
-    it('should have cleanupJobTimings method', () => {
-      const cleanupJobTimings = (scheduler as any).cleanupJobTimings.bind(scheduler);
-      expect(typeof cleanupJobTimings).toBe('function');
+  describe("cleanupJobTimings - Timing Cleanup", () => {
+    it("should have cleanupJobTimings method", () => {
+      const cleanupJobTimings = (scheduler as any).cleanupJobTimings.bind(
+        scheduler,
+      );
+      expect(typeof cleanupJobTimings).toBe("function");
     });
 
-    it('should handle cleanup for non-existent job', () => {
-      const cleanupJobTimings = (scheduler as any).cleanupJobTimings.bind(scheduler);
+    it("should handle cleanup for non-existent job", () => {
+      const cleanupJobTimings = (scheduler as any).cleanupJobTimings.bind(
+        scheduler,
+      );
 
       expect(() => {
-        cleanupJobTimings('non-existent-job-id');
+        cleanupJobTimings("non-existent-job-id");
       }).not.toThrow();
     });
 
-    it('should handle cleanup with empty jobTimings map', () => {
+    it("should handle cleanup with empty jobTimings map", () => {
       const newScheduler = new PriorityScheduler(
-        { name: 'cleanup-test' },
-        mockLLMService
+        { name: "cleanup-test" },
+        mockLLMService,
       );
 
-      const cleanupJobTimings = (newScheduler as any).cleanupJobTimings.bind(newScheduler);
+      const cleanupJobTimings = (newScheduler as any).cleanupJobTimings.bind(
+        newScheduler,
+      );
 
       expect(() => {
-        cleanupJobTimings('any-job-id');
+        cleanupJobTimings("any-job-id");
       }).not.toThrow();
     });
   });
 
-  describe('logRequest - Request Logging', () => {
-    it('should have logRequest method', () => {
+  describe("logRequest - Request Logging", () => {
+    it("should have logRequest method", () => {
       const logRequest = (scheduler as any).logRequest.bind(scheduler);
-      expect(typeof logRequest).toBe('function');
+      expect(typeof logRequest).toBe("function");
     });
 
-    it('should accept LLMRequest parameter', () => {
+    it("should accept LLMRequest parameter", () => {
       const logRequest = (scheduler as any).logRequest.bind(scheduler);
 
       const testRequest: LLMRequest = {
-        id: 'test-request-id',
-        prompt: 'Test prompt',
-        provider: { name: 'ollama', model: 'llama2' },
+        id: "test-request-id",
+        prompt: "Test prompt",
+        provider: { name: "ollama", model: "llama2" },
         priority: RequestPriority.NORMAL,
         status: RequestStatus.PENDING,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      expect(testRequest.id).toBe('test-request-id');
+      expect(testRequest.id).toBe("test-request-id");
       expect(testRequest.priority).toBe(RequestPriority.NORMAL);
     });
   });
 
-  describe('logResponse - Response Logging', () => {
-    it('should have logResponse method', () => {
+  describe("logResponse - Response Logging", () => {
+    it("should have logResponse method", () => {
       const logResponse = (scheduler as any).logResponse.bind(scheduler);
-      expect(typeof logResponse).toBe('function');
+      expect(typeof logResponse).toBe("function");
     });
 
-    it('should handle optional response parameter', () => {
+    it("should handle optional response parameter", () => {
       const logResponse = (scheduler as any).logResponse.bind(scheduler);
 
       const undefinedResponse: string | undefined = undefined;
       expect(undefinedResponse).toBeUndefined();
     });
 
-    it('should handle optional error parameter', () => {
+    it("should handle optional error parameter", () => {
       const logResponse = (scheduler as any).logResponse.bind(scheduler);
 
       const undefinedError: string | undefined = undefined;
       expect(undefinedError).toBeUndefined();
     });
 
-    it('should handle optional completedAt parameter', () => {
+    it("should handle optional completedAt parameter", () => {
       const logResponse = (scheduler as any).logResponse.bind(scheduler);
 
       const undefinedDate: Date | undefined = undefined;
@@ -252,19 +286,22 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Configuration Handling', () => {
-    it('should handle configuration with minimal required fields', () => {
+  describe("Configuration Handling", () => {
+    it("should handle configuration with minimal required fields", () => {
       const minimalConfig: SchedulerConfig = {
-        name: 'minimal-scheduler',
+        name: "minimal-scheduler",
       };
 
-      const minimalScheduler = new PriorityScheduler(minimalConfig, mockLLMService);
+      const minimalScheduler = new PriorityScheduler(
+        minimalConfig,
+        mockLLMService,
+      );
       expect(minimalScheduler).toBeDefined();
     });
 
-    it('should handle configuration with all optional fields', () => {
+    it("should handle configuration with all optional fields", () => {
       const fullConfig: SchedulerConfig = {
-        name: 'full-scheduler',
+        name: "full-scheduler",
         defaultPriority: RequestPriority.HIGH,
         concurrency: 10,
       };
@@ -273,36 +310,42 @@ describe('PriorityScheduler - Business Logic Tests', () => {
       expect(fullScheduler).toBeDefined();
     });
 
-    it('should use default priority when not specified', () => {
+    it("should use default priority when not specified", () => {
       const noPriorityConfig: SchedulerConfig = {
-        name: 'no-priority-scheduler',
+        name: "no-priority-scheduler",
       };
 
-      const noPriorityScheduler = new PriorityScheduler(noPriorityConfig, mockLLMService);
+      const noPriorityScheduler = new PriorityScheduler(
+        noPriorityConfig,
+        mockLLMService,
+      );
       expect(noPriorityScheduler).toBeDefined();
     });
 
-    it('should use default concurrency when not specified', () => {
+    it("should use default concurrency when not specified", () => {
       const noConcurrencyConfig: SchedulerConfig = {
-        name: 'no-concurrency-scheduler',
+        name: "no-concurrency-scheduler",
       };
 
-      const noConcurrencyScheduler = new PriorityScheduler(noConcurrencyConfig, mockLLMService);
+      const noConcurrencyScheduler = new PriorityScheduler(
+        noConcurrencyConfig,
+        mockLLMService,
+      );
       expect(noConcurrencyScheduler).toBeDefined();
     });
   });
 
-  describe('Non-Preemptive Scheduling', () => {
-    it('should not interrupt running requests', () => {
+  describe("Non-Preemptive Scheduling", () => {
+    it("should not interrupt running requests", () => {
       // Non-preemptive is implicit in the implementation
       // Once a job starts processing, it runs to completion
       const processJob = (scheduler as any).processJob.bind(scheduler);
-      expect(typeof processJob).toBe('function');
+      expect(typeof processJob).toBe("function");
     });
   });
 
-  describe('Priority Constants', () => {
-    it('should have four priority levels', () => {
+  describe("Priority Constants", () => {
+    it("should have four priority levels", () => {
       const priorities = [
         RequestPriority.LOW,
         RequestPriority.NORMAL,
@@ -313,7 +356,7 @@ describe('PriorityScheduler - Business Logic Tests', () => {
       expect(priorities).toHaveLength(4);
     });
 
-    it('should have numeric values 0-3 for priorities', () => {
+    it("should have numeric values 0-3 for priorities", () => {
       expect(RequestPriority.LOW).toBe(0);
       expect(RequestPriority.NORMAL).toBe(1);
       expect(RequestPriority.HIGH).toBe(2);
@@ -321,26 +364,26 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('AgingManager Integration', () => {
-    it('should initialize AgingManager on initialize', () => {
-      expect(typeof scheduler.initialize).toBe('function');
+  describe("AgingManager Integration", () => {
+    it("should initialize AgingManager on initialize", () => {
+      expect(typeof scheduler.initialize).toBe("function");
     });
 
-    it('should stop AgingManager on shutdown', () => {
-      expect(typeof scheduler.shutdown).toBe('function');
+    it("should stop AgingManager on shutdown", () => {
+      expect(typeof scheduler.shutdown).toBe("function");
     });
 
-    it('should provide updateJobPriority for AgingManager', () => {
-      expect(typeof scheduler.updateJobPriority).toBe('function');
+    it("should provide updateJobPriority for AgingManager", () => {
+      expect(typeof scheduler.updateJobPriority).toBe("function");
     });
 
-    it('should provide getWaitingJobs for AgingManager', () => {
-      expect(typeof scheduler.getWaitingJobs).toBe('function');
+    it("should provide getWaitingJobs for AgingManager", () => {
+      expect(typeof scheduler.getWaitingJobs).toBe("function");
     });
   });
 
-  describe('Edge Cases - Multiple Initialize Calls', () => {
-    it('should handle multiple initialize calls', async () => {
+  describe("Edge Cases - Multiple Initialize Calls", () => {
+    it("should handle multiple initialize calls", async () => {
       await scheduler.initialize();
 
       // Second initialize should complete without throwing
@@ -348,19 +391,19 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Edge Cases - Shutdown Before Initialize', () => {
-    it('should handle shutdown before initialize', async () => {
+  describe("Edge Cases - Shutdown Before Initialize", () => {
+    it("should handle shutdown before initialize", async () => {
       const newScheduler = new PriorityScheduler(
-        { name: 'shutdown-test' },
-        mockLLMService
+        { name: "shutdown-test" },
+        mockLLMService,
       );
 
       await expect(newScheduler.shutdown()).resolves.not.toThrow();
     });
   });
 
-  describe('Edge Cases - Multiple Shutdown Calls', () => {
-    it('should handle multiple shutdown calls', async () => {
+  describe("Edge Cases - Multiple Shutdown Calls", () => {
+    it("should handle multiple shutdown calls", async () => {
       await scheduler.initialize();
       await scheduler.shutdown();
 
@@ -368,33 +411,33 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Edge Cases - Pause and Resume', () => {
-    it('should handle pause before initialize', async () => {
+  describe("Edge Cases - Pause and Resume", () => {
+    it("should handle pause before initialize", async () => {
       const newScheduler = new PriorityScheduler(
-        { name: 'pause-test' },
-        mockLLMService
+        { name: "pause-test" },
+        mockLLMService,
       );
 
       await expect(newScheduler.pause()).rejects.toThrow();
     });
 
-    it('should handle resume before initialize', async () => {
+    it("should handle resume before initialize", async () => {
       const newScheduler = new PriorityScheduler(
-        { name: 'resume-test' },
-        mockLLMService
+        { name: "resume-test" },
+        mockLLMService,
       );
 
       await expect(newScheduler.resume()).rejects.toThrow();
     });
 
-    it('should handle multiple pause calls', async () => {
+    it("should handle multiple pause calls", async () => {
       await scheduler.initialize();
       await scheduler.pause();
 
       await expect(scheduler.pause()).resolves.not.toThrow();
     });
 
-    it('should handle multiple resume calls', async () => {
+    it("should handle multiple resume calls", async () => {
       await scheduler.initialize();
       await scheduler.pause();
       await scheduler.resume();
@@ -403,73 +446,73 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Job Timings Map', () => {
-    it('should initialize job timings map', () => {
+  describe("Job Timings Map", () => {
+    it("should initialize job timings map", () => {
       const jobTimings = (scheduler as any).jobTimings;
       expect(jobTimings).toBeInstanceOf(Map);
     });
 
-    it('should track queued time', () => {
+    it("should track queued time", () => {
       const jobTimings = (scheduler as any).jobTimings;
 
       const timing = { queued: new Date() };
-      jobTimings.set('test-job', timing);
+      jobTimings.set("test-job", timing);
 
-      expect(jobTimings.get('test-job')).toEqual(timing);
+      expect(jobTimings.get("test-job")).toEqual(timing);
     });
 
-    it('should track started time', () => {
+    it("should track started time", () => {
       const jobTimings = (scheduler as any).jobTimings;
 
       const timing = { queued: new Date(), started: new Date() };
-      jobTimings.set('test-job', timing);
+      jobTimings.set("test-job", timing);
 
-      expect(jobTimings.get('test-job').started).toBeDefined();
+      expect(jobTimings.get("test-job").started).toBeDefined();
     });
   });
 
-  describe('QueueJob Interface', () => {
-    it('should define all required fields', () => {
+  describe("QueueJob Interface", () => {
+    it("should define all required fields", () => {
       const jobData = {
-        requestId: 'test-request-id',
-        prompt: 'Test prompt',
-        provider: { name: 'ollama', model: 'llama2' },
+        requestId: "test-request-id",
+        prompt: "Test prompt",
+        provider: { name: "ollama", model: "llama2" },
         priority: RequestPriority.NORMAL,
         attempts: 0,
-        tenantId: 'default',
+        tenantId: "default",
         weight: 10,
       };
 
-      expect(jobData.requestId).toBe('test-request-id');
+      expect(jobData.requestId).toBe("test-request-id");
       expect(jobData.priority).toBe(RequestPriority.NORMAL);
       expect(jobData.attempts).toBe(0);
-      expect(jobData.tenantId).toBe('default');
+      expect(jobData.tenantId).toBe("default");
       expect(jobData.weight).toBe(10);
     });
   });
 
-  describe('SchedulerStats Interface', () => {
-    it('should define all required stat fields', () => {
+  describe("SchedulerStats Interface", () => {
+    it("should define all required stat fields", () => {
       const expectedFields = [
-        'name',
-        'waiting',
-        'active',
-        'completed',
-        'failed',
-        'delayed',
-        'paused',
+        "name",
+        "waiting",
+        "active",
+        "completed",
+        "failed",
+        "delayed",
+        "paused",
       ];
 
       expectedFields.forEach((field) => {
-        expect(typeof field).toBe('string');
+        expect(typeof field).toBe("string");
       });
     });
   });
 
-  describe('Concurrent Request Handling', () => {
-    it('should handle concurrency of 1', () => {
+  describe("Concurrent Request Handling", () => {
+    it("should handle concurrency of 1", () => {
       const config: SchedulerConfig = {
-        name: 'concurrency-1-test',
+        name: "concurrency-1-test",
         concurrency: 1,
       };
 
@@ -477,9 +520,9 @@ describe('PriorityScheduler - Business Logic Tests', () => {
       expect(singleScheduler).toBeDefined();
     });
 
-    it('should handle concurrency of 10', () => {
+    it("should handle concurrency of 10", () => {
       const config: SchedulerConfig = {
-        name: 'concurrency-10-test',
+        name: "concurrency-10-test",
         concurrency: 10,
       };
 
@@ -488,21 +531,27 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('BullMQ Priority Calculation Edge Cases', () => {
-    it('should handle priority value 0', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+  describe("BullMQ Priority Calculation Edge Cases", () => {
+    it("should handle priority value 0", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       const result = getPriorityValue(RequestPriority.URGENT);
       expect(result).toBe(0);
     });
 
-    it('should handle maximum priority value', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should handle maximum priority value", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
       const result = getPriorityValue(RequestPriority.LOW);
       expect(result).toBe(6);
     });
 
-    it('should maintain even spacing between priorities', () => {
-      const getPriorityValue = (scheduler as any).getPriorityValue.bind(scheduler);
+    it("should maintain even spacing between priorities", () => {
+      const getPriorityValue = (scheduler as any).getPriorityValue.bind(
+        scheduler,
+      );
 
       const priorities = [
         RequestPriority.URGENT,
@@ -520,23 +569,23 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Aging Constants', () => {
-    it('should define aging interval', () => {
+  describe("Aging Constants", () => {
+    it("should define aging interval", () => {
       const AGING_INTERVAL_MS = 60000;
       expect(AGING_INTERVAL_MS).toBe(60000);
     });
 
-    it('should define aging threshold', () => {
+    it("should define aging threshold", () => {
       const AGING_THRESHOLD_MS = 120000;
       expect(AGING_THRESHOLD_MS).toBe(120000);
     });
 
-    it('should define max age promotions', () => {
+    it("should define max age promotions", () => {
       const MAX_AGE_PROMOTIONS = 2;
       expect(MAX_AGE_PROMOTIONS).toBe(2);
     });
 
-    it('should have threshold greater than interval', () => {
+    it("should have threshold greater than interval", () => {
       const AGING_INTERVAL_MS = 60000;
       const AGING_THRESHOLD_MS = 120000;
 
@@ -544,23 +593,23 @@ describe('PriorityScheduler - Business Logic Tests', () => {
     });
   });
 
-  describe('Worker Event Handlers', () => {
-    it('should have completed event handler', () => {
-      expect(typeof scheduler.initialize).toBe('function');
+  describe("Worker Event Handlers", () => {
+    it("should have completed event handler", () => {
+      expect(typeof scheduler.initialize).toBe("function");
     });
 
-    it('should have failed event handler', () => {
-      expect(typeof scheduler.initialize).toBe('function');
+    it("should have failed event handler", () => {
+      expect(typeof scheduler.initialize).toBe("function");
     });
 
-    it('should reset aging on job completion', () => {
+    it("should reset aging on job completion", () => {
       // This is tested in AgingManager tests
-      expect(typeof scheduler.initialize).toBe('function');
+      expect(typeof scheduler.initialize).toBe("function");
     });
 
-    it('should reset aging on job failure', () => {
+    it("should reset aging on job failure", () => {
       // This is tested in AgingManager tests
-      expect(typeof scheduler.initialize).toBe('function');
+      expect(typeof scheduler.initialize).toBe("function");
     });
   });
 });
