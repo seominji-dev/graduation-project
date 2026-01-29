@@ -153,7 +153,7 @@ export class SchedulerManager {
    * Switch to a different scheduler
    * Returns true if switch was successful, false otherwise
    */
-  async switchScheduler(newType: SchedulerType): Promise<boolean> {
+  switchScheduler(newType: SchedulerType): boolean {
     if (this.currentType === newType) {
       logger.info(`Already using ${newType} scheduler`);
       return true;
@@ -180,7 +180,7 @@ export class SchedulerManager {
       logger.info(`Successfully switched to ${newType} scheduler`);
       return true;
     } catch (error) {
-      logger.error(`Failed to switch scheduler: ${error}`);
+      logger.error(`Failed to switch scheduler: ${String(error)}`);
       return false;
     }
   }
@@ -199,7 +199,7 @@ export class SchedulerManager {
         const schedulerStats = await scheduler.getStats();
         (stats.schedulers as Record<string, unknown>)[type] = schedulerStats;
       } catch (error) {
-        logger.error(`Failed to get stats for ${type}: ${error}`);
+        logger.error(`Failed to get stats for ${type}: ${String(error)}`);
         (stats.schedulers as Record<string, unknown>)[type] = { error: String(error) };
       }
     }

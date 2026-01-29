@@ -53,7 +53,7 @@ export class SchedulerController {
    * GET /api/scheduler/available
    * Get list of available schedulers
    */
-  getAvailableSchedulers = async (
+  getAvailableSchedulers = (
     req: Request,
     res: Response,
     next: NextFunction
@@ -97,7 +97,7 @@ export class SchedulerController {
       logger.info(`Switching scheduler to: ${newType}`);
 
       // Perform the switch
-      const success = await this.schedulerManager.switchScheduler(newType);
+      const success = this.schedulerManager.switchScheduler(newType);
 
       if (!success) {
         res.status(400).json({

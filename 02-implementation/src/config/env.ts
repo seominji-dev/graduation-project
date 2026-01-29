@@ -5,6 +5,8 @@
 
 import { z } from 'zod';
 
+import { createLogger } from '../utils/logger';
+const logger = createLogger('EnvConfig');
 // =============================================================================
 // Environment Schema Definition
 // =============================================================================
@@ -55,10 +57,10 @@ function validateEnv() {
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {
-    console.error('Environment validation failed:');
+    logger.error('Environment validation failed:');
     for (const issue of result.error.issues) {
       const path = issue.path.join('.');
-      console.error('  - ' + path + ': ' + issue.message);
+      logger.error('  - ' + path + ': ' + issue.message);
     }
     throw new Error(
       'Invalid environment configuration:\n' +
