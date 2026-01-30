@@ -1116,3 +1116,220 @@ describe("PriorityScheduler - Specification Tests", () => {
     });
   });
 });
+
+describe("Branch Coverage Improvements - PriorityScheduler", () => {
+  let scheduler: PriorityScheduler;
+  let mockLLMService: jest.Mocked<LLMService>;
+  let config: SchedulerConfig;
+  let mockQueue: any;
+  let mockWorker: any;
+
+  beforeEach(async () => {
+    mockLLMService = {
+      process: jest.fn().mockResolvedValue("Test response"),
+    } as any;
+
+    config = {
+      name: "test-priority-scheduler-branch",
+      defaultPriority: RequestPriority.NORMAL,
+      concurrency: 1,
+    };
+
+    scheduler = new PriorityScheduler(config, mockLLMService);
+
+    // Create mock queue and worker
+    mockQueue = {
+      add: jest.fn().mockResolvedValue({ id: "test-id" }),
+      getJob: jest.fn().mockResolvedValue(null),
+      getJobCounts: jest.fn().mockResolvedValue({ waiting: 0, active: 0 }),
+      getJobs: jest.fn().mockResolvedValue([]),
+      isPaused: jest.fn().mockResolvedValue(false),
+      pause: jest.fn().mockResolvedValue(undefined),
+      resume: jest.fn().mockResolvedValue(undefined),
+      close: jest.fn().mockResolvedValue(undefined),
+    };
+
+    mockWorker = {
+      close: jest.fn().mockResolvedValue(undefined),
+      on: jest.fn().mockReturnThis(),
+    };
+
+    (scheduler as any).queue = mockQueue;
+    (scheduler as any).worker = mockWorker;
+
+    // Mock AgingManager
+    (scheduler as any).agingManager = {
+      start: jest.fn().mockResolvedValue(undefined),
+      stop: jest.fn().mockResolvedValue(undefined),
+      resetJobAging: jest.fn().mockResolvedValue(undefined),
+    };
+    (scheduler as any).agingManager.start();
+  });
+
+  afterEach(async () => {
+    if (scheduler) {
+      try {
+        await scheduler.shutdown();
+      } catch {
+        // Ignore shutdown errors
+      }
+    }
+  });
+
+  const createTestRequest = (priority: RequestPriority = RequestPriority.NORMAL): LLMRequest => ({
+    id: "550e8400-e29b-41d4-a716-446655440000",
+    prompt: "Test request",
+    provider: { name: "ollama", model: "llama2" },
+    priority,
+    status: RequestStatus.PENDING,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  // BRANCH COVERAGE: Test processJob error handling (line 80)
+  describe("processJob() - Error Handling", () => {
+    it("should handle LLM processing errors", async () => {
+      const request = createTestRequest();
+      (scheduler as any).jobTimings.set(request.id, { queued: new Date() });
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock LLM service to reject
+      mockLLMService.process.mockRejectedValueOnce(new Error("LLM API Error"));
+
+      // Should handle error and log failure
+      await expect(processJob(mockJob)).rejects.toThrow("LLM API Error");
+    });
+
+    it("should handle database logging errors during failure", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.updateOne.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      (scheduler as any).jobTimings.set(request.id, { queued: new Date() });
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock LLM service to reject
+      mockLLMService.process.mockRejectedValueOnce(new Error("LLM Error"));
+
+      // Should handle both LLM error and logging error
+      await expect(processJob(mockJob)).rejects.toThrow();
+    });
+
+    it("should handle database logging errors during success", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.updateOne.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      (scheduler as any).jobTimings.set(request.id, { queued: new Date() });
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock LLM service to succeed
+      mockLLMService.process.mockResolvedValueOnce("Success");
+
+      // Should handle logging error without throwing
+      const result = await processJob(mockJob);
+      expect(result).toBe("Success");
+    });
+  });
+
+  // BRANCH COVERAGE: Test logRequest error handling
+  describe("logRequest() - Error Handling", () => {
+    it("should handle database errors when logging request", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.create.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      const logRequest = (scheduler as any).logRequest.bind(scheduler);
+
+      // Should handle error gracefully
+      await expect(logRequest(request, RequestStatus.QUEUED, new Date())).resolves.not.toThrow();
+    });
+  });
+
+  // BRANCH COVERAGE: Test updateJobPriority edge cases
+  describe("updateJobPriority() - Edge Cases", () => {
+    it("should handle job not found", async () => {
+      mockQueue.getJob.mockResolvedValueOnce(null);
+
+      const result = await scheduler.updateJobPriority("non-existent", RequestPriority.HIGH);
+      expect(result).toBe(false);
+    });
+
+    it("should handle job in non-waiting state", async () => {
+      const mockJob = {
+        id: "test-job",
+        getState: jest.fn().mockResolvedValueOnce("active"), // Not waiting/delayed
+        data: { requestId: "test-req", priority: RequestPriority.NORMAL },
+        remove: jest.fn().mockResolvedValue(undefined),
+      };
+      mockQueue.getJob.mockResolvedValueOnce(mockJob);
+
+      const result = await scheduler.updateJobPriority("test-job", RequestPriority.HIGH);
+      expect(result).toBe(false);
+    });
+
+    it("should handle job remove errors", async () => {
+      const mockJob = {
+        id: "test-job",
+        getState: jest.fn().mockResolvedValueOnce("waiting"),
+        data: { requestId: "test-req", priority: RequestPriority.NORMAL },
+        remove: jest.fn().mockRejectedValueOnce(new Error("Queue Error")),
+      };
+      mockQueue.getJob.mockResolvedValueOnce(mockJob);
+
+      // Should handle remove error
+      const result = await scheduler.updateJobPriority("test-job", RequestPriority.HIGH);
+      expect(result).toBe(false);
+    });
+  });
+
+  // BRANCH COVERAGE: Test getWaitingJobs error handling
+  describe("getWaitingJobs() - Error Handling", () => {
+    it("should handle queue errors when getting waiting jobs", async () => {
+      mockQueue.getJobs.mockRejectedValueOnce(new Error("Queue Error"));
+
+      const jobs = await scheduler.getWaitingJobs();
+      expect(jobs).toEqual([]);
+    });
+  });
+
+  // BRANCH COVERAGE: Test cleanupJobTimings with non-existent job
+  describe("cleanupJobTimings() - Edge Cases", () => {
+    it("should handle cleanup of non-existent job", () => {
+      const cleanup = (scheduler as any).cleanupJobTimings.bind(scheduler);
+
+      // Should not throw for non-existent job
+      expect(() => cleanup("non-existent-id")).not.toThrow();
+    });
+  });
+});

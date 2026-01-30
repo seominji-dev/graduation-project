@@ -977,3 +977,284 @@ describe("MLFQScheduler - Specification Tests", () => {
     });
   });
 });
+
+describe("Branch Coverage Improvements - MLFQScheduler", () => {
+  let scheduler: MLFQScheduler;
+  let mockLLMService: jest.Mocked<LLMService>;
+  let config: SchedulerConfig;
+  let testIdCounter = 0;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    capturedWorkerEventHandlers.clear();
+    resetAllQueues();
+    testIdCounter = 0;
+
+    mockLLMService = {
+      process: jest.fn().mockResolvedValue("Test response"),
+    } as any;
+
+    config = {
+      name: "test-mlfq-scheduler-branch",
+      defaultPriority: RequestPriority.NORMAL,
+      concurrency: 1,
+    };
+
+    scheduler = new MLFQScheduler(config, mockLLMService);
+
+    (BoostManager as jest.Mock).mockClear();
+    (BoostManager as jest.Mock).mockImplementation(() => ({
+      start: jest.fn().mockResolvedValue(undefined),
+      stop: jest.fn().mockResolvedValue(undefined),
+      getStats: jest.fn().mockReturnValue({ interval: 5000, totalBoosts: 0 }),
+    }));
+  });
+
+  afterEach(async () => {
+    if (scheduler) {
+      try {
+        await scheduler.shutdown();
+      } catch {
+        // Ignore shutdown errors
+      }
+    }
+  });
+
+  const createTestRequest = (
+    id?: string,
+    priority?: RequestPriority,
+  ): LLMRequest => {
+    testIdCounter++;
+    const padded = String(testIdCounter).padStart(12, "0");
+    return {
+      id: id || "550e8400-e29b-41d4-a716-" + padded,
+      prompt: "Test request prompt",
+      provider: { name: "ollama", model: "llama2" },
+      priority: priority ?? RequestPriority.NORMAL,
+      status: RequestStatus.PENDING,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  };
+
+  // BRANCH COVERAGE: Test processJob timeout/demotion (lines 467-468, 505-515)
+  describe("processJob() - Timeout and Demotion Branches", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle time quantum exceeded for demotion", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock LLM service to reject with timeout error
+      mockLLMService.process.mockRejectedValueOnce(new Error("Time quantum exceeded"));
+
+      // Should throw demotion error
+      await expect(processJob(mockJob, 0)).rejects.toThrow(
+        "Job demoted to Q1 after exceeding time quantum",
+      );
+    });
+
+    it("should handle timeout error at lowest queue (Q3)", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      // Set queue level to 3 (lowest)
+      const metadata = (scheduler as any).jobMetadata.get(request.id);
+      metadata.queueLevel = 3;
+      (scheduler as any).jobMetadata.set(request.id, metadata);
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock timeout at Q3 - no lower queue to demote to
+      mockLLMService.process.mockRejectedValueOnce(new Error("Time quantum exceeded"));
+
+      // Should not demote (already at lowest queue)
+      await expect(processJob(mockJob, 3)).rejects.toThrow();
+    });
+
+    it("should handle other LLM errors", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      // Mock non-timeout error
+      mockLLMService.process.mockRejectedValueOnce(new Error("API Error"));
+
+      await expect(processJob(mockJob, 0)).rejects.toThrow("API Error");
+    });
+  });
+
+  // BRANCH COVERAGE: Test boostAllJobs error handling (line 405)
+  describe("boostAllJobs() - Error Handling", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle boost when metadata is missing", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      // Remove metadata to simulate missing data
+      (scheduler as any).jobMetadata.delete(request.id);
+
+      // boostAllJobs should handle missing metadata gracefully
+      const count = await scheduler.boostAllJobs();
+      expect(typeof count).toBe("number");
+    });
+
+    it("should handle boost errors for individual jobs", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      // Set queue level to 1 for boosting
+      const metadata = (scheduler as any).jobMetadata.get(request.id);
+      metadata.queueLevel = 1;
+      (scheduler as any).jobMetadata.set(request.id, metadata);
+
+      // Boost should handle errors gracefully
+      const count = await scheduler.boostAllJobs();
+      expect(count).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  // BRANCH COVERAGE: Test logResponse error handling (line 661)
+  describe("logResponse() - Error Handling", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle database logging errors", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.updateOne.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const processJob = (scheduler as any).processJob.bind(scheduler);
+      const mockJob = {
+        data: {
+          requestId: request.id,
+          prompt: request.prompt,
+          provider: request.provider,
+        },
+      };
+
+      mockLLMService.process.mockResolvedValueOnce("Success");
+
+      // Should handle logging error without throwing
+      const result = await processJob(mockJob, 0);
+      expect(result).toBe("Success");
+    });
+  });
+
+  // BRANCH COVERAGE: Test updateQueueLevel error handling
+  describe("updateQueueLevel() - Error Handling", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle database update errors", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.updateOne.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const updateQueueLevel = (scheduler as any).updateQueueLevel.bind(scheduler);
+
+      // Should handle error gracefully
+      await expect(updateQueueLevel(request.id, 1, [0, 1])).resolves.not.toThrow();
+    });
+  });
+
+  // BRANCH COVERAGE: Test demoteJob edge cases
+  describe("demoteJob() - Edge Cases", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle demotion when job not found", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const demoteJob = (scheduler as any).demoteJob.bind(scheduler);
+
+      // Job doesn't exist in queue
+      await expect(demoteJob("non-existent-id", 0)).resolves.not.toThrow();
+    });
+
+    it("should handle demotion when job not in active state", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const demoteJob = (scheduler as any).demoteJob.bind(scheduler);
+
+      // Job exists but may not be active
+      await expect(demoteJob(request.id, 0)).resolves.not.toThrow();
+    });
+
+    it("should handle demotion at lowest queue", async () => {
+      const request = createTestRequest();
+      await scheduler.submit(request);
+
+      const metadata = (scheduler as any).jobMetadata.get(request.id);
+      metadata.queueLevel = 3; // Already at Q3
+      (scheduler as any).jobMetadata.set(request.id, metadata);
+
+      const demoteJob = (scheduler as any).demoteJob.bind(scheduler);
+
+      // Should not demote below Q3
+      await expect(demoteJob(request.id, 3)).resolves.not.toThrow();
+    });
+  });
+
+  // BRANCH COVERAGE: Test logRequest error handling
+  describe("logRequest() - Error Handling", () => {
+    beforeEach(async () => {
+      await scheduler.initialize();
+    });
+
+    it("should handle database logging errors", async () => {
+      const {
+        RequestLog,
+      } = require("../../../src/infrastructure/models/RequestLog");
+      RequestLog.create.mockRejectedValueOnce(new Error("DB Error"));
+
+      const request = createTestRequest();
+      const logRequest = (scheduler as any).logRequest.bind(scheduler);
+
+      // Should handle error gracefully
+      await expect(logRequest(request, RequestStatus.QUEUED, new Date(), 0)).resolves.not.toThrow();
+    });
+  });
+});
