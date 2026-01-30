@@ -17,7 +17,7 @@ LLM 스케줄러 소스코드, 테스트, 실험 데이터를 관리합니다.
 | FR-2 | REST API | src/api/ | tests/api/ |
 | FR-3 | LLM 통합 | src/services/llmService.ts | tests/services/ |
 | FR-4 | 데이터 저장 | src/infrastructure/ | tests/infrastructure/ |
-| NFR-6.2 | 85%+ 커버리지 | 전체 | tests/ (757개) |
+| NFR-6.2 | 85%+ 커버리지 | 전체 | tests/ (777개) |
 
 ## 폴더 구조
 
@@ -53,7 +53,7 @@ LLM 스케줄러 소스코드, 테스트, 실험 데이터를 관리합니다.
 │   ├── config/            # 설정 파일
 │   ├── utils/             # 유틸리티
 │   └── index.ts           # 진입점
-├── tests/                  # 테스트 코드 (757개, 100% 통과)
+├── tests/                  # 테스트 코드 (777개, 100% 통과)
 ├── coverage/               # 테스트 커버리지 리포트
 ├── experiments/            # 실험 데이터 및 결과
 ├── docs/                   # API 문서
@@ -98,12 +98,12 @@ npm run lint
 
 | 항목 | 결과 | 목표 | 달성 여부 |
 |------|------|------|----------|
-| 테스트 수 | 757개 | 700개 이상 | ✅ |
+| 테스트 수 | 777개 | 700개 이상 | ✅ |
 | 통과율 | 100% | 100% | ✅ |
-| Statements | 98.37% | 85%+ | ✅ |
-| Branches | 84.98% | 80%+ | ✅ |
+| Statements | 98.72% | 85%+ | ✅ |
+| Branches | 85.77% | 80%+ | ✅ |
 | Functions | 94.77% | 85%+ | ✅ |
-| Lines | 98.57% | 85%+ | ✅ |
+| Lines | 98.93% | 85%+ | ✅ |
 | TRUST 5 | 88/100 | 80/100+ | ✅ |
 
 ## API 문서
