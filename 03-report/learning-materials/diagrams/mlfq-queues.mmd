@@ -1,0 +1,38 @@
+%% MLFQ (Multi-Level Feedback Queue) Structure
+%% Mermaid flowchart diagram
+
+flowchart TB
+    subgraph NewJob["새 작업 도착"]
+        NJ["모든 새 작업은<br/>Q0에서 시작"]
+    end
+
+    subgraph Queues["4단계 큐 구조"]
+        Q0["Q0: 최고 우선순위<br/>Time Quantum: 1초<br/>짧은 대화형 요청"]
+        Q1["Q1: 높은 우선순위<br/>Time Quantum: 3초<br/>중간 길이 요청"]
+        Q2["Q2: 중간 우선순위<br/>Time Quantum: 8초<br/>긴 요청"]
+        Q3["Q3: 낮은 우선순위<br/>Time Quantum: 무제한<br/>배치 작업"]
+    end
+
+    subgraph Rules["MLFQ 규칙"]
+        R1["Rule 1: Priority(A) > Priority(B)<br/>→ A 먼저 실행"]
+        R2["Rule 2: 같은 우선순위<br/>→ Round-Robin"]
+        R3["Rule 3: 새 작업<br/>→ Q0 시작"]
+        R4["Rule 4: 타임슬라이스 소진<br/>→ 우선순위 강등"]
+        R5["Rule 5: 주기적 Boost<br/>→ 모두 Q0로"]
+    end
+
+    subgraph Boost["Boost Manager"]
+        BM["60초마다<br/>모든 작업을 Q0로 이동<br/>(기아 방지)"]
+    end
+
+    NJ --> Q0
+    Q0 -->|"타임슬라이스 소진"| Q1
+    Q1 -->|"타임슬라이스 소진"| Q2
+    Q2 -->|"타임슬라이스 소진"| Q3
+    
+    BM -.->|"Boost"| Q0
+    Q1 & Q2 & Q3 -.->|"60초마다"| BM
+
+    style Q0 fill:#90EE90,stroke:#333
+    style Q3 fill:#FFB6C1,stroke:#333
+    style BM fill:#87CEEB,stroke:#333

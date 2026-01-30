@@ -1,0 +1,55 @@
+%% Component Interactions - Request Lifecycle
+%% Mermaid sequence diagram
+
+sequenceDiagram
+    participant C as Client
+    participant RC as RequestController
+    participant SF as SchedulerFactory
+    participant S as Scheduler
+    participant M as Manager
+    participant Q as BullMQ
+    participant W as Worker
+    participant LLM as LLMService
+    participant DB as MongoDB
+
+    %% 요청 제출
+    rect rgb(200, 230, 200)
+        Note over C,S: 1. 요청 제출 단계
+        C->>RC: POST /api/requests
+        RC->>SF: getScheduler(type)
+        SF-->>RC: scheduler instance
+        RC->>S: submit(request)
+        S->>Q: add(job)
+        Q-->>S: jobId
+        S->>DB: saveRequestLog()
+        S-->>RC: requestId
+        RC-->>C: 202 Accepted
+    end
+
+    %% 스케줄링
+    rect rgb(200, 200, 230)
+        Note over S,M: 2. 스케줄링 단계
+        S->>M: checkAging() / checkBoost()
+        M->>Q: updatePriorities()
+        M-->>S: updated
+    end
+
+    %% 처리
+    rect rgb(230, 200, 200)
+        Note over W,LLM: 3. 처리 단계
+        W->>Q: getNextJob()
+        Q-->>W: job
+        W->>LLM: processPrompt()
+        LLM-->>W: response
+        W->>Q: complete(jobId)
+        W->>DB: updateRequestLog()
+    end
+
+    %% 결과 조회
+    rect rgb(230, 230, 200)
+        Note over C,DB: 4. 결과 조회 단계
+        C->>RC: GET /api/requests/:id
+        RC->>DB: findRequest(id)
+        DB-->>RC: request
+        RC-->>C: {status, result}
+    end

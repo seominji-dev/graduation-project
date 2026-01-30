@@ -1,0 +1,33 @@
+%% Priority Scheduling with Aging Mechanism
+%% Mermaid flowchart diagram
+
+flowchart TD
+    subgraph Input["요청 입력"]
+        R1["요청 A<br/>Priority: LOW (0)"]
+        R2["요청 B<br/>Priority: NORMAL (1)"]
+        R3["요청 C<br/>Priority: HIGH (2)"]
+        R4["요청 D<br/>Priority: URGENT (3)"]
+    end
+
+    subgraph PriorityQueue["우선순위 큐"]
+        Q["BullMQ Priority Queue<br/>(낮은 숫자 = 높은 우선순위)"]
+    end
+
+    subgraph Aging["Aging Manager"]
+        AM["10초마다 검사<br/>30초 대기 시 우선순위 상향"]
+    end
+
+    subgraph Processing["처리 순서"]
+        P1["1. URGENT (3)"]
+        P2["2. HIGH (2)"]
+        P3["3. NORMAL (1)"]
+        P4["4. LOW (0) → Aged to NORMAL"]
+    end
+
+    R1 & R2 & R3 & R4 --> Q
+    Q --> Aging
+    Aging -->|"기아 방지"| Q
+    Q --> P1 --> P2 --> P3 --> P4
+
+    style P4 fill:#ffcc00,stroke:#333
+    style Aging fill:#90EE90,stroke:#333

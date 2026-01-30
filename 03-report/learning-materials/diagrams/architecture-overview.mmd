@@ -1,0 +1,39 @@
+%% LLM Scheduler System Architecture Overview
+%% Mermaid flowchart diagram
+
+flowchart TB
+    subgraph Client["클라이언트 계층"]
+        API["REST API<br/>(요청 제출/조회)"]
+        Dashboard["대시보드<br/>(실시간 모니터링)"]
+    end
+
+    subgraph APILayer["API 계층 (Express.js)"]
+        RC["Request<br/>Controller"]
+        SC["Scheduler<br/>Controller"]
+        DS["Dashboard<br/>Service"]
+    end
+
+    subgraph Engine["스케줄러 엔진"]
+        FCFS["FCFS<br/>선착순"]
+        PRI["Priority<br/>우선순위"]
+        MLFQ["MLFQ<br/>다단계"]
+        WFQ["WFQ<br/>가중치"]
+    end
+
+    subgraph Managers["관리자 계층"]
+        AM["Aging<br/>Manager"]
+        BM["Boost<br/>Manager"]
+        TR["Tenant<br/>Registry"]
+        FC["Fairness<br/>Calculator"]
+    end
+
+    subgraph Storage["저장소 계층"]
+        Redis[(Redis<br/>BullMQ)]
+        Mongo[(MongoDB<br/>Logs)]
+        LLM["LLM<br/>Service"]
+    end
+
+    Client --> APILayer
+    APILayer --> Engine
+    Engine --> Managers
+    Managers --> Storage

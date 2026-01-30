@@ -62,7 +62,7 @@
 │   │
 │   └── index.ts                # 애플리케이션 진입점
 │
-├── tests/                      # 테스트 파일 (757개)
+├── tests/                      # 테스트 파일 (777개)
 │   ├── unit/                   # 단위 테스트
 │   ├── integration/            # 통합 테스트
 │   └── e2e/                    # E2E 테스트
@@ -347,7 +347,7 @@ export class MLFQScheduler implements IScheduler {
   // ★ MLFQ 메타데이터
   private jobMetadata: Map<string, {
     queueLevel: number;          // 현재 큐 레벨 (0-3)
-    queueHistory: number[];      // 큐 이동历史
+    queueHistory: number[];      // 큐 이동이력
     timeSliceUsed?: number;      // 사용한 시간 퀀텀
     timeSliceRemaining: number;  // 남은 시간 퀀텀
     totalCPUTime: number;        // 총 CPU 시간
