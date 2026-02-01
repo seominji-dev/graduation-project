@@ -15,7 +15,7 @@
     실험 결과, Priority Scheduling은 FCFS 대비 평균 대기시간을 30% 개선하였고, MLFQ는 40% 개선과 함께 처리량을 20% 증가시켰다. WFQ는 개별 테넌트 수준에서 Jain's Fairness Index 0.92-0.98을 달성하여 멀티테넌트 환경에서 우수한 공정성을 보여주었다.
   ],
   keywords: ("LLM", "스케줄링 알고리즘", "MLFQ", "WFQ", "API 요청 관리", "공정성"),
-  date: "2026년 졸업프로젝트",
+  date: "2025년 졸업프로젝트",
   theme: "default",
   two_column: false,
 )
@@ -104,9 +104,9 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 
 == 테스트 결과
 
-- 총 테스트 수: 757개
-- 통과 테스트: 757개 (100%)
-- 코드 커버리지: 98.37%
+- 총 테스트 수: 777개
+- 통과 테스트: 777개 (100%)
+- 코드 커버리지: 98.72%
 
 == 성능 비교 분석
 
@@ -126,7 +126,7 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 #booktabs_table_simple(
   columns: 3,
   [*항목*], [*점수*], [*평가 내용*],
-  [Tested], [18/20], [757개 테스트, 98.37% 커버리지],
+  [Tested], [18/20], [777개 테스트, 98.72% 커버리지],
   [Readable], [18/20], [명확한 네이밍, TypeScript 타입 시스템],
   [Unified], [18/20], [일관된 코드 스타일],
   [Secured], [17/20], [Zod 입력 검증],
@@ -140,7 +140,7 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 + *4가지 스케줄링 알고리즘 구현*: FCFS, Priority, MLFQ, WFQ
 + *기아 방지 메커니즘*: Aging과 Boost를 통한 효과적인 기아 방지
 + *공정성 보장*: Virtual Time과 Jain's Fairness Index
-+ *높은 품질*: 757개 테스트 100% 통과, 98.37% 코드 커버리지
++ *높은 품질*: 777개 테스트 100% 통과, 98.72% 코드 커버리지
 
 #bibliography_section()
 

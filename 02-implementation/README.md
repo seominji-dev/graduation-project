@@ -10,7 +10,7 @@ LLM 스케줄러 소스코드, 테스트, 실험 데이터를 관리합니다.
 
 | 요구사항 ID | 설명 | 구현 파일 | 테스트 파일 |
 |-------------|------|-----------|-------------|
-| FR-1.1 | FCFS 스케줄러 | src/schedulers/FCFQScheduler.ts | tests/schedulers/fcfs.test.ts |
+| FR-1.1 | FCFS 스케줄러 | src/schedulers/FCFSScheduler.ts | tests/schedulers/fcfs.test.ts |
 | FR-1.2 | Priority 스케줄러 | src/schedulers/PriorityScheduler.ts | tests/schedulers/priority.test.ts |
 | FR-1.3 | MLFQ 스케줄러 | src/schedulers/MLFQScheduler.ts | tests/schedulers/mlfq.test.ts |
 | FR-1.4 | WFQ 스케줄러 | src/schedulers/WFQScheduler.ts | tests/schedulers/wfq.test.ts |
@@ -25,7 +25,7 @@ LLM 스케줄러 소스코드, 테스트, 실험 데이터를 관리합니다.
 02-implementation/
 ├── src/                    # 소스코드
 │   ├── schedulers/        # 4개 스케줄링 알고리즘
-│   │   ├── FCFScheduler.ts
+│   │   ├── FCFSScheduler.ts
 │   │   ├── PriorityScheduler.ts
 │   │   ├── MLFQScheduler.ts
 │   │   ├── WFQScheduler.ts
