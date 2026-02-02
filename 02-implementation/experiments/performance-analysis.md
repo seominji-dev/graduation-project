@@ -1144,7 +1144,7 @@ Deadlock Detector가 가장 낮은 메모리 사용량을 보임(128MB @ 1000 co
 
 | 버전 | 날짜 | 변경 사항 | 작성자 |
 |------|------|----------|--------|
-| **1.0.0** | 2026-01-25 | 초기 버전, 4개 프로젝트 종합 성능 분석 | Hongik Univ. Graduation Project Team |
+| **1.0.0** | 2026-01-25 | 초기 버전, 4개 프로젝트 종합 성능 분석 | 서민지 (홍익대학교) |
 
 ---
 
@@ -1162,5 +1162,5 @@ Deadlock Detector가 가장 낮은 메모리 사용량을 보임(128MB @ 1000 co
 
 ---
 
-© 2026 Hongik University Computer Science Graduation Project Team
+© 2026 홍익대학교 컴퓨터공학과 서민지
 All performance data is based on controlled test environment and hypothetical scenarios.

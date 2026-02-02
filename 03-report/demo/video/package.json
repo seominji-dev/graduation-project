@@ -1,7 +1,7 @@
 {
   "name": "llm-scheduler-demo",
   "version": "1.0.0",
-  "description": "LLM API 요청 최적화 스케줄러 데모 비디오 - 홍익대학교 졸업프로젝트 2025",
+  "description": "LLM API 요청 최적화 스케줄러 데모 비디오 - 홍익대학교 졸업프로젝트 2026",
   "scripts": {
     "studio": "remotion studio",
     "build": "remotion render src/index.ts DemoVideo out/demo.mp4",

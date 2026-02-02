@@ -65,7 +65,7 @@ llm-scheduler/
 npm install          # 의존성 설치
 npm run dev          # 개발 서버 실행
 npm run build        # TypeScript 빌드
-npm test             # 테스트 실행 (707개, 100% 통과)
+npm test             # 테스트 실행 (777개, 100% 통과)
 npm run lint         # ESLint 검사
 npm run format       # Prettier 포맷팅
 ```

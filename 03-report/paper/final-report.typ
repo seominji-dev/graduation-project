@@ -15,7 +15,7 @@
     실험 결과, Priority Scheduling은 FCFS 대비 평균 대기시간을 30% 개선하였고, MLFQ는 40% 개선과 함께 처리량을 20% 증가시켰다. WFQ는 개별 테넌트 수준에서 Jain's Fairness Index 0.92-0.98을 달성하여 멀티테넌트 환경에서 우수한 공정성을 보여주었다.
   ],
   keywords: ("LLM", "스케줄링 알고리즘", "MLFQ", "WFQ", "API 요청 관리", "공정성"),
-  date: "2025년 졸업프로젝트",
+  date: "2026년 졸업프로젝트",
   theme: "default",
   two_column: false,
 )
@@ -119,18 +119,16 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
   [WFQ], [35% 개선], [유지], [매우 높음],
 )
 
-== TRUST 5 품질 평가
-
-총점: 88/100
+== 코드 품질
 
 #booktabs_table_simple(
-  columns: 3,
-  [*항목*], [*점수*], [*평가 내용*],
-  [Tested], [18/20], [777개 테스트, 98.72% 커버리지],
-  [Readable], [18/20], [명확한 네이밍, TypeScript 타입 시스템],
-  [Unified], [18/20], [일관된 코드 스타일],
-  [Secured], [17/20], [Zod 입력 검증],
-  [Trackable], [17/20], [구조화된 로깅],
+  columns: 2,
+  [*항목*], [*달성 내용*],
+  [테스트], [777개 테스트, 98.72% 커버리지],
+  [가독성], [TypeScript 정적 타이핑, 명확한 변수/함수 네이밍],
+  [일관성], [ESLint, Prettier를 통한 코드 스타일 통일],
+  [안전성], [Zod를 통한 입력 검증, 체계적인 에러 처리],
+  [추적성], [구조화된 로깅으로 디버깅 용이],
 )
 
 = 결론

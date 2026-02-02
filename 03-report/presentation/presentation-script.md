@@ -308,13 +308,11 @@ FairnessCalculator는 공정성 지표를 계산합니다.
 
 테스트 현황을 보면, 총 777개 테스트가 있고 통과율은 100%입니다. 실행 시간은 약 3초입니다.
 
-커버리지는 Statements 98.72%, Branches 82.57%, Functions 90.19%, Lines 96.54%입니다.
+커버리지는 Statements 98.72%, Branches 85.77%로 목표인 85%를 초과 달성했습니다.
 
-TRUST 5 점수는 88/100입니다.
+TypeScript 정적 타이핑과 ESLint를 적용하여 일관된 코드 스타일을 유지했습니다.
 
-Tested 90%, Readable 90%, Unified 90%, Secured 85%, Trackable 85%입니다.
-
-이는 프로덕션급 코드 품질을 의미합니다.
+높은 테스트 커버리지 덕분에 재현 가능한 학술 연구의 기반이 됩니다.
 
 ---
 
@@ -444,7 +442,7 @@ Jain's Fairness Index 결과를 자세히 보겠습니다.
 - Q: 왜 OS 알고리즘인가? A: 수십 년간 검증된 이론적 기반
 - Q: 실제 성능 향상 수치는? A: 대기시간 30-40% 개선
 - Q: 공정성 측정 방법은? A: Jain's Fairness Index 사용
-- Q: 상용화 가능성은? A: REST API 제공으로 즉시 활용 가능
+- Q: 학술적 기여는? A: OS 이론의 AI 도메인 확장 및 정량적 비교 분석 제공
 
 ---
 

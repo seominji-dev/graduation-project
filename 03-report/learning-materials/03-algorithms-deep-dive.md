@@ -659,4 +659,4 @@ export class FairnessCalculator {
 
 **작성일:** 2026-01-30
 **버전:** 1.0.0
-**작성자:** LLM Scheduler 팀
+**작성자:** 서민지
