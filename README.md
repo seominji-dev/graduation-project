@@ -37,12 +37,8 @@ API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 ├── 03-report/              # Phase 3: 보고서
 │   ├── paper/             # 최종 논문
 │   ├── presentation/      # PPT 발표자료
-│   └── demo/              # 데모 자료
-│
-├── study-materials/        # 학습자료
-│   ├── os-concepts/       # OS 개념 정리
-│   ├── code-analysis/     # 코드 분석
-│   └── faq/               # 예상 질문
+│   ├── demo/              # 데모 자료
+│   └── learning-materials/ # 학습자료 (7개 챕터)
 │
 └── archive/                # 참고용 아카이브
 ```
@@ -106,6 +102,24 @@ Phase 2 (구현) → Phase 3 (보고서) → Phase 1 (계획서) 보완
 - [x] 최종 논문 (PDF) - 03-report/paper/final-report.pdf (154KB)
 - [x] 발표자료 (PPT) - 03-report/presentation/graduation-presentation.pptx (457KB)
 - [x] 데모 영상 - 03-report/demo/video/out/demo.mp4 (5.2MB)
+
+---
+
+## AI 에이전트 지원
+
+이 프로젝트는 다양한 AI 코딩 어시스턴트를 지원합니다.
+
+| 파일 | 대상 AI |
+|------|---------|
+| `CLAUDE.md` | Claude Code |
+| `.cursorrules` | Cursor AI |
+| `.clinerules` | Cline (VS Code) |
+| `.windsurfrules` | Windsurf |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+| `.ai/rules/gemini.md` | Google Gemini |
+| `.ai/rules/opencode.md` | OpenCode |
+
+모든 AI가 공통으로 참조하는 통합 컨텍스트: `.ai/PROJECT_CONTEXT.md`
 
 ---
 

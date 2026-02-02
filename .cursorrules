@@ -2,31 +2,33 @@
 
 You are an expert TypeScript developer working on an LLM Request Scheduler project that applies OS scheduling concepts to LLM API request management.
 
-## Project Overview
+## Project Context
 
-- **Name**: LLM Request Scheduler
-- **Purpose**: Apply OS scheduling algorithms (FCFS, Priority, MLFQ, WFQ) to optimize LLM API request handling
-- **Tech Stack**: TypeScript, Node.js 20+, Express, BullMQ, MongoDB, Redis, Socket.io
+See `.ai/PROJECT_CONTEXT.md` for full project details.
+
+## Quick Reference
+
+- **Project**: LLM Request Scheduler (Hongik University Graduation Project)
+- **Author**: 서민지 (Seo Minji)
+- **Tech Stack**: TypeScript, Node.js 20+, Express, BullMQ, MongoDB, Redis
+- **Tests**: 777 tests, 98.72% coverage
 
 ## Project Structure
 
 ```
-src/
-├── schedulers/           # Scheduling algorithms (FCFS, Priority, MLFQ, WFQ)
-├── managers/             # Management components (Tenant, Fairness, Aging, Boost)
-├── services/             # Business logic (schedulerFactory, llmService)
-├── api/                  # REST API (routes, controllers)
-├── middlewares/          # Express middlewares
-├── infrastructure/       # External services (Redis, MongoDB)
-├── config/               # Configuration management
-├── domain/               # Domain models
-├── metrics/              # Prometheus metrics
-└── utils/                # Utility functions
-
-tests/                    # Jest unit and integration tests
-shared/                   # Shared libraries (@shared/errors, @shared/logger)
-docs/                     # Project documentation
-archive/                  # Archived files (reference only)
+졸업프로젝트/
+├── 01-plan/              # Planning documents
+├── 02-implementation/    # Main implementation (TypeScript)
+│   ├── src/              # Source code
+│   │   ├── schedulers/   # FCFS, Priority, MLFQ, WFQ
+│   │   ├── managers/     # Queue, Request, Tenant
+│   │   ├── services/     # Business logic
+│   │   ├── api/          # REST API
+│   │   └── infrastructure/
+│   └── tests/            # Jest tests
+├── 03-report/            # Final report & presentation
+├── study-materials/      # Study materials
+└── archive/              # Alternative projects (reference)
 ```
 
 ## Coding Standards
@@ -53,9 +55,10 @@ archive/                  # Archived files (reference only)
 ## Key Commands
 
 ```bash
+cd 02-implementation
 npm run dev          # Development server with hot reload
 npm run build        # TypeScript compilation
-npm test             # Run tests with coverage (707 tests)
+npm test             # Run tests with coverage (777 tests)
 npm run lint         # ESLint check
 npm run format       # Prettier formatting
 ```
@@ -66,7 +69,7 @@ npm run format       # Prettier formatting
 2. Run `npm test` to verify all tests pass
 3. Follow existing code patterns in the codebase
 4. Update relevant tests when modifying functionality
-5. Keep the 97%+ test coverage
+5. Maintain 98%+ test coverage
 
 ## Domain Knowledge
 
@@ -80,3 +83,8 @@ npm run format       # Prettier formatting
 - Wait time, turnaround time, throughput
 - Fairness index (Jain's fairness index)
 - Starvation prevention effectiveness
+
+## Language
+
+- User communication: Korean (한국어)
+- Code/Technical: English
