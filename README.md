@@ -65,7 +65,7 @@ npm test
 
 ## 기술 스택
 
-- **언어:** TypeScript 5.3+
+- **언어:** TypeScript 5.9
 - **런타임:** Node.js 20 LTS
 - **프레임워크:** Express.js 4.18
 - **큐 시스템:** BullMQ 5.1.8

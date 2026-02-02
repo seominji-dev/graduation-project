@@ -27,7 +27,7 @@ See `.ai/PROJECT_CONTEXT.md` for full project details.
 │   │   └── infrastructure/
 │   └── tests/            # Jest tests
 ├── 03-report/            # Final report & presentation
-├── study-materials/      # Study materials
+│   └── learning-materials/ # Study materials (7 chapters)
 └── archive/              # Alternative projects (reference)
 ```
 

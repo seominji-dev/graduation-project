@@ -19,7 +19,7 @@
 
 - **Remotion 4.0**: React 기반 비디오 제작 프레임워크
 - **React 18.2**: UI 컴포넌트
-- **TypeScript 5.3**: 타입 안전성
+- **TypeScript 5.9**: 타입 안전성
 
 ## 설치 방법
 
