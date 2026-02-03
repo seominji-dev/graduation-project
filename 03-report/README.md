@@ -39,7 +39,7 @@
     ├── 03-algorithms-deep-dive.md     # 알고리즘 심층 분석 (527줄)
     ├── 04-component-interactions.md    # 컴포넌트 상호작용 (738줄)
     ├── 05-faq.md                      # FAQ (694줄)
-    ├── 06-eli5.md                      | 쉽게 설명 (335줄)
+    ├── 06-eli5.md                      # 쉽게 설명 (335줄)
     ├── 07-os-scheduling-reference.md   # OS 참고 자료 (471줄)
     ├── diagrams/                       # 다이어그램
     └── examples/                       # 코드 예제
