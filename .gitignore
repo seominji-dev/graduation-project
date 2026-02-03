@@ -101,6 +101,10 @@ logs/
 # AI & Development Tools
 # ============================================
 .claude/
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/moai/
+!.claude/skills/moai/**
 .moai/
 .moai-backups/
 
