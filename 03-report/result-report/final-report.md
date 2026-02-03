@@ -378,7 +378,7 @@ FairnessCalculator는 다음 지표를 실시간으로 계산한다:
 | **프로그래밍 언어** | JavaScript | ES2024 | 학부생 수준 코드 |
 | **웹 프레임워크** | Express.js | 4.18 | REST API |
 | **큐 시스템** | 메모리 배열 | - | 인메모리 작업 큐 |
-| **데이터베이스** | SQLite | 3.x | 요청 로그 영구 저장 |
+| **데이터 저장** | JSON 파일 | - | 요청 로그 영구 저장 |
 | **테스트 프레임워크** | Jest | 29.7 | 단위 테스트 |
 
 ---
@@ -523,7 +523,7 @@ const BOOST_INTERVAL_MS = 30000;    // 30초마다 Boosting
 | RAM | 16GB |
 | OS | macOS 14.5 Sonoma |
 | Node.js | v20.10.0 LTS |
-| SQLite | v3.x (better-sqlite3) |
+| 데이터 저장 | JSON 파일 저장소 |
 | LLM | Ollama Llama 3.2 (8B) |
 
 #### 5.1.2 실험 방법론
@@ -752,9 +752,9 @@ Jain's Fairness Index 외에 추가 공정성 메트릭 연구:
 
 ### 7.3 기술 문서
 
-[7] SQLite Documentation. (2024). "SQLite Home Page". Retrieved from https://www.sqlite.org/
+[7] Node.js Documentation. (2024). "Node.js Documentation". Retrieved from https://nodejs.org/docs/
 
-[8] better-sqlite3 Documentation. (2024). "better-sqlite3 - Fast Node.js SQLite". Retrieved from https://github.com/WiseLibs/better-sqlite3
+[8] MDN JavaScript Documentation. (2024). "JavaScript". Retrieved from https://developer.mozilla.org/ko/docs/Web/JavaScript
 
 [9] Express.js Documentation. (2024). "Express - Node.js web application framework". Retrieved from https://expressjs.com/
 
@@ -790,8 +790,8 @@ Jain's Fairness Index 외에 추가 공정성 메트릭 연구:
 
 | 산출물 | 상태 | 위치 |
 |--------|------|------|
-| 소스코드 | 완료 | 02-implementation/src/ |
-| 테스트 케이스 | 완료 (777개) | 02-implementation/tests/ |
+| 소스코드 | 완료 | 02-implementation/src-simple/ |
+| 테스트 케이스 | 완료 | 02-implementation/tests-simple/ |
 | 결과보고서 | 완료 (본 문서) | 03-report/result-report/ |
 | 학습자료 | 진행 중 | 03-report/learning-materials/ |
 | 발표자료 | 진행 중 | 03-report/presentation/ |
