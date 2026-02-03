@@ -28,8 +28,8 @@ flowchart TB
     end
 
     subgraph Storage["저장소 계층"]
-        Redis[(Redis<br/>BullMQ)]
-        Mongo[(MongoDB<br/>Logs)]
+        Queue["메모리 큐<br/>(배열 기반)"]
+        SQLite[(SQLite<br/>Logs)]
         LLM["LLM<br/>Service"]
     end
 

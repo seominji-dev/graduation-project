@@ -64,7 +64,7 @@ P2(1) → P3(1) → P1(10)
 ### 2.2 본 프로젝트 구현
 
 ```typescript
-// FCFS는 기본적으로 BullMQ의 FIFO 동작
+// FCFS는 기본적으로 메모리 큐의 FIFO 동작
 this.queue = new Queue("fcfs", {
   connection: redisConnection,
   defaultJobOptions: {
@@ -495,9 +495,9 @@ if (p->vruntime < min_vruntime) {
    ↓
 2. LLM API 요청 관리로 매핑
    ↓
-3. TypeScript로 구현
+3. JavaScript로 구현
    ↓
-4. BullMQ로 큐 시스템 구축
+4. 메모리 큐로 큐 시스템 구축
    ↓
 5. 777개 테스트로 검증
 ```

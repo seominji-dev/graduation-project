@@ -34,14 +34,9 @@ npx ts-node 02-scheduler-selection.ts
    npm run dev
    ```
 
-2. **Redis 실행**
+2. **Ollama 실행**
    ```bash
-   redis-server
-   ```
-
-3. **MongoDB 실행**
-   ```bash
-   mongod --dbpath /data/db
+   ollama serve
    ```
 
 ## API 엔드포인트 요약

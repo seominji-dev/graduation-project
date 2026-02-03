@@ -35,8 +35,8 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Infrastructure Layer                       │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │    Redis     │  │   MongoDB    │  │    Ollama    │          │
-│  │   (BullMQ)   │  │   (Logs)     │  │    /API      │          │
+│  │    메모리     │  │   SQLite    │  │    Ollama    │          │
+│  │   (메모리 큐)   │  │   (Logs)     │  │    /API      │          │
 │  └──────────────┘  └──────────────┘  └──────────────┘          │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -49,7 +49,7 @@
 | **SchedulerController** | 스케줄러 관리 | SchedulerManager |
 | **DashboardService** | 메트릭 제공 | All Schedulers |
 | **SchedulerFactory** | 스케줄러 생성 | Scheduler Types |
-| **SchedulerManager** | 스케줄러 수명 관리 | Redis, MongoDB |
+| **SchedulerManager** | 스케줄러 수명 관리 | 메모리, SQLite |
 | **LLMService** | LLM API 호출 | Ollama, OpenAI |
 | **AgingManager** | Priority 기아 방지 | PriorityScheduler |
 | **BoostManager** | MLFQ 주기적 부스팅 | MLFQScheduler |
@@ -83,11 +83,11 @@
    - configured scheduler 반환
    ↓
 5. PriorityScheduler.submit()
-   - BullMQ Queue에 작업 추가
-   - MongoDB에 요청 로그 저장
+   - 메모리 큐 Queue에 작업 추가
+   - SQLite에 요청 로그 저장
    ↓
-6. BullMQ Worker 감지
-   - Redis에서 작업 가져오기
+6. 메모리 큐 Worker 감지
+   - 메모리에서 작업 가져오기
    ↓
 7. PriorityScheduler.processJob()
    - LLMService.process() 호출
@@ -96,7 +96,7 @@
    - Ollama API 호출
    - 응답 반환
    ↓
-9. MongoDB에 결과 저장
+9. SQLite에 결과 저장
    - RequestLog 업데이트
    ↓
 10. Socket.IO 이벤트 발송
@@ -106,7 +106,7 @@
     GET /api/requests/{requestId}
     ↓
 12. RequestController.getRequest()
-    - MongoDB에서 결과 조회
+    - SQLite에서 결과 조회
     - 응답 반환
 ```
 
@@ -121,7 +121,7 @@ sequenceDiagram
     participant Queue
     participant Worker
     participant LLM
-    participant MongoDB
+    participant SQLite
 
     Client->>Controller: POST /api/requests
     Controller->>Controller: Zod 검증
@@ -130,7 +130,7 @@ sequenceDiagram
     Manager-->>Controller: return scheduler
     Controller->>Scheduler: submit(request)
     Scheduler->>Queue: queue.add(job)
-    Queue->>MongoDB: log request
+    Queue->>SQLite: log request
     Scheduler-->>Controller: return requestId
     Controller-->>Client: {requestId}
     
@@ -138,11 +138,11 @@ sequenceDiagram
     Worker->>Scheduler: processJob(job)
     Scheduler->>LLM: process(prompt, provider)
     LLM-->>Scheduler: response
-    Scheduler->>MongoDB: log response
+    Scheduler->>SQLite: log response
     
     Client->>Controller: GET /api/requests/{id}
-    Controller->>MongoDB: find by requestId
-    MongoDB-->>Controller: request log
+    Controller->>SQLite: find by requestId
+    SQLite-->>Controller: request log
     Controller-->>Client: {status, response}
 ```
 
@@ -232,9 +232,9 @@ export class SchedulerManager {
 PriorityScheduler 초기화
 ┌─────────────────────────────────────────────────────────────┐
 │ PriorityScheduler.initialize()                             │
-│  1. Redis 연결 가져오기                                      │
-│  2. BullMQ Queue 생성                                        │
-│  3. BullMQ Worker 생성                                       │
+│  1. 메모리 연결 가져오기                                      │
+│  2. 메모리 큐 Queue 생성                                        │
+│  3. 메모리 큐 Worker 생성                                       │
 │  4. AgingManager 인스턴스 생성                              │
 │  5. AgingManager.start() 호출  ───────────────────┐         │
 │                                                       ↓       │
@@ -249,7 +249,7 @@ PriorityScheduler 초기화
 │  │  1. getWaitingJobs() 호출                  │           │
 │  │         ↓                                   │           │
 │  │  PriorityScheduler.getWaitingJobs()         │           │
-│  │  - BullMQ Queue에서 대기 작업 가져오기      │           │
+│  │  - 메모리 큐 Queue에서 대기 작업 가져오기      │           │
 │  │         ↓                                   │           │
 │  │  2. 각 작업의 대기 시간 확인                │           │
 │  │  3. 30초 초과 시 우선순위 상향             │           │
@@ -292,8 +292,8 @@ export interface IPriorityScheduler {
 MLFQScheduler 초기화
 ┌─────────────────────────────────────────────────────────────┐
 │ MLFQScheduler.initialize()                                  │
-│  1. 4개 BullMQ Queue 생성 (Q0, Q1, Q2, Q3)                  │
-│  2. 4개 BullMQ Worker 생성                                   │
+│  1. 4개 메모리 큐 Queue 생성 (Q0, Q1, Q2, Q3)                  │
+│  2. 4개 메모리 큐 Worker 생성                                   │
 │  3. BoostManager 인스턴스 생성                              │
 │  4. BoostManager.start() 호출  ───────────────────┐         │
 │                                                       ↓       │
@@ -313,7 +313,7 @@ MLFQScheduler 초기화
 │  │     - job.remove()                          │           │
 │  │     - metadata.queueLevel = 0               │           │
 │  │     - queues[0].add()                       │           │
-│  │  3. MongoDB에 큐 레벨 업데이트             │           │
+│  │  3. SQLite에 큐 레벨 업데이트             │           │
 │  └─────────────────────────────────────────────┘           │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -413,7 +413,7 @@ async submit(request: LLMRequest) {
   //   virtualFinishTime: 0 + (5000/100) = 50
   // }
 
-  // BullMQ 큐에 추가 (우선순위 = 가상 완료 시간)
+  // 메모리 큐 큐에 추가 (우선순위 = 가상 완료 시간)
   await this.queue.add(job.name, jobData, {
     priority: Math.floor(vft.virtualFinishTime),  // 50
   });
@@ -524,7 +524,7 @@ async submitRequest(req, res) {
 async getRequest(req, res) {
   const { id } = req.params;
 
-  // MongoDB에서 조회
+  // SQLite에서 조회
   const log = await RequestLog.findOne({ requestId: id });
 
   if (!log) {

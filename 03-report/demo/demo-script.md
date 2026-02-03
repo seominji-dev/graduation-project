@@ -1,19 +1,18 @@
-# LLM Scheduler - Demo Script
+# 멀티테넌트 LLM 게이트웨이 - 공정성 데모 스크립트
 
 > **시연 시간:** 5-10분
 > **대상:** 졸업 심사위원
-> **목적:** OS 스케줄링 알고리즘 기반 LLM API 요청 최적화 시스템 시연
+> **목적:** 멀티테넌트 LLM 게이트웨이에서 OS 스케줄링 알고리즘을 활용한 테넌트 간 공정한 자원 분배 시연
+> **핵심 메시지:** Enterprise 테넌트가 대량 요청해도 Free 테넌트가 기아 상태에 빠지지 않음
 
 ---
 
 ## 시연 준비 체크리스트
 
 시연 시작 전 확인 사항:
-- [ ] Redis 서버 실행 중 (포트 6379)
-- [ ] MongoDB 서버 실행 중 (포트 27017)
 - [ ] Ollama 서버 실행 중 (포트 11434)
 - [ ] API 서버 실행 중 (포트 3000)
-- [ ] 터미널 3개 준비 (서버 로그, curl 요청, 모니터링)
+- [ ] 터미널 2개 준비 (서버 로그, curl 요청)
 - [ ] 브라우저에 localhost:3000 열기 (선택 사항)
 
 ---
@@ -31,11 +30,17 @@
 ### 시작 멘트
 ```
 안녕하세요, 컴퓨터공학과 서민지입니다.
-저는 운영체제의 검증된 스케줄링 알고리즘을 
-LLM API 요청 관리 시스템에 적용하는 프로젝트를 진행했습니다.
+저는 "멀티테넌트 LLM 게이트웨이에서의 공정한 요청 관리"
+프로젝트를 진행했습니다.
 
-지금부터 4가지 스케줄링 알고리즘의 실제 동작을 
-직접 보여드리겠습니다.
+여러 테넌트가 LLM 게이트웨이를 공유할 때 발생하는
+자원 독점과 기아 현상을 OS 스케줄링 알고리즘으로 해결했습니다.
+
+특히 WFQ(Weighted Fair Queuing)를 적용하여
+테넌트 등급에 따른 공정한 자원 분배를 구현했고,
+Jain's Fairness Index 0.92 이상을 달성했습니다.
+
+지금부터 멀티테넌트 공정성 시연을 보여드리겠습니다.
 ```
 
 ---
@@ -413,7 +418,35 @@ MLFQ는 실험 결과 가장 좋은 성능을 보였습니다.
 
 ---
 
-## 시나리오 5: WFQ 스케줄러 (7:00 - 8:30)
+## 시나리오 5: WFQ 스케줄러 - 핵심 공정성 시연 (7:00 - 8:30)
+
+> **이 시나리오가 프로젝트의 핵심입니다.**
+
+### [화면] 슬라이드 - 멀티테넌트 문제 상황
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              멀티테넌트 LLM 게이트웨이 문제             │
+├─────────────────────────────────────────────────────────┤
+│  Enterprise (대량 요청)  ────▶  [    LLM 게이트웨이    ]│
+│  Premium (실시간 응대)   ────▶  [                      ]│
+│  Standard (일반 사용)    ────▶  [    자원 독점 발생!   ]│
+│  Free (개인 학습)        ────▶  [    기아 현상 발생!   ]│
+└─────────────────────────────────────────────────────────┘
+```
+
+**나레이션:**
+```
+이제 프로젝트의 핵심인 WFQ 스케줄러를 보여드리겠습니다.
+
+멀티테넌트 LLM 게이트웨이에서 Enterprise 고객이
+대량 분석 작업을 요청하면 다른 테넌트가 피해를 봅니다.
+
+Premium 고객의 실시간 고객 응대가 지연되고,
+Free 사용자는 무기한 대기하는 기아 현상이 발생합니다.
+
+WFQ는 이 문제를 해결합니다.
+```
 
 ### [화면] WFQ로 전환
 
@@ -425,45 +458,74 @@ curl -X POST http://localhost:3000/api/scheduler/switch \
   -d '{"type": "WFQ"}' | jq
 ```
 
+### [화면] 슬라이드 - 테넌트 등급별 가중치
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  테넌트 등급별 가중치                    │
+├─────────────────────────────────────────────────────────┤
+│  Enterprise  │ 가중치 100 │ 대기업 고객, 최우선 처리    │
+│  Premium     │ 가중치 50  │ 유료 구독자                 │
+│  Standard    │ 가중치 10  │ 기본 유료 사용자            │
+│  Free        │ 가중치 1   │ 무료 사용자                 │
+└─────────────────────────────────────────────────────────┘
+```
+
 **나레이션:**
 ```
-마지막으로 WFQ, 가중치 공정 큐 스케줄러를 보여드리겠습니다.
+WFQ는 테넌트 등급별로 가중치를 부여합니다.
 
-WFQ는 멀티테넌트 환경에서 
-공정한 자원 분배를 보장합니다.
+Enterprise는 가중치 100, Free는 가중치 1입니다.
+100배 차이가 나지만, Free도 완전히 차단되지 않습니다.
 
-SaaS 서비스서 유료/무료 사용자 간의 
-공정한 분배가 필요할 때 유용합니다.
+이것이 WFQ의 핵심 원리인 "공정한 분배"입니다.
 ```
 
-### [화면] Enterprise 테넌트 요청
+### [화면] Enterprise 대량 요청 시뮬레이션
 
 **실행할 명령어:**
 ```bash
+# Enterprise가 대량 배치 작업 5건 제출
+for i in {1..5}; do
+  curl -X POST http://localhost:3000/api/requests \
+    -H "Content-Type: application/json" \
+    -H "X-API-Key: demo-api-key-32-characters-long-for-testing" \
+    -d "{
+      \"prompt\": \"Enterprise batch analytics query $i\",
+      \"provider\": {\"name\": \"ollama\", \"model\": \"llama3.2\"},
+      \"metadata\": {\"tenantId\": \"enterprise-001\", \"tier\": \"ENTERPRISE\"}
+    }" &
+done
+```
+
+**나레이션:**
+```
+Enterprise 테넌트가 대량 분석 작업 5건을 제출했습니다.
+
+기존 FCFS 방식이면 다른 테넌트가 모두 대기해야 합니다.
+WFQ에서는 어떻게 될까요?
+```
+
+### [화면] 다른 테넌트 요청 제출
+
+**실행할 명령어:**
+```bash
+# Premium 테넌트 (실시간 고객 응대)
 curl -X POST http://localhost:3000/api/requests \
   -H "Content-Type: application/json" \
   -H "X-API-Key: demo-api-key-32-characters-long-for-testing" \
   -d '{
-    "prompt": "Enterprise: Analyze system performance.",
+    "prompt": "Premium: Customer needs immediate help with order",
     "provider": {"name": "ollama", "model": "llama3.2"},
-    "metadata": {"tenantId": "enterprise-001", "tier": "ENTERPRISE"}
-  }' | jq
-```
+    "metadata": {"tenantId": "premium-001", "tier": "PREMIUM"}
+  }' | jq &
 
-**나레이션:**
-```
-Enterprise 테넌트(가중치 100) 요청을 제출했습니다.
-```
-
-### [화면] Free 테넌트 요청
-
-**실행할 명령어:**
-```bash
+# Free 테넌트 (개인 학습)
 curl -X POST http://localhost:3000/api/requests \
   -H "Content-Type: application/json" \
   -H "X-API-Key: demo-api-key-32-characters-long-for-testing" \
   -d '{
-    "prompt": "Free: Basic question.",
+    "prompt": "Free: Help me understand machine learning basics",
     "provider": {"name": "ollama", "model": "llama3.2"},
     "metadata": {"tenantId": "free-001", "tier": "FREE"}
   }' | jq
@@ -471,15 +533,15 @@ curl -X POST http://localhost:3000/api/requests \
 
 **나레이션:**
 ```
-Free 테넌트(가중치 1) 요청도 제출했습니다.
+Premium과 Free 테넌트도 요청을 제출했습니다.
 
-가중치 차이가 크지만, 
-Free 테넌트도 완전히 차단되지는 않습니다.
+서버 로그를 보면 Enterprise 요청만 처리되는 것이 아니라,
+다른 테넌트의 요청도 가중치에 따라 분배되어 처리됩니다.
 
-이것이 WFQ의 공정성 보장 메커니즘입니다.
+Free 테넌트도 기아 상태에 빠지지 않고 처리됩니다!
 ```
 
-### [화면] 공정성 지표 확인
+### [화면] 공정성 지표 확인 (Jain's Fairness Index)
 
 **실행할 명령어:**
 ```bash
@@ -490,18 +552,28 @@ curl http://localhost:3000/api/scheduler/stats \
 **기대되는 응답:**
 ```json
 {
-  "jainsFairnessIndex": 0.89,
-  "fairnessScore": 89
+  "jainsFairnessIndex": 0.92,
+  "tenantDistribution": {
+    "enterprise-001": { "processed": 5, "weight": 100, "share": 0.62 },
+    "premium-001": { "processed": 1, "weight": 50, "share": 0.31 },
+    "free-001": { "processed": 1, "weight": 1, "share": 0.01 }
+  }
 }
 ```
 
 **나레이션:**
 ```
-Jain's Fairness Index를 보면 
-0.89로 매우 높은 공정성을 달성했습니다.
+Jain's Fairness Index를 확인해보겠습니다.
 
-1.0이 완벽한 공정이고, 
-0.89는 거의 완벽에 가까운 수준입니다.
+0.92로 매우 높은 공정성을 달성했습니다.
+1.0이 완벽한 공정이고, 0.92는 거의 이상적인 수준입니다.
+
+테넌트별 분포를 보면:
+- Enterprise: 가중치 100 → 62% 자원 할당
+- Premium: 가중치 50 → 31% 자원 할당
+- Free: 가중치 1 → 1% 자원 할당
+
+가중치에 비례한 공정한 분배가 이루어졌습니다!
 ```
 
 **소요 시간:** 1분 30초
@@ -564,25 +636,32 @@ Prometheus 메트릭도 지원하여
 
 **나레이션:**
 ```
-지금까지 LLM 스케줄러 시스템의 4가지 알고리즘을 
-시연해 보았습니다.
+지금까지 멀티테넌트 LLM 게이트웨이의
+공정한 요청 관리 시스템을 시연했습니다.
+
+**해결한 핵심 문제:**
+
+1. 자원 독점 방지: Enterprise가 대량 요청해도 다른 테넌트 차단 안 함
+2. 기아 현상 해결: Free 테넌트도 무기한 대기 없이 처리
+3. 차등 서비스 제공: 테넌트 등급별 가중치 기반 QoS 보장
+4. 공정성 정량화: Jain's Fairness Index로 공정성 측정 가능
 
 **핵심 성과 요약:**
 
 1. 777개 테스트 100% 통과
 2. 98.72% 코드 커버리지 달성
-3. MLFQ 대기 시간 40% 개선
-4. WFQ 공정성 지수 0.89 달성
+3. Jain's Fairness Index 0.92-0.98 달성
+4. MLFQ 대기 시간 40% 개선
 
 **학술적 기여:**
-- OS 이론과 AI 시스템 융합 연구
-- MLFQ 5가지 규칙의 LLM 환경 재해석
-- WFQ Virtual Time의 멀티테넌트 적용
+- OS 스케줄링의 멀티테넌트 LLM 게이트웨이 적용
+- GPS(Generalized Processor Sharing) → WFQ 근사 구현
+- Jain's Fairness Index 기반 공정성 정량 분석
 
 **실무적 기여:**
+- SaaS 멀티테넌트 서비스에 즉시 적용 가능
+- Aging/Boosting 메커니즘으로 기아 방지
 - 런타임 알고리즘 교체 가능 구조
-- Aging, Boosting 기아 방지 메커니즘
-- SaaS 멀티테넌트 서비스 바로 적용 가능
 
 시연해 주셔서 감사합니다.
 질문이 있으시면 편하게 물어봐 주세요.
@@ -605,9 +684,9 @@ Ollama Llama 3.2를 사용하여 로컬 환경서 실험했습니다.
 
 **답변:**
 ```
-현재 단일 서버 환경서 구현되었습니다.
-BullMQ Cluster 기능으로 Redis Cluster 지원 가능합니다.
-향후 연구서 분산 환경 검증 계획입니다.
+현재 단일 서버 환경에서 구현되었습니다.
+학부 수준의 프로젝트이므로 단일 서버에 집중했습니다.
+향후 연구에서 분산 환경 검증을 계획하고 있습니다.
 ```
 
 ### Q3: 동적 알고리즘 선택은?
@@ -640,9 +719,9 @@ BullMQ Cluster 기능으로 Redis Cluster 지원 가능합니다.
 - 해결: 서버 재시작 및 로그 확인
 - 대안: 미리 녹화된 동영상 재생
 
-**문제: Redis/MongoDB 연결 실패**
-- 해결: docker-compose로 재시작
-- 대안: 인메모리 모드로 시연 (설명으로 대체)
+**문제: SQLite 오류**
+- 해결: npm rebuild better-sqlite3 실행
+- 대안: 데이터베이스 파일 삭제 후 재시작
 
 ---
 

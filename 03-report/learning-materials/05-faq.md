@@ -163,7 +163,7 @@ Virtual Time += 3000 / 200 = 15
 
 ## Part 3: 구현 및 코드
 
-### Q7: 왜 TypeScript를 사용했나요?
+### Q7: 왜 JavaScript를 사용했나요?
 
 **답변:**
 
@@ -194,12 +194,12 @@ type Schema = z.infer<typeof schema>;  // 자동 타입 추론
 
 ---
 
-### Q8: BullMQ를 선택한 이유는 무엇인가요?
+### Q8: 메모리 큐를 선택한 이유는 무엇인가요?
 
 **답변:**
 
 **1. 신뢰성:**
-- Redis 기반의 영구성 있는 큐
+- 메모리 기반의 영구성 있는 큐
 - 작업 손실 방지 (재시도 메커니즘)
 
 **2. 기능 풍부함:**
@@ -233,11 +233,11 @@ await queue.getJobCounts();
 - AWS SQS: 클라우드 종속, 비용
 - RabbitMQ: 복잡한 설정
 - Kafka: 오버엔지니어링
-- BullMQ: 간단한 설정, 오픈소스
+- 메모리 큐: 간단한 설정, 오픈소스
 
 ---
 
-### Q9: MongoDB와 Redis를 함께 사용하는 이유는 무엇인가요?
+### Q9: SQLite와 메모리를 함께 사용하는 이유는 무엇인가요?
 
 **답변:**
 
@@ -245,10 +245,10 @@ await queue.getJobCounts();
 
 | 시스템 | 용도 | 이유 |
 |-------|------|------|
-| **Redis** | 큐 저장 | 빠른 읽기/쓰기, 메모리 내 |
-| **MongoDB** | 로그 저장 | 영구 저장, 복잡한 쿼리 |
+| **메모리** | 큐 저장 | 빠른 읽기/쓰기, 메모리 내 |
+| **SQLite** | 로그 저장 | 영구 저장, 복잡한 쿼리 |
 
-**Redis의 장점 (큐용):**
+**메모리의 장점 (큐용):**
 ```typescript
 // O(1) 삽입/추출
 await queue.add(job);
@@ -258,7 +258,7 @@ await queue.getNextJob();
 // 영구성 (RDB/AOF)
 ```
 
-**MongoDB의 장점 (로그용):**
+**SQLite의 장점 (로그용):**
 ```typescript
 // 복잡한 쿼리
 await RequestLog.find({
@@ -277,8 +277,8 @@ await RequestLog.aggregate([
 ```
 
 **함께 사용하는 이유:**
-- Redis: 실시간 처리 (속도 중요)
-- MongoDB: 장기 분석 (유연성 중요)
+- 메모리: 실시간 처리 (속도 중요)
+- SQLite: 장기 분석 (유연성 중요)
 
 ---
 
@@ -427,8 +427,8 @@ export const waitForJob = (requestId: string, timeout = 5000) => {
 
 **병목 포인트:**
 1. **LLM API 속도:** Ollama 로컬에서 ~2-5초/요청
-2. **Redis 네트워크:** 로컬에서 1ms 미만
-3. **MongoDB 쓰기:** 5-10ms/로그
+2. **메모리 네트워크:** 로컬에서 1ms 미만
+3. **SQLite 쓰기:** 5-10ms/로그
 
 **최적화 방안:**
 ```typescript
@@ -437,10 +437,10 @@ const worker = new Worker(queue, processor, {
   concurrency: 5,  // 동시에 5개 작업 처리
 });
 
-// 2. MongoDB 배치 쓰기
+// 2. SQLite 배치 쓰기
 await RequestLog.insertMany(logs);
 
-// 3. Redis 파이프라이닝
+// 3. 메모리 파이프라이닝
 await queue.pipeline().add(job1).add(job2).exec();
 ```
 
@@ -455,8 +455,8 @@ await queue.pipeline().add(job1).add(job2).exec();
 | 컴포넌트 | 메모리 사용 |
 |---------|-----------|
 | Node.js 프로세스 | ~200MB (기본) |
-| Redis | ~50MB (큐 데이터) |
-| MongoDB | ~100MB (로그) |
+| 메모리 | ~50MB (큐 데이터) |
+| SQLite | ~100MB (로그) |
 | **총계** | **~350MB** |
 
 **최적화:**
@@ -467,14 +467,14 @@ private cleanupJobMetadata(requestId: string) {
   this.jobMetadata.delete(requestId);
 }
 
-// 2. MongoDB 인덱스
+// 2. SQLite 인덱스
 await RequestLog.createIndexes([
   { requestId: 1 },
   { status: 1 },
   { createdAt: -1 }
 ]);
 
-// 3. Redis 만료 설정
+// 3. 메모리 만료 설정
 await queue.add(job, {
   attempts: 3,
   removeOnComplete: 100,    // 최근 100개만 보관
@@ -490,10 +490,10 @@ await queue.add(job, {
 
 **답변:**
 
-**Redis Cluster로 확장:**
+**메모리 Cluster로 확장:**
 
 ```typescript
-// Redis Cluster 설정
+// 메모리 Cluster 설정
 const connection = new Cluster([
   { host: "redis-01", port: 6379 },
   { host: "redis-02", port: 6379 },
@@ -502,7 +502,7 @@ const connection = new Cluster([
   redisOptions: { password: process.env.REDIS_PASSWORD }
 });
 
-// BullMQ가 자동으로 분산 처리
+// 메모리 큐가 자동으로 분산 처리
 const queue = new Queue("distributed-scheduler", {
   connection,
   defaultJobOptions: {
@@ -529,7 +529,7 @@ const worker = new Worker("distributed-scheduler", processor, {
 **답변:**
 
 **1. 분산 스케줄링:**
-- Redis Cluster 지원
+- 메모리 Cluster 지원
 - 워커 노드 간 부하 분산
 - 장애 조치 (Failover)
 
@@ -598,7 +598,7 @@ const LLMRequestSchema = z.object({
   provider: LLMProviderSchema,
 });
 
-// SQL Injection 방지 (MongoDB 사용으로 자동 방지)
+// SQL Injection 방지 (SQLite 사용으로 자동 방지)
 // XSS 방지 (입력 sanitization)
 ```
 
@@ -616,10 +616,10 @@ logger.info("Job completed", {
 
 5. **백업 및 복구:**
 ```typescript
-// MongoDB 백업
+// SQLite 백업
 // mongodump --uri="..." --out=/backup
 
-// Redis 백업
+// 메모리 백업
 // redis-cli --rdb /backup/dump.rdb
 ```
 

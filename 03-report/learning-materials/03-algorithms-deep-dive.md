@@ -85,7 +85,7 @@ t=12: []  (모두 완료)
 평균 대기: 3초
 ```
 
-**BullMQ에서의 구현:**
+**메모리 큐에서의 구현:**
 
 ```typescript
 // FCFS는 기본적으로 FIFO 큐
@@ -206,10 +206,10 @@ t=90초:
 결과: 작업A는 최대 90초 후에는 URGENT가 되어 반드시 처리됨
 ```
 
-**BullMQ 우선순위 변환:**
+**메모리 큐 우선순위 변환:**
 
 ```typescript
-// BullMQ: 낮은 숫자 = 높은 우선순위
+// 메모리 큐: 낮은 숫자 = 높은 우선순위
 // RequestPriority: 높은 숫자 = 높은 우선순위
 // 따라서 변환 필요
 
@@ -218,7 +218,7 @@ private getPriorityValue(priority: RequestPriority): number {
 }
 
 // 변환 테이블:
-// RequestPriority  →  BullMQ Priority
+// RequestPriority  →  메모리 큐 Priority
 // URGENT(3)       →  (3-3)*2 = 0  (최고)
 // HIGH(2)         →  (3-2)*2 = 2
 // NORMAL(1)       →  (3-1)*2 = 4

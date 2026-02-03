@@ -7,10 +7,10 @@ sequenceDiagram
     participant SF as SchedulerFactory
     participant S as Scheduler
     participant M as Manager
-    participant Q as BullMQ
+    participant Q as 메모리 큐
     participant W as Worker
     participant LLM as LLMService
-    participant DB as MongoDB
+    participant DB as SQLite
 
     %% 요청 제출
     rect rgb(200, 230, 200)

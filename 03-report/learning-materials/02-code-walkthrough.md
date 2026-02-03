@@ -27,10 +27,10 @@
 │   │   └── models.ts           # 핵심 도메인 모델
 │   │
 │   ├── infrastructure/         # 인프라 계층
-│   │   ├── mongodb.ts          # MongoDB 연결
-│   │   ├── redis.ts            # Redis 연결
+│   │   ├── mongodb.ts          # SQLite 연결
+│   │   ├── redis.ts            # 메모리 연결
 │   │   └── models/
-│   │       └── RequestLog.ts   # MongoDB 스키마
+│   │       └── RequestLog.ts   # SQLite 스키마
 │   │
 │   ├── managers/               # 관리자 컴포넌트
 │   │   ├── AgingManager.ts     # Priority용 기아 방지
@@ -169,15 +169,15 @@ export interface IScheduler {
 
 ```typescript
 export class FCFSScheduler implements IScheduler {
-  private queue: Queue | null = null;      // BullMQ 큐
-  private worker: Worker | null = null;    // BullMQ 워커
+  private queue: Queue | null = null;      // 메모리 큐 큐
+  private worker: Worker | null = null;    // 메모리 큐 워커
   private llmService: LLMService;          // LLM 서비스
   private jobTimings: Map<string, {...}>;  // 작업 시간 추적
 
   // 초기화: 큐와 워커 생성
   initialize(): Promise<void> {
-    // Redis 연결 가져오기
-    const bullmqConnection = redisManager.getBullMQConnection();
+    // 메모리 연결 가져오기
+    const bullmqConnection = redisManager.get메모리 큐Connection();
     
     // 큐 생성
     this.queue = new Queue(this.config.name, {
@@ -218,7 +218,7 @@ export class FCFSScheduler implements IScheduler {
       }
     );
     
-    // MongoDB에 로그 기록
+    // SQLite에 로그 기록
     await this.logRequest(request, RequestStatus.QUEUED, queuedAt);
     
     return job.id ?? request.id;
@@ -237,7 +237,7 @@ export class FCFSScheduler implements IScheduler {
       const completedAt = new Date();
       const processingTime = completedAt.getTime() - startedAt.getTime();
       
-      // MongoDB에 결과 저장
+      // SQLite에 결과 저장
       await this.logResponse(
         requestId,
         RequestStatus.COMPLETED,
@@ -258,9 +258,9 @@ export class FCFSScheduler implements IScheduler {
 ```
 
 **핵심 설계 결정:**
-1. **BullMQ 사용:** Redis 기반의 신뢰할 수 있는 큐 시스템
+1. **메모리 큐 사용:** 메모리 기반의 신뢰할 수 있는 큐 시스템
 2. **Job Timing Map:** 각 작업의 대기/처리 시간 추적
-3. **MongoDB 로그:** 모든 요청/응답 영구 저장
+3. **SQLite 로그:** 모든 요청/응답 영구 저장
 4. **에러 처리:** 실패 시 로그 기록 후 재Throw
 
 ---
@@ -285,7 +285,7 @@ export class PriorityScheduler implements IScheduler {
 
   // ★ 우선순위 변환 (중요!)
   private getPriorityValue(priority: RequestPriority): number {
-    // BullMQ: 낮은 숫자 = 높은 우선순위
+    // 메모리 큐: 낮은 숫자 = 높은 우선순위
     // RequestPriority: 높은 숫자 = 높은 우선순위
     // 따라서 변환 필요: (MAX - priority) * 2
     return (MAX_PRIORITY - priority) * 2;
@@ -327,7 +327,7 @@ export class PriorityScheduler implements IScheduler {
 ```
 
 **왜 제거 후 재추가인가?**
-- BullMQ는 실행 중인 작업의 우선순위 업데이트를 지원하지 않음
+- 메모리 큐는 실행 중인 작업의 우선순위 업데이트를 지원하지 않음
 - 따라서 제거 후 새 우선순위로 다시 추가해야 함
 
 ---
@@ -456,7 +456,7 @@ export class MLFQScheduler implements IScheduler {
 ```
 
 **5가지 MLFQ 규칙 구현:**
-1. **Rule 1:** 높은 우선순위 큐 먼저 처리 (BullMQ 기본 동작)
+1. **Rule 1:** 높은 우선순위 큐 먼저 처리 (메모리 큐 기본 동작)
 2. **Rule 2:** 같은 우선순위는 Round-Robin (priority: 0)
 3. **Rule 3:** 새 작업은 Q0에서 시작 (queueLevel: 0)
 4. **Rule 4:** 시간 퀀텀 초과 시 강등 (demoteJob)
@@ -620,14 +620,14 @@ export class FairnessCalculator {
    - configured scheduler 가져오기
    ↓
 4. Specific Scheduler.submit() (FCFS/Priority/MLFQ/WFQ)
-   - BullMQ Queue에 작업 추가
-   - MongoDB에 요청 로그 저장
+   - 메모리 큐 Queue에 작업 추가
+   - SQLite에 요청 로그 저장
    ↓
-5. BullMQ Worker가 작업 감지
+5. 메모리 큐 Worker가 작업 감지
    ↓
 6. Scheduler.processJob()
    - LLMService.process() 호출
-   - MongoDB에 결과 저장
+   - SQLite에 결과 저장
    ↓
 7. 클라이언트가 GET /api/requests/:id로 결과 조회
 ```
@@ -672,7 +672,7 @@ export class FairnessCalculator {
 5. 각 작업에 대해:
    - 기존 큐에서 제거
    - Q0에 재추가
-   - MongoDB에 큐 레벨 업데이트
+   - SQLite에 큐 레벨 업데이트
 ```
 
 ---
@@ -722,7 +722,7 @@ async submit(request: LLMRequest) {
   return job.id;
 }
 
-// 4. BullMQ Worker.processJob()
+// 4. 메모리 큐 Worker.processJob()
 async processJob(job) {
   const response = await this.llmService.process(
     job.data.prompt,
@@ -780,7 +780,7 @@ Response: {
 }
 ```
 
-### 5.2 QueueJob 객체 (BullMQ)
+### 5.2 QueueJob 객체 (메모리 큐)
 
 ```typescript
 {
@@ -804,7 +804,7 @@ Response: {
 }
 ```
 
-### 5.3 MongoDB RequestLog 문서
+### 5.3 SQLite RequestLog 문서
 
 ```typescript
 {

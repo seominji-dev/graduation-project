@@ -1,6 +1,8 @@
-# LLM Scheduler - Demo Video Guide
+# 멀티테넌트 LLM 게이트웨이 - 공정성 데모 가이드
 
-> **목적:** 5-10분 분량의 시연을 통해 LLM 스케줄러 시스템의 핵심 기능을 시연합니다.
+> **목적:** 5-10분 분량의 시연을 통해 멀티테넌트 LLM 게이트웨이에서 테넌트 간 공정한 자원 분배를 시연합니다.
+>
+> **핵심 메시지:** OS 스케줄링 알고리즘(특히 WFQ)을 활용하여 여러 테넌트가 공유하는 LLM 게이트웨이에서 공정성을 보장합니다.
 >
 > **대상:** 교수님, 심사위원님, 동료 학생들
 >
@@ -15,23 +17,15 @@
 | 항목 | 요구사항 |
 |------|----------|
 | **Node.js** | v20.10.0 LTS 이상 |
-| **Redis** | v7.2+ (포트 6379) |
-| **MongoDB** | v8.0+ (포트 27017) |
 | **Ollama** | Llama 3.2 모델 다운로드 (포트 11434) |
-| **Terminal** | 3개 창 (API, Redis/MongoDB, Ollama) |
-| **Browser** | Chrome/Firefox (대시보드용) |
+| **Terminal** | 2개 창 (API, Ollama) |
+| **Browser** | Chrome/Firefox (API 테스트용) |
 
 ### 2. 설치 확인
 
 ```bash
 # Node.js 버전 확인
 node --version  # v20.10.0 이상
-
-# Redis 실행 확인
-redis-cli ping  # PONG 응답
-
-# MongoDB 실행 확인
-mongosh --eval "db.version()"  # 버전 정보 출력
 
 # Ollama 실행 확인
 ollama list  # llama3.2 모델 확인
@@ -59,18 +53,7 @@ cp .env.example .env
 
 **단계별 진행:**
 
-#### 1.1 Docker Compose로 인프라 시작 (권장)
-
-```bash
-# Redis + MongoDB 한 번에 시작
-cd 02-implementation
-docker-compose up -d
-
-# 컨테이너 상태 확인
-docker-compose ps
-```
-
-#### 1.2 Ollama 서버 시작
+#### 1.1 Ollama 서버 시작
 
 ```bash
 # 별도 터미널에서 Ollama 시작
@@ -80,19 +63,18 @@ ollama serve
 ollama pull llama3.2
 ```
 
-#### 1.3 API 서버 시작
+#### 1.2 API 서버 시작
 
 ```bash
 # 메인 터미널에서 API 서버 시작
 cd 02-implementation
 npm run dev
 
-# 또는 빌드 후 실행
-npm run build
-npm start
+# 또는 직접 실행
+node src/app.js
 ```
 
-#### 1.4 시작 확인
+#### 1.3 시작 확인
 
 **기대되는 로그 출력:**
 ```
@@ -232,7 +214,17 @@ curl -X POST http://localhost:3000/api/requests \
 
 ---
 
-### 시나리오 5: WFQ 스케줄러 - 멀티테넌트 공정 분배
+### 시나리오 5: WFQ 스케줄러 - 멀티테넌트 공정 분배 (핵심 시나리오)
+
+> **이 시나리오가 프로젝트의 핵심입니다.** 여러 테넌트가 LLM 게이트웨이를 공유할 때 발생하는 자원 독점, 기아 현상을 WFQ로 해결합니다.
+
+**테넌트 등급별 가중치:**
+| 등급 | 가중치 | 설명 |
+|------|--------|------|
+| Enterprise | 100 | 대기업 고객, 최우선 처리 |
+| Premium | 50 | 유료 구독자 |
+| Standard | 10 | 기본 유료 사용자 |
+| Free | 1 | 무료 사용자 |
 
 **5.1 WFQ 스케줄러로 전환**
 ```bash
@@ -242,32 +234,77 @@ curl -X POST http://localhost:3000/api/scheduler/switch \
   -d '{"type": "WFQ"}'
 ```
 
-**5.2 테넌트별 요청 제출**
+**5.2 테넌트별 요청 제출 (공정성 테스트)**
+
 ```bash
-# Enterprise (가중치 100)
+# Enterprise 테넌트 (가중치 100) - 대량 요청 시뮬레이션
+for i in {1..5}; do
+  curl -X POST http://localhost:3000/api/requests \
+    -H "Content-Type: application/json" \
+    -H "X-API-Key: your-secure-api-key-min-32-characters-long-example-key-12345" \
+    -d "{
+      \"prompt\": \"Enterprise batch query $i\",
+      \"provider\": {\"name\": \"ollama\", \"model\": \"llama3.2\"},
+      \"metadata\": {\"tenantId\": \"enterprise-001\", \"tier\": \"ENTERPRISE\"}
+    }" &
+done
+
+# Premium 테넌트 (가중치 50)
 curl -X POST http://localhost:3000/api/requests \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-secure-api-key-min-32-characters-long-example-key-12345" \
   -d '{
-    "prompt": "Enterprise query",
+    "prompt": "Premium user real-time customer service query",
     "provider": {"name": "ollama", "model": "llama3.2"},
-    "metadata": {"tenantId": "enterprise-001", "tier": "ENTERPRISE"}
+    "metadata": {"tenantId": "premium-001", "tier": "PREMIUM"}
   }'
 
-# Free (가중치 1)
+# Standard 테넌트 (가중치 10)
 curl -X POST http://localhost:3000/api/requests \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-secure-api-key-min-32-characters-long-example-key-12345" \
   -d '{
-    "prompt": "Free tier query",
+    "prompt": "Standard user general query",
+    "provider": {"name": "ollama", "model": "llama3.2"},
+    "metadata": {"tenantId": "standard-001", "tier": "STANDARD"}
+  }'
+
+# Free 테넌트 (가중치 1)
+curl -X POST http://localhost:3000/api/requests \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-secure-api-key-min-32-characters-long-example-key-12345" \
+  -d '{
+    "prompt": "Free tier learning query",
     "provider": {"name": "ollama", "model": "llama3.2"},
     "metadata": {"tenantId": "free-001", "tier": "FREE"}
   }'
 ```
 
+**5.3 공정성 지표 확인 (Jain's Fairness Index)**
+```bash
+# 공정성 메트릭 조회
+curl http://localhost:3000/api/scheduler/stats \
+  -H "X-API-Key: your-secure-api-key-min-32-characters-long-example-key-12345" | jq '.data.stats.fairnessMetrics'
+```
+
+**기대 결과:**
+```json
+{
+  "jainsFairnessIndex": 0.92,
+  "tenantDistribution": {
+    "enterprise-001": { "processed": 5, "weight": 100, "normalizedShare": 0.62 },
+    "premium-001": { "processed": 1, "weight": 50, "normalizedShare": 0.31 },
+    "standard-001": { "processed": 1, "weight": 10, "normalizedShare": 0.06 },
+    "free-001": { "processed": 1, "weight": 1, "normalizedShare": 0.01 }
+  }
+}
+```
+
 **시연 포인트:**
-- 가중치에 따른 공정한 분배
-- Jain's Fairness Index로 공정성 측정
+- **자원 독점 방지:** Enterprise가 대량 요청해도 다른 테넌트 차단 안 함
+- **기아 현상 방지:** Free 테넌트도 무기한 대기 없이 처리됨
+- **가중치 비례 분배:** 테넌트 등급에 따른 공정한 자원 할당
+- **Jain's Fairness Index 0.92+:** 정량적 공정성 입증
 
 ---
 
@@ -292,22 +329,16 @@ curl http://localhost:3000/metrics
 
 ## 문제 해결
 
-### Redis 연결 실패
-```bash
-brew services start redis  # macOS
-sudo systemctl start redis  # Linux
-```
-
-### MongoDB 연결 실패
-```bash
-brew services start mongodb-community  # macOS
-sudo systemctl start mongod  # Linux
-```
-
 ### Ollama 연결 실패
 ```bash
 ollama serve
 ollama pull llama3.2
+```
+
+### SQLite 오류
+```bash
+# better-sqlite3 재설치
+npm rebuild better-sqlite3
 ```
 
 ---

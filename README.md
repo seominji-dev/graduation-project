@@ -65,12 +65,12 @@ npm test
 
 ## 기술 스택
 
-- **언어:** TypeScript 5.9
+- **언어:** JavaScript (ES2024)
 - **런타임:** Node.js 20 LTS
 - **프레임워크:** Express.js 4.18
-- **큐 시스템:** BullMQ 5.1.8
-- **데이터베이스:** Redis 7.2+, MongoDB 8.0+
-- **LLM:** Ollama, OpenAI API
+- **큐 시스템:** 메모리 배열 기반
+- **데이터베이스:** SQLite
+- **LLM:** Ollama
 
 ---
 
