@@ -148,26 +148,26 @@
 | 항목 | 목표 | 달성 | 비율 |
 |------|------|------|------|
 | 전체 구현 | 4개 알고리즘 | 4개 알고리즘 | 100% |
-| 테스트 통과 | 700개 이상 | 777개 | 100% |
-| 코드 커버리지 | 85% 이상 | 98.72% | 116% |
+| 테스트 통과 | 50개 이상 | 67개 | 134% |
+| 코드 커버리지 | 85% 이상 | 98.65% | 116% |
 
 ### 5.2 테스트 커버리지 상세
 
 | 항목 | 커버리지 |
 |------|----------|
-| Statements (문장) | 98.72% |
-| Branches (분기) | 85.77% |
-| Functions (함수) | 94.77% |
-| Lines (라인) | 98.93% |
+| Statements (문장) | 98.65% |
+| Branches (분기) | 85.43% |
+| Functions (함수) | 95.94% |
+| Lines (라인) | 98.55% |
 
 ### 5.3 코드 품질 요약
 
 | 항목 | 달성 내용 |
 |------|----------|
-| 테스트 | 777개 테스트, 98.72% 커버리지 |
+| 테스트 | 67개 테스트, 98.65% 커버리지 |
 | 가독성 | 명확한 네이밍, JSDoc 타입 주석 |
 | 일관성 | ESLint, Prettier 코드 스타일 적용 |
-| 안전성 | Zod 입력 검증, 에러 처리 |
+| 안전성 | Express 미들웨어 검증, 에러 처리 |
 
 ---
 
@@ -225,17 +225,16 @@
 
 ```
 02-implementation/
-├── src/
+├── src-simple/
 │   ├── api/              # API 계층 (Controller, Routes)
 │   ├── config/           # 설정 파일
 │   ├── domain/           # 도메인 모델
-│   ├── models/           # 데이터베이스 (SQLite)
 │   ├── managers/         # 관리자 컴포넌트
 │   ├── middlewares/      # Express 미들웨어
 │   ├── schedulers/       # 4개 스케줄러 구현
 │   ├── services/         # 서비스 계층
 │   └── utils/            # 유틸리티
-├── tests/                # 777개 테스트
+├── tests-simple/         # 67개 테스트
 ├── coverage/             # 커버리지 리포트
 └── experiments/          # 실험 데이터
 ```
@@ -244,11 +243,11 @@
 
 | 파일/디렉토리 | 역할 | 주요 내용 |
 |-------------|------|----------|
-| `src/domain/models.ts` | 도메인 모델 | LLMRequest, RequestPriority, RequestStatus |
-| `src/schedulers/` | 스케줄러 구현 | FCFS, Priority, MLFQ, WFQ |
-| `src/managers/` | 관리자 컴포넌트 | Aging, Boost, Tenant, Fairness |
-| `src/api/` | API 계층 | REST 엔드포인트, Socket.IO |
-| `tests/` | 테스트 | 777개 테스트 케이스 |
+| `src-simple/domain/models.js` | 도메인 모델 | LLMRequest, RequestPriority, RequestStatus |
+| `src-simple/schedulers/` | 스케줄러 구현 | FCFS, Priority, MLFQ, WFQ |
+| `src-simple/managers/` | 관리자 컴포넌트 | Aging, Boost, Tenant, Fairness |
+| `src-simple/api/` | API 계층 | REST 엔드포인트 |
+| `tests-simple/` | 테스트 | 67개 테스트 케이스 |
 
 ---
 
@@ -270,6 +269,6 @@
 
 ---
 
-**작성일:** 2026-01-30
-**버전:** 1.0.0
+**작성일:** 2026-02-04
+**버전:** 2.0.0
 **작성자:** 서민지

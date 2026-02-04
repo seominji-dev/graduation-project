@@ -20,7 +20,7 @@
 **핵심 기여도:**
 - OS 이론의 실제 시스템 적용 사례
 - 4가지 알고리즘의 정량적 비교 분석
-- 98.72% 테스트 커버리지로 검증된 신뢰할 수 있는 구현
+- 98.65% 테스트 커버리지로 검증된 신뢰할 수 있는 구현
 
 ---
 
@@ -167,77 +167,79 @@ Virtual Time += 3000 / 200 = 15
 
 **답변:**
 
-**1. 정적 타입 검사:**
-```typescript
-// 컴파일 타임에 에러 발견
-const priority: RequestPriority = 5;  // Error: 0-3만 가능
+**1. 학부생 수준의 접근성:**
+```javascript
+// 간단하고 이해하기 쉬운 코드
+const priority = RequestPriority.NORMAL;
 ```
 
-**2. 자동 완성 및 리팩토링:**
-```typescript
-// IDE가 정확한 제안
-scheduler.s  // → submit, getStatus, cancel, getStats, ...
+**2. 빠른 개발 및 테스트:**
+```javascript
+// 컴파일 없이 즉시 실행 가능
+node src-simple/index.js
 ```
 
-**3. Zod와의 통합:**
-```typescript
-// 런타임 + 컴파일 타임 타입 안전성
-const schema = z.object({
-  priority: z.nativeEnum(RequestPriority)
-});
-type Schema = z.infer<typeof schema>;  // 자동 타입 추론
+**3. JSDoc을 통한 타입 힌트:**
+```javascript
+/**
+ * @param {Object} request - LLM 요청 객체
+ * @param {string} request.prompt - 프롬프트
+ * @param {number} request.priority - 우선순위 (0-3)
+ * @returns {string} 요청 ID
+ */
+function submit(request) { ... }
 ```
 
-**4. 연구급 코드 품질:**
-- 대규모 프로젝트에서 유지보수성 향상
-- 777개 테스트와 98.72% 커버리지로 검증된 구현체
+**4. 검증된 코드 품질:**
+- 학부생도 이해할 수 있는 단순한 구조
+- 67개 테스트와 98.65% 커버리지로 검증된 구현체
 
 ---
 
-### Q8: 메모리 큐를 선택한 이유는 무엇인가요?
+### Q8: 메모리 배열 큐를 선택한 이유는 무엇인가요?
 
 **답변:**
 
-**1. 신뢰성:**
-- 메모리 기반의 영구성 있는 큐
-- 작업 손실 방지 (재시도 메커니즘)
+**1. 학부생 수준의 단순함:**
+- JavaScript 배열을 사용한 직관적인 큐 구현
+- 외부 의존성 없이 순수 JavaScript로 동작
 
-**2. 기능 풍부함:**
-```typescript
-{
-  attempts: 3,              // 최대 3번 재시도
-  backoff: {
-    type: "exponential",     // 지수 백오프
-    delay: 1000,            // 1초, 2초, 4초...
-  },
-  priority: 2,              // 우선순위 지원
-  delay: 5000,              // 지연된 실행
-}
+**2. 이해하기 쉬운 구조:**
+```javascript
+// 메모리 배열 기반 큐
+const queue = [];
+
+// 작업 추가
+queue.push({ id, prompt, priority });
+
+// 우선순위에 따른 정렬
+queue.sort((a, b) => b.priority - a.priority);
+
+// 작업 가져오기
+const job = queue.shift();
 ```
 
-**3. 분산 처리:**
-```typescript
-// 여러 워커가 동시에 처리 가능
-const worker1 = new Worker("queue", processor);
-const worker2 = new Worker("queue", processor);
-const worker3 = new Worker("queue", processor);
+**3. 빠른 개발:**
+```javascript
+// 설치나 설정 없이 바로 사용
+// npm install 불필요
 ```
 
-**4. 모니터링:**
-```typescript
-await queue.getJobCounts();
-// { waiting: 10, active: 2, completed: 100, failed: 3 }
+**4. 테스트 용이:**
+```javascript
+// 쉽게 모킹 가능
+const mockQueue = [];
 ```
 
 **대안과 비교:**
+- BullMQ/Redis: 학부생에게 복잡
 - AWS SQS: 클라우드 종속, 비용
 - RabbitMQ: 복잡한 설정
-- Kafka: 오버엔지니어링
-- 메모리 큐: 간단한 설정, 오픈소스
+- 메모리 배열: **간단, 직관적, 학습 용이**
 
 ---
 
-### Q9: SQLite와 메모리를 함께 사용하는 이유는 무엇인가요?
+### Q9: 메모리 배열과 JSON 파일을 함께 사용하는 이유는 무엇인가요?
 
 **답변:**
 
@@ -245,96 +247,89 @@ await queue.getJobCounts();
 
 | 시스템 | 용도 | 이유 |
 |-------|------|------|
-| **메모리** | 큐 저장 | 빠른 읽기/쓰기, 메모리 내 |
-| **SQLite** | 로그 저장 | 영구 저장, 복잡한 쿼리 |
+| **메모리 배열** | 큐 저장 | 빠른 읽기/쓰기, 실시간 처리 |
+| **JSON 파일** | 로그 저장 | 영구 저장, 설치 불필요 |
 
-**메모리의 장점 (큐용):**
-```typescript
-// O(1) 삽입/추출
-await queue.add(job);
-await queue.getNextJob();
+**메모리 배열의 장점 (큐용):**
+```javascript
+// O(1) 삽입, O(n) 정렬
+queue.push(job);
+queue.sort((a, b) => a.virtualFinishTime - b.virtualFinishTime);
+const nextJob = queue.shift();
 
 // 빠른 속도 (메모리 내)
-// 영구성 (RDB/AOF)
+// 단순한 구현
 ```
 
-**SQLite의 장점 (로그용):**
-```typescript
-// 복잡한 쿼리
-await RequestLog.find({
-  provider: "ollama",
-  status: "completed",
-  createdAt: {
-    $gte: new Date("2026-01-01"),
-    $lt: new Date("2026-02-01")
-  }
-});
+**JSON 파일의 장점 (로그용):**
+```javascript
+// 간단한 파일 저장
+const logs = JSON.parse(fs.readFileSync('logs.json', 'utf8'));
 
-// 집계
-await RequestLog.aggregate([
-  { $group: { _id: "$priority", avgTime: { $avg: "$processingTime" } } }
-]);
+// 데이터 분석
+const completedLogs = logs.filter(log => log.status === 'completed');
+const avgTime = completedLogs.reduce((sum, log) =>
+  sum + log.processingTime, 0) / completedLogs.length;
 ```
 
 **함께 사용하는 이유:**
-- 메모리: 실시간 처리 (속도 중요)
-- SQLite: 장기 분석 (유연성 중요)
+- 메모리 배열: 실시간 처리 (속도 중요)
+- JSON 파일: 설치 없이 영구 저장 (단순함 중요)
 
 ---
 
 ## Part 4: 테스트 및 품질
 
-### Q10: 98.72% 커버리지를 어떻게 달성했나요?
+### Q10: 98.65% 커버리지를 어떻게 달성했나요?
 
 **답변:**
 
 **1. 체계적인 테스트 작성:**
 
-```typescript
+```javascript
 // 단위 테스트 (각 함수)
 describe("FCFSScheduler.submit()", () => {
-  it("should add job to queue", async () => {
+  it("should add job to queue", () => {
     const scheduler = new FCFSScheduler(config, llmService);
-    await scheduler.initialize();
-    
-    const requestId = await scheduler.submit(request);
-    
+    scheduler.initialize();
+
+    const requestId = scheduler.submit(request);
+
     expect(requestId).toBeDefined();
   });
 });
 
 // 통합 테스트 (컴포넌트 간 상호작용)
 describe("Priority + Aging", () => {
-  it("should promote long-waiting jobs", async () => {
+  it("should promote long-waiting jobs", () => {
     const scheduler = new PriorityScheduler(config, llmService);
-    await scheduler.initialize();
-    
+    scheduler.initialize();
+
     // 30초 대기 후 Aging 확인
-    await advanceTime(30000);
-    await agingManager.runAging();
-    
-    const job = await scheduler.getJob(jobId);
+    jest.advanceTimersByTime(30000);
+    agingManager.runAging();
+
+    const job = scheduler.getJob(jobId);
     expect(job.priority).toBe(RequestPriority.NORMAL);
   });
 });
 ```
 
 **2. Edge Case 커버리지:**
-```typescript
+```javascript
 // 빈 큐
-it("should handle empty queue", async () => {
-  const stats = await scheduler.getStats();
+it("should handle empty queue", () => {
+  const stats = scheduler.getStats();
   expect(stats.waiting).toBe(0);
 });
 
 // 실패 처리
-it("should retry failed jobs", async () => {
+it("should handle failed jobs", () => {
   llmService.process.mockRejectedValue(new Error("API Error"));
-  
-  await scheduler.submit(request);
-  
-  // 3번 재시도 확인
-  expect(llmService.process).toHaveBeenCalledTimes(3);
+
+  scheduler.submit(request);
+
+  expect(scheduler.getStats().failed).toBe(1);
 });
 ```
 
@@ -344,68 +339,65 @@ it("should retry failed jobs", async () => {
 npm test -- --coverage
 
 # 결과:
-# Statements: 98.72%
-# Branches: 85.77%
-# Functions: 94.77%
-# Lines: 98.93%
+# Statements: 98.65%
+# Branches: 85.43%
+# Functions: 95.94%
+# Lines: 98.55%
 ```
 
 ---
 
-### Q11: 777개 테스트를 어떻게 관리했나요?
+### Q11: 67개 테스트를 어떻게 관리했나요?
 
 **답변:**
 
 **1. 테스트 구조화:**
 ```
-tests/
-├── unit/                    # 400+ 개
+tests-simple/
+├── unit/                    # 40+ 개
 │   ├── schedulers/
-│   │   ├── FCFSScheduler.test.ts
-│   │   ├── PriorityScheduler.test.ts
-│   │   ├── MLFQScheduler.test.ts
-│   │   └── WFQScheduler.test.ts
-│   ├── managers/
-│   └── services/
-├── integration/             # 200+ 개
-│   ├── scheduler-integration.test.ts
-│   └── api-integration.test.ts
-└── e2e/                     # 100+ 개
-    └── full-workflow.test.ts
+│   │   ├── fcfs.test.js
+│   │   ├── priority.test.js
+│   │   ├── mlfq.test.js
+│   │   └── wfq.test.js
+│   └── managers/
+├── integration/             # 20+ 개
+│   └── scheduler-integration.test.js
+└── setup.js                 # 테스트 설정
 ```
 
 **2. 테스트 유틸리티:**
-```typescript
+```javascript
 // 공용 픽스처
-export const createMockScheduler = () => ({
-  submit: jest.fn(),
-  getStatus: jest.fn(),
-  cancel: jest.fn(),
-  getStats: jest.fn(),
-});
+function createMockScheduler() {
+  return {
+    submit: jest.fn(),
+    getStatus: jest.fn(),
+    cancel: jest.fn(),
+    getStats: jest.fn(),
+  };
+}
 
 // 공용 헬퍼
-export const waitForJob = (requestId: string, timeout = 5000) => {
-  return new Promise((resolve) => {
-    const interval = setInterval(async () => {
-      const status = await scheduler.getStatus(requestId);
-      if (status === "completed") {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-};
+function createTestRequest(overrides = {}) {
+  return {
+    id: 'test-' + Date.now(),
+    prompt: 'Test prompt',
+    priority: RequestPriority.NORMAL,
+    ...overrides
+  };
+}
 ```
 
-**3. CI/CD 통합:**
-```yaml
-# .github/workflows/test.yml
-- name: Run tests
-  run: npm test
-  
-- name: Upload coverage
-  uses: codecov/codecov-action@v3
+**3. 테스트 실행:**
+```bash
+# 테스트 실행
+npm test
+
+# 결과:
+# Test Suites: 15 passed, 15 total
+# Tests:       67 passed, 67 total
+# Time:        0.234s
 ```
 
 ---
@@ -725,8 +717,8 @@ try {
 
 **답변:**
 
-**1. 98.72% 테스트 커버리지:**
-- 777개 테스트 작성
+**1. 98.65% 테스트 커버리지:**
+- 67개 테스트 작성
 - 모든 알고리즘에 대한 통합 테스트
 - Edge Case 완전 커버리지
 
@@ -753,6 +745,6 @@ try {
 
 ---
 
-**작성일:** 2026-01-30
-**버전:** 1.0.0
+**작성일:** 2026-02-04
+**버전:** 2.0.0
 **작성자:** 서민지

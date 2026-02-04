@@ -30,9 +30,9 @@ API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 │   └── requirements.md    # 요구사항 분석
 │
 ├── 02-implementation/      # Phase 2: 구현
-│   ├── src/               # 소스코드
-│   ├── tests/             # 테스트 (777개)
-│   └── experiments/       # 실험 데이터
+│   ├── src-simple/        # 소스코드 (학부생 버전)
+│   ├── tests-simple/      # 테스트 (67개)
+│   └── experiments-simple/ # 실험 데이터
 │
 ├── 03-report/              # Phase 3: 보고서
 │   ├── paper/             # 최종 논문
@@ -54,8 +54,8 @@ cd 02-implementation
 # 의존성 설치
 npm install
 
-# 개발 서버 실행 (포트 3000)
-npm run dev
+# 서버 실행 (포트 3000)
+npm start
 
 # 테스트 실행
 npm test
@@ -69,7 +69,7 @@ npm test
 - **런타임:** Node.js 20 LTS
 - **프레임워크:** Express.js 4.18
 - **큐 시스템:** 메모리 배열 기반
-- **데이터베이스:** SQLite
+- **데이터 저장:** JSON 파일
 - **LLM:** Ollama
 
 ---
@@ -78,9 +78,12 @@ npm test
 
 | 항목 | 결과 |
 |------|------|
-| 테스트 수 | 777개 |
+| 테스트 수 | 67개 |
 | 통과율 | 100% |
-| 코드 커버리지 | 98.72% |
+| 코드 커버리지 (Statements) | 98.65% |
+| 코드 커버리지 (Branches) | 85.43% |
+| 코드 커버리지 (Functions) | 95.94% |
+| 코드 커버리지 (Lines) | 98.55% |
 
 ---
 

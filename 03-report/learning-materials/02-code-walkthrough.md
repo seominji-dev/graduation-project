@@ -10,67 +10,55 @@
 
 ```
 02-implementation/
-├── src/
+├── src-simple/
 │   ├── api/                    # API 계층
 │   │   ├── controllers/        # 요청 처리 컨트롤러
-│   │   │   ├── requestController.ts
-│   │   │   └── schedulerController.ts
+│   │   │   ├── requestController.js
+│   │   │   └── schedulerController.js
 │   │   └── routes/             # 라우트 정의
-│   │       └── index.ts
+│   │       └── index.js
 │   │
 │   ├── config/                 # 설정 관리
-│   │   ├── constants.ts        # 상수 정의
-│   │   ├── env.ts              # 환경 변수 검증
-│   │   └── index.ts            # 설정 내보내기
+│   │   ├── constants.js        # 상수 정의
+│   │   └── index.js            # 설정 내보내기
 │   │
 │   ├── domain/                 # 도메인 모델
-│   │   └── models.ts           # 핵심 도메인 모델
-│   │
-│   ├── infrastructure/         # 인프라 계층
-│   │   ├── mongodb.ts          # SQLite 연결
-│   │   ├── redis.ts            # 메모리 연결
-│   │   └── models/
-│   │       └── RequestLog.ts   # SQLite 스키마
+│   │   └── models.js           # 핵심 도메인 모델
 │   │
 │   ├── managers/               # 관리자 컴포넌트
-│   │   ├── AgingManager.ts     # Priority용 기아 방지
-│   │   ├── BoostManager.ts     # MLFQ용 주기적 부스팅
-│   │   ├── TenantRegistry.ts   # WFQ용 테넌트 관리
-│   │   ├── VirtualTimeTracker.ts # WFQ용 가상 시간
-│   │   └── FairnessCalculator.ts # WFQ용 공정성 계산
+│   │   ├── AgingManager.js     # Priority용 기아 방지
+│   │   ├── BoostManager.js     # MLFQ용 주기적 부스팅
+│   │   ├── TenantRegistry.js   # WFQ용 테넌트 관리
+│   │   ├── VirtualTimeTracker.js # WFQ용 가상 시간
+│   │   └── FairnessCalculator.js # WFQ용 공정성 계산
 │   │
 │   ├── middlewares/            # Express 미들웨어
-│   │   ├── errorHandler.ts
-│   │   ├── correlationId.ts
-│   │   ├── rateLimit.ts
-│   │   └── auth.ts
+│   │   ├── errorHandler.js
+│   │   └── validation.js
 │   │
 │   ├── schedulers/             # 스케줄러 구현
-│   │   ├── types.ts            # 스케줄러 인터페이스
-│   │   ├── FCFSScheduler.ts    # FCFS 구현
-│   │   ├── PriorityScheduler.ts # Priority 구현
-│   │   ├── MLFQScheduler.ts    # MLFQ 구현
-│   │   └── WFQScheduler.ts     # WFQ 구현
+│   │   ├── FCFSScheduler.js    # FCFS 구현
+│   │   ├── PriorityScheduler.js # Priority 구현
+│   │   ├── MLFQScheduler.js    # MLFQ 구현
+│   │   └── WFQScheduler.js     # WFQ 구현
 │   │
 │   ├── services/               # 서비스 계층
-│   │   ├── llmService.ts       # LLM API 호출
-│   │   ├── schedulerFactory.ts # 스케줄러 팩토리
-│   │   └── schedulerManager.ts # 스케줄러 매니저
+│   │   ├── llmService.js       # LLM API 호출
+│   │   └── schedulerFactory.js # 스케줄러 팩토리
 │   │
 │   ├── utils/                  # 유틸리티
-│   │   └── logger.ts           # 로거
+│   │   └── logger.js           # 로거
 │   │
-│   └── index.ts                # 애플리케이션 진입점
+│   └── index.js                # 애플리케이션 진입점
 │
-├── tests/                      # 테스트 파일 (777개)
+├── tests-simple/               # 테스트 파일 (67개)
 │   ├── unit/                   # 단위 테스트
 │   ├── integration/            # 통합 테스트
-│   └── e2e/                    # E2E 테스트
+│   └── setup.js                # 테스트 설정
 │
 ├── package.json                # 프로젝트 설정
-├── tsconfig.json              # TypeScript 설정
-├── jest.config.js             # Jest 설정
-└── README.md                  # 프로젝트 문서
+├── jest.config.js              # Jest 설정
+└── README.md                   # 프로젝트 문서
 ```
 
 ---
@@ -852,6 +840,6 @@ Response: {
 
 ---
 
-**작성일:** 2026-01-30
-**버전:** 1.0.0
+**작성일:** 2026-02-04
+**버전:** 2.0.0
 **작성자:** 서민지
