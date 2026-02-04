@@ -52,8 +52,8 @@ LLM Scheduler는 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용
 +------------------------------------------------------------------+
 |                       저장소 계층                                  |
 |  +-------------+  +-------------+  +-------------+               |
-|  |    Redis    |  |   MongoDB   |  |     LLM     |               |
-|  |  (BullMQ)   |  |   (Logs)    |  |   Service   |               |
+|  |Memory Array |  |  JSON File  |  |     LLM     |               |
+|  |  (Queue)    |  |   (Logs)    |  |   Service   |               |
 |  +-------------+  +-------------+  +-------------+               |
 +------------------------------------------------------------------+
 ```
@@ -111,8 +111,8 @@ interface IScheduler {
 
 | 저장소 | 용도 | 기술 |
 |--------|------|------|
-| Redis | 작업 큐, 상태 저장 | BullMQ 5.1 |
-| MongoDB | 요청 로그, 메트릭 | MongoDB 8.0 |
+| Memory Array | 작업 큐, 상태 저장 | JavaScript Array |
+| JSON File | 요청 로그, 메트릭 | Node.js fs 모듈 |
 | LLM Service | LLM API 호출 | Ollama / OpenAI |
 
 ---
@@ -127,18 +127,18 @@ interface IScheduler {
    { prompt: "...", priority: "HIGH", ... }
 
 2. RequestController
-   - Zod 스키마 검증
+   - 조건문 입력 검증
    - LLMRequest 객체 생성
 
 3. SchedulerFactory
    - 현재 활성 스케줄러 선택
 
-4. Scheduler.submit()
-   - BullMQ 큐에 작업 추가
+4. Scheduler.enqueue()
+   - 메모리 배열 큐에 작업 추가
    - 상태: PENDING -> QUEUED
 
 5. Worker 처리
-   - 큐에서 작업 추출
+   - 큐에서 작업 추출 (dequeue)
    - 상태: QUEUED -> PROCESSING
 
 6. LLMService.process()
@@ -147,7 +147,7 @@ interface IScheduler {
 
 7. 완료
    - 상태: PROCESSING -> COMPLETED
-   - MongoDB에 로그 저장
+   - JSON 파일에 로그 저장
 
 8. 응답 반환
    { requestId, status: "completed", result: "..." }
@@ -192,17 +192,17 @@ interface IScheduler {
 **대안**: 단일 스케줄러 클래스 + 조건문
 - 문제점: 확장 시 기존 코드 수정 필요
 
-### 2. BullMQ 선택
+### 2. 메모리 배열 큐 선택
 
-**결정**: Redis 기반 BullMQ를 작업 큐로 사용
+**결정**: JavaScript 메모리 배열을 작업 큐로 사용
 
 **이유**:
-- 우선순위 큐 네이티브 지원
-- 분산 환경 확장 용이
-- 작업 재시도, 지연 실행 지원
+- 학부생 수준의 이해 용이성
+- 외부 의존성 없음 (Redis 불필요)
+- 스케줄링 알고리즘 직접 구현으로 학습 효과 향상
 
-**대안**: 인메모리 큐 (Array)
-- 문제점: 서버 재시작 시 데이터 손실
+**대안**: Redis 기반 BullMQ
+- 문제점: 학부생에게 복잡, 외부 서비스 의존성
 
 ### 3. 관리자 컴포넌트 분리
 
@@ -227,7 +227,7 @@ interface IScheduler {
 ```
 연구 주제 1: 분산 큐 환경
 - Redis Cluster 환경에서의 스케줄링 알고리즘 특성 변화 분석
-- BullMQ 분산 기능과의 통합 연구
+- 분산 큐 시스템과의 통합 연구
 
 연구 주제 2: 분산 스케줄링
 - Consistent Hashing 기반 분산 전략 비교
@@ -256,7 +256,7 @@ interface IScheduler {
 
 | 기능 | 구현 방식 |
 |------|----------|
-| 입력 검증 | Zod 스키마 |
+| 입력 검증 | 조건문 기반 검증 |
 | 헤더 보안 | Helmet.js |
 | CORS | 허용 Origin 제한 |
 | Rate Limiting | (향후 구현 예정) |
@@ -267,7 +267,7 @@ interface IScheduler {
 본 연구는 학술 목적이며, 실제 서비스 환경에서는 다음 사항 고려 필요:
 - HTTPS 사용
 - API 키 환경 변수 관리
-- Redis/MongoDB 인증 활성화
+- 데이터 암호화
 
 ---
 
@@ -298,41 +298,29 @@ llm_scheduler_queue_size{queue="mlfq-q0"} 3
 
 ```
 02-implementation/
-├── src/
-│   ├── api/                    # API 계층
-│   │   ├── controllers/        # HTTP 컨트롤러
-│   │   ├── middlewares/        # 미들웨어
-│   │   └── routes/             # 라우트 정의
-│   ├── config/                 # 설정
-│   │   ├── environment.ts      # 환경 변수
-│   │   └── scheduler.ts        # 스케줄러 설정
-│   ├── domain/                 # 도메인 모델
-│   │   ├── LLMRequest.ts       # 요청 엔티티
-│   │   └── types.ts            # 타입 정의
-│   ├── managers/               # 관리자 컴포넌트
-│   │   ├── AgingManager.ts     # Aging 관리
-│   │   ├── BoostManager.ts     # Boost 관리
-│   │   ├── FairnessCalculator.ts # 공정성 계산
-│   │   └── TenantRegistry.ts   # 테넌트 관리
+├── src-simple/                 # JavaScript 소스 코드
+│   ├── queue/                  # 큐 시스템
+│   │   └── MemoryQueue.js      # 메모리 기반 큐
 │   ├── schedulers/             # 스케줄러 엔진
-│   │   ├── IScheduler.ts       # 인터페이스
-│   │   ├── FCFSScheduler.ts    # FCFS 구현
-│   │   ├── PriorityScheduler.ts # Priority 구현
-│   │   ├── MLFQScheduler.ts    # MLFQ 구현
-│   │   ├── WFQScheduler.ts     # WFQ 구현
-│   │   └── SchedulerFactory.ts # 팩토리
-│   ├── services/               # 서비스
-│   │   └── LLMService.ts       # LLM API 연동
-│   └── utils/                  # 유틸리티
+│   │   ├── BaseScheduler.js    # 기본 스케줄러
+│   │   ├── FCFSScheduler.js    # FCFS 구현
+│   │   ├── PriorityScheduler.js # Priority 구현
+│   │   ├── MLFQScheduler.js    # MLFQ 구현
+│   │   ├── WFQScheduler.js     # WFQ 구현
+│   │   └── index.js            # 내보내기
+│   └── storage/                # 저장소
+│       └── JSONStore.js        # JSON 파일 저장소
+├── tests-simple/               # Jest 테스트 (67개)
+│   ├── schedulers.test.js      # 스케줄러 테스트
+│   ├── queue.test.js           # 큐 테스트
+│   └── storage.test.js         # 저장소 테스트
 ├── docs/                       # 문서
 │   ├── api-documentation.md    # API 문서
 │   └── architecture.md         # 아키텍처 문서 (이 파일)
-├── docker-compose.yml          # Docker 구성
-├── package.json                # 의존성
-└── tsconfig.json               # TypeScript 설정
+└── package.json                # 의존성
 ```
 
 ---
 
-**최종 업데이트**: 2026-02-01
-**버전**: 1.0.0
+**최종 업데이트**: 2026-02-04
+**버전**: 2.0.0 (JavaScript 단순 구현)

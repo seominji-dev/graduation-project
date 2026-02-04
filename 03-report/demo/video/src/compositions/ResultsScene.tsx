@@ -102,7 +102,7 @@ export const ResultsScene: React.FC = () => {
 							<span
 								style={{ fontSize: "32px", fontWeight: 700, color: "#ffffff" }}
 							>
-								777
+								67
 							</span>
 							<span
 								style={{
