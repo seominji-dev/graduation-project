@@ -31,7 +31,7 @@ API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 │
 ├── 02-implementation/      # Phase 2: 구현
 │   ├── src-simple/        # 소스코드 (학부생 버전)
-│   ├── tests-simple/      # 테스트 (67개)
+│   ├── tests-simple/      # 테스트 (69개)
 │   └── experiments-simple/ # 실험 데이터
 │
 ├── 03-report/              # Phase 3: 보고서
@@ -78,10 +78,10 @@ npm test
 
 | 항목 | 결과 |
 |------|------|
-| 테스트 수 | 67개 |
+| 테스트 수 | 69개 |
 | 통과율 | 100% |
 | 코드 커버리지 (Statements) | 98.65% |
-| 코드 커버리지 (Branches) | 85.43% |
+| 코드 커버리지 (Branches) | 86.40% |
 | 코드 커버리지 (Functions) | 95.94% |
 | 코드 커버리지 (Lines) | 98.55% |
 

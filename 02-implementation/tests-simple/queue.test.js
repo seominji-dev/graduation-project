@@ -136,4 +136,23 @@ describe('MemoryQueue', () => {
       expect(queue.getAllRequests().length).toBe(0);
     });
   });
+
+  describe('updateRequest', () => {
+    test('존재하지 않는 요청 업데이트 시 아무 일도 안 일어남', () => {
+      // 존재하지 않는 ID로 업데이트 시도
+      queue.updateRequest('non-existent-id', { status: 'completed' });
+
+      // 에러가 발생하지 않고, 큐에 아무것도 추가되지 않음
+      expect(queue.getAllRequests().length).toBe(0);
+    });
+
+    test('존재하는 요청 업데이트 성공', () => {
+      const request = queue.createRequest({ prompt: 'test' });
+
+      queue.updateRequest(request.id, { customField: 'custom-value' });
+
+      const updated = queue.getRequest(request.id);
+      expect(updated.customField).toBe('custom-value');
+    });
+  });
 });

@@ -6,24 +6,24 @@
     "processingTimeMax": 100,
     "arrivalInterval": 5
   },
-  "timestamp": "2026-02-04T08:04:00.097Z",
+  "timestamp": "2026-02-04T09:40:36.691Z",
   "results": {
     "fcfs": {
       "scheduler": "FCFS",
       "totalRequests": 100,
-      "avgWaitTime": "2571.75",
-      "maxWaitTime": "4952.00",
-      "minWaitTime": "0.00",
-      "avgProcessingTime": "55.59",
-      "throughput": "17.99",
+      "avgWaitTime": 2571.75,
+      "maxWaitTime": 4952.00,
+      "minWaitTime": 0.00,
+      "avgProcessingTime": 55.59,
+      "throughput": 17.99,
       "priorityWaitTimes": {
-        "1": 2648.2727272727275,
-        "2": 2386.0454545454545,
-        "3": 2735.2,
-        "4": 2971
+        "1": 2648.27,
+        "2": 2386.05,
+        "3": 2735.20,
+        "4": 2971.00
       },
       "tenantWaitTimes": {
-        "enterprise": 2498,
+        "enterprise": 2498.00,
         "premium": 2550.64,
         "standard": 2593.28,
         "free": 2645.08
@@ -32,40 +32,40 @@
     "priority": {
       "scheduler": "Priority",
       "totalRequests": 100,
-      "avgWaitTime": "2826.41",
-      "maxWaitTime": "5243.00",
-      "minWaitTime": "0.00",
-      "avgProcessingTime": "55.59",
-      "throughput": "17.09",
+      "avgWaitTime": 2826.41,
+      "maxWaitTime": 5243.00,
+      "minWaitTime": 0.00,
+      "avgProcessingTime": 55.59,
+      "throughput": 17.09,
       "priorityWaitTimes": {
-        "1": 3080.909090909091,
-        "2": 2830.2272727272725,
-        "3": 3164.4666666666667,
+        "1": 3080.91,
+        "2": 2830.23,
+        "3": 3164.47,
         "4": 1121.75
       },
       "tenantWaitTimes": {
         "enterprise": 2766.44,
         "premium": 2879.12,
         "standard": 2890.68,
-        "free": 2769.4
+        "free": 2769.40
       }
     },
     "mlfq": {
       "scheduler": "MLFQ",
       "totalRequests": 100,
-      "avgWaitTime": "2571.75",
-      "maxWaitTime": "4952.00",
-      "minWaitTime": "0.00",
-      "avgProcessingTime": "55.59",
-      "throughput": "17.99",
+      "avgWaitTime": 2571.75,
+      "maxWaitTime": 4952.00,
+      "minWaitTime": 0.00,
+      "avgProcessingTime": 55.59,
+      "throughput": 17.99,
       "priorityWaitTimes": {
-        "1": 2648.2727272727275,
-        "2": 2386.0454545454545,
-        "3": 2735.2,
-        "4": 2971
+        "1": 2648.27,
+        "2": 2386.05,
+        "3": 2735.20,
+        "4": 2971.00
       },
       "tenantWaitTimes": {
-        "enterprise": 2498,
+        "enterprise": 2498.00,
         "premium": 2550.64,
         "standard": 2593.28,
         "free": 2645.08
@@ -74,24 +74,24 @@
     "wfq": {
       "scheduler": "WFQ",
       "totalRequests": 100,
-      "avgWaitTime": "2819.32",
-      "maxWaitTime": "5536.00",
-      "minWaitTime": "0.00",
-      "avgProcessingTime": "55.59",
-      "throughput": "16.84",
+      "avgWaitTime": 2819.32,
+      "maxWaitTime": 5536.00,
+      "minWaitTime": 0.00,
+      "avgProcessingTime": 55.59,
+      "throughput": 16.84,
       "priorityWaitTimes": {
-        "1": 2584.969696969697,
-        "2": 3077.7727272727275,
-        "3": 2385.733333333333,
-        "4": 3177.5
+        "1": 2584.97,
+        "2": 3077.77,
+        "3": 2385.73,
+        "4": 3177.50
       },
       "tenantWaitTimes": {
         "enterprise": 849.32,
         "premium": 2103.04,
-        "standard": 3431.2,
+        "standard": 3431.20,
         "free": 4893.72
       },
-      "fairnessIndex": "0.3159",
+      "fairnessIndex": 0.3159,
       "tenantDetails": {
         "tenants": {
           "enterprise": {
@@ -104,22 +104,22 @@
             "tier": "premium",
             "weight": 50,
             "processed": 25,
-            "normalizedThroughput": 0.5
+            "normalizedThroughput": 0.50
           },
           "standard": {
             "tier": "standard",
             "weight": 10,
             "processed": 25,
-            "normalizedThroughput": 2.5
+            "normalizedThroughput": 2.50
           },
           "free": {
             "tier": "free",
             "weight": 1,
             "processed": 25,
-            "normalizedThroughput": 25
+            "normalizedThroughput": 25.00
           }
         },
-        "fairnessIndex": 0.31590796635329044,
+        "fairnessIndex": 0.3159,
         "globalVirtualTime": 198
       }
     }
