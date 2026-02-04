@@ -6,7 +6,7 @@
     "processingTimeMax": 100,
     "arrivalInterval": 5
   },
-  "timestamp": "2026-02-03T23:32:40.539Z",
+  "timestamp": "2026-02-04T08:04:00.097Z",
   "results": {
     "fcfs": {
       "scheduler": "FCFS",

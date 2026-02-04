@@ -68,7 +68,7 @@ npm run experiment
 │   │   └── JSONStore.js       # JSON 파일 저장소
 │   └── llm/
 │       └── OllamaClient.js    # Ollama 연동
-├── tests-simple/              # 테스트 (41개)
+├── tests-simple/              # 테스트 (67개)
 │   ├── schedulers.test.js
 │   ├── queue.test.js
 │   └── storage.test.js
@@ -138,7 +138,7 @@ npm run experiment
 
 ```
 Test Suites: 3 passed, 3 total
-Tests:       41 passed, 41 total
+Tests:       67 passed, 67 total
 ```
 
 ---
