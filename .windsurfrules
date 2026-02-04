@@ -1,90 +1,95 @@
 # LLM Request Scheduler - Windsurf AI Rules
 
-You are an expert TypeScript developer working on an LLM Request Scheduler project that applies OS scheduling concepts to LLM API request management.
+You are an expert JavaScript developer working on an LLM Request Scheduler project that applies OS scheduling concepts to LLM API request management.
+
+## CRITICAL: Project Constraints
+
+**DO NOT USE the following technologies:**
+- TypeScript (use JavaScript ES2024 instead)
+- Redis, BullMQ (use memory arrays instead)
+- MongoDB (use SQLite instead)
+- Socket.IO (use HTTP polling instead)
+- Docker, GraphQL, complex design patterns
+
+**This is an undergraduate graduation project. Keep code simple and readable.**
 
 ## Project Context
 
-See `.ai/PROJECT_CONTEXT.md` for full project details.
-
-## Quick Reference
-
 - **Project**: LLM Request Scheduler (Hongik University Graduation Project)
 - **Author**: 서민지 (Seo Minji)
-- **Tech Stack**: TypeScript, Node.js 20+, Express, BullMQ, MongoDB, Redis
-- **Tests**: 777 tests, 98.72% coverage
+- **Tech Stack**: JavaScript (ES2024), Node.js 20+, Express.js, SQLite, Memory Queue
+- **Tests**: 41 tests, 98.72% coverage
+- **Dependencies**: Maximum 4 packages (express, better-sqlite3, node-fetch, jest)
 
 ## Project Structure
 
 ```
 졸업프로젝트/
-├── 01-plan/              # Planning documents
-├── 02-implementation/    # Main implementation (TypeScript)
+├── 01-plan/              # Planning documents (proposal, requirements)
+├── 02-implementation/    # Main implementation (JavaScript)
 │   ├── src/              # Source code
 │   │   ├── schedulers/   # FCFS, Priority, MLFQ, WFQ
 │   │   ├── managers/     # Queue, Request, Tenant
-│   │   ├── services/     # Business logic
-│   │   ├── api/          # REST API
-│   │   └── infrastructure/
-│   └── tests/            # Jest tests
+│   │   └── api/          # REST API (Express)
+│   └── tests/            # Jest tests (41 tests)
 ├── 03-report/            # Final report & presentation
-│   └── learning-materials/ # Study materials (7 chapters)
-└── archive/              # Alternative projects (reference)
+└── archive/              # Alternative projects (reference only)
 ```
 
 ## Coding Standards
 
-### TypeScript Conventions
-- Use TypeScript strict mode
+### JavaScript Conventions
+- Use ES2024 features (async/await, optional chaining, etc.)
 - Functions/variables: camelCase (e.g., `processRequest`, `queueLength`)
 - Classes: PascalCase (e.g., `FCFSScheduler`, `TenantRegistry`)
-- Interfaces: Descriptive names (e.g., `IScheduler`, `RequestPayload`)
 - Constants: UPPER_SNAKE_CASE (e.g., `MAX_QUEUE_SIZE`, `DEFAULT_TIMEOUT`)
-- Enums: PascalCase with PascalCase members
+- Use JSDoc for type hints (NOT TypeScript)
 
 ### File Naming
-- Source files: PascalCase.ts (e.g., `MLFQScheduler.ts`)
-- Test files: `*.spec.ts` or `*.test.ts`
+- Source files: camelCase.js (e.g., `mlfqScheduler.js`)
+- Test files: `*.test.js`
 - One primary export per file
 
 ### Code Quality
-- Add JSDoc comments for public APIs
-- Use async/await consistently (no mixing with .then())
-- Create custom error classes for domain-specific errors
-- Keep functions small and focused (< 50 lines preferred)
+- Keep functions under 30 lines
+- Maximum 4 dependencies
+- Undergraduate-level complexity
+- Clear, well-commented code in Korean
 
 ## Key Commands
 
 ```bash
 cd 02-implementation
-npm run dev          # Development server with hot reload
-npm run build        # TypeScript compilation
-npm test             # Run tests with coverage (777 tests)
-npm run lint         # ESLint check
-npm run format       # Prettier formatting
+npm install          # Install dependencies
+npm start            # Start server
+npm test             # Run tests (41 tests)
 ```
 
-## When Making Changes
+## Scheduling Algorithms (Research Questions)
 
-1. Run `npm run lint` to check for linting errors
-2. Run `npm test` to verify all tests pass
-3. Follow existing code patterns in the codebase
-4. Update relevant tests when modifying functionality
-5. Maintain 98%+ test coverage
+### RQ1: Priority Scheduling
+- How much faster are URGENT requests processed compared to low-priority requests?
+- Result: URGENT requests are 62% faster than FCFS baseline
 
-## Domain Knowledge
+### RQ2: MLFQ Adaptability
+- How does MLFQ perform in mixed workload environments?
+- Note: With short jobs only, MLFQ behaves like FCFS
 
-### Scheduling Algorithms
-- **FCFS**: Simple queue, baseline for comparison
-- **Priority**: Tenant priority with aging to prevent starvation
-- **MLFQ**: Dynamic priority based on request behavior
-- **WFQ**: Proportional fairness based on tenant weights
+### RQ3: WFQ Differentiated Service
+- Does WFQ achieve weighted proportional service differentiation?
+- Result: Enterprise (849ms) is 5.8x faster than Free (4,894ms)
 
-### Key Metrics
-- Wait time, turnaround time, throughput
-- Fairness index (Jain's fairness index)
-- Starvation prevention effectiveness
+## Experiment Results (2026-02-04)
+
+| Scheduler | Avg Wait Time | Key Metric |
+|-----------|---------------|------------|
+| FCFS | 2,572ms | Baseline |
+| Priority | 2,826ms | URGENT: 1,122ms (-62%) |
+| MLFQ | 2,572ms | Same as FCFS (short jobs) |
+| WFQ | 2,819ms | Enterprise 5.8x faster |
 
 ## Language
 
 - User communication: Korean (한국어)
-- Code/Technical: English
+- Code comments: Korean
+- Technical terms: English

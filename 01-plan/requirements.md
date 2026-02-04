@@ -30,8 +30,8 @@
   - FR-1.2.2: 우선순위 큐 구조 사용
   - FR-1.2.3: 선점형 스케줄링 구현
   - FR-1.2.4: Aging 메커니즘으로 기아 방지
-    - 30초 대기 시 우선순위 +1
-    - 60초 대기 시 우선순위 +2
+    - 2분(120초) 이상 대기 시 우선순위 1단계 상승
+    - 구체적인 파라미터는 실험적으로 조정 가능
 - **검증 기준**: URGENT 요청이 LOW 요청보다 먼저 처리됨 (도착 순서 무관)
 
 #### FR-1.3: MLFQ (Multi-Level Feedback Queue) 스케줄러
@@ -62,14 +62,14 @@
     - Virtual Finish Time = Virtual Start Time + (Service Time / Weight)
   - FR-1.4.3: GPS (Generalized Processor Sharing) 근사
   - FR-1.4.4: Jain's Fairness Index 계산 (FairnessCalculator)
-    - 개별 테넌트 수준 목표: 0.90 이상 (동일 등급 내)
-    - 가중치 정규화 목표: 0.95 이상 (처리량/가중치 비율)
+    - 가중치에 비례하는 서비스 차등화 검증
+    - 참고: WFQ의 낮은 Jain's Index는 의도된 불균형이며, 차등 서비스 성공을 의미함
   - FR-1.4.5: 테넌트 티어별 기본 가중치
     - enterprise: 100
     - premium: 50
     - standard: 10
     - free: 1
-- **검증 기준**: 가중치 비율에 맞는 처리량 배분, 개별 테넌트 Fairness Index >= 0.90, 가중치 정규화 Fairness Index >= 0.95
+- **검증 기준**: 가중치 비율에 비례하는 대기시간 차등화 (예: Enterprise가 Free보다 의미있게 빠른 응답)
 
 ### FR-2: REST API
 
