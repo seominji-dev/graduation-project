@@ -44,7 +44,7 @@
 ┌─────────────────────────────────────┐
 │     기존 LLM API 처리 시스템         │
 ├─────────────────────────────────────┤
-│  • 단순 선찮순(FCFS) 방식           │
+│  • 단순 선착순(FCFS) 방식           │
 │  • 우선순위 구분 없음               │
 │  • 공정성 보장 부족                 │
 │  • 자원 활용 비효율                 │
@@ -382,36 +382,35 @@ npm start
 
 ### 공통 인터페이스
 
-모든 스케줄러는 `IScheduler` 인터페이스 구현
+모든 스케줄러는 BaseScheduler 클래스를 상속
 
-```typescript
-interface IScheduler {
-  initialize(): Promise<void>;
-  submit(request: LLMRequest): Promise<string>;
-  getStatus(requestId: string): Promise<string>;
-  cancel(requestId: string): Promise<boolean>;
-  getStats(): Promise<SchedulerStats>;
-  pause(): Promise<void>;
-  resume(): Promise<void>;
-  shutdown(): Promise<void>;
+```javascript
+// BaseScheduler.js - 공통 메서드 정의
+class BaseScheduler {
+  constructor(name) {
+    this.name = name;
+    this.queue = [];
+  }
+
+  enqueue(request) { this.queue.push(request); }
+  dequeue() { return this.queue.shift(); }
+  isEmpty() { return this.queue.length === 0; }
+  size() { return this.queue.length; }
+  getStats() { return { name: this.name, size: this.size() }; }
 }
 ```
 
 ### 런타임 알고리즘 교체
 
-```typescript
-// 설정 파일에서 스케줄러 선택
-schedulerConfig: {
-  type: 'MLFQ',  // FCFS | Priority | MLFQ | WFQ
-  options: {
-    queues: [
-      { level: 0, quantum: 1000 },
-      { level: 1, quantum: 3000 },
-      { level: 2, quantum: 8000 },
-      { level: 3, quantum: Infinity }
-    ]
-  }
-}
+```javascript
+// 환경 변수로 스케줄러 선택
+// SCHEDULER_TYPE=MLFQ npm start
+
+const schedulerType = process.env.SCHEDULER_TYPE || 'FCFS';
+const scheduler = createScheduler(schedulerType);
+
+// MLFQ 큐 설정
+const TIME_QUANTA = [1000, 3000, 8000, Infinity]; // Q0, Q1, Q2, Q3
 ```
 
 ---
@@ -422,29 +421,29 @@ schedulerConfig: {
 
 **역할:** 대기 시간이 긴 작업의 우선순위 점진적 상승으로 기아 현상 방지
 
-```typescript
-agingInterval: 10,000ms   // 10초마다 확인
-agingThreshold: 30,000ms  // 30초 이상 대기 시 Aging
+```javascript
+const AGING_INTERVAL_MS = 5000;  // 5초마다 확인
+const AGING_INCREMENT = 1;       // aging 시 증가할 우선순위
 ```
 
 ### BoostManager (MLFQ Scheduler용)
 
 **역할:** 주기적으로 모든 작업을 최고 우선순위 큐(Q0)로 이동 (Rule 5 구현)
 
-```typescript
-boostInterval: 60,000ms   // 60초마다 Boost
+```javascript
+const BOOST_INTERVAL_MS = 60000;  // 60초마다 Boost
 ```
 
 ### TenantRegistry (WFQ Scheduler용)
 
 **역할:** 멀티테넌트 환경에서 테넌트별 가중치 관리
 
-```typescript
-DEFAULT_WEIGHTS = {
-  ENTERPRISE: 100,  // 엔터프라이즈
-  PREMIUM: 50,      // 프리미엄
-  STANDARD: 10,     // 표준
-  FREE: 1          // 무료
+```javascript
+const DEFAULT_WEIGHTS = {
+  enterprise: 100,  // 엔터프라이즈
+  premium: 50,      // 프리미엄
+  standard: 10,     // 표준
+  free: 1           // 무료
 };
 ```
 
@@ -470,15 +469,15 @@ DEFAULT_WEIGHTS = {
 
 ### 코드 구조
 
-```typescript
-class FCFSScheduler implements IScheduler {
-  async submit(request: LLMRequest): Promise<string> {
-    const job = await this.queue.add('process', request, {
-      jobId: requestId,
-      priority: 0  // 모든 작업 동일 우선순위
-    });
-    return requestId;
+```javascript
+class FCFSScheduler extends BaseScheduler {
+  constructor() {
+    super('FCFS');
   }
+
+  // FCFS는 단순히 배열 끝에 추가, 앞에서 꺼냄
+  enqueue(request) { this.queue.push(request); }
+  dequeue() { return this.queue.shift(); }
 }
 ```
 
@@ -486,19 +485,22 @@ class FCFSScheduler implements IScheduler {
 
 ## 슬라이드 16: Priority Scheduler 구현
 
-### 우선순위 변환
+### 우선순위 상수
 
-```typescript
-private getPriorityValue(priority: RequestPriority): number {
-  return (MAX_PRIORITY - priority) * 2;
-}
+```javascript
+const PRIORITY = {
+  LOW: 1,
+  NORMAL: 2,
+  HIGH: 3,
+  URGENT: 4
+};
 ```
 
-**변환 테이블:**
-- URGENT(3) → 0 (최고)
-- HIGH(2) → 2
-- NORMAL(1) → 4
-- LOW(0) → 6 (최저)
+**우선순위 처리:**
+- URGENT(4) → 가장 먼저 처리
+- HIGH(3) → 두 번째
+- NORMAL(2) → 세 번째
+- LOW(1) → 마지막 처리
 
 ### 시간 복잡도
 
@@ -509,10 +511,10 @@ private getPriorityValue(priority: RequestPriority): number {
 
 ### Aging 로직
 
-```typescript
-// 10초마다 실행
-if (waitTime > 30000) {
-  currentPriority = Math.min(currentPriority + 1, MAX_PRIORITY);
+```javascript
+// 5초마다 실행
+if (waitTime >= 5000 && request.effectivePriority < PRIORITY.URGENT) {
+  request.effectivePriority += 1;
 }
 ```
 
@@ -522,31 +524,26 @@ if (waitTime > 30000) {
 
 ### 4단계 큐 구성
 
-```typescript
-const queues = [
-  { level: 0, quantum: 1000 },  // Q0: 짧은 대화형 요청
-  { level: 1, quantum: 3000 },  // Q1: 중간 길이 요청
-  { level: 2, quantum: 8000 },  // Q2: 긴 요청
-  { level: 3, quantum: Infinity } // Q3: 배치 작업
-];
+```javascript
+const TIME_QUANTA = [1000, 3000, 8000, Infinity];
+// Q0: 1초 - 짧은 대화형 요청
+// Q1: 3초 - 중간 길이 요청
+// Q2: 8초 - 긴 요청
+// Q3: 무제한 - 배치 작업
 ```
 
-### Rule 4 구현 (타임 슬라이스 강제)
+### Rule 4 구현 (타임 슬라이스 초과 시 강등)
 
-```typescript
-const timeoutPromise = new Promise<string>((_, reject) => {
-  setTimeout(() => reject(new Error("Time quantum exceeded")), timeQuantum);
-});
-
-response = await Promise.race([
-  this.llmService.process(prompt, provider),
-  timeoutPromise
-]);
+```javascript
+// 시간 퀀텀 초과 시 다음 큐로 이동
+if (processingTime > TIME_QUANTA[currentLevel]) {
+  request.queueLevel = Math.min(currentLevel + 1, 3);
+}
 ```
 
 ### Rule 5 구현 (Boosting)
 
-```typescript
+```javascript
 // 60초마다 모든 작업을 Q0로 이동
 setInterval(() => {
   this.boostAllJobs();
@@ -559,32 +556,34 @@ setInterval(() => {
 
 ### Virtual Time 계산
 
-```typescript
-virtualFinishTime = virtualStartTime + (serviceTime / weight)
+```javascript
+// 가상 완료 시간 = 현재 시간 + (서비스 시간 / 가중치)
+const virtualFinishTime = this.globalVirtualTime + (serviceTime / weight);
 ```
 
 ### Jain's Fairness Index 계산
 
-```typescript
+```javascript
+// J = (Σxi)² / (n × Σxi²)
+const sum = values.reduce((a, b) => a + b, 0);
+const sumSquared = values.reduce((a, b) => a + b * b, 0);
 const jainsIndex = (sum * sum) / (n * sumSquared);
 ```
 
 ### 테넌트별 가중치 적용
 
-```typescript
-const tenant = await this.tenantRegistry.get(tenantId);
-const weight = tenant.weight;
-const vft = currentTime + (estimatedTime / weight);
+```javascript
+const weight = this.tenants[tenantId]?.weight || DEFAULT_WEIGHTS.free;
+const vft = this.globalVirtualTime + (estimatedTime / weight);
 ```
 
 ### 공정성 모니터링
 
-```typescript
+```javascript
 // 실시간 공정성 지수 계산
 const fairness = this.calculateJainsIndex(perTenantMetrics);
-if (fairness < 0.85) {
-  // 공정성 저하 경고
-}
+console.log('Jain Fairness Index:', fairness);
+// WFQ에서 낮은 JFI는 의도된 차등 서비스를 의미함
 ```
 
 ---
@@ -647,92 +646,85 @@ if (fairness < 0.85) {
 
 ## 슬라이드 21: 종합 성능 비교
 
-### 스케줄링 알고리즘별 성능
+### 스케줄링 알고리즘별 성능 (100개 요청, 실제 실험 결과)
 
-| 알고리즘 | 평균 대기 시간 (ms) | 평균 처리 시간 (ms) | 처리량 (RPS) | P95 지연 (ms) |
+| 알고리즘 | 평균 대기 시간 (ms) | 평균 처리 시간 (ms) | 처리량 (RPS) | 최대 대기 (ms) |
 |---------|---------------------|---------------------|--------------|-------------|
-| **FCFS** | 48.25 | 159.25 | 6.3 | 185.3 |
-| **Priority** | 32.18 | 161.42 | 6.2 | 175.8 |
-| **MLFQ** | **28.45** | **158.90** | **6.4** | **168.2** |
-| **WFQ** | 52.30 | 160.15 | 6.1 | 192.5 |
+| **FCFS** | 2,571.75 | 55.59 | 17.99 | 4,952 |
+| **Priority** | 2,826.41 | 55.59 | 17.09 | 5,243 |
+| **MLFQ** | 2,571.75 | 55.59 | 17.99 | 4,952 |
+| **WFQ** | 2,819.32 | 55.59 | 16.84 | 5,536 |
 
 ### 핵심 발견
 
-- **MLFQ 최고 성능:** 가장 낮은 대기 시간(28.45ms)과 P95 지연(168.2ms)
-- **Priority 우선순위 효과:** URGENT 요청 74.1% 개선
-- **WFQ 공정성 지향:** 공정성을 위해 약간의 대기 시간 희생
+- **MLFQ = FCFS**: 현재 실험 조건에서 모든 요청이 Q0 타임 슬라이스(1초) 내 완료되어 동일 성능
+- **Priority 우선순위 효과**: URGENT 요청 62.3% 개선 (1,122ms vs 2,971ms)
+- **WFQ 차등 서비스 성공**: Enterprise가 Free보다 5.8배 빠른 응답 (849ms vs 4,894ms)
 
 ---
 
-## 슬라이드 22: 부하 수준에 따른 성능 변화
+## 슬라이드 22: WFQ 테넌트별 성능 (차등 서비스)
 
-### Light Load (10 동시 요청)
+### 테넌트 등급별 대기 시간 (실제 실험 결과)
 
-| 알고리즘 | 대기 시간 (ms) | 처리량 (RPS) | CPU (%) | 메모리 (MB) |
-|---------|---------------|--------------|---------|-------------|
-| FCFS | 12.3 | 8.2 | 15 | 45 |
-| Priority | 8.5 | 8.5 | 18 | 52 |
-| MLFQ | **7.2** | **8.7** | 20 | 58 |
-| WFQ | 14.1 | 8.0 | 16 | 48 |
+| 테넌트 등급 | 가중치 | 평균 대기 시간 (ms) | FCFS 대비 | 처리 건수 |
+|------------|--------|---------------------|----------|----------|
+| **Enterprise** | 100 | 849.32 | 66% 개선 | 25건 |
+| **Premium** | 50 | 2,103.04 | 16% 개선 | 25건 |
+| **Standard** | 10 | 3,431.20 | 37% 악화 | 25건 |
+| **Free** | 1 | 4,893.72 | 96% 악화 | 25건 |
 
-### Medium Load (100 동시 요청)
+### WFQ 핵심 인사이트
 
-| 알고리즘 | 대기 시간 (ms) | 처리량 (RPS) | CPU (%) | 메모리 (MB) |
-|---------|---------------|--------------|---------|-------------|
-| FCFS | 48.3 | 6.3 | 65 | 95 |
-| Priority | 32.2 | 6.2 | 68 | 102 |
-| MLFQ | **28.5** | **6.4** | 72 | 115 |
-| WFQ | 52.3 | 6.1 | 66 | 98 |
-
-### Heavy Load (1000 동시 요청)
-
-| 알고리즘 | 대기 시간 (ms) | 처리량 (RPS) | CPU (%) | 메모리 (MB) |
-|---------|---------------|--------------|---------|-------------|
-| FCFS | 485.2 | 6.0 | 95 | 450 |
-| Priority | 321.8 | 5.8 | 98 | 520 |
-| MLFQ | **284.5** | **6.1** | 99 | 580 |
-| WFQ | 523.0 | 5.7 | 96 | 480 |
-
-**→ MLFQ가 모든 부하 수준에서 안정적인 우위**
+- **가중치 비례 서비스**: Enterprise(100)가 Free(1)보다 5.8배 빠른 응답
+- **차등화 성공**: 높은 등급 테넌트에게 의미 있는 서비스 품질 차이 제공
+- **Jain's Fairness Index**: 0.316 (의도된 불균형 - 가중치 비례 분배)
+- **비즈니스 모델 지원**: SaaS 멀티테넌트 환경에서 유료/무료 사용자 차별화 가능
 
 ---
 
 ## 슬라이드 23: Priority Scheduler 우선순위별 성능
 
-### 우선순위별 대기 시간 분석
+### 우선순위별 대기 시간 분석 (실제 실험 결과)
 
-| 우선순위 | 대기 시간 (ms) | FCFS 대비 개선율 (%) | P95 지연 (ms) |
-|---------|---------------|---------------------|-------------|
-| **URGENT (3)** | 12.5 | **74.1↓** | 168.3 |
-| **HIGH (2)** | 24.8 | **48.6↓** | 175.1 |
-| **NORMAL (1)** | 45.2 | 6.3↓ | 189.2 |
-| **LOW (0)** | 52.1 | -8.0↑ | 201.5 |
-| **FCFS 기준** | 48.3 | - | 185.3 |
+| 우선순위 | Priority 대기 (ms) | FCFS 대기 (ms) | 개선율 |
+|---------|-------------------|----------------|--------|
+| **URGENT (4)** | 1,121.75 | 2,971.00 | **62.3% 개선** |
+| **HIGH (3)** | 3,164.47 | 2,735.20 | 15.7% 악화 |
+| **NORMAL (2)** | 2,830.23 | 2,386.05 | 18.6% 악화 |
+| **LOW (1)** | 3,080.91 | 2,648.27 | 16.3% 악화 |
 
 ### 인사이트
 
-- URGENT 요청 대기 시간 74.1% 개선 (12.5ms vs 48.3ms)
-- LOW 우선순위는 약간의 희생 (-8.0%)
-- **실무적 적용:** 긴급 고객 문의, 보안 이슈 즉시 처리 가능
+- **URGENT 요청 62.3% 개선**: 긴급 요청이 1.1초 내 처리 (FCFS 대비 1.8초 단축)
+- **Trade-off 존재**: 긴급 요청 우선 처리를 위해 낮은 우선순위 요청은 지연
+- **실무적 적용**: 긴급 고객 문의, 보안 이슈 즉시 처리에 효과적
+- **Aging 메커니즘**: 낮은 우선순위 요청도 5초마다 우선순위 상승으로 기아 방지
 
 ---
 
-## 슬라이드 24: MLFQ 큐별 작업 분포
+## 슬라이드 24: MLFQ 실험 결과 분석
 
-### 큐별 배분 및 성능
+### 큐 구성
 
-| 큐 | 시간 퀀텀 (ms) | 실제 배분 (%) | 평균 대기 (ms) |
-|----|---------------|--------------|---------------|
-| **Q0** | 1,000 | 38.5% | 8.2 |
-| **Q1** | 3,000 | 36.2% | 22.5 |
-| **Q2** | 8,000 | 19.8% | 45.8 |
-| **Q3** | 무제한 | 5.5% | 95.3 |
+| 큐 | 시간 퀀텀 (ms) | 목표 요청 유형 |
+|----|---------------|---------------|
+| **Q0** | 1,000 | 짧은 대화형 요청 |
+| **Q1** | 3,000 | 중간 길이 요청 |
+| **Q2** | 8,000 | 긴 요청 |
+| **Q3** | 무제한 | 매우 긴 배치 작업 |
 
-### MLFQ 성공 요인
+### 실험 결과 해석
 
-- **Rule 3 효과:** 38.5%가 Q0에서 처리 (짧은 요청 빠른 응답)
-- **Rule 4 효과:** CPU-bound 작업은 Q2, Q3로 강등
-- **Rule 5 효과:** 주기적 Boosting으로 기아 현상 방지
+- **MLFQ = FCFS 동일 성능**: 평균 대기 시간 2,571.75ms로 동일
+- **원인 분석**: 실험에서 모든 요청의 처리 시간이 10-100ms (Q0 타임 퀀텀 1초 미만)
+- **결과**: 모든 요청이 Q0에서 완료되어 큐 강등 발생 안 함
+
+### 향후 연구 방향
+
+- **장기 작업 포함 실험**: 1초 이상 처리 시간 요청 추가하여 MLFQ 효과 검증
+- **Boost 효과 검증**: 60초 이상 실험으로 Boost 메커니즘 테스트
+- **실제 LLM 환경**: Ollama 연동하여 실제 LLM 처리 시간 기반 실험
 
 ---
 
@@ -740,19 +732,19 @@ if (fairness < 0.85) {
 
 ### 테넌트별 공정성 지표
 
-| 티어 | 가중치 | 처리 시간 (ms) | 공정성 지수 (JFI) |
-|-----|--------|--------------|------------------|
-| **Enterprise** | 100 | 95.2 | 0.98 |
-| **Premium** | 50 | 98.1 | 0.96 |
-| **Standard** | 10 | 102.4 | 0.94 |
-| **Free** | 1 | 158.7 | 0.92 |
-| **전체** | - | 113.6 | 0.89 |
+| 티어 | 가중치 | 대기 시간 (ms) | 정규화 처리량 |
+|-----|--------|---------------|--------------|
+| **Enterprise** | 100 | 849.32 | 0.25 |
+| **Premium** | 50 | 2,103.04 | 0.50 |
+| **Standard** | 10 | 3,431.20 | 2.50 |
+| **Free** | 1 | 4,893.72 | 25.00 |
 
 ### 공정성 해석
 
-- **개별 테넌트:** 0.92-0.98 (매우 높은 공정성)
-- **전체 시스템:** 0.89 (티어 간 가중치 차이 반영)
-- **실무적 의미:** SaaS 멀티테넌트 서비스서 유료/무료 사용자 간 공정한 자원 분배 보장
+- **Jain's Fairness Index**: 0.316 (의도된 불균형)
+- **해석**: 낮은 JFI는 가중치에 따른 차등 서비스가 성공적으로 적용됨을 의미
+- **실무적 의미**: SaaS 멀티테넌트 서비스에서 유료/무료 사용자 간 명확한 서비스 차별화 달성
+- **Enterprise 우위**: Free 대비 5.8배 빠른 응답 시간
 
 ---
 
@@ -763,26 +755,25 @@ if (fairness < 0.85) {
 ### 핵심 성과
 
 ```
-MLFQ: 대기 시간 40% 개선 (28.45ms vs 48.25ms)
-MLFQ: 처리량 20% 증가 (6.4 RPS vs 6.3 RPS)
-Priority: URGENT 요청 대기 시간 74.1% 개선
-WFQ: 개별 테넌트 공정성 0.92-0.98
+Priority: URGENT 요청 대기 시간 62.3% 개선 (1,122ms vs 2,971ms)
+WFQ: Enterprise가 Free보다 5.8배 빠른 응답 (849ms vs 4,894ms)
+MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 필요)
 전체 시스템: 67개 테스트 100% 통과
-코드 커버리지: 98.65%
+코드 커버리지: 98.65% (Statements), 85.43% (Branches)
 ```
 
 ### 학술적 기여
 
-1. OS 이론의 AI 시스템 응용 실증
-2. MLFQ 5가지 규칙의 LLM 환경 재해석
-3. WFQ Virtual Time의 멀티테넌트 적용
-4. 정량적 성능 비교 데이터 제공
+1. OS 스케줄링 이론의 LLM API 환경 적용 실증
+2. 4가지 알고리즘의 정량적 성능 비교 데이터 제공
+3. WFQ Virtual Time의 멀티테넌트 환경 적용
+4. 학부생 수준에서 구현 가능한 교육용 레퍼런스 제공
 
 ### 실용적 기여
 
-1. 런타임 알고리즘 교체 가능 구조
-2. Aging, Boosting 기아 방지 메커니즘
-3. SaaS 멀티테넌트 지원
+1. 런타임 알고리즘 교체 가능한 모듈화 설계
+2. Aging, Boosting 기아 방지 메커니즘 구현
+3. SaaS 멀티테넌트 환경 지원
 4. MIT 라이선스 오픈 소스
 
 ---
@@ -793,8 +784,9 @@ WFQ: 개별 테넌트 공정성 0.92-0.98
 
 1. **시스템 시작**
    ```bash
-   docker-compose up
-   npm run start:mlfq
+   cd 02-implementation
+   npm install
+   npm start
    ```
 
 2. **요청 제출 (REST API)**
@@ -836,7 +828,7 @@ WFQ: 개별 테넌트 공정성 0.92-0.98
 
 **A:** 현재 단일 서버 환경서 구현되었습니다.
 - 메모리 배열 기반으로 단순하게 구현
-- 분산 환경 확장 시 Redis/BullMQ 도입 가능
+- 분산 환경 확장은 향후 연구 과제
 - 향후 연구서 분산 환경 검증 계획
 
 ### Q3: 동적 알고리즘 선택 메커니즘이 있나?

@@ -211,17 +211,17 @@ class FCFSScheduler {
 
 | 우선순위 | 레벨 | 설명 |
 |----------|------|------|
-| URGENT | 3 | 즉시 처리 필요 |
-| HIGH | 2 | 중요한 요청 |
-| NORMAL | 1 | 일반 요청 |
-| LOW | 0 | 낮은 우선순위 |
+| URGENT | 4 | 즉시 처리 필요 |
+| HIGH | 3 | 중요한 요청 |
+| NORMAL | 2 | 일반 요청 |
+| LOW | 1 | 낮은 우선순위 |
 
 **Aging 메커니즘**: 오래 대기한 요청의 우선순위를 점진적으로 높여 기아(Starvation) 방지
 
 ```javascript
-// 2분 이상 대기 시 우선순위 1단계 상승
-if (waitTime > 120000 && request.priority < 3) {
-  request.priority += 1;
+// 5초 이상 대기 시 우선순위 1단계 상승 (최대 URGENT까지)
+if (waitTime >= 5000 && request.effectivePriority < 4) {
+  request.effectivePriority += 1;
 }
 ```
 

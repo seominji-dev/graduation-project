@@ -95,47 +95,53 @@
 
 ### 3.1 WFQ 스케줄러 핵심 로직
 
-```typescript
+```javascript
 // WFQ의 핵심: Virtual Time 기반 공정 분배
-class WFQScheduler {
-  private virtualTime = 0;
-  private tenantRegistry: TenantRegistry;
-
-  // 요청 처리 순서 결정
-  selectNext(): Request {
-    // Virtual Finish Time이 가장 작은 요청 선택
-    // → 가중치가 높을수록 Finish Time이 작아져 먼저 처리됨
-    // → 단, 완전히 독점하지 않고 비율에 따라 분배
-    return this.queue.min(req => req.virtualFinishTime);
+class WFQScheduler extends BaseScheduler {
+  constructor() {
+    super('WFQ');
+    this.globalVirtualTime = 0;
+    this.tenants = {};
   }
 
   // Virtual Finish Time 계산
-  calculateVFT(request: Request, tenant: Tenant): number {
-    const weight = tenant.weight; // Enterprise: 10, Free: 1
+  calculateVFT(request) {
+    const weight = this.tenants[request.tenantId]?.weight || 1;
     const serviceTime = this.estimateServiceTime(request);
-
     // 가중치가 클수록 작은 증가량
-    return this.virtualTime + (serviceTime / weight);
+    return this.globalVirtualTime + (serviceTime / weight);
+  }
+
+  // 가장 작은 Virtual Finish Time을 가진 요청 선택
+  dequeue() {
+    if (this.isEmpty()) return null;
+    let minIdx = 0;
+    for (let i = 1; i < this.queue.length; i++) {
+      if (this.queue[i].virtualFinishTime < this.queue[minIdx].virtualFinishTime) {
+        minIdx = i;
+      }
+    }
+    return this.queue.splice(minIdx, 1)[0];
   }
 }
 ```
 
 ### 3.2 공정성 측정: Jain's Fairness Index
 
-```typescript
+```javascript
 // Jain's Fairness Index 계산
 // J = (Σxi)² / (n × Σxi²)
 // 범위: 1/n ~ 1.0 (1.0 = 완벽한 공정)
 
-class FairnessCalculator {
-  calculate(tenantShares: Map<string, number>): number {
-    const shares = Array.from(tenantShares.values());
-    const n = shares.length;
-    const sum = shares.reduce((a, b) => a + b, 0);
-    const sumSquared = shares.reduce((a, b) => a + b * b, 0);
+function calculateJainsIndex(tenantShares) {
+  const shares = Object.values(tenantShares);
+  const n = shares.length;
+  if (n === 0) return 1;
 
-    return (sum * sum) / (n * sumSquared);
-  }
+  const sum = shares.reduce((a, b) => a + b, 0);
+  const sumSquared = shares.reduce((a, b) => a + b * b, 0);
+
+  return (sum * sum) / (n * sumSquared);
 }
 ```
 
@@ -149,7 +155,7 @@ class FairnessCalculator {
 |------|------|------|------|
 | Jain's Fairness Index | 0.90+ | 0.92-0.98 | 목표 초과 달성 |
 | 기아 발생 | 0건 | 0건 | 완전 방지 |
-| 테스트 커버리지 | 85%+ | 98.72% | 목표 초과 |
+| 테스트 커버리지 (Statements) | 85%+ | 98.65% | 목표 초과 |
 
 ### 4.2 멀티테넌트 시나리오 결과
 
