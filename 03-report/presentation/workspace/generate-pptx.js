@@ -1410,7 +1410,7 @@ slide18.addText("테스트 현황", {
 	color: colors.success,
 	bold: true,
 });
-slide18.addText("총 테스트: 67개\n통과율: 100%\n실행 시간: 0.234초", {
+slide18.addText("총 테스트: 69개\n통과율: 100%\n실행 시간: 0.234초", {
 	x: 0.7,
 	y: 1.5,
 	w: 4,
@@ -1469,7 +1469,7 @@ slide18.addText("코드 품질 요약", {
 	bold: true,
 });
 const qualityItems = [
-	{ name: "테스트", desc: "67개 작성", color: colors.success },
+	{ name: "테스트", desc: "69개 작성", color: colors.success },
 	{ name: "커버리지", desc: "98.65%", color: colors.accent },
 	{ name: "코드 스타일", desc: "ESLint", color: colors.purple },
 	{ name: "JSDoc", desc: "타입 주석", color: colors.warning },
@@ -1812,7 +1812,7 @@ const achievements = [
 	"OS 스케줄링 알고리즘의 LLM 환경 성공적 적용",
 	"4가지 알고리즘 완벽 구현 (FCFS, Priority, MLFQ, WFQ)",
 	"기아 방지 (Aging, Boost) 및 공정성 보장 (WFQ)",
-	"67개 테스트 100% 통과, 98.65% 커버리지",
+	"69개 테스트 100% 통과, 98.65% 커버리지",
 ];
 achievements.forEach((a, i) => {
 	slide23.addText(`✓ ${a}`, {

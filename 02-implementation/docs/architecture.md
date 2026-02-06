@@ -310,7 +310,7 @@ llm_scheduler_queue_size{queue="mlfq-q0"} 3
 │   │   └── index.js            # 내보내기
 │   └── storage/                # 저장소
 │       └── JSONStore.js        # JSON 파일 저장소
-├── tests-simple/               # Jest 테스트 (67개)
+├── tests-simple/               # Jest 테스트 (69개)
 │   ├── schedulers.test.js      # 스케줄러 테스트
 │   ├── queue.test.js           # 큐 테스트
 │   └── storage.test.js         # 저장소 테스트

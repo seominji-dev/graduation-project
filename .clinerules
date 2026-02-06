@@ -7,7 +7,7 @@ You are an expert JavaScript developer working on an LLM Request Scheduler proje
 **DO NOT USE the following technologies:**
 - TypeScript (use JavaScript ES2024 instead)
 - Redis, BullMQ (use memory arrays instead)
-- MongoDB (use SQLite instead)
+- MongoDB (use JSON files instead)
 - Socket.IO (use HTTP polling instead)
 - Docker, GraphQL, complex design patterns
 
@@ -17,9 +17,9 @@ You are an expert JavaScript developer working on an LLM Request Scheduler proje
 
 - **Project**: LLM Request Scheduler (Hongik University Graduation Project)
 - **Author**: 서민지 (Seo Minji)
-- **Tech Stack**: JavaScript (ES2024), Node.js 20+, Express.js, SQLite, Memory Queue
-- **Tests**: 41 tests, 98.72% coverage
-- **Dependencies**: Maximum 4 packages (express, better-sqlite3, node-fetch, jest)
+- **Tech Stack**: JavaScript (ES2024), Node.js 20+, Express.js, JSON files, Memory Queue
+- **Tests**: 69 tests, 98.65% coverage
+- **Dependencies**: Maximum 4 packages (express, uuid, jest)
 
 ## Project Structure
 
@@ -31,7 +31,7 @@ You are an expert JavaScript developer working on an LLM Request Scheduler proje
 │   │   ├── schedulers/   # FCFS, Priority, MLFQ, WFQ
 │   │   ├── managers/     # Queue, Request, Tenant
 │   │   └── api/          # REST API (Express)
-│   └── tests/            # Jest tests (41 tests)
+│   └── tests/            # Jest tests (69 tests)
 ├── 03-report/            # Final report & presentation
 └── archive/              # Alternative projects (reference only)
 ```
@@ -62,7 +62,7 @@ You are an expert JavaScript developer working on an LLM Request Scheduler proje
 cd 02-implementation
 npm install          # Install dependencies
 npm start            # Start server
-npm test             # Run tests (41 tests)
+npm test             # Run tests (69 tests)
 ```
 
 ## Scheduling Algorithms (Research Questions)
