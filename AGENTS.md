@@ -55,6 +55,7 @@ Ollama (로컬 LLM)
 │   └── phase3-feedback.md    # 실험 결과 피드백
 │
 ├── 02-implementation/        # 2단계: 핵심 구현
+│   ├── prototype/            # 사전 타당성 검증 프로토타입 (FCFS, Priority)
 │   ├── src/                  # JavaScript 소스 코드
 │   │   ├── schedulers/       # 스케줄링 알고리즘 (4개)
 │   │   ├── managers/         # 관리 컴포넌트
@@ -75,6 +76,7 @@ cd 02-implementation
 npm install          # 의존성 설치
 npm start            # 서버 실행
 npm test             # 테스트 실행 (69개, 100% 통과)
+npm run prototype    # 사전 프로토타입 실행 (FCFS vs Priority)
 ```
 
 ## 연구 질문 (정량적 목표가 아님!)

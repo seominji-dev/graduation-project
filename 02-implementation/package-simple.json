@@ -11,7 +11,8 @@
     "start:wfq": "SCHEDULER_TYPE=WFQ node src-simple/index.js",
     "test": "jest --config jest-simple.config.js",
     "test:coverage": "jest --config jest-simple.config.js --coverage",
-    "experiment": "node experiments-simple/run-experiments.js"
+    "experiment": "node experiments-simple/run-experiments.js",
+    "prototype": "node prototype/run-test.js"
   },
   "keywords": [
     "llm",
