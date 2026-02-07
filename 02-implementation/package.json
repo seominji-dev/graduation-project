@@ -13,7 +13,8 @@
     "test:coverage": "jest --config jest-simple.config.js --coverage",
     "experiment": "node experiments-simple/run-experiments.js",
     "experiment:full": "node experiments-simple/run-comprehensive-experiments.js",
-    "experiment:all": "npm run experiment:full"
+    "experiment:concurrent": "node experiments-simple/mlfq-concurrent-competition-experiment.js",
+    "experiment:all": "npm run experiment:full && npm run experiment:concurrent"
   },
   "keywords": [
     "llm",

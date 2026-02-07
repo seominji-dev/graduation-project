@@ -30,7 +30,9 @@ npm run test:coverage
 
 # 실험 실행
 npm run experiment
-npm run experiment:full  # 종합 실험
+npm run experiment:full     # 종합 실험
+npm run experiment:concurrent  # MLFQ 동시 요청 경쟁 실험 (NEW)
+npm run experiment:all       # 모든 실험 실행
 ```
 
 ---
@@ -53,7 +55,7 @@ npm run experiment:full  # 종합 실험
 
 ```
 02-implementation/
-├── src-simple/                 # 메인 소스코드 (약 1,327줄)
+├── src-simple/                 # 메인 소스코드 (약 1,500줄)
 │   ├── index.js               # 진입점
 │   ├── server.js              # Express 서버
 │   ├── api/
@@ -71,15 +73,20 @@ npm run experiment:full  # 종합 실험
 │   │   └── JSONStore.js       # JSON 파일 저장소
 │   └── llm/
 │       └── OllamaClient.js    # Ollama 연동
-├── tests-simple/              # 테스트 (69개, 98.65% 커버리지)
+├── tests-simple/              # 테스트 (137개, 98.88% 커버리지)
 │   ├── schedulers.test.js
 │   ├── queue.test.js
-│   └── storage.test.js
+│   ├── storage.test.js
+│   ├── mlfq-preemptive-behavior.test.js  # MLFQ 선점형 기능 테스트
+│   ├── mlfq-preemptive-characterization.test.js  # MLFQ 비선점형 특성 테스트
+│   └── mlfq-concurrent-experiment.test.js  # 동시 요청 경쟁 실험 테스트 (NEW)
 ├── experiments-simple/        # 실험 스크립트 및 결과
-│   ├── run-experiments.js           # 기본 실험
-│   ├── run-comprehensive-experiments.js  # 종합 실험
-│   ├── experiment-results.json       # 기본 결과
-│   └── comprehensive-results.json  # 종합 결과
+│   ├── run-experiments.js              # 기본 실험
+│   ├── run-comprehensive-experiments.js # 종합 실험
+│   ├── mlfq-concurrent-competition-experiment.js # 동시 요청 경쟁 실험 (NEW)
+│   ├── experiment-results.json         # 기본 결과
+│   ├── comprehensive-results.json    # 종합 결과
+│   └── mlfq-concurrent-results.json  # 동시 요청 결과 (NEW)
 ├── docs/                       # 문서
 │   ├── api-documentation.md    # API 문서
 │   ├── architecture.md         # 아키텍처 문서
@@ -133,9 +140,11 @@ npm run experiment:full  # 종합 실험
 - 기아(Starvation) 방지
 
 ### 3. MLFQ (다단계 피드백 큐)
-- 4개 큐: Q0(1초), Q1(3초), Q2(8초), Q3(무제한)
-- Boosting: 주기적으로 모든 요청을 Q0로 이동
+- 4개 큐: Q0(500ms), Q1(1500ms), Q2(4000ms), Q3(무제한)
+- 선점형(Preemptive): 타임 슬라이스(500ms) 단위로 처리, 중간에 선점 가능
+- Boosting: 주기적으로 모든 요청을 Q0로 이동 (기아 방지)
 - 대화형/배치 작업 혼합 환경에 적합
+- **동시 요청 경쟁 환경에서 짧은 요청 최대 81% 개선** (신규 실험)
 
 ### 4. WFQ (가중치 공정 큐)
 - 테넌트 등급별 가중치: Enterprise(100), Premium(50), Standard(10), Free(1)
@@ -147,12 +156,12 @@ npm run experiment:full  # 종합 실험
 ## 테스트 현황
 
 ```
-Test Suites: 3 passed, 3 total
-Tests:       69 passed, 69 total
-Coverage:     98.65% statements, 86.4% branches, 95.94% functions
+Test Suites: 6 passed, 6 total
+Tests:       137 passed, 137 total
+Coverage:     98.88% statements, 88.8% branches, 96.25% functions, 98.81% lines
 ```
 
-**품질 목표 달성**: 85%+ 커버리지 ✅ (98.65%)
+**품질 목표 달성**: 85%+ 커버리지 ✅ (98.88%)
 
 ---
 
@@ -172,8 +181,23 @@ Coverage:     98.65% statements, 86.4% branches, 95.94% functions
 | 연구 질문 | 결과 |
 |---------|------|
 | **RQ1** Priority: URGENT 요청 우선 처리? | ✅ FCFS 대비 62% 빠름 (1,122ms vs 2,971ms) |
-| **RQ2** MLFQ: 혼합 워크로드 적응성? | ✅ 다양한 워크로드 환경에서 성능 데이터 확보 |
+| **RQ2** MLFQ: 혼합 워크로드 적응성? | ✅ 동시 요청 경쟁 환경에서 Short 요청 81% 개선 |
 | **RQ3** WFQ: 가중치 기반 차등화? | ✅ Enterprise가 Free 대비 5.8배 빠름 (849ms vs 4,894ms) |
+
+### MLFQ 동시 요청 경쟁 실험 결과 (신규)
+
+동시 요청이 버스트 단위로 도착하는 경쟁 환경에서 MLFQ의 선점형 특성을 검증:
+
+| 카테고리 | FCFS 평균 대기(ms) | MLFQ 평균 대기(ms) | 개선율 |
+|---------|-------------------|-------------------|--------|
+| Short | 79,627 | 15,018 | **81.14%** |
+| Medium | 86,319 | 86,711 | -0.45% |
+| Long | 78,327 | 156,803 | -100% |
+| **전체** | **81,684** | **71,303** | **12.71%** |
+
+- **선점 이벤트**: 294회 (큐 강급 작동)
+- **부스팅 이벤트**: 34회
+- **큐 분포**: 96개 요청이 Q0에서 완료 (짧은 요청 우선 처리)
 
 상세 결과: `docs/EXPERIMENTS.md`, `experiments-simple/comprehensive-results.json`
 
@@ -189,6 +213,7 @@ npm run experiment:all
 
 # 2. 결과 확인
 cat experiments-simple/comprehensive-results.json
+cat experiments-simple/mlfq-concurrent-results.json
 ```
 
 ### 개별 실험 재현
@@ -199,6 +224,9 @@ npm run experiment
 
 # 종합 실험만
 npm run experiment:full
+
+# MLFQ 동시 요청 경쟁 실험만
+npm run experiment:concurrent
 ```
 
 ---
