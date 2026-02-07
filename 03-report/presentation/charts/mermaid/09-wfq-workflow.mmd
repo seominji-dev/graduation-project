@@ -1,0 +1,20 @@
+flowchart TD
+    Start([새 요청 도착]) --> Identify[테넌트 ID 식별]
+    Identify --> GetWeight[가중치 조회]
+    GetWeight --> CalcVFT[Virtual Finish Time 계산]
+
+    CalcVFT --> Formula["VFT = max(VT, PVT) + (service_time / weight)"]
+
+    Formula --> Insert[우선순위 큐에 삽입]
+    Insert --> CheckEmpty{큐가 비어있나?}
+
+    CheckEmpty -->|Yes| Process[요청 처리 시작]
+    CheckEmpty -->|No| Wait[대기]
+
+    Process --> UpdateVT[Virtual Time 업데이트]
+    UpdateVT --> Complete([처리 완료])
+
+    Wait --> CheckEmpty
+
+    style Formula fill:#E3F2FD,stroke:#2196F3,stroke-width:2px
+    style Complete fill:#4CAF50,color:#fff

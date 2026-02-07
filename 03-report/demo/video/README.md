@@ -4,156 +4,132 @@
 
 **프로젝트:** OS 스케줄링 알고리즘을 활용한 LLM API 요청 최적화 스케줄러
 
-## 비디오 구성 (3분 15초)
+## 빠른 시작
 
-| Scene | 시간 | 프레임 | 내용 |
-|-------|------|--------|------|
-| TitleScene | 0:00 - 0:15 | 0 - 450 | 프로젝트 타이틀, 학교 정보 |
-| ProblemScene | 0:15 - 0:45 | 450 - 1350 | LLM API 요청의 3가지 문제 |
-| SolutionScene | 0:45 - 1:30 | 1350 - 2700 | 4가지 스케줄링 알고리즘 소개 |
-| DemoScene | 1:30 - 2:30 | 2700 - 4500 | 실제 API 동작 데모 |
-| ResultsScene | 2:30 - 3:00 | 4500 - 5400 | 테스트 결과 및 성과 |
-| EndingScene | 3:00 - 3:15 | 5400 - 5850 | 마무리 및 감사 인사 |
-
-## 기술 스택
-
-- **Remotion 4.0**: React 기반 비디오 제작 프레임워크
-- **React 18.2**: UI 컴포넌트
-- **TypeScript 5.9**: 타입 안전성
-
-## 설치 방법
+### 1. 데모 실행 (테스트)
 
 ```bash
-# 1. 디렉토리 이동
 cd 03-report/demo/video
+./run-demo.sh
+```
 
-# 2. 의존성 설치
+### 2. 데모 녹화 (Asciinema)
+
+```bash
+# 1. Asciinema 설치
+brew install asciinema
+
+# 2. 녹화 시작
+asciinema rec demo-screencast.cast
+
+# 3. 데모 실행 (다른 터미널)
+./run-demo.sh
+
+# 4. 녹화 종료 (Ctrl+D)
+```
+
+### 3. MP4로 변환
+
+```bash
+# 변환 도구 설치
+npm install -g asciinema-convert
+
+# 변환
+asciinema-convert demo-screencast.cast demo-screencast.mp4
+```
+
+## 데모 시나리오
+
+| 시나리오 | 시간 | 내용 |
+|---------|------|------|
+| 시나리오 1 | 1분 | 시스템 시작 및 Health Check |
+| 시나리오 2 | 1.5분 | FCFS 스케줄러 - 선착순 처리 |
+| 시나리오 3 | 1.5분 | Priority 스케줄러 - 우선순위 처리 |
+| 시나리오 4 | 1.5분 | MLFQ 스케줄러 - 다단계 큐 |
+| 시나리오 5 | 2분 | WFQ 스케줄러 - 멀티테넌트 공정성 (핵심) |
+| 시나리오 6 | 1분 | 통계 및 성능 요약 |
+
+## 사전 요구사항
+
+```bash
+# Homebrew 확인
+brew --version
+
+# Node.js 확인 (v22.0.0 이상)
+node --version
+
+# Ollama 확인 및 모델 다운로드
+ollama list
+ollama pull llama3.2
+
+# jq 확인 (선택사항, JSON 포맷팅용)
+brew install jq
+```
+
+## 파일 구조
+
+```
+video/
+├── README.md              # 이 파일
+├── RECORDING-GUIDE.md     # 상세 녹화 가이드
+├── run-demo.sh            # 데모 실행 스크립트
+├── test-scheduler.sh      # 간단한 테스트 스크립트
+├── src/                   # Remotion 비디오 소스
+├── out/                   # 렌더링된 비디오
+└── screenshots/           # 데모 스크린샷
+```
+
+## Remotion 비디오 (애니메이션)
+
+Remotion을 사용하여 프레젠테이션 비디오를 제작할 수도 있습니다.
+
+```bash
+# 의존성 설치
 npm install
 
-# 3. Remotion 스튜디오 실행 (미리보기)
+# 스튜디오 실행 (미리보기)
 npm run studio
-```
 
-## 사용 방법
-
-### 미리보기 (개발 모드)
-
-```bash
-npm run studio
-```
-
-브라우저에서 `http://localhost:3000`으로 접속하여 실시간 미리보기 가능
-
-### 비디오 렌더링
-
-```bash
-# MP4 출력 (기본)
+# 비디오 렌더링
 npm run build
 
 # 출력 파일: out/demo.mp4
 ```
 
-### GIF 렌더링 (선택)
-
-```bash
-npm run build:gif
-
-# 출력 파일: out/demo.gif
-```
-
-## 프로젝트 구조
-
-```
-video/
-├── package.json          # 프로젝트 설정 및 의존성
-├── tsconfig.json         # TypeScript 설정
-├── remotion.config.ts    # Remotion 설정
-├── README.md             # 이 파일
-└── src/
-    ├── index.ts          # 진입점
-    ├── Root.tsx          # 메인 컴포지션
-    ├── compositions/     # Scene 컴포넌트
-    │   ├── TitleScene.tsx
-    │   ├── ProblemScene.tsx
-    │   ├── SolutionScene.tsx
-    │   ├── DemoScene.tsx
-    │   ├── ResultsScene.tsx
-    │   └── EndingScene.tsx
-    ├── components/       # 재사용 컴포넌트
-    │   ├── Terminal.tsx
-    │   ├── CodeBlock.tsx
-    │   ├── SchedulerDiagram.tsx
-    │   └── ProgressBar.tsx
-    └── styles/
-        └── global.css    # 글로벌 스타일
-```
-
-## 주요 기능
-
-### 스케줄러 종류
-
-1. **FCFS (First Come First Served)**: 도착 순서대로 처리
-2. **Priority Scheduling**: VIP 우선 처리 및 에이징
-3. **MLFQ (Multi-Level Feedback Queue)**: 적응형 다단계 큐
-4. **WFQ (Weighted Fair Queuing)**: 가중치 기반 공정 분배
-
-### 프로젝트 성과
-
-- 69개 테스트, 100% 통과
-- 98.65% 코드 커버리지
-
-## 커스터마이징
-
-### Scene 수정
-
-각 Scene 파일(`src/compositions/*.tsx`)을 수정하여 내용 변경 가능
-
-### 색상 변경
-
-`src/styles/global.css`의 CSS 변수 수정:
-
-```css
-:root {
-  --color-primary: #6366f1;
-  --color-secondary: #22d3ee;
-  /* ... */
-}
-```
-
-### 비디오 설정 변경
-
-`src/Root.tsx`에서 FPS, 해상도 등 수정:
-
-```typescript
-const FPS = 30;
-const WIDTH = 1920;
-const HEIGHT = 1080;
-```
-
 ## 문제 해결
 
-### npm install 실패 시
+### 포트 충돌
 
 ```bash
-# Node.js 18+ 필요
-node --version
+# 포트 3000 사용 중인 프로세스 확인
+lsof -i :3000
 
-# 캐시 삭제 후 재설치
-rm -rf node_modules package-lock.json
-npm install
+# 프로세스 종료
+kill -9 <PID>
 ```
 
-### 렌더링 오류 시
+### Ollama 연결 실패
 
 ```bash
-# Remotion 버전 업그레이드
-npm run upgrade
+# Ollama 재시작
+killall ollama
+ollama serve
 ```
 
-## 라이선스
+### 서버 시작 실패
 
-홍익대학교 C235180 서민지 졸업프로젝트 2026
+```bash
+# 로그 확인
+cat /tmp/api-server-*.log
+```
+
+## 상세 가이드
+
+- [녹화 가이드](RECORDING-GUIDE.md) - 상세 녹화 방법
+- [데모 스크립트](../demo-script.md) - 발표용 스크립트
+- [데모 가이드](../demo-guide.md) - 상세 데모 설명
 
 ---
 
-제작: MoAI-ADK (Multi-domain Orchestrated AI Agentic Development Kit)
+**작성일:** 2026-02-07
+**버전:** 1.0.0

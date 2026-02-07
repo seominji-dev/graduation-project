@@ -1,0 +1,37 @@
+flowchart TB
+    subgraph Request["요청 수신 계층"]
+        E[Enterprise<br/>w=100]
+        P[Premium<br/>w=50]
+        S[Standard<br/>w=10]
+        F[Free<br/>w=1]
+    end
+
+    subgraph Scheduler["공정 스케줄러 엔진"]
+        FC[FCFS<br/>기준선]
+        PR[Priority<br/>+Aging]
+        ML[MLFQ<br/>+Boosting]
+        WF[WFQ<br/>공정분배]
+    end
+
+    subgraph Management["공정성 관리자"]
+        TR[TenantRegistry]
+        VT[VirtualTimeTracker]
+        FC[ FairnessCalculator]
+    end
+
+    subgraph Storage["저장소 계층"]
+        MQ[메모리 큐]
+        DB[SQLite 로그]
+        LL[LLM Service]
+    end
+
+    E & P & S & F --> Scheduler
+    Scheduler --> Management
+    Management --> Storage
+
+    style WF fill:#4CAF50,color:#fff
+    style FC fill:#2196F3,color:#fff
+    style E fill:#FF9800
+    style P fill:#2196F3
+    style S fill:#9C27B0
+    style F fill:#9E9E9E

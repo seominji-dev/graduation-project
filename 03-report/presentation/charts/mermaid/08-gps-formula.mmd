@@ -1,0 +1,18 @@
+flowchart LR
+    A[GPS 수식] --> B["Si(t1,t2) = (wi / Σwj) × (t2 - t1)"]
+
+    B --> C[Si: 테넌트 i의 서비스 시간]
+    B --> D[wi: 테넌트 i의 가중치]
+    B --> E[Σwj: 전체 가중치 합]
+    B --> F[t2-t1: 시간 구간]
+
+    G[예시: 10초 동안] --> H[Enterprise: 6.21초 62.1%]
+    G --> I[Premium: 3.11초 31.1%]
+    G --> J[Standard: 0.62초 6.2%]
+    G --> K[Free: 0.06초 0.6%]
+
+    style B fill:#E3F2FD
+    style H fill:#FF9800
+    style I fill:#2196F3
+    style J fill:#9C27B0
+    style K fill:#9E9E9E

@@ -1,0 +1,10 @@
+graph LR
+    subgraph Compare[알고리즘 특성 비교]
+        direction TB
+        A1[FCFS<br/>⏱ 공정성: 없음<br/>🛡️ 기아방지: 자동<br/>👥 테넌트: 미지원]
+        A2[Priority<br/>⏱ 공정성: 없음<br/>🛡️ 기아방지: Aging 필요<br/>👥 테넌트: 미지원]
+        A3[MLFQ<br/>⏱ 공정성: 부분<br/>🛡️ 기아방지: Boosting<br/>👥 테넌트: 미지원]
+        A4[WFQ<br/>⏱ 공정성: 가중치 기반<br/>🛡️ 기아방지: 자동 보장<br/>👥 테넌트: 핵심 기능]
+    end
+
+    style A4 fill:#4CAF50,color:#fff,stroke:#1B5E20,stroke-width:3px
