@@ -16,7 +16,7 @@
 
 | 항목 | 요구사항 |
 |------|----------|
-| **Node.js** | v20.10.0 LTS 이상 |
+| **Node.js** | v22.0.0 LTS 이상 |
 | **Ollama** | Llama 3.2 모델 다운로드 (포트 11434) |
 | **Terminal** | 2개 창 (API, Ollama) |
 | **Browser** | Chrome/Firefox (API 테스트용) |
@@ -25,7 +25,7 @@
 
 ```bash
 # Node.js 버전 확인
-node --version  # v20.10.0 이상
+node --version  # v22.0.0 이상
 
 # Ollama 실행 확인
 ollama list  # llama3.2 모델 확인

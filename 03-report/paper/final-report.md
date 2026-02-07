@@ -46,7 +46,7 @@
 본 연구는 다음과 같은 범위로 진행되었다:
 
 - **구현 범위**: 4가지 스케줄링 알고리즘 (FCFS, Priority, MLFQ, WFQ)
-- **기술 스택**: JavaScript (ES2024), Node.js 20 LTS, Express.js 4.18, 메모리 배열, JSON 파일 저장소
+- **기술 스택**: JavaScript (ES2024), Node.js 22 LTS, Express.js 4.18, 메모리 배열, JSON 파일 저장소
 - **LLM 통합**: Ollama (로컬), OpenAI API (클라우드)
 - **테스트 환경**: 단위 테스트 69개, 98.65% 코드 커버리지
 
@@ -159,7 +159,7 @@ J = (sum of xi)^2 / (n * sum of xi^2)
 
 | 분류 | 기술 | 버전 | 용도 |
 |------|------|------|------|
-| 런타임 | Node.js | 20 LTS | 서버 실행 환경 |
+| 런타임 | Node.js | 22 LTS | 서버 실행 환경 |
 | 언어 | JavaScript | ES2024 | 학부생 수준 코드 |
 | 웹 프레임워크 | Express.js | 4.18 | REST API 서버 |
 | 큐 시스템 | 메모리 배열 | - | 인메모리 작업 큐 |
@@ -274,7 +274,7 @@ Jain's Fairness Index를 계산하여 공정성을 정량적으로 측정하고 
 - Storage: SSD
 
 **소프트웨어 환경**:
-- Node.js 20 LTS
+- Node.js 22 LTS
 - JavaScript ES2024
 - Jest 29.7
 

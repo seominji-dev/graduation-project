@@ -332,7 +332,7 @@ J → 1/n: 최악의 불공정
 
 | 분야 | 기술 | 버전 | 용도 |
 |------|------|------|------|
-| **런타임** | Node.js | 20 LTS | JavaScript 실행 환경 |
+| **런타임** | Node.js | 22 LTS | JavaScript 실행 환경 |
 | **프로그래밍 언어** | JavaScript | ES2024 | 학부생 수준 코드 |
 | **웹 프레임워크** | Express.js | 4.18 | REST API |
 | **큐 시스템** | Memory Array | - | 인메모리 작업 큐 |
@@ -636,7 +636,7 @@ console.log('Jain Fairness Index:', fairness);
 | 구성 요소 | 버전 |
 |----------|------|
 | **OS** | macOS 14.5 Sonoma |
-| **Node.js** | v20.10.0 LTS |
+| **Node.js** | v22.0.0 LTS |
 | **Language** | JavaScript ES2024 |
 | **Queue** | Memory Array |
 | **Storage** | JSON File |

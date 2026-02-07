@@ -168,7 +168,7 @@ Virtual Time 개념을 사용합니다. Virtual Finish Time은 Virtual Start Tim
 
 사용한 기술 스택을 소개합니다.
 
-런타임은 Node.js 20 LTS를 사용했고, 언어는 JavaScript ES2024를 사용했습니다.
+런타임은 Node.js 22 LTS를 사용했고, 언어는 JavaScript ES2024를 사용했습니다.
 
 웹 프레임워크는 Express.js 4.18, 큐 시스템은 메모리 배열 기반입니다.
 

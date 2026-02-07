@@ -374,7 +374,7 @@ FairnessCalculator는 다음 지표를 실시간으로 계산한다:
 
 | 분야 | 기술 | 버전 | 용도 |
 |------|------|------|------|
-| **런타임** | Node.js | 20 LTS | JavaScript 실행 환경 |
+| **런타임** | Node.js | 22 LTS | JavaScript 실행 환경 |
 | **프로그래밍 언어** | JavaScript | ES2024 | 학부생 수준 코드 |
 | **웹 프레임워크** | Express.js | 4.18 | REST API |
 | **큐 시스템** | 메모리 배열 | - | 인메모리 작업 큐 |
@@ -522,7 +522,7 @@ const BOOST_INTERVAL_MS = 30000;    // 30초마다 Boosting
 | CPU | Apple M2 (8코어) |
 | RAM | 16GB |
 | OS | macOS 14.5 Sonoma |
-| Node.js | v20.10.0 LTS |
+| Node.js | v22.0.0 LTS |
 | 데이터 저장 | JSON 파일 저장소 |
 | LLM | Ollama Llama 3.2 (8B) |
 
@@ -801,7 +801,7 @@ Jain's Fairness Index 외에 추가 공정성 메트릭 연구:
 **논문 제출일:** 2026년 2월 3일
 **완성 보고서 작성자:** 홍익대학교 컴퓨터공학과 C235180 서민지
 **프로젝트 기간:** 2025년 3월 ~ 2026년 2월
-**총 테스트 수:** 67 tests (100% pass)
+**총 테스트 수:** 69개 (100% 통과)
 **코드 커버리지:** 98.55% (Lines), 85.43% (Branches)
 **핵심 관점:** Provider (멀티테넌트 공정성)
 
