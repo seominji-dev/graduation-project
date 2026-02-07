@@ -427,7 +427,7 @@ Priority_new = Priority_current + (wait_time / aging_threshold)
 
 | 분류 | 기술 | 버전 | 용도 |
 |------|------|------|------|
-| **런타임** | Node.js | 20 LTS | JavaScript 실행 환경 |
+| **런타임** | Node.js | 22 LTS | JavaScript 실행 환경 |
 | **언어** | JavaScript | ES2024 | 학부생 수준 코드 |
 | **웹 프레임워크** | Express.js | 4.18 | REST API |
 | **큐 시스템** | 메모리 배열 | - | 인메모리 작업 큐 |
