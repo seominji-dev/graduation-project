@@ -7,7 +7,7 @@
  * - UUID 기반 요청 ID 생성
  * - 상태별 요청 조회 지원
  */
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 // 요청 상태 상수
 const REQUEST_STATUS = {
@@ -29,7 +29,7 @@ class MemoryQueue {
    */
   createRequest(data) {
     const request = {
-      id: uuidv4(),
+      id: randomUUID(),
       prompt: data.prompt,
       priority: data.priority || 2,  // NORMAL
       tenantId: data.tenantId || 'default',

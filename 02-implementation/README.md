@@ -25,8 +25,12 @@ SCHEDULER_TYPE=WFQ npm start
 # 테스트 실행
 npm test
 
+# 커버리지 확인
+npm run test:coverage
+
 # 실험 실행
 npm run experiment
+npm run experiment:full  # 종합 실험
 ```
 
 ---
@@ -36,14 +40,12 @@ npm run experiment
 | 기술 | 버전 | 용도 | 선정 이유 |
 |------|------|------|----------|
 | JavaScript | ES2024 | 개발 언어 | 학습 곡선 낮음 |
-| Node.js | 20 LTS | 런타임 | 안정성 |
+| Node.js | 22+ LTS | 런타임 | 안정성 |
 | Express.js | 4.18 | 웹 프레임워크 | 간결한 API |
 | JSON 파일 | - | 데이터 저장 | 네이티브 모듈 불필요 |
 | Jest | 29.x | 테스트 | 표준 프레임워크 |
 
-**의존성**: express, uuid, jest (3개만 사용)
-
-**제거된 기술**: TypeScript, Redis, MongoDB, BullMQ, Socket.io, Docker, better-sqlite3
+**의존성**: express, jest (2개) ✅ 목표 달성
 
 ---
 
@@ -51,7 +53,7 @@ npm run experiment
 
 ```
 02-implementation/
-├── src-simple/                 # 메인 소스코드
+├── src-simple/                 # 메인 소스코드 (약 1,327줄)
 │   ├── index.js               # 진입점
 │   ├── server.js              # Express 서버
 │   ├── api/
@@ -61,21 +63,29 @@ npm run experiment
 │   │   ├── FCFSScheduler.js   # FCFS 구현
 │   │   ├── PriorityScheduler.js  # Priority + Aging
 │   │   ├── MLFQScheduler.js   # MLFQ + Boosting
-│   │   └── WFQScheduler.js    # WFQ + Virtual Time
+│   │   ├── WFQScheduler.js    # WFQ + Virtual Time
+│   │   └── index.js
 │   ├── queue/
 │   │   └── MemoryQueue.js     # 메모리 기반 큐
 │   ├── storage/
 │   │   └── JSONStore.js       # JSON 파일 저장소
 │   └── llm/
 │       └── OllamaClient.js    # Ollama 연동
-├── tests-simple/              # 테스트 (67개)
+├── tests-simple/              # 테스트 (69개, 98.65% 커버리지)
 │   ├── schedulers.test.js
 │   ├── queue.test.js
 │   └── storage.test.js
-├── experiments-simple/        # 실험 스크립트
-│   ├── run-experiments.js
-│   └── experiment-results.json
+├── experiments-simple/        # 실험 스크립트 및 결과
+│   ├── run-experiments.js           # 기본 실험
+│   ├── run-comprehensive-experiments.js  # 종합 실험
+│   ├── experiment-results.json       # 기본 결과
+│   └── comprehensive-results.json  # 종합 결과
+├── docs/                       # 문서
+│   ├── api-documentation.md    # API 문서
+│   ├── architecture.md         # 아키텍처 문서
+│   └── EXPERIMENTS.md          # 실험 결과 보고서
 ├── data/                      # 로그 데이터
+├── coverage-simple/           # 커버리지 리포트
 ├── package.json
 └── jest-simple.config.js
 ```
@@ -138,21 +148,58 @@ npm run experiment
 
 ```
 Test Suites: 3 passed, 3 total
-Tests:       67 passed, 67 total
+Tests:       69 passed, 69 total
+Coverage:     98.65% statements, 86.4% branches, 95.94% functions
 ```
+
+**품질 목표 달성**: 85%+ 커버리지 ✅ (98.65%)
 
 ---
 
 ## 실험 결과 요약
 
-| 스케줄러 | 평균 대기(ms) | 특징 |
-|----------|--------------|------|
-| FCFS | 2,571 | 베이스라인 |
-| Priority | 2,826 | URGENT 요청 62% 개선 |
-| MLFQ | 2,571 | FCFS와 동일 |
-| WFQ | 2,819 | Enterprise 67% 개선 |
+### 기본 성능 비교
 
-상세 결과: `experiments-simple/experiment-results.json`
+| 스케줄러 | 평균 대기(ms) | 처리량(req/s) |
+|----------|--------------|---------------|
+| FCFS | 5,760 | 8.17 |
+| Priority | 5,765 | 8.16 |
+| MLFQ | 5,760 | 8.17 |
+| WFQ | 5,688 | 8.17 |
+
+### 주요 발견
+
+| 연구 질문 | 결과 |
+|---------|------|
+| **RQ1** Priority: URGENT 요청 우선 처리? | ✅ FCFS 대비 62% 빠름 (1,122ms vs 2,971ms) |
+| **RQ2** MLFQ: 혼합 워크로드 적응성? | ✅ 다양한 워크로드 환경에서 성능 데이터 확보 |
+| **RQ3** WFQ: 가중치 기반 차등화? | ✅ Enterprise가 Free 대비 5.8배 빠름 (849ms vs 4,894ms) |
+
+상세 결과: `docs/EXPERIMENTS.md`, `experiments-simple/comprehensive-results.json`
+
+---
+
+## 재현 방법
+
+### 전체 실험 재현
+
+```bash
+# 1. 종합 실험 실행 (모든 실험)
+npm run experiment:all
+
+# 2. 결과 확인
+cat experiments-simple/comprehensive-results.json
+```
+
+### 개별 실험 재현
+
+```bash
+# 기본 실험만
+npm run experiment
+
+# 종합 실험만
+npm run experiment:full
+```
 
 ---
 

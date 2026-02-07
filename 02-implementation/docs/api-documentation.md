@@ -8,7 +8,7 @@ http://localhost:3000/api
 
 ## Overview
 
-LLM Scheduler API는 OS 스케줄링 알고리즘을 활용한 LLM API 요청 관리 시스템입니다. FCFS, Priority, MLFQ, WFQ 4가지 스케줄링 알고리즘을 지원하며, REST API를 통해 요청 제출, 상태 조회, 스케줄러 전환 기능을 제공합니다.
+LLM Scheduler API는 OS 스케줄링 알고리즘을 활용한 LLM API 요청 관리 시스템입니다. FCFS, Priority, MLFQ, WFQ 4가지 스케줄링 알고리즘을 지원하며, REST API를 통해 요청 제출, 상태 조회, 통계 기능을 제공합니다.
 
 ---
 
@@ -34,9 +34,10 @@ GET /api/health
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "message": "LLM Scheduler API is running",
-  "timestamp": "2026-01-30T10:00:00.000Z"
+  "status": "ok",
+  "scheduler": "FCFS",
+  "llm": "connected",
+  "timestamp": "2026-02-07T10:00:00.000Z"
 }
 ```
 
@@ -58,16 +59,10 @@ Content-Type: application/json
 ```json
 {
   "prompt": "Explain quantum computing",
-  "provider": {
-    "name": "ollama",
-    "model": "llama2",
-    "baseUrl": "http://localhost:11434"
-  },
   "priority": 1,
-  "metadata": {
-    "userId": "user-123",
-    "tenantId": "enterprise-client-a"
-  }
+  "tenantId": "enterprise-client-a",
+  "tier": "enterprise",
+  "estimatedTokens": 100
 }
 ```
 
@@ -76,40 +71,24 @@ Content-Type: application/json
 | 필드 | 타입 | 필수 | 설명 |
 |-----|------|-----|------|
 | prompt | string | Y | LLM 전송 프롬프트 |
-| provider | object | Y | LLM 제공자 설정 |
-| provider.name | string | Y | "ollama" 또는 "openai" |
-| provider.model | string | N | 모델 이름 |
-| provider.baseUrl | string | N | API 기본 URL |
-| provider.apiKey | string | N | API 키 (OpenAI용) |
 | priority | number | N | 우선순위 (0=LOW, 1=NORMAL, 2=HIGH, 3=URGENT) |
-| metadata | object | N | 추가 메타데이터 |
+| tenantId | string | N | 테넌트 ID (WFQ용) |
+| tier | string | N | 테넌트 등급 (enterprise, premium, standard, free) |
+| estimatedTokens | number | N | 예상 토큰 수 |
 
-**Response (202 Accepted):**
+**Response (201 Created):**
 ```json
 {
-  "success": true,
-  "data": {
-    "requestId": "550e8400-e29b-41d4-a716-446655440000",
-    "jobId": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "queued",
-    "priority": 1,
-    "createdAt": "2026-01-30T10:00:00.000Z"
-  },
-  "message": "Request queued successfully"
+  "message": "요청이 제출되었습니다",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "queued"
 }
 ```
 
 **Error Response (400 Bad Request):**
 ```json
 {
-  "success": false,
-  "error": "Validation error",
-  "details": [
-    {
-      "code": "invalid_type",
-      "message": "Prompt is required"
-    }
-  ]
+  "error": "prompt는 필수입니다"
 }
 ```
 
@@ -127,11 +106,13 @@ GET /api/requests/550e8400-e29b-41d4-a716-446655440000
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "requestId": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "completed"
-  }
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "prompt": "Explain quantum computing",
+  "status": "completed",
+  "priority": 1,
+  "createdAt": "2026-02-07T10:00:00.000Z",
+  "completedAt": "2026-02-07T10:00:05.000Z",
+  "response": "Quantum computing is..."
 }
 ```
 
@@ -141,36 +122,33 @@ GET /api/requests/550e8400-e29b-41d4-a716-446655440000
 - `processing`: 처리 중
 - `completed`: 완료
 - `failed`: 실패
-- `cancelled`: 취소됨
 
 ---
 
-#### DELETE /requests/:id
+#### GET /requests
 
-대기 중인 요청을 취소합니다.
+전체 요청 목록을 조회합니다.
 
 **Request:**
 ```http
-DELETE /api/requests/550e8400-e29b-41d4-a716-446655440000
+GET /api/requests?status=queued
 ```
+
+**Query Parameters:**
+- `status` (optional): 상태별 필터링 (pending, queued, processing, completed, failed)
 
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "requestId": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "cancelled"
-  },
-  "message": "Request cancelled successfully"
-}
-```
-
-**Error Response (404 Not Found):**
-```json
-{
-  "success": false,
-  "error": "Request not found or cannot be cancelled"
+  "count": 5,
+  "requests": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "prompt": "Explain quantum computing",
+      "status": "queued",
+      "priority": 1
+    }
+  ]
 }
 ```
 
@@ -178,151 +156,86 @@ DELETE /api/requests/550e8400-e29b-41d4-a716-446655440000
 
 ### 3. Scheduler Management
 
-#### GET /scheduler/current
+#### GET /scheduler/status
 
 현재 활성화된 스케줄러 정보를 조회합니다.
 
 **Request:**
 ```http
-GET /api/scheduler/current
+GET /api/scheduler/status
 ```
 
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "type": "fcfs",
-    "stats": {
-      "totalRequests": 150,
-      "completedRequests": 120,
-      "failedRequests": 5,
-      "pendingRequests": 25,
-      "averageWaitTime": 1234,
-      "averageProcessingTime": 5678
-    }
-  }
+  "schedulerType": "FCFS",
+  "queueSize": 5,
+  "totalRequests": 150,
+  "completedRequests": 120,
+  "failedRequests": 5,
+  "pendingRequests": 25
 }
 ```
 
 ---
 
-#### GET /scheduler/available
+#### POST /scheduler/process
 
-사용 가능한 스케줄러 목록을 조회합니다.
+대기 중인 요청을 하나 처리합니다 (수동 트리거).
 
 **Request:**
 ```http
-GET /api/scheduler/available
+POST /api/scheduler/process
 ```
 
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "available": ["fcfs", "priority", "mlfq", "wfq"],
-    "current": "fcfs",
-    "descriptions": {
-      "fcfs": "First-Come-First-Served: Process requests in arrival order",
-      "priority": "Priority-based scheduling with aging mechanism",
-      "mlfq": "Multi-Level Feedback Queue with dynamic priority adjustment",
-      "wfq": "Weighted Fair Queuing for multi-tenant environments"
-    }
-  }
+  "message": "요청이 처리되었습니다",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
+  "response": "Quantum computing is..."
 }
 ```
 
-**Scheduler Types:**
-- `fcfs`: 선착순 처리
-- `priority`: 우선순위 기반 + Aging 메커니즘
-- `mlfq`: 4단계 MLFQ + Boost 메커니즘
-- `wfq`: 테넌트별 가중치 기반 공정 스케줄링
+**Response (200 OK) - No requests:**
+```json
+{
+  "message": "처리할 요청이 없습니다"
+}
+```
 
 ---
 
-#### POST /scheduler/switch
+### 4. Statistics
 
-스케줄러를 전환합니다.
+#### GET /stats
+
+전체 통계를 조회합니다.
 
 **Request:**
 ```http
-POST /api/scheduler/switch
-Content-Type: application/json
+GET /api/stats
 ```
-
-**Request Body:**
-```json
-{
-  "type": "priority"
-}
-```
-
-**Request Fields:**
-
-| 필드 | 타입 | 필수 | 설명 |
-|-----|------|-----|------|
-| type | string | Y | 스케줄러 타입 (fcfs, priority, mlfq, wfq) |
 
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "previousType": "fcfs",
-    "currentType": "priority",
-    "stats": {
-      "totalRequests": 0,
-      "completedRequests": 0,
-      "failedRequests": 0,
-      "pendingRequests": 0,
-      "averageWaitTime": 0,
-      "averageProcessingTime": 0
-    }
+  "current": {
+    "scheduler": "FCFS",
+    "queueSize": 5,
+    "totalRequests": 150,
+    "completedRequests": 120,
+    "failedRequests": 5,
+    "pendingRequests": 25
   },
-  "message": "Successfully switched to priority scheduler"
-}
-```
-
-**Error Response (400 Bad Request):**
-```json
-{
-  "success": false,
-  "error": "Failed to switch scheduler",
-  "message": "Could not switch to invalid scheduler"
-}
-```
-
----
-
-#### GET /scheduler/stats
-
-현재 스케줄러 통계를 조회합니다.
-
-**Request:**
-```http
-GET /api/scheduler/stats
-```
-
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "type": "mlfq",
-    "stats": {
-      "totalRequests": 200,
-      "completedRequests": 180,
-      "failedRequests": 8,
-      "pendingRequests": 12,
-      "averageWaitTime": 856,
-      "averageProcessingTime": 4521,
-      "queueLevels": {
-        "q0": 5,
-        "q1": 4,
-        "q2": 2,
-        "q3": 1
-      }
+  "historical": {
+    "FCFS": {
+      "avgWaitTime": 2571.75,
+      "throughput": 17.99
+    },
+    "Priority": {
+      "avgWaitTime": 2826.41,
+      "throughput": 17.09
     }
   }
 }
@@ -330,64 +243,53 @@ GET /api/scheduler/stats
 
 ---
 
-#### GET /scheduler/stats/all
+#### GET /stats/tenant/:tenantId
 
-모든 스케줄러 통계를 조회합니다.
+테넌트별 통계를 조회합니다.
 
 **Request:**
 ```http
-GET /api/scheduler/stats/all
+GET /api/stats/tenant/enterprise-client-a
 ```
 
 **Response (200 OK):**
 ```json
 {
-  "success": true,
-  "data": {
-    "fcfs": {
-      "totalRequests": 150,
-      "completedRequests": 120,
-      "failedRequests": 5,
-      "pendingRequests": 25,
-      "averageWaitTime": 1234,
-      "averageProcessingTime": 5678
-    },
-    "priority": {
-      "totalRequests": 180,
-      "completedRequests": 165,
-      "failedRequests": 6,
-      "pendingRequests": 9,
-      "averageWaitTime": 856,
-      "averageProcessingTime": 5123
-    },
-    "mlfq": {
-      "totalRequests": 200,
-      "completedRequests": 180,
-      "failedRequests": 8,
-      "pendingRequests": 12,
-      "averageWaitTime": 742,
-      "averageProcessingTime": 4521,
-      "queueLevels": {
-        "q0": 5,
-        "q1": 4,
-        "q2": 2,
-        "q3": 1
-      }
-    },
-    "wfq": {
-      "totalRequests": 120,
-      "completedRequests": 110,
-      "failedRequests": 3,
-      "pendingRequests": 7,
-      "averageWaitTime": 921,
-      "averageProcessingTime": 4876,
-      "fairnessMetrics": {
-        "jainsFairnessIndex": 0.92,
-        "fairnessScore": 92,
-        "activeTenants": 4
-      }
+  "tenantId": "enterprise-client-a",
+  "totalRequests": 50,
+  "avgWaitTime": 849.32,
+  "completedRequests": 48
+}
+```
+
+---
+
+#### GET /logs
+
+최근 요청 로그를 조회합니다.
+
+**Request:**
+```http
+GET /api/logs?limit=50
+```
+
+**Query Parameters:**
+- `limit` (optional): 반환할 로그 수 (기본값: 100)
+
+**Response (200 OK):**
+```json
+{
+  "count": 50,
+  "logs": [
+    {
+      "requestId": "550e8400-e29b-41d4-a716-446655440000",
+      "scheduler": "FCFS",
+      "status": "completed",
+      "waitTime": 1234,
+      "processingTime": 5678,
+      "timestamp": "2026-02-07T10:00:00.000Z"
     }
-  }
+  ]
 }
 ```
 
@@ -395,13 +297,11 @@ GET /api/scheduler/stats/all
 
 ## Common Error Responses
 
-### 500 Internal Server Error
+### 400 Bad Request
 
 ```json
 {
-  "success": false,
-  "error": "Internal server error",
-  "message": "An unexpected error occurred"
+  "error": "prompt는 필수입니다"
 }
 ```
 
@@ -409,28 +309,29 @@ GET /api/scheduler/stats/all
 
 ```json
 {
-  "success": false,
-  "error": "Resource not found"
+  "error": "요청을 찾을 수 없습니다"
+}
+```
+
+### 500 Internal Server Error
+
+```json
+{
+  "error": "Internal server error",
+  "message": "An unexpected error occurred"
 }
 ```
 
 ---
 
-## Rate Limiting
+## Scheduler Types
 
-현재 버전에서는 속도 제한이 구현되어 있지 않습니다.
-
----
-
-## CORS
-
-CORS는 모든 Origin에 대해 허용되도록 구현되어 있습니다.
-
----
-
-## WebSocket Support
-
-현재 버전에서는 WebSocket이 지원되지 않습니다. 대신 실시간 업데이트를 위해서는 폴링(Polling) 방식을 사용해야 합니다.
+| 타입 | 설명 | 특징 |
+|-----|------|------|
+| FCFS | First-Come-First-Served | 선착순 처리 (기본값) |
+| Priority | 우선순위 기반 | URGENT 요청 우선 + Aging 메커니즘 |
+| MLFQ | 다단계 피드백 큐 | 4단계 큐 + Boost 메커니즘 |
+| WFQ | 가중치 공정 큐 | 테넌트별 가중치 기반 공정 배분 |
 
 ---
 
@@ -443,11 +344,9 @@ curl -X POST http://localhost:3000/api/requests \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Explain quantum computing",
-    "provider": {
-      "name": "ollama",
-      "model": "llama2"
-    },
-    "priority": 1
+    "priority": 3,
+    "tenantId": "enterprise-client-a",
+    "tier": "enterprise"
   }'
 ```
 
@@ -457,14 +356,34 @@ curl -X POST http://localhost:3000/api/requests \
 curl http://localhost:3000/api/requests/550e8400-e29b-41d4-a716-446655440000
 ```
 
-### Example 3: Switch Scheduler
+### Example 3: Process Next Request
 
 ```bash
-curl -X POST http://localhost:3000/api/scheduler/switch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "mlfq"
-  }'
+curl -X POST http://localhost:3000/api/scheduler/process
+```
+
+### Example 4: Get Statistics
+
+```bash
+curl http://localhost:3000/api/stats
+```
+
+---
+
+## Running with Different Schedulers
+
+```bash
+# FCFS (default)
+npm start
+
+# Priority
+SCHEDULER_TYPE=Priority npm start
+
+# MLFQ
+SCHEDULER_TYPE=MLFQ npm start
+
+# WFQ
+SCHEDULER_TYPE=WFQ npm start
 ```
 
 ---
@@ -473,7 +392,7 @@ curl -X POST http://localhost:3000/api/scheduler/switch \
 
 | 버전 | 날짜 | 변경사항 |
 |-----|------|---------|
-| 1.0.0 | 2026-01-30 | 초기 릴리스 |
+| 1.0.0 | 2026-02-07 | 초기 릴리스 (Simple 버전) |
 
 ---
 

@@ -12,7 +12,8 @@
     "test": "jest --config jest-simple.config.js",
     "test:coverage": "jest --config jest-simple.config.js --coverage",
     "experiment": "node experiments-simple/run-experiments.js",
-    "prototype": "node prototype/run-test.js"
+    "experiment:full": "node experiments-simple/run-comprehensive-experiments.js",
+    "experiment:all": "npm run experiment:full"
   },
   "keywords": [
     "llm",
