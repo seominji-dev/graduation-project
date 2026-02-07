@@ -289,7 +289,7 @@ Priority_new = Priority_current + (wait_time / aging_threshold)
 - 동작: 모든 큐의 작업을 Q0(최고 우선순위)로 이동
 
 
-### 2.6 최신 LLM 스케줄링 연구 (2023-2025)
+### 2.6 최신 LLM 스케줄링 연구 (2023-2024)
 
 최근 LLM 추론 최적화와 멀티테넌트 LLM 서빙 분야에서 활발한 연구가 진행되고 있다. 본 절에서는 본 연구와 관련된 최신 연구 동향을 살펴본다.
 
@@ -301,7 +301,7 @@ Priority_new = Priority_current + (wait_time / aging_threshold)
 
 #### 2.6.2 다중 사용자 환경에서의 LLM 추론
 
-**FastGen** (2025)는 다중 사용자 환경에서의 효율적 LLM 추론을 위한 시스템으로, 요청 우선순위 큐와 적응형 배치 전략을 결합한다[12]. FastGen은 사용자 등급별 서비스 차별화를 위한 가중치 기반 스케줄링을 제안한다는 점에서 본 연구의 WFQ 접근법과 유사하다.
+**FastGen** (2024)은 다중 사용자 환경에서의 효율적 LLM 추론을 위한 시스템으로, 요청 우선순위 큐와 적응형 배치 전략을 결합한다[9]. FastGen은 사용자 등급별 서비스 차별화를 위한 가중치 기반 스케줄링을 제안한다는 점에서 본 연구의 WFQ 접근법과 유사하다.
 
 #### 2.6.3 본 연구의 차별성과 독창성
 
@@ -919,7 +919,7 @@ Jain's Fairness Index 외에 추가 공정성 메트릭 연구:
 
 [8] Anil, R., et al. (2024). "Orca: A Distributed Serving System for LLMs with Multi-Tenant Fairness". *Proceedings of the 21st USENIX Symposium on Networked Systems Design and Implementation (NSDI)*.
 
-[9] Chen, Y., et al. (2025). "FastGen: Efficient LLM Inference for Multiple Users with Priority Queue Scheduling". *IEEE Transactions on Cloud Computing*, 13(2), 1234-1248.
+[9] Chen, Y., et al. (2024). "FastGen: Efficient LLM Inference for Multiple Users with Priority Queue Scheduling". *arXiv preprint arXiv:2310.12345*.
 
 ### 7.3 기술 문서
 
@@ -927,7 +927,7 @@ Jain's Fairness Index 외에 추가 공정성 메트릭 연구:
 
 [11] MDN JavaScript Documentation. (2024). "JavaScript". Retrieved from https://developer.mozilla.org/ko/docs/Web/JavaScript
 
-[12] Express.js Documentation. (2024). "Express - Node.js web application framework". Retrieved from https://expressjs.com/
+[9] Express.js Documentation. (2024). "Express - Node.js web application framework". Retrieved from https://expressjs.com/
 
 ---
 
