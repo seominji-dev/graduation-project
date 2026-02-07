@@ -1,4 +1,6 @@
-# 멀티테넌트 LLM 게이트웨이를 위한 OS 스케줄링 기반 공정 요청 관리 시스템
+# OS 스케줄링 알고리즘을 활용한 LLM API 요청 최적화 스케줄러
+
+## Fair Request Scheduling for Multi-tenant LLM Gateway Using OS Scheduling Algorithms
 
 ## Fair Request Scheduling for Multi-tenant LLM Gateway Using OS Scheduling Algorithms
 

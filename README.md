@@ -1,5 +1,6 @@
-# LLM 스케줄러
-**OS 스케줄링 기법을 활용한 LLM API 요청 최적화**
+# OS 스케줄링 알고리즘을 활용한 LLM API 요청 최적화 스케줄러
+
+## LLM Scheduler with OS Scheduling Algorithms
 
 홍익대학교 컴퓨터공학과 2026년 졸업프로젝트
 

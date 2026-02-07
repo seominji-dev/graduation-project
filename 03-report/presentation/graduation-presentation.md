@@ -736,7 +736,7 @@ console.log('Jain Fairness Index:', fairness);
 
 ### 혼합 작업 부하 실험 결과
 
-![혼합 작업 부하 비교](../graphs/mixed-workload-comparison.png)
+![혼합 작업 부하 비교](charts/images/mixed_workload_analysis.png)
 
 **그래프 1: 혼합 작업 부하 대기 시간 비교**
 
@@ -967,7 +967,7 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 ### 그래프 1: 대기 시간 비교
 
-![대기 시간 비교](../graphs/wait-time-comparison.png)
+![대기 시간 비교](charts/images/wait_time_comparison.png)
 
 **그래프 1: 스케줄러별 평균 대기 시간 비교**
 
@@ -980,7 +980,7 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 ### 그래프 2: 처리량 비교
 
-![처리량 비교](../graphs/throughput-comparison.png)
+![처리량 비교](charts/images/throughput_distribution.png)
 
 **그래프 2: 스케줄러별 처리량 비교 (req/s)**
 
@@ -993,7 +993,7 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 ### 그래프 3: WFQ 공정성 지수
 
-![WFQ 공정성 지수](../graphs/wfq-fairness-index.png)
+![WFQ 공정성 지수](charts/images/fairness_index.png)
 
 **그래프 3: WFQ 공정성 지수 vs 목표치**
 
@@ -1019,7 +1019,7 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 ### 그래프 5: 스케줄러 특성 레이더 차트
 
-![스케줄러 특성 비교](../graphs/scheduler-radar-comparison.png)
+![스케줄러 특성 비교](charts/images/comprehensive_summary.png)
 
 **그래프 5: 스케줄러 특성 다차원 비교 (1-5점 척도)**
 
@@ -1032,7 +1032,7 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 ### 그래프 6: 혼합 작업 부하 카테고리별 분석
 
-![혼합 작업 부하 카테고리별 분석](../graphs/mixed-workload-category-analysis.png)
+![혼합 작업 부하 카테고리별 분석](charts/images/mixed_workload_analysis.png)
 
 **그래프 6: 카테고리별 대기/처리 시간 분석**
 
