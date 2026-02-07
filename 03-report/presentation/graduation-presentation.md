@@ -1,5 +1,5 @@
-# OS 스케줄링 알고리즘 기반 LLM API 요청 관리 시스템
-## LLM Scheduler: Operating System Scheduling Algorithms for LLM API Request Management
+# OS 스케줄링 알고리즘을 활용한 LLM API 요청 최적화 스케줄러
+## LLM Scheduler: Operating System Scheduling Algorithms for LLM API Request Optimization
 
 ---
 
@@ -892,8 +892,8 @@ MLFQ: 현재 실험 조건에서는 FCFS와 동일 (향후 장기 작업 실험 
 
 **핵심 학술적 메시지:**
 - OS 이론은 AI 시스템 도메인으로 확장 가능
-- MLFQ는 LLM API 환경에서 최고의 성능 (40% 대기시간 개선)
-- WFQ는 멀티테넌트 환경에서 높은 공정성 달성 (0.89 Jain's Index)
+- Priority 스케줄러: 긴급 요청 대기 시간 62% 개선 (URGENT 6ms vs 일반 16ms)
+- WFQ: 테넌트 등급별 가중치 기반 차등 서비스 (시스템 JFI 0.32, 테넌트 JFI 0.92-0.98)
 - 69개 테스트와 98.65% 커버리지로 재현 가능한 연구 기반 제공
 
 ### 문의처
