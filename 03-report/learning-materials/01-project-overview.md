@@ -234,7 +234,7 @@
 │   ├── schedulers/       # 4개 스케줄러 구현
 │   ├── services/         # 서비스 계층
 │   └── utils/            # 유틸리티
-├── tests-simple/         # 67개 테스트
+├── tests-simple/         # 69개 테스트
 ├── coverage/             # 커버리지 리포트
 └── experiments/          # 실험 데이터
 ```
@@ -247,7 +247,7 @@
 | `src-simple/schedulers/` | 스케줄러 구현 | FCFS, Priority, MLFQ, WFQ |
 | `src-simple/managers/` | 관리자 컴포넌트 | Aging, Boost, Tenant, Fairness |
 | `src-simple/api/` | API 계층 | REST 엔드포인트 |
-| `tests-simple/` | 테스트 | 67개 테스트 케이스 |
+| `tests-simple/` | 테스트 | 69개 테스트 케이스 |
 
 ---
 

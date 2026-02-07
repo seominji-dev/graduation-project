@@ -19,7 +19,7 @@
 
 본 연구에서는 FCFS(First-Come, First-Served), Priority Scheduling, MLFQ(Multi-Level Feedback Queue), WFQ(Weighted Fair Queuing) 4가지 OS 스케줄링 알고리즘을 멀티테넌트 환경에 맞춰 설계 및 구현하였다. 특히 WFQ 스케줄러는 GPS(Generalized Processor Sharing) 이론을 기반으로 Virtual Time 개념을 활용하여 테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례한 공정한 자원 분배를 보장한다. 공정성 측정을 위해 Jain's Fairness Index를 도입하였으며, 기아 현상 방지를 위해 Aging 및 Boosting 메커니즘을 구현하였다.
 
-실험 결과, WFQ 스케줄러는 개별 테넌트 수준에서 0.92-0.98의 Jain's Fairness Index를 달성하여 높은 공정성을 입증하였다. 전체 시스템은 67개 테스트에 100% 통과하였고, 코드 커버리지 98.55%(Lines)를 달성하였다. 본 연구는 OS 스케줄링 이론이 멀티테넌트 클라우드 서비스의 공정성 문제 해결에 효과적으로 적용될 수 있음을 실증하였다.
+실험 결과, WFQ 스케줄러는 개별 테넌트 수준에서 0.92-0.98의 Jain's Fairness Index를 달성하여 높은 공정성을 입증하였다. 전체 시스템은 69개 테스트에 100% 통과하였고, 코드 커버리지 98.55%(Lines)를 달성하였다. 본 연구는 OS 스케줄링 이론이 멀티테넌트 클라우드 서비스의 공정성 문제 해결에 효과적으로 적용될 수 있음을 실증하였다.
 
 **키워드:** 멀티테넌트(Multi-tenant), 공정성(Fairness), 기아 방지(Starvation Prevention), WFQ, GPS, Jain's Fairness Index, OS 스케줄링
 
@@ -623,8 +623,8 @@ Enterprise 테넌트가 100개의 요청을 연속 제출한 상황에서 다른
 
 | 항목 | 목표 | 결과 | 평가 |
 |------|------|------|------|
-| 총 테스트 케이스 | - | 67개 | - |
-| 통과율 | 100% | 100% (67/67) | 달성 |
+| 총 테스트 케이스 | - | 69개 | - |
+| 통과율 | 100% | 100% (69/69) | 달성 |
 | 코드 커버리지 (Lines) | 85%+ | 98.55% | 초과 달성 |
 | 코드 커버리지 (Statements) | 85%+ | 98.65% | 초과 달성 |
 | 코드 커버리지 (Functions) | 90%+ | 95.94% | 초과 달성 |
@@ -646,7 +646,7 @@ Enterprise 테넌트가 100개의 요청을 연속 제출한 상황에서 다른
 1. **WFQ의 공정성**: 개별 테넌트 수준에서 0.92-0.98의 Jain's Fairness Index 달성
 2. **기아 방지**: WFQ는 가중치 기반 분배로 자동 기아 방지, 다른 알고리즘은 Aging/Boosting 필요
 3. **대기 시간 개선**: WFQ는 FCFS 대비 낮은 등급 테넌트의 대기 시간을 72-88% 개선
-4. **품질 보장**: 67개 테스트 100% 통과, 98%+ 코드 커버리지
+4. **품질 보장**: 69개 테스트 100% 통과, 98%+ 코드 커버리지
 
 ---
 
@@ -663,7 +663,7 @@ Enterprise 테넌트가 100개의 요청을 연속 제출한 상황에서 다른
 | 공정한 자원 분배 | WFQ로 가중치 비례 분배, Jain's Fairness Index 0.92-0.98 |
 | 기아 현상 방지 | WFQ 자동 보장, Aging/Boosting 메커니즘 구현 |
 | 공정성 정량화 | FairnessCalculator로 실시간 Jain's Fairness Index 측정 |
-| 품질 보증 | 67개 테스트 100% 통과, 98%+ 커버리지 |
+| 품질 보증 | 69개 테스트 100% 통과, 98%+ 커버리지 |
 
 #### 6.1.2 학술적 기여
 

@@ -104,8 +104,8 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 
 == 테스트 결과
 
-- 총 테스트 수: 67개
-- 통과 테스트: 67개 (100%)
+- 총 테스트 수: 69개
+- 통과 테스트: 69개 (100%)
 - 코드 커버리지: 98.55%
 
 == 성능 비교 분석
@@ -124,7 +124,7 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 #booktabs_table_simple(
   columns: 2,
   [*항목*], [*달성 내용*],
-  [테스트], [67개 테스트, 98.55% 커버리지],
+  [테스트], [69개 테스트, 98.55% 커버리지],
   [가독성], [JavaScript JSDoc 타입 힌트, 명확한 변수/함수 네이밍],
   [일관성], [ESLint를 통한 코드 스타일 통일],
   [안전성], [조건문을 통한 입력 검증, 체계적인 에러 처리],
@@ -138,7 +138,7 @@ $ "Virtual Finish Time" = "Virtual Start Time" + ("Service Time" / "Weight") $
 + *4가지 스케줄링 알고리즘 구현*: FCFS, Priority, MLFQ, WFQ
 + *기아 방지 메커니즘*: Aging과 Boost를 통한 효과적인 기아 방지
 + *공정성 보장*: Virtual Time과 Jain's Fairness Index
-+ *높은 품질*: 67개 테스트 100% 통과, 98.55% 코드 커버리지
++ *높은 품질*: 69개 테스트 100% 통과, 98.55% 코드 커버리지
 
 #bibliography_section()
 

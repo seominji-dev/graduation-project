@@ -58,7 +58,7 @@
 │   │
 │   └── index.js                # 애플리케이션 진입점
 │
-├── tests-simple/               # 테스트 파일 (67개)
+├── tests-simple/               # 테스트 파일 (69개)
 │   ├── unit/                   # 단위 테스트
 │   ├── integration/            # 통합 테스트
 │   └── setup.js                # 테스트 설정
