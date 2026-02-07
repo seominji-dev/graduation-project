@@ -26,8 +26,7 @@ API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 ```
 졸업프로젝트/
 ├── 01-plan/                # Phase 1: 계획서
-│   ├── proposal.md        # 연구 계획서
-│   └── requirements.md    # 요구사항 분석
+│   └── 수강신청서-내용-최종본.md    # 프로젝트 수강신청서 및 계획서 (Single Source of Truth)
 │
 ├── 02-implementation/      # Phase 2: 구현
 │   ├── src-simple/        # 소스코드 (학부생 버전)
@@ -66,7 +65,7 @@ npm test
 ## 기술 스택
 
 - **언어:** JavaScript (ES2024)
-- **런타임:** Node.js 20 LTS
+- **런타임:** Node.js 22+ LTS
 - **프레임워크:** Express.js 4.18
 - **큐 시스템:** 메모리 배열 기반
 - **데이터 저장:** JSON 파일

@@ -11,7 +11,8 @@
     "start:wfq": "SCHEDULER_TYPE=WFQ node src-simple/index.js",
     "test": "jest --config jest-simple.config.js",
     "test:coverage": "jest --config jest-simple.config.js --coverage",
-    "experiment": "node experiments-simple/run-experiments.js"
+    "experiment": "node experiments-simple/run-experiments.js",
+    "prototype": "node prototype/run-test.js"
   },
   "keywords": [
     "llm",
@@ -25,13 +26,12 @@
   "author": "서민지",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "uuid": "^9.0.1"
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "jest": "^29.7.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }
