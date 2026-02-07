@@ -35,13 +35,20 @@ const path = require("path");
 
 const CONFIG = {
 	numBursts: 5, // Number of request bursts
-	requestsPerBurst: 20, // Requests per burst
+	requestsPerBurst: 20, // Requests per burst (기본: 100 requests = 5 × 20)
 	timeSliceMs: 500, // Time slice for processing (same as MLFQ TIME_SLICE_MS)
 	// Request processing time ranges (ms)
 	shortRequestRange: [100, 400], // Completes in Q0 quantum (500ms)
 	mediumRequestRange: [800, 2500], // Needs Q1 quantum (1500ms)
 	longRequestRange: [3000, 7000], // Needs Q2 quantum (4000ms)
+	// Scale mode: command line argument to scale up requests
+	scaleMode: process.argv[2] === "scale" ? 500 : 100, // 100 or 500 requests
 };
+
+// Adjust configuration based on scale mode
+if (CONFIG.scaleMode === 500) {
+	CONFIG.numBursts = 25; // 25 bursts × 20 requests = 500 requests
+}
 
 // ============================================
 // Utility Functions
