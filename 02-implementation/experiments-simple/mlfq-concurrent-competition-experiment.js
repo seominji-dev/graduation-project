@@ -38,9 +38,9 @@ const CONFIG = {
 	requestsPerBurst: 20, // Requests per burst (기본: 100 requests = 5 × 20)
 	timeSliceMs: 500, // Time slice for processing (same as MLFQ TIME_SLICE_MS)
 	// Request processing time ranges (ms)
-	shortRequestRange: [100, 400], // Completes in Q0 quantum (500ms)
-	mediumRequestRange: [800, 2500], // Needs Q1 quantum (1500ms)
-	longRequestRange: [3000, 7000], // Needs Q2 quantum (4000ms)
+	shortRequestRange: [100, 800], // Completes in Q0 quantum (1000ms)
+	mediumRequestRange: [1200, 4000], // Needs Q1 quantum (3000ms)
+	longRequestRange: [5000, 10000], // Needs Q2 quantum (8000ms)
 	// Scale mode: command line argument to scale up requests
 	scaleMode: process.argv[2] === "scale" ? 500 : 100, // 100 or 500 requests
 };
@@ -187,7 +187,10 @@ function simulateMLFQPreemptive(requests) {
 
 	// Add all requests to MLFQ (all start at Q0)
 	for (const req of requests) {
-		scheduler.enqueue({ ...req });
+		scheduler.enqueue({
+			...req,
+			usedTime: 0, // Initialize usedTime
+		});
 	}
 
 	// Process with time slicing
@@ -214,6 +217,10 @@ function simulateMLFQPreemptive(requests) {
 		// Advance time
 		currentTime += timeSlice;
 		currentReq.remainingTime -= timeSlice;
+		currentReq.usedTime += timeSlice; // Update usedTime for preemption check
+
+		// Also update scheduler's internal usedTime for checkPreemption
+		scheduler.currentRequestUsedTime = currentReq.usedTime;
 
 		// Check for preemption
 		const preemption = scheduler.checkPreemption(timeSlice);

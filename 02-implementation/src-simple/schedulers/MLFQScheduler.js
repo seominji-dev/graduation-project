@@ -21,8 +21,8 @@
  */
 const BaseScheduler = require("./BaseScheduler");
 
-// 큐 레벨별 시간 할당량 (밀리초) - 선점형을 위해 단축
-const TIME_QUANTUM = [500, 1500, 4000, Infinity];
+// 큐 레벨별 시간 할당량 (밀리초)
+const TIME_QUANTUM = [1000, 3000, 8000, Infinity]; // Q0: 1초, Q1: 3초, Q2: 8초, Q3: 무제한
 const NUM_QUEUES = 4;
 const BOOST_INTERVAL_MS = 5000; // 5초마다 boosting (재실험을 위해 단축, 기존 30초)
 const TIME_SLICE_MS = 500; // 타임 슬라이스: 선점 체크 주기

@@ -68,17 +68,17 @@ describe("MLFQScheduler - 현재 비선점형 동작 특성 테스트", () => {
 	// ============================================
 	describe("피드백 메커니즘 동작", () => {
 		test("feedback은 요청의 usedTime을 누적함 (시간 할당량 미만)", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 
-			scheduler.feedback(req, 100); // 400ms (TIME_QUANTUM[0] = 500ms 미만)
+			scheduler.feedback(req, 200); // 900ms (TIME_QUANTUM[0] = 1000ms 미만)
 
-			expect(req.usedTime).toBe(400);
+			expect(req.usedTime).toBe(900);
 		});
 
 		test("feedback은 시간 할당량 도달 시 usedTime을 0으로 초기화함", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 
-			scheduler.feedback(req, 200); // 500ms (TIME_QUANTUM[0] = 500ms 도달)
+			scheduler.feedback(req, 300); // 1000ms (TIME_QUANTUM[0] = 1000ms 도달)
 
 			// 시간 할당량에 도달하면 usedTime이 0으로 초기화되고 큐 레벨이 증가함
 			expect(req.usedTime).toBe(0);
@@ -95,12 +95,12 @@ describe("MLFQScheduler - 현재 비선점형 동작 특성 테스트", () => {
 		});
 
 		test("feedback은 시간 할당량 미만이면 큐 레벨을 유지함", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 
-			scheduler.feedback(req, 100); // 총 400ms (TIME_QUANTUM[0] = 500ms 미만)
+			scheduler.feedback(req, 200); // 총 900ms (TIME_QUANTUM[0] = 1000ms 미만)
 
 			expect(req.queueLevel).toBe(0);
-			expect(req.usedTime).toBe(400);
+			expect(req.usedTime).toBe(900);
 		});
 
 		test("feedback은 최대 큐 레벨을 초과하지 않음", () => {
@@ -112,18 +112,18 @@ describe("MLFQScheduler - 현재 비선점형 동작 특성 테스트", () => {
 		});
 
 		test("feedback은 각 큐 레벨의 시간 할당량을 준수함", () => {
-			// Q0: 500ms
-			const reqQ0 = { id: "q0", queueLevel: 0, usedTime: 400 };
+			// Q0: 1000ms
+			const reqQ0 = { id: "q0", queueLevel: 0, usedTime: 900 };
 			scheduler.feedback(reqQ0, 200);
 			expect(reqQ0.queueLevel).toBe(1);
 
-			// Q1: 1500ms
-			const reqQ1 = { id: "q1", queueLevel: 1, usedTime: 1300 };
+			// Q1: 3000ms
+			const reqQ1 = { id: "q1", queueLevel: 1, usedTime: 2700 };
 			scheduler.feedback(reqQ1, 500);
 			expect(reqQ1.queueLevel).toBe(2);
 
-			// Q2: 4000ms
-			const reqQ2 = { id: "q2", queueLevel: 2, usedTime: 3500 };
+			// Q2: 8000ms
+			const reqQ2 = { id: "q2", queueLevel: 2, usedTime: 7500 };
 			scheduler.feedback(reqQ2, 1000);
 			expect(reqQ2.queueLevel).toBe(3);
 
@@ -276,9 +276,9 @@ describe("MLFQScheduler - 현재 비선점형 동작 특성 테스트", () => {
 	// ============================================
 	describe("타임 퀀텀 설정", () => {
 		test("TIME_QUANTUM 배열이 올바른 순서로 정의됨", () => {
-			expect(TIME_QUANTUM[0]).toBe(500); // Q0: 500ms (선점형 단축)
-			expect(TIME_QUANTUM[1]).toBe(1500); // Q1: 1.5초
-			expect(TIME_QUANTUM[2]).toBe(4000); // Q2: 4초
+			expect(TIME_QUANTUM[0]).toBe(1000); // Q0: 1000ms (1초)
+			expect(TIME_QUANTUM[1]).toBe(3000); // Q1: 3초
+			expect(TIME_QUANTUM[2]).toBe(8000); // Q2: 8초
 			expect(TIME_QUANTUM[3]).toBe(Infinity); // Q3: 무제한
 		});
 

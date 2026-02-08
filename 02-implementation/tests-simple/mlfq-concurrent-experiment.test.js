@@ -187,7 +187,7 @@ describe("MLFQ Concurrent Request Competition Experiment", () => {
 				requests.push({
 					id: `req-${i}`,
 					arrivalTime: 0, // All arrive at same time
-					processingTime: 2000, // Longer than Q0 quantum (500ms)
+					processingTime: 2000, // Longer than Q0 quantum (1000ms)
 					category: "medium",
 					remainingTime: 2000,
 				});

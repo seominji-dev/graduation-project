@@ -47,19 +47,19 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 
 	describe("checkPreemption", () => {
 		test("시간 할당량 미만이면 선점하지 않음", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 			scheduler.startProcessing(req);
 
-			const result = scheduler.checkPreemption(100); // 총 400ms (500ms 미만)
+			const result = scheduler.checkPreemption(200); // 총 900ms (1000ms 미만)
 
 			expect(result).toBeNull();
 		});
 
 		test("시간 할당량 도달 시 선점 필요", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 			scheduler.startProcessing(req);
 
-			const result = scheduler.checkPreemption(200); // 총 500ms (500ms 도달)
+			const result = scheduler.checkPreemption(300); // 총 1000ms (1000ms 도달)
 
 			expect(result).not.toBeNull();
 			expect(result.shouldPreempt).toBe(true);
@@ -67,10 +67,10 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 		});
 
 		test("시간 할당량 초과 시 선점 필요", () => {
-			const req = { id: "1", queueLevel: 0, usedTime: 300 };
+			const req = { id: "1", queueLevel: 0, usedTime: 700 };
 			scheduler.startProcessing(req);
 
-			const result = scheduler.checkPreemption(300); // 총 600ms (500ms 초과)
+			const result = scheduler.checkPreemption(400); // 총 1100ms (1000ms 초과)
 
 			expect(result).not.toBeNull();
 			expect(result.shouldPreempt).toBe(true);
@@ -84,11 +84,11 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 		});
 
 		test("하위 큐에서도 선점 동작함", () => {
-			// Q1: 1500ms
-			const req = { id: "1", queueLevel: 1, usedTime: 1000 };
+			// Q1: 3000ms
+			const req = { id: "1", queueLevel: 1, usedTime: 2500 };
 			scheduler.startProcessing(req);
 
-			const result = scheduler.checkPreemption(600); // 총 1600ms (1500ms 초과)
+			const result = scheduler.checkPreemption(600); // 총 3100ms (3000ms 초과)
 
 			expect(result).not.toBeNull();
 			expect(result.newQueueLevel).toBe(2);
@@ -180,7 +180,7 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 
 			const remaining = scheduler.getRemainingTime();
 
-			expect(remaining).toBe(200); // 500 - 300 = 200
+			expect(remaining).toBe(700); // 1000 - 300 = 700
 		});
 
 		test("처리 중인 요청 없으면 0 반환", () => {
@@ -190,20 +190,20 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 		});
 
 		test("각 큐 레벨별 할당량을 준수함", () => {
-			// Q0: 500ms
+			// Q0: 1000ms
 			const reqQ0 = { id: "q0", queueLevel: 0, usedTime: 200 };
 			scheduler.startProcessing(reqQ0);
-			expect(scheduler.getRemainingTime()).toBe(300);
+			expect(scheduler.getRemainingTime()).toBe(800);
 
-			// Q1: 1500ms
+			// Q1: 3000ms
 			const reqQ1 = { id: "q1", queueLevel: 1, usedTime: 500 };
 			scheduler.startProcessing(reqQ1);
-			expect(scheduler.getRemainingTime()).toBe(1000);
+			expect(scheduler.getRemainingTime()).toBe(2500);
 
-			// Q2: 4000ms
+			// Q2: 8000ms
 			const reqQ2 = { id: "q2", queueLevel: 2, usedTime: 1000 };
 			scheduler.startProcessing(reqQ2);
-			expect(scheduler.getRemainingTime()).toBe(3000);
+			expect(scheduler.getRemainingTime()).toBe(7000);
 
 			// Q3: Infinity
 			const reqQ3 = { id: "q3", queueLevel: 3, usedTime: 0 };
@@ -226,8 +226,8 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 
 			scheduler.startProcessing(shortReq);
 
-			// 400ms 경과 (500ms 미만)
-			const preemption = scheduler.checkPreemption(400);
+			// 900ms 경과 (1000ms 미만)
+			const preemption = scheduler.checkPreemption(900);
 			expect(preemption).toBeNull();
 
 			// 요청 완료
@@ -246,8 +246,8 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 
 			scheduler.startProcessing(longReq);
 
-			// 600ms 경과 (500ms 초과)
-			const preemption = scheduler.checkPreemption(600);
+			// 1100ms 경과 (1000ms 초과)
+			const preemption = scheduler.checkPreemption(1100);
 			expect(preemption).not.toBeNull();
 			expect(preemption.newQueueLevel).toBe(1);
 
@@ -268,9 +268,9 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 				usedTime: 0,
 			};
 
-			// Q0에서 Q1로 강등
+			// Q0에서 Q1로 강등 (1000ms 초과)
 			scheduler.startProcessing(veryLongReq);
-			let preemption = scheduler.checkPreemption(600); // 600ms > 500ms
+			let preemption = scheduler.checkPreemption(1100); // 1100ms > 1000ms
 			scheduler.preempt(preemption);
 
 			expect(scheduler.queues[1].length).toBe(1);
@@ -278,7 +278,7 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 			// Q1에서 다시 처리 시작
 			const reqFromQ1 = scheduler.dequeue();
 			scheduler.startProcessing(reqFromQ1);
-			preemption = scheduler.checkPreemption(2000); // 2000ms > 1500ms
+			preemption = scheduler.checkPreemption(3100); // 3100ms > 3000ms
 			scheduler.preempt(preemption);
 
 			expect(scheduler.queues[2].length).toBe(1);
@@ -286,7 +286,7 @@ describe("MLFQScheduler - 선점형 기능 동작 테스트", () => {
 			// Q2에서 다시 처리 시작
 			const reqFromQ2 = scheduler.dequeue();
 			scheduler.startProcessing(reqFromQ2);
-			preemption = scheduler.checkPreemption(5000); // 5000ms > 4000ms
+			preemption = scheduler.checkPreemption(8100); // 8100ms > 8000ms
 			scheduler.preempt(preemption);
 
 			expect(scheduler.queues[3].length).toBe(1);
