@@ -1,0 +1,26 @@
+[
+  {
+    "category": "Short",
+    "count": 33,
+    "fcfs_avg_wait": 65635.85,
+    "mlfq_avg_wait": 65635.85,
+    "fcfs_avg_processing": 171.24,
+    "mlfq_avg_processing": 171.24
+  },
+  {
+    "category": "Medium",
+    "count": 44,
+    "fcfs_avg_wait": 58231.05,
+    "mlfq_avg_wait": 58231.05,
+    "fcfs_avg_processing": 1045.11,
+    "mlfq_avg_processing": 1045.11
+  },
+  {
+    "category": "Long",
+    "count": 23,
+    "fcfs_avg_wait": 68807.74,
+    "mlfq_avg_wait": 68807.74,
+    "fcfs_avg_processing": 3500.91,
+    "mlfq_avg_processing": 3500.91
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "algorithm": "FCFS",
+    "free_served": true,
+    "max_wait_time": 2500,
+    "starvation": "Conditional"
+  },
+  {
+    "algorithm": "Priority (No Aging)",
+    "free_served": false,
+    "max_wait_time": Infinity,
+    "starvation": "Yes"
+  },
+  {
+    "algorithm": "Priority (With Aging)",
+    "free_served": true,
+    "max_wait_time": 1200,
+    "starvation": "Prevented"
+  },
+  {
+    "algorithm": "MLFQ (Boosting)",
+    "free_served": true,
+    "max_wait_time": 800,
+    "starvation": "Prevented"
+  },
+  {
+    "algorithm": "WFQ",
+    "free_served": true,
+    "max_wait_time": 523,
+    "starvation": "Prevented"
+  }
+]

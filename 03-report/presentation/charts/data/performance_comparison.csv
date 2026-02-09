@@ -1,0 +1,5 @@
+scheduler,avgWaitTime,maxWaitTime,minWaitTime,throughput,totalTime
+FCFS,5759.75,11565.0,0.0,8.17,12242.0
+Priority,5764.63,11572.0,0.0,8.16,12249.0
+MLFQ,5759.75,11565.0,0.0,8.17,12242.0
+WFQ,5688.17,11565.0,0.0,8.17,12242.0

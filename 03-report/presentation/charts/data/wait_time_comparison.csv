@@ -1,0 +1,5 @@
+tier,fcfs_wait_time,wfq_wait_time,improvement_pct
+Enterprise,48.3,52.1,-7.9
+Premium,892.5,104.2,88.3
+Standard,1245.8,156.3,87.5
+Free,1892.3,523.0,72.4

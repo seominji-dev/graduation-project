@@ -1,0 +1,6 @@
+algorithm,free_served,max_wait_time,starvation
+FCFS,True,2500,Conditional
+Priority (No Aging),False,inf,Yes
+Priority (With Aging),True,1200,Prevented
+MLFQ (Boosting),True,800,Prevented
+WFQ,True,523,Prevented

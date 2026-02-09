@@ -1,0 +1,34 @@
+[
+  {
+    "scheduler": "FCFS",
+    "avgWaitTime": 5759.75,
+    "maxWaitTime": 11565.0,
+    "minWaitTime": 0.0,
+    "throughput": 8.17,
+    "totalTime": 12242.0
+  },
+  {
+    "scheduler": "Priority",
+    "avgWaitTime": 5764.63,
+    "maxWaitTime": 11572.0,
+    "minWaitTime": 0.0,
+    "throughput": 8.16,
+    "totalTime": 12249.0
+  },
+  {
+    "scheduler": "MLFQ",
+    "avgWaitTime": 5759.75,
+    "maxWaitTime": 11565.0,
+    "minWaitTime": 0.0,
+    "throughput": 8.17,
+    "totalTime": 12242.0
+  },
+  {
+    "scheduler": "WFQ",
+    "avgWaitTime": 5688.17,
+    "maxWaitTime": 11565.0,
+    "minWaitTime": 0.0,
+    "throughput": 8.17,
+    "totalTime": 12242.0
+  }
+]

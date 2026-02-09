@@ -1,0 +1,4 @@
+category,count,fcfs_avg_wait,mlfq_avg_wait,fcfs_avg_processing,mlfq_avg_processing
+Short,33,65635.85,65635.85,171.24,171.24
+Medium,44,58231.05,58231.05,1045.11,1045.11
+Long,23,68807.74,68807.74,3500.91,3500.91

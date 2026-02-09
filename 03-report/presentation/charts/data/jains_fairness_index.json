@@ -1,0 +1,33 @@
+{
+  "individual_tenants": [
+    {
+      "tier": "Enterprise",
+      "weight": 100,
+      "jfi": 0.98,
+      "target": 0.9
+    },
+    {
+      "tier": "Premium",
+      "weight": 50,
+      "jfi": 0.96,
+      "target": 0.9
+    },
+    {
+      "tier": "Standard",
+      "weight": 10,
+      "jfi": 0.94,
+      "target": 0.9
+    },
+    {
+      "tier": "Free",
+      "weight": 1,
+      "jfi": 0.92,
+      "target": 0.9
+    }
+  ],
+  "system_level": {
+    "overall_jfi": 0.89,
+    "normalized_jfi": 0.95,
+    "target": 0.95
+  }
+}

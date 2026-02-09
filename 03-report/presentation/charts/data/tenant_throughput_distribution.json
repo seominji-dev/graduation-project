@@ -1,0 +1,30 @@
+[
+  {
+    "tier": "Enterprise",
+    "weight": 100,
+    "expected_ratio": 62.11180124223602,
+    "throughput": 62.67,
+    "jfi_contribution": 0.6267
+  },
+  {
+    "tier": "Premium",
+    "weight": 50,
+    "expected_ratio": 31.05590062111801,
+    "throughput": 31.61,
+    "jfi_contribution": 0.3161
+  },
+  {
+    "tier": "Standard",
+    "weight": 10,
+    "expected_ratio": 6.211180124223603,
+    "throughput": 6.77,
+    "jfi_contribution": 0.0677
+  },
+  {
+    "tier": "Free",
+    "weight": 1,
+    "expected_ratio": 0.6211180124223602,
+    "throughput": 1.18,
+    "jfi_contribution": 0.0118
+  }
+]

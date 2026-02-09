@@ -1,0 +1,26 @@
+[
+  {
+    "tier": "Enterprise",
+    "fcfs_wait_time": 48.3,
+    "wfq_wait_time": 52.1,
+    "improvement_pct": -7.9
+  },
+  {
+    "tier": "Premium",
+    "fcfs_wait_time": 892.5,
+    "wfq_wait_time": 104.2,
+    "improvement_pct": 88.3
+  },
+  {
+    "tier": "Standard",
+    "fcfs_wait_time": 1245.8,
+    "wfq_wait_time": 156.3,
+    "improvement_pct": 87.5
+  },
+  {
+    "tier": "Free",
+    "fcfs_wait_time": 1892.3,
+    "wfq_wait_time": 523.0,
+    "improvement_pct": 72.4
+  }
+]
