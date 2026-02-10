@@ -196,6 +196,21 @@ function createRoutes(deps) {
     res.json({ count: logs.length, logs });
   });
 
+  /**
+   * GET /api/fairness
+   * 공정성 지표 (Jain's Fairness Index) 조회
+   */
+  router.get('/fairness', (req, res) => {
+    const stats = scheduler.getStats ? scheduler.getStats() : {};
+    const fairnessIndex = stats.fairnessIndex || null;
+
+    res.json({
+      scheduler: scheduler.name,
+      fairnessIndex: fairnessIndex,
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // ============================================
   // 시스템 API
   // ============================================
