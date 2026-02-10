@@ -730,6 +730,129 @@ pm2 start src-simple/index.js -i max
 
 ---
 
+## 12. 프로덕션 모니터링 설정 (Production Monitoring Setup)
+
+### 12.1 헬스 체크 강화
+
+```javascript
+// advanced-health-check.js
+const createHealthCheck = (scheduler) => {
+  return (req, res) => {
+    const health = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      scheduler: scheduler.getName(),
+      metrics: {
+        queueSize: scheduler.size(),
+        processed: scheduler.getStats().processed || 0,
+        fairnessIndex: scheduler.calculateFairnessIndex ? scheduler.calculateFairnessIndex() : 1.0
+      },
+      system: {
+        memory: process.memoryUsage(),
+        cpu: process.cpuUsage(),
+        platform: process.platform,
+        nodeVersion: process.version
+      },
+      checks: {
+        database: checkDatabase(),
+        llm: checkLLM(),
+        diskSpace: checkDiskSpace()
+      }
+    };
+
+    // 헬스 체크 실패 조건
+    if (health.metrics.queueSize > 1000) {
+      health.status = 'degraded';
+    }
+    if (health.metrics.queueSize > 5000) {
+      health.status = 'unhealthy';
+    }
+
+    const statusCode = health.status === 'healthy' ? 200 :
+                       health.status === 'degraded' ? 200 : 503;
+    res.status(statusCode).json(health);
+  };
+};
+```
+
+### 12.2 실시간 공정성 대시보드
+
+```javascript
+// fairness-dashboard.js
+const getFairnessReport = (scheduler) => {
+  const stats = scheduler.getStats();
+  const tenants = Object.values(stats.tenants || {});
+
+  return {
+    timestamp: new Date().toISOString(),
+    overall: {
+      fairnessIndex: stats.fairnessIndex,
+      totalProcessed: tenants.reduce((sum, t) => sum + t.processed, 0),
+      tenantCount: tenants.length
+    },
+    byTenant: tenants.map(t => ({
+      tenantId: t.tenantId || 'unknown',
+      tier: t.tier,
+      weight: t.weight,
+      processed: t.processed,
+      normalizedThroughput: t.normalizedThroughput,
+      share: t.processed / stats.totalProcessed
+    })),
+    alerts: generateFairnessAlerts(stats)
+  };
+};
+
+const generateFairnessAlerts = (stats) => {
+  const alerts = [];
+  if (stats.fairnessIndex < 0.8) {
+    alerts.push({
+      severity: 'warning',
+      message: `Fairness Index below threshold: ${stats.fairnessIndex.toFixed(2)}`,
+      recommendation: 'Consider adjusting tenant weights or investigating resource monopolization'
+    });
+  }
+  return alerts;
+};
+```
+
+---
+
+## 13. 무중단 배포 전략 (Zero-Downtime Deployment)
+
+### 13.1 블루-그린 배포
+
+```bash
+# 1. 새 버전을 다른 포트에서 시작
+PORT=3001 pm2 start src-simple/index.js --name llm-scheduler-v2
+
+# 2. 헬스 체크
+curl http://localhost:3001/api/health
+
+# 3. 트래픽 전환 (Nginx 설정)
+# nginx.conf 업데이트:
+# upstream llm_scheduler {
+#   server localhost:3001; # 새 버전 우선
+#   server localhost:3000 backup;
+# }
+
+# 4. 구버전 중지
+pm2 stop llm-scheduler
+
+# 5. 포트 전환
+PORT=3000 pm2 restart llm-scheduler-v2
+```
+
+### 13.2 롤링 업데이트
+
+```bash
+# PM2 클러스터 모드에서 무중단 재시작
+pm2 reload llm-scheduler
+```
+
+---
+
 **작성일:** 2026년 2월 9일
-**버전:** 1.0
+**수정일:** 2026년 2월 10일 (모니터링 및 운영 가이드 강화)
+**버전:** 1.1
 **작성자:** 서민지 (C235180)
