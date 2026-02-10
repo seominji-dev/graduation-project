@@ -11,11 +11,12 @@
 운영체제(OS)의 프로세스 스케줄링 알고리즘을 LLM API 요청 관리에 적용하여,
 API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 
-**최신 업데이트 (2026-02-08)**:
+**최신 업데이트 (2026-02-11)**:
 - MLFQ 선점형 시간 분할 시뮬레이션 구현 완료
-- Short 요청 대기 시간 76.11% 개선 (144,599ms → 34,540ms)
-- 560회 선점 이벤트 기록으로 적응형 특성 입증
-- 137개 테스트 100% 통과
+- Short 요청 대기 시간 81.14% 개선 (동시 경쟁 실험)
+- 이중 수준 JFI 측정 방법론 구현
+- 307개 테스트 100% 통과
+- 99.6% 코드 커버리지 달성
 
 ### 구현된 알고리즘
 
@@ -25,6 +26,7 @@ API 비용을 절감하고 응답 시간을 최적화하는 시스템입니다.
 | **Priority** | 우선순위 기반 | 중요도 구분 필요 |
 | **MLFQ** | 동적 우선순위 조정 | 다양한 작업 혼합 |
 | **WFQ** | 가중치 공정 분배 | 멀티테넌트 환경 |
+| **Rate Limiter** | 속도 제어 기반 | API 과부하 방지 |
 
 ---
 
@@ -84,16 +86,16 @@ npm test
 
 | 항목 | 결과 |
 |------|------|
-| 테스트 수 | 137개 |
+| 테스트 수 | 307개 |
 | 통과율 | 100% |
-| 코드 커버리지 (Statements) | 98.65% |
-| 코드 커버리지 (Branches) | 86.40% |
-| 코드 커버리지 (Functions) | 95.94% |
-| 코드 커버리지 (Lines) | 98.55% |
+| 코드 커버리지 (Statements) | 99.6% |
+| 코드 커버리지 (Branches) | 94.11% |
+| 코드 커버리지 (Functions) | 98.18% |
+| 코드 커버리지 (Lines) | 99.75% |
 
 ## 주요 실험 결과
 
-### MLFQ 시간 분할 시뮬레이션 (2026-02-08)
+### MLFQ 시간 분할 시뮬레이션 (2026-02-11)
 
 | 카테고리 | FCFS 평균 대기 시간 | MLFQ 평균 대기 시간 | 개선율 |
 |---------|-------------------|-------------------|-------|
@@ -119,9 +121,13 @@ Phase 2 (구현) → Phase 3 (보고서) → Phase 1 (계획서) 보완
 ## 제출물
 
 - [x] 소스코드 (GitHub Repository)
-- [x] 최종 논문 (PDF) - 03-report/paper/final-report.pdf (154KB)
-- [x] 발표자료 (PPT) - 03-report/presentation/graduation-presentation.pptx (457KB)
-- [x] 데모 영상 - 03-report/demo/video/out/demo.mp4 (5.2MB)
+- [x] 최종 논문 - 03-report/paper/final-thesis.md (544줄)
+- [x] 논문 초록 - 03-report/paper/abstract.md (한/영)
+- [x] 발표자료 - 03-report/presentation/final-presentation.md (514줄)
+- [x] 데모 시나리오 - 03-report/demo/demo-scenario-final.md
+- [x] 스크린샷 가이드 - 03-report/demo/screenshots-guide-final.md
+- [x] 비디오 가이드 - 03-report/demo/video-guide-final.md
+- [x] 종합 평가 보고서 - 03-report/evaluation-final.md (346줄)
 
 ---
 
