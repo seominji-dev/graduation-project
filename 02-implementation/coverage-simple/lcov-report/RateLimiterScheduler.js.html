@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for schedulers/MLFQScheduler.js</title>
+    <title>Code coverage report for RateLimiterScheduler.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../prettify.css" />
-    <link rel="stylesheet" href="../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../sort-arrow-sprite.png);
+            background-image: url(sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">schedulers</a> MLFQScheduler.js</h1>
+        <h1><a href="index.html">All files</a> RateLimiterScheduler.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">98.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>87/87</span>
+                <span class='fraction'>66/67</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">96.29% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>32/32</span>
+                <span class='fraction'>26/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">95% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>19/19</span>
+                <span class='fraction'>19/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">98.46% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>83/83</span>
+                <span class='fraction'>64/65</span>
             </div>
         
             
@@ -316,7 +316,47 @@
 <a name='L251'></a><a href='#L251'>251</a>
 <a name='L252'></a><a href='#L252'>252</a>
 <a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -337,32 +377,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">76x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">76x</span>
-<span class="cline-any cline-yes">76x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">76x</span>
-<span class="cline-any cline-yes">76x</span>
-<span class="cline-any cline-yes">76x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -371,9 +397,45 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">68x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">47x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">49x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -381,37 +443,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">183x</span>
-<span class="cline-any cline-yes">183x</span>
-<span class="cline-any cline-yes">732x</span>
-<span class="cline-any cline-yes">732x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">183x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">183x</span>
-<span class="cline-any cline-yes">7614x</span>
-<span class="cline-any cline-yes">7614x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">183x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">344x</span>
-<span class="cline-any cline-yes">344x</span>
-<span class="cline-any cline-yes">344x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">344x</span>
+<span class="cline-any cline-yes">48x</span>
+<span class="cline-any cline-yes">48x</span>
+<span class="cline-any cline-yes">48x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,9 +453,90 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1785x</span>
-<span class="cline-any cline-yes">1832x</span>
-<span class="cline-any cline-yes">1782x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">178x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">137x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -432,72 +547,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1786x</span>
-<span class="cline-any cline-yes">1786x</span>
-<span class="cline-any cline-yes">1786x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1797x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1796x</span>
-<span class="cline-any cline-yes">1796x</span>
-<span class="cline-any cline-yes">1796x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1796x</span>
-<span class="cline-any cline-yes">1445x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">351x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1435x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-yes">1434x</span>
-<span class="cline-any cline-yes">1434x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">332x</span>
-<span class="cline-any cline-yes">332x</span>
-<span class="cline-any cline-yes">332x</span>
-<span class="cline-any cline-yes">332x</span>
-<span class="cline-any cline-yes">332x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -506,13 +571,55 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -521,18 +628,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">110x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">24x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -540,288 +638,310 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">116x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3574x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * MLFQ (Multi-Level Feedback Queue) 스케줄러
- * 다단계 피드백 큐 - 4개의 우선순위 레벨
+ * RateLimiterScheduler - Token Bucket Algorithm
  *
- * Q0: 500ms (최고 우선순위, 대화형 Short 요청)
- * Q1: 1500ms
- * Q2: 4000ms
- * Q3: 무제한 (배치 작업)
+ * Token Bucket 알고리즘 기반 Rate Limiter
+ * LLM API 요청 속도 제어를 위한 스케줄러
  *
- * MLFQ 5가지 규칙:
- * 1. Priority(A) &gt; Priority(B) → A 먼저 실행
- * 2. Priority(A) = Priority(B) → FCFS
- * 3. 새 작업은 최상위 큐(Q0)에 배치
- * 4. 시간 할당량 소진 시 하위 큐로 이동
- * 5. 주기적 Boosting으로 모든 작업을 Q0로
+ * 핵심 개념:
+ * - Bucket: 토큰을 저장하는 가상의 버킷
+ * - Tokens: 요청 처리 권한 (1토큰 = 1요청)
+ * - Refill Rate: 초당 토큰 충전 속도
+ * - Capacity: 버킷 최대 용량
  *
- * 선점형(Preemptive) 기능:
- * - 타임 슬라이스 단위 처리 (500ms)
- * - 중간 결과를 보존하고 요청을 하위 큐로 강등
- * - Round-Robin 방식으로 상위 큐 우선 처리
+ * 알고리즘:
+ * 1. 요청 도착 시 버킷에서 토큰 소비
+ * 2. 토큰이 있으면 요청 허용 (allow)
+ * 3. 토큰이 없으면 요청 거부 (deny)
+ * 4. 주기적으로 토큰 충전 (refill)
+ *
+ * 사용 예시:
+ * - refill_rate: 10 tokens/sec (초당 10요청)
+ * - bucket_capacity: 50 tokens (최대 50토큰 저장)
+ * - Burst: 50개 요청 즉시 처리 후 10req/s로 제한
+ *
+ * 기존 OS 스케줄러와 비교:
+ * - FCFS/Priority/MLFQ: 큐작 및 순서 결정
+ * - RateLimiter: 속도 제어 (폭탄 방지, API 과부하 방지)
+ * - 함께 사용: RateLimiter -&gt; OS Scheduler 순서로 체이닝 가능
  */
-const BaseScheduler = require("./BaseScheduler");
+const BaseScheduler = require('./BaseScheduler');
 &nbsp;
-// 큐 레벨별 시간 할당량 (밀리초)
-const TIME_QUANTUM = [1000, 3000, 8000, Infinity]; // Q0: 1초, Q1: 3초, Q2: 8초, Q3: 무제한
-const NUM_QUEUES = 4;
-const BOOST_INTERVAL_MS = 5000; // 5초마다 boosting (재실험을 위해 단축, 기존 30초)
-const TIME_SLICE_MS = 500; // 타임 슬라이스: 선점 체크 주기
+// 기본 설정값
+const DEFAULT_REFILL_RATE = 10; // tokens per second
+const DEFAULT_BUCKET_CAPACITY = 50; // maximum tokens
+const DEFAULT_REFILL_INTERVAL_MS = 100; // refill check interval (100ms)
 &nbsp;
-class MLFQScheduler extends BaseScheduler {
-	constructor() {
-		super("MLFQ");
-		// 4개의 큐 배열 (Q0이 최고 우선순위)
-		this.queues = [[], [], [], []];
-		this.boostInterval = null;
+class RateLimiterScheduler extends BaseScheduler {
+  /**
+   * RateLimiterScheduler 생성자
+   * @param {Object} options - 설정 옵션
+   * @param {number} options.refillRate - 초당 토큰 충전량 (default: 10)
+   * @param {number} options.bucketCapacity - 버킷 최대 용량 (default: 50)
+   * @param {number} options.refillInterval - 충전 체크 간격 ms (default: 100)
+   */
+  constructor(options = {}) {
+    super('RateLimiter');
 &nbsp;
-		// 선점형 처리를 위한 현재 실행 중인 요청 추적
-		this.currentRequest = null;
-		this.currentRequestStartTime = null;
-		this.currentRequestUsedTime = 0;
-	}
+    this.refillRate = options.refillRate || DEFAULT_REFILL_RATE;
+    this.bucketCapacity = options.bucketCapacity || DEFAULT_BUCKET_CAPACITY;
+    this.refillInterval = options.refillInterval || DEFAULT_REFILL_INTERVAL_MS;
 &nbsp;
-	/**
-	 * Boosting 시작 - 주기적으로 모든 작업을 Q0로 이동
-	 */
-	startBoosting() {
-		this.boostInterval = setInterval(() =&gt; {
-			this.boost();
-		}, BOOST_INTERVAL_MS);
-	}
+    // 현재 토큰 수용량 (버킷에 있는 토큰 수)
+    this.currentTokens = this.bucketCapacity;
 &nbsp;
-	/**
-	 * Boosting 중지
-	 */
-	stopBoosting() {
-		if (this.boostInterval) {
-			clearInterval(this.boostInterval);
-			this.boostInterval = null;
-		}
-	}
+    // 마지막으로 토큰을 충전한 시간
+    this.lastRefillTime = Date.now();
 &nbsp;
-	/**
-	 * 모든 작업을 Q0로 이동 (기아 방지)
-	 */
-	boost() {
-		const allRequests = [];
-		for (let i = 0; i &lt; NUM_QUEUES; i++) {
-			allRequests.push(...this.queues[i]);
-			this.queues[i] = [];
-		}
+    // 충전 타이머
+    this.refillTimer = null;
 &nbsp;
-		// 현재 실행 중인 요청이 있으면 처리
-		if (this.currentRequest) {
-			allRequests.push(this.currentRequest);
-			this.currentRequest = null;
-			this.currentRequestStartTime = null;
-			this.currentRequestUsedTime = 0;
-		}
+    // 통계
+    this.stats = {
+      allowed: 0,
+      denied: 0,
+      totalRequests: 0
+    };
 &nbsp;
-		// 모든 요청을 Q0로 이동
-		for (const request of allRequests) {
-			request.queueLevel = 0;
-			request.usedTime = 0;
-		}
-		this.queues[0] = allRequests;
-	}
+    // 자동 충전 시작
+    this.startRefilling();
+  }
 &nbsp;
-	/**
-	 * 요청 추가 (새 작업은 Q0에 배치)
-	 */
-	enqueue(request) {
-		request.queueLevel = 0;
-		request.usedTime = 0;
-		request.createdAt =
-			request.createdAt !== undefined ? request.createdAt : Date.now();
-		this.queues[0].push(request);
-	}
+  /**
+   * 토큰 충전 시작
+   */
+  startRefilling() {
+    if (this.refillTimer) {
+      return; // 이미 실행 중
+    }
 &nbsp;
-	/**
-	 * 다음 요청 선택 (높은 우선순위 큐부터)
-	 * @returns {Object|null}
-	 */
-	dequeue() {
-		for (let i = 0; i &lt; NUM_QUEUES; i++) {
-			if (this.queues[i].length &gt; 0) {
-				return this.queues[i].shift();
-			}
-		}
-		return null;
-	}
+    this.refillTimer = setInterval(<span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >      this.refill();</span>
+    }, this.refillInterval);
+  }
 &nbsp;
-	/**
-	 * 선점형 처리를 시작할 요청 설정
-	 * @param {Object} request - 처리할 요청
-	 */
-	startProcessing(request) {
-		this.currentRequest = request;
-		this.currentRequestStartTime = Date.now();
-		this.currentRequestUsedTime = request.usedTime || 0;
-	}
+  /**
+   * 토큰 충전 중지
+   */
+  stopRefilling() {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (this.refillTimer) {
+      clearInterval(this.refillTimer);
+      this.refillTimer = null;
+    }
+  }
 &nbsp;
-	/**
-	 * 타임 슬라이스 체크 (선점 여부 확인)
-	 * @param {number} elapsedMs - 경과 시간 (밀리초)
-	 * @returns {Object|null} 선점이 필요하면 {shouldPreempt: true, newQueueLevel: number}, 아니면 null
-	 */
-	checkPreemption(elapsedMs) {
-		if (!this.currentRequest) {
-			return null;
-		}
+  /**
+   * 토큰 충전 (Refill)
+   * 경과 시간에 비례하여 토큰 추가
+   */
+  refill() {
+    const now = Date.now();
+    const elapsedMs = now - this.lastRefillTime;
+    const elapsedSec = elapsedMs / 1000;
 &nbsp;
-		const totalUsedTime = this.currentRequestUsedTime + elapsedMs;
-		const currentQueueLevel = this.currentRequest.queueLevel || 0;
-		const timeQuantum = TIME_QUANTUM[currentQueueLevel];
+    // 경과 시간만큼 토큰 충전
+    const tokensToAdd = elapsedSec * this.refillRate;
 &nbsp;
-		// 타임 할당량 초과 시 선점
-		if (totalUsedTime &gt;= timeQuantum &amp;&amp; timeQuantum !== Infinity) {
-			return {
-				shouldPreempt: true,
-				newQueueLevel: Math.min(currentQueueLevel + 1, NUM_QUEUES - 1),
-				usedTime: totalUsedTime,
-			};
-		}
+    this.currentTokens = Math.min(
+      this.bucketCapacity,
+      this.currentTokens + tokensToAdd
+    );
 &nbsp;
-		return null;
-	}
+    this.lastRefillTime = now;
+  }
 &nbsp;
-	/**
-	 * 요청 선점 및 하위 큐로 이동
-	 * @param {Object} preemptionInfo - 선점 정보
-	 */
-	preempt(preemptionInfo) {
-		if (!this.currentRequest) {
-			return;
-		}
+  /**
+   * 수동으로 토큰 충전 실행 (테스트용)
+   */
+  manualRefill() {
+    this.refill();
+  }
 &nbsp;
-		const request = this.currentRequest;
-		const newQueueLevel = preemptionInfo.newQueueLevel;
+  /**
+   * 요청 추가 (토큰 확인 및 소비)
+   * @param {Object} request - LLM 요청 객체
+   * @returns {Object} { allowed: boolean, tokens: number, waitTime: number }
+   */
+  enqueue(request) {
+    this.stats.totalRequests++;
 &nbsp;
-		// 요청 상태 업데이트
-		request.queueLevel = newQueueLevel;
-		request.usedTime = 0; // 새 큐에서 시간 초기화
+    // 토큰 충전 확인
+    this.refill();
 &nbsp;
-		// 하위 큐에 재삽입
-		this.queues[newQueueLevel].push(request);
+    // 토큰이 부족하면 거부
+    if (this.currentTokens &lt; 1) {
+      this.stats.denied++;
 &nbsp;
-		// 현재 요청 초기화
-		this.currentRequest = null;
-		this.currentRequestStartTime = null;
-		this.currentRequestUsedTime = 0;
-	}
+      // 대기 예상 시간 계산 (1토큰 충전所需 시간)
+      const waitTime = (1 / this.refillRate) * 1000; // ms
 &nbsp;
-	/**
-	 * 현재 처리 중인 요청 완료
-	 * @returns {Object|null} 완료된 요청
-	 */
-	completeCurrentRequest() {
-		const request = this.currentRequest;
-		this.currentRequest = null;
-		this.currentRequestStartTime = null;
-		this.currentRequestUsedTime = 0;
-		return request;
-	}
+      // 요청에 거부 정보 표시
+      request.rateLimitResult = {
+        allowed: false,
+        tokens: 0,
+        waitTime: waitTime
+      };
 &nbsp;
-	/**
-	 * 작업 완료 후 피드백 (시간 사용량에 따라 큐 레벨 조정)
-	 * @param {Object} request - 완료된 요청
-	 * @param {number} executionTime - 실행 시간 (밀리초)
-	 */
-	feedback(request, executionTime) {
-		request.usedTime += executionTime;
+      // 거부된 요청도 큐에 저장 (재시도를 위해)
+      this.queue.push(request);
 &nbsp;
-		// 시간 할당량 초과 시 하위 큐로 이동
-		if (request.usedTime &gt;= TIME_QUANTUM[request.queueLevel]) {
-			request.queueLevel = Math.min(request.queueLevel + 1, NUM_QUEUES - 1);
-			request.usedTime = 0;
-		}
-	}
+      return request.rateLimitResult;
+    }
 &nbsp;
-	/**
-	 * 작업을 다시 큐에 넣기 (재시도 등)
-	 * @param {Object} request - 재큐잉할 요청
-	 */
-	requeue(request) {
-		const level = request.queueLevel || 0;
-		this.queues[level].push(request);
-	}
+    // 토큰이 있으면 허용
+    this.currentTokens -= 1;
+    this.stats.allowed++;
 &nbsp;
-	/**
-	 * 전체 큐 크기 반환
-	 */
-	size() {
-		let total = this.queues.reduce((sum, q) =&gt; sum + q.length, 0);
-		if (this.currentRequest) {
-			total += 1;
-		}
-		return total;
-	}
+    request.rateLimitResult = {
+      allowed: true,
+      tokens: 1,
+      waitTime: 0,
+      remainingTokens: this.currentTokens
+    };
 &nbsp;
-	/**
-	 * 큐가 비어있는지 확인
-	 */
-	isEmpty() {
-		if (this.currentRequest) {
-			return false;
-		}
-		return this.queues.every((q) =&gt; q.length === 0);
-	}
+    // 허용된 요청을 큐에 추가
+    this.queue.push(request);
 &nbsp;
-	/**
-	 * 현재 처리 중인 요청 정보 반환
-	 * @returns {Object|null} 현재 요청 정보
-	 */
-	getCurrentRequest() {
-		return this.currentRequest;
-	}
+    return request.rateLimitResult;
+  }
 &nbsp;
-	/**
-	 * 현재 요청의 남은 시간 할당량 계산
-	 * @returns {number} 남은 시간 (밀리초)
-	 */
-	getRemainingTime() {
-		if (!this.currentRequest) {
-			return 0;
-		}
+  /**
+   * 다음 요청 선택 (허용된 요청만 처리)
+   * @returns {Object|null} 다음 처리할 요청
+   */
+  dequeue() {
+    // 허용된 요청 찾기
+    for (let i = 0; i &lt; this.queue.length; i++) {
+      const req = this.queue[i];
+      if (req.rateLimitResult &amp;&amp; req.rateLimitResult.allowed) {
+        // 큐에서 제거하고 반환
+        this.queue.splice(i, 1);
+        return req;
+      }
+    }
 &nbsp;
-		const currentQueueLevel = this.currentRequest.queueLevel || 0;
-		const timeQuantum = TIME_QUANTUM[currentQueueLevel];
-		return timeQuantum - this.currentRequestUsedTime;
-	}
+    return null;
+  }
+&nbsp;
+  /**
+   * 특정 요청을 큐에서 제거 (재시도 완료 등)
+   * @param {string} requestId - 제거할 요청 ID
+   * @returns {boolean} 제거 성공 여부
+   */
+  removeRequest(requestId) {
+    for (let i = 0; i &lt; this.queue.length; i++) {
+      if (this.queue[i].id === requestId) {
+        this.queue.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
+  }
+&nbsp;
+  /**
+   * 거부된 요청을 모두 제거
+   */
+  clearDeniedRequests() {
+    this.queue = this.queue.filter(req =&gt; {
+      return req.rateLimitResult &amp;&amp; req.rateLimitResult.allowed;
+    });
+  }
+&nbsp;
+  /**
+   * 현재 토큰 수 반환
+   * @returns {number} 현재 토큰 수
+   */
+  getCurrentTokens() {
+    this.refill(); // 최신 상태로 업데이트
+    return this.currentTokens;
+  }
+&nbsp;
+  /**
+   * 토큰 수 직접 설정 (테스트용)
+   * @param {number} tokens - 설정할 토큰 수
+   */
+  setCurrentTokens(tokens) {
+    this.currentTokens = Math.min(this.bucketCapacity, Math.max(0, tokens));
+  }
+&nbsp;
+  /**
+   * 통계 정보 반환
+   * @returns {Object} 통계 객체
+   */
+  getStats() {
+    this.refill(); // 최신 상태로 업데이트
+&nbsp;
+    return {
+      refillRate: this.refillRate,
+      bucketCapacity: this.bucketCapacity,
+      currentTokens: this.currentTokens,
+      allowed: this.stats.allowed,
+      denied: this.stats.denied,
+      totalRequests: this.stats.totalRequests,
+      allowRate: this.stats.totalRequests &gt; 0
+        ? (this.stats.allowed / this.stats.totalRequests * 100).toFixed(2) + '%'
+        : '0%'
+    };
+  }
+&nbsp;
+  /**
+   * 통계 초기화
+   */
+  resetStats() {
+    this.stats = {
+      allowed: 0,
+      denied: 0,
+      totalRequests: 0
+    };
+  }
+&nbsp;
+  /**
+   * 큐 크기 반환 (거부된 요청 포함)
+   * @returns {number} 큐에 있는 요청 수
+   */
+  size() {
+    return this.queue.length;
+  }
+&nbsp;
+  /**
+   * 허용된 요청만 큐 크기 반환
+   * @returns {number} 허용된 요청 수
+   */
+  allowedSize() {
+    return this.queue.filter(req =&gt;
+      req.rateLimitResult &amp;&amp; req.rateLimitResult.allowed
+    ).length;
+  }
+&nbsp;
+  /**
+   * 거부된 요청 수 반환
+   * @returns {number} 거부된 요청 수
+   */
+  deniedSize() {
+    return this.queue.filter(req =&gt;
+      req.rateLimitResult &amp;&amp; !req.rateLimitResult.allowed
+    ).length;
+  }
 }
 &nbsp;
-module.exports = { MLFQScheduler, TIME_QUANTUM, NUM_QUEUES, TIME_SLICE_MS };
+module.exports = {
+  RateLimiterScheduler,
+  DEFAULT_REFILL_RATE,
+  DEFAULT_BUCKET_CAPACITY,
+  DEFAULT_REFILL_INTERVAL_MS
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -829,16 +949,16 @@ module.exports = { MLFQScheduler, TIME_QUANTUM, NUM_QUEUES, TIME_SLICE_MS };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-02-10T12:00:36.546Z
+                at 2026-02-10T11:34:47.438Z
             </div>
-        <script src="../prettify.js"></script>
+        <script src="prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../sorter.js"></script>
-        <script src="../block-navigation.js"></script>
+        <script src="sorter.js"></script>
+        <script src="block-navigation.js"></script>
     </body>
 </html>
     

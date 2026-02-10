@@ -1,0 +1,23 @@
+# AST-grep Configuration for MLFQ Scheduler Project
+
+ruleDirs:
+  - .sg/rules
+
+# Skip directories
+ignore:
+  - node_modules
+  - coverage
+  - coverage-simple
+  - dist
+  - build
+
+# Test configurations
+testConfig:
+  template: snapshot
+  cases:
+    - id: no-console-log
+      message: Avoid console.log in production code
+      severity: warning
+    - id: no-var
+      message: Use let or const instead of var
+      severity: warning

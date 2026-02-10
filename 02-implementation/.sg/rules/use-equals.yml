@@ -1,0 +1,6 @@
+id: use-equals
+message: Use === instead of ==
+severity: warning
+language: js
+rule:
+  pattern: $A == $B

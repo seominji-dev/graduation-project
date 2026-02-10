@@ -1,0 +1,6 @@
+id: no-var
+message: Use let or const instead of var
+severity: warning
+language: js
+rule:
+  pattern: var $A = $B
