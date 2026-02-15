@@ -73,7 +73,7 @@ npm run experiment:all       # 모든 실험 실행
 │   │   └── JSONStore.js       # JSON 파일 저장소
 │   └── llm/
 │       └── OllamaClient.js    # Ollama 연동
-├── tests-simple/              # 테스트 (137개, 98.88% 커버리지)
+├── tests-simple/              # 테스트 (307개, 99.76% 커버리지)
 │   ├── schedulers.test.js
 │   ├── queue.test.js
 │   ├── storage.test.js
@@ -156,12 +156,12 @@ npm run experiment:all       # 모든 실험 실행
 ## 테스트 현황
 
 ```
-Test Suites: 6 passed, 6 total
-Tests:       137 passed, 137 total
-Coverage:     98.88% statements, 88.8% branches, 96.25% functions, 98.81% lines
+Test Suites: 11 passed, 11 total
+Tests:       307 passed, 307 total
+Coverage:     99.76% statements, 94.11% branches, 98.18% functions, 99.76% lines
 ```
 
-**품질 목표 달성**: 85%+ 커버리지 ✅ (98.88%)
+**품질 목표 달성**: 85%+ 커버리지 ✅ (99.76%)
 
 ---
 

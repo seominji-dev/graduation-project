@@ -35,6 +35,13 @@ export const SolutionScene: React.FC = () => {
       description: '가중치 기반 공정한 대역폭 분배',
       features: ['대역폭 보장', '가중치 할당', '공정 분배'],
     },
+    {
+      name: 'RateLimiter',
+      fullName: 'Token Bucket Rate Limiting',
+      color: '#f59e0b',
+      description: '토큰 버킷 기반 속도 제한으로 과부하 방지',
+      features: ['속도 제한', '과부하 방지', '처리량 제어'],
+    },
   ];
 
   const headerOpacity = interpolate(frame, [0, 0.5 * fps], [0, 1], {
@@ -78,7 +85,7 @@ export const SolutionScene: React.FC = () => {
             margin: 0,
           }}
         >
-          <span style={{ color: '#6366f1' }}>4가지</span> OS 스케줄링 알고리즘
+          <span style={{ color: '#6366f1' }}>5가지</span> OS 스케줄링 알고리즘
         </h2>
         {/* 서브 설명 추가 */}
         <p
@@ -97,18 +104,18 @@ export const SolutionScene: React.FC = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '24px',
-          maxWidth: '1200px',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '20px',
+          maxWidth: '1400px',
         }}
       >
         {schedulers.map((scheduler, index) => {
           // fps 기반 타이밍
-          const cardDelay = Math.round(0.8 * fps) + index * Math.round(0.8 * fps);
+          const cardDelay = Math.round(0.8 * fps) + index * Math.round(0.6 * fps);
           const cardOpacity = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [0, 1], {
             extrapolateRight: 'clamp',
           });
-          const cardX = index % 2 === 0 ? -50 : 50;
+          const cardX = (index % 3 - 1) * 30;
           const cardTranslateX = interpolate(frame, [cardDelay, cardDelay + Math.round(0.4 * fps)], [cardX, 0], {
             extrapolateRight: 'clamp',
           });

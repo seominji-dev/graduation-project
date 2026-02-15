@@ -1,4 +1,4 @@
-import { Composition, Sequence } from 'remotion';
+import { Composition, Sequence, useCurrentFrame, interpolate, useVideoConfig } from 'remotion';
 import { TitleScene } from './compositions/TitleScene';
 import { ProblemScene } from './compositions/ProblemScene';
 import { SolutionScene } from './compositions/SolutionScene';
@@ -34,10 +34,90 @@ const ENDING_START = RESULTS_START + RESULTS_FRAMES;
 // Premount 설정 (0.5초 premount for smooth transitions)
 const PREMOUNT_FRAMES = Math.round(0.5 * FPS);
 
+// 전체 진행 표시바 컴포넌트
+const VideoProgressBar: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+
+  const progress = interpolate(frame, [0, durationInFrames], [0, 100], {
+    extrapolateRight: 'clamp',
+  });
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        backgroundColor: '#27272a',
+        zIndex: 100,
+      }}
+    >
+      <div
+        style={{
+          height: '100%',
+          width: progress + '%',
+          backgroundColor: '#6366f1',
+          boxShadow: '0 0 10px #6366f180',
+          transition: 'width 0.1s ease-out',
+        }}
+      />
+    </div>
+  );
+};
+
+// Scene 라벨 표시 컴포넌트
+const SceneLabel: React.FC<{ label: string; sceneNumber: number; totalScenes: number }> = ({
+  label,
+  sceneNumber,
+  totalScenes,
+}) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(frame, [0, 10], [0, 1], { extrapolateRight: 'clamp' });
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 24,
+        left: 24,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        opacity,
+        zIndex: 100,
+      }}
+    >
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          backgroundColor: '#6366f1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14,
+          fontWeight: 700,
+          color: 'white',
+        }}
+      >
+        {sceneNumber}
+      </div>
+      <span style={{ fontSize: 16, fontWeight: 500, color: '#a1a1aa' }}>
+        {sceneNumber} / {totalScenes}
+      </span>
+      <span style={{ fontSize: 16, fontWeight: 600, color: '#e4e4e7' }}>{label}</span>
+    </div>
+  );
+};
+
 // 전체 데모 비디오 컴포넌트
 const DemoVideo: React.FC = () => {
   return (
-    <div style={{ backgroundColor: '#0a0a0a', width: '100%', height: '100%' }}>
+    <div style={{ backgroundColor: '#0a0a0a', width: '100%', height: '100%', position: 'relative' }}>
       {/* Scene 1: 타이틀 (0:00-0:08) */}
       <Sequence from={TITLE_START} durationInFrames={TITLE_FRAMES}>
         <TitleScene />
@@ -46,27 +126,34 @@ const DemoVideo: React.FC = () => {
       {/* Scene 2: 문제 제기 (0:08-0:20) */}
       <Sequence from={PROBLEM_START} durationInFrames={PROBLEM_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <ProblemScene />
+        <SceneLabel label="문제 제기" sceneNumber={2} totalScenes={6} />
       </Sequence>
 
       {/* Scene 3: 해결책 (0:20-0:38) */}
       <Sequence from={SOLUTION_START} durationInFrames={SOLUTION_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <SolutionScene />
+        <SceneLabel label="해결책" sceneNumber={3} totalScenes={6} />
       </Sequence>
 
       {/* Scene 4: 데모 (0:38-1:03) */}
       <Sequence from={DEMO_START} durationInFrames={DEMO_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <DemoScene />
+        <SceneLabel label="데모" sceneNumber={4} totalScenes={6} />
       </Sequence>
 
       {/* Scene 5: 결과 (1:03-1:18) */}
       <Sequence from={RESULTS_START} durationInFrames={RESULTS_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <ResultsScene />
+        <SceneLabel label="결과" sceneNumber={5} totalScenes={6} />
       </Sequence>
 
       {/* Scene 6: 엔딩 (1:18-1:26) */}
       <Sequence from={ENDING_START} durationInFrames={ENDING_FRAMES} premountFor={PREMOUNT_FRAMES}>
         <EndingScene />
       </Sequence>
+
+      {/* 전체 진행 표시바 */}
+      <VideoProgressBar />
     </div>
   );
 };

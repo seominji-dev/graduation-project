@@ -102,7 +102,7 @@ export const ResultsScene: React.FC = () => {
 							<span
 								style={{ fontSize: "32px", fontWeight: 700, color: "#ffffff" }}
 							>
-								67
+								307
 							</span>
 							<span
 								style={{
@@ -124,7 +124,7 @@ export const ResultsScene: React.FC = () => {
 				>
 					<div style={{ textAlign: "center" }}>
 						<CircularProgress
-							value={98.72}
+							value={99.76}
 							size={160}
 							strokeWidth={12}
 							color="#6366f1"
@@ -169,9 +169,9 @@ export const ResultsScene: React.FC = () => {
 			>
 				<div style={{ display: "flex", gap: "24px" }}>
 					<StatCardItem
-						value="4"
+						value="5"
 						label="스케줄러"
-						sublabel="FCFS, Priority, MLFQ, WFQ"
+						sublabel="FCFS, Priority, MLFQ, WFQ, RateLimiter"
 						color="#3b82f6"
 						frame={frame}
 						delay={Math.round(2.5 * fps)}

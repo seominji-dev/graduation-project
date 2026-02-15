@@ -134,7 +134,7 @@ export const TitleScene: React.FC = () => {
 					fontWeight: 400,
 				}}
 			>
-				FCFS | Priority | MLFQ | WFQ
+				FCFS | Priority | MLFQ | WFQ | RateLimiter
 			</p>
 
 			{/* 학교 정보 */}
