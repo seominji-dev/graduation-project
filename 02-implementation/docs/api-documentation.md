@@ -8,7 +8,7 @@ http://localhost:3000/api
 
 ## Overview
 
-LLM Scheduler API는 OS 스케줄링 알고리즘을 활용한 LLM API 요청 관리 시스템입니다. FCFS, Priority, MLFQ, WFQ 4가지 스케줄링 알고리즘을 지원하며, REST API를 통해 요청 제출, 상태 조회, 통계 기능을 제공합니다.
+LLM Scheduler API는 OS 스케줄링 알고리즘을 활용한 LLM API 요청 관리 시스템입니다. FCFS, Priority, MLFQ, WFQ, RateLimiter 5가지 스케줄링 알고리즘을 지원하며, REST API를 통해 요청 제출, 상태 조회, 통계 기능을 제공합니다.
 
 ---
 
@@ -295,6 +295,40 @@ GET /api/logs?limit=50
 
 ---
 
+#### GET /fairness
+
+공정성 지표(Jain's Fairness Index)를 조회합니다. WFQ 스케줄러에서만 유효한 값을 반환합니다.
+
+**Request:**
+```http
+GET /api/fairness
+```
+
+**Response (200 OK) - WFQ Scheduler:**
+```json
+{
+  "scheduler": "WFQ",
+  "fairnessIndex": 0.89,
+  "timestamp": "2026-02-11T10:00:00.000Z"
+}
+```
+
+**Response (200 OK) - Non-WFQ Scheduler:**
+```json
+{
+  "scheduler": "FCFS",
+  "fairnessIndex": null,
+  "timestamp": "2026-02-11T10:00:00.000Z"
+}
+```
+
+**Notes:**
+- `fairnessIndex`는 0~1 사이의 값으로, 1에 가까울수록 완전한 공정성을 의미합니다
+- WFQ 스케줄러에서만 `fairnessIndex`가 계산됩니다
+- 다른 스케줄러에서는 `null`을 반환합니다
+
+---
+
 ## Common Error Responses
 
 ### 400 Bad Request
@@ -330,8 +364,9 @@ GET /api/logs?limit=50
 |-----|------|------|
 | FCFS | First-Come-First-Served | 선착순 처리 (기본값) |
 | Priority | 우선순위 기반 | URGENT 요청 우선 + Aging 메커니즘 |
-| MLFQ | 다단계 피드백 큐 | 4단계 큐 + Boost 메커니즘 |
-| WFQ | 가중치 공정 큐 | 테넌트별 가중치 기반 공정 배분 |
+| MLFQ | 다단계 피드백 큐 | 4단계 큐 + Boost 메커니즘 + 선점형 |
+| WFQ | 가중치 공정 큐 | 테넌트별 가중치 기반 공정 배분 + JFI |
+| RateLimiter | 속도 제한 | 토큰 버킷 알고리즘 기반 요청 속도 제어 |
 
 ---
 

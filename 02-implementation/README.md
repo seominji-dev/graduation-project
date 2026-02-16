@@ -156,9 +156,9 @@ npm run experiment:all       # 모든 실험 실행
 ## 테스트 현황
 
 ```
-Test Suites: 11 passed, 11 total
+Test Suites: 12 passed, 12 total
 Tests:       307 passed, 307 total
-Coverage:     99.76% statements, 94.11% branches, 98.18% functions, 99.76% lines
+Coverage:     99.76% statements, 94.11% branches, 98.18% functions, 99.75% lines
 ```
 
 **품질 목표 달성**: 85%+ 커버리지 ✅ (99.76%)
