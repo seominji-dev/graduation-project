@@ -21,10 +21,12 @@ class OllamaClient {
    * LLM에 프롬프트 전송 및 응답 받기
    * @param {string} prompt - 사용자 프롬프트
    * @param {Object} options - 추가 옵션
+   * @param {number} options.timeout - 타임아웃 (밀리초, 기본 30초)
    * @returns {Promise<string>} LLM 응답 텍스트
    */
   async generate(prompt, options = {}) {
     const url = `${this.baseUrl}/api/generate`;
+    const timeoutMs = options.timeout || 30000;
 
     const body = {
       model: options.model || this.model,
@@ -36,11 +38,16 @@ class OllamaClient {
       }
     };
 
+    // AbortController로 타임아웃 구현 (FR-1.2.1)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       });
 
       if (!response.ok) {
@@ -51,12 +58,18 @@ class OllamaClient {
       return data.response;
 
     } catch (error) {
+      // 타임아웃 처리
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timeout: ${timeoutMs}ms 이내에 응답이 없습니다`);
+      }
       // Ollama 서버가 실행 중이 아닌 경우 Mock 응답 반환
       if (error.cause?.code === 'ECONNREFUSED') {
         console.warn('Ollama 서버에 연결할 수 없습니다. Mock 응답을 반환합니다.');
         return this.mockResponse(prompt);
       }
       throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 

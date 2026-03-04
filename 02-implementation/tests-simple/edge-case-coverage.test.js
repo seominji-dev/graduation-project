@@ -210,23 +210,23 @@ describe('Edge Case Coverage Tests', () => {
       }
     });
 
-    test('_readJSON handles invalid JSON gracefully (line 46)', () => {
+    test('_readJSON handles invalid JSON gracefully (line 46)', async () => {
       const store = new JSONStore(testFile);
 
       // Write invalid JSON
       fs.writeFileSync(testFile, 'invalid json content', 'utf-8');
 
       // Should return empty array instead of throwing
-      const result = store._readJSON(testFile);
+      const result = await store._readJSON(testFile);
 
       expect(result).toEqual([]);
     });
 
-    test('_readJSON handles missing file gracefully', () => {
+    test('_readJSON handles missing file gracefully', async () => {
       const store = new JSONStore(testFile);
 
       // Try to read non-existent file
-      const result = store._readJSON('/non/existent/path.json');
+      const result = await store._readJSON('/non/existent/path.json');
 
       expect(result).toEqual([]);
     });

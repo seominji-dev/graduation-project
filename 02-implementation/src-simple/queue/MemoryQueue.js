@@ -144,6 +144,28 @@ class MemoryQueue {
   clear() {
     this.requests.clear();
   }
-}
 
+  /**
+   * 완료/실패된 오래된 요청 정리 (메모리 누수 방지)
+   * @param {number} maxAgeMs - 정리 기준 시간 (기본 5분)
+   * @returns {number} 정리된 요청 수
+   */
+  cleanup(maxAgeMs = 5 * 60 * 1000) {
+    const now = Date.now();
+    let cleaned = 0;
+
+    for (const [id, request] of this.requests) {
+      const isFinished = request.status === REQUEST_STATUS.COMPLETED
+        || request.status === REQUEST_STATUS.FAILED;
+      const age = now - (request.completedAt || request.createdAt);
+
+      if (isFinished && age > maxAgeMs) {
+        this.requests.delete(id);
+        cleaned++;
+      }
+    }
+
+    return cleaned;
+  }
+}
 module.exports = { MemoryQueue, REQUEST_STATUS };

@@ -216,6 +216,92 @@ interface IScheduler {
 **대안**: 스케줄러 내부 구현
 - 문제점: 스케줄러 클래스 복잡도 증가
 
+### 4. Priority Aging 비활성화 (ADR-004)
+
+**결정**: Priority Scheduler의 Aging 메커니즘을 기본 비활성화
+
+**코드 위치**: `PriorityScheduler.js` - `applyAging()`, `startAging()`
+
+**이유**:
+- 본 프로젝트의 연구 목표는 **정적 우선순위**에 의한 스케줄링 특성 분석
+- Aging을 활성화하면 모든 요청이 URGENT로 수렴하여 우선순위 실험의 변별력이 저하됨
+- MLFQ의 Boosting이 이미 기아 방지 기능을 제공하므로, Priority에서는 순수 우선순위 효과를 관찰
+- 실험 결과: URGENT 요청이 FCFS 대비 62% 빠른 처리 — 정적 우선순위만으로 유의미한 차이 확인
+
+**현재 상태**:
+- `applyAging()`, `startAging()` 코드는 구현 완료 (재활용 가능)
+- `server.js`의 `createScheduler('PRIORITY')`에서 `startAging()` 호출 중이나,
+  외부에서 주기적으로 `applyAging()`을 호출하지 않으면 실질적 비활성 상태
+- 향후 Aging 효과 분석이 필요한 경우, 외부 interval에서 `applyAging()` 호출로 활성화 가능
+
+---
+
+## MLFQ 선점형 스케줄링 (Preemptive Scheduling)
+
+### 개요
+
+MLFQ 스케줄러는 4단계 피드백 큐(Q0~Q3)와 선점형(Preemptive) 메커니즘을 결합하여,
+짧은 요청의 응답 시간을 극적으로 개선합니다 (동시 경쟁 환경에서 76.11% 향상).
+
+### 타임 슬라이스 및 큐 레벨
+
+| 큐 레벨 | 시간 할당량 (Time Quantum) | 대상 요청 유형 |
+|---------|--------------------------|--------------|
+| Q0 | 1,000ms | 대화형 Short 요청 (신규 진입) |
+| Q1 | 3,000ms | 중간 길이 요청 |
+| Q2 | 8,000ms | 긴 요청 |
+| Q3 | ∞ (무제한) | 배치/초장문 요청 |
+
+- **타임 슬라이스 주기**: 500ms 간격으로 선점 여부 확인
+- **부스팅 주기**: 5초마다 모든 요청을 Q0로 이동 (기아 방지)
+
+### 선점 흐름 (Pseudocode)
+
+```
+function processNextRequest():
+    request = dequeue()           // 최상위 비어있지 않은 큐에서 추출
+    startProcessing(request)      // 현재 요청으로 등록, 시작 시간 기록
+
+    every 500ms:                  // 타임 슬라이스 체크
+        elapsed = now - startTime + usedTime
+        quantum = TIME_QUANTUM[request.queueLevel]
+
+        if elapsed >= quantum AND quantum != Infinity:
+            // 선점 발생: 하위 큐로 강등
+            request.queueLevel = min(queueLevel + 1, 3)
+            request.usedTime = 0
+            queues[newLevel].push(request)
+            processNextRequest()  // 다음 요청 처리
+        else:
+            continue processing   // 계속 처리
+```
+
+### 선점 트리거 조건
+
+선점이 발생하는 조건:
+
+1. 현재 요청의 **누적 사용 시간**이 해당 큐의 **시간 할당량**을 초과
+2. 해당 큐가 **Q3(무제한 큐)가 아닌** 경우
+3. `checkPreemption(elapsedMs)`가 `{ shouldPreempt: true }` 반환
+
+### MLFQ 5가지 규칙
+
+| 규칙 | 설명 |
+|------|------|
+| Rule 1 | Priority(A) > Priority(B) → A 먼저 실행 |
+| Rule 2 | Priority(A) = Priority(B) → FCFS 순서 |
+| Rule 3 | 새 작업은 항상 최상위 큐(Q0)에 배치 |
+| Rule 4 | 시간 할당량 소진 시 하위 큐로 강등 |
+| Rule 5 | 주기적 Boosting으로 모든 작업을 Q0로 이동 (기아 방지) |
+
+### 실험 결과
+
+동시 경쟁(Concurrent Competition) 환경에서의 측정 결과:
+
+- **Short 요청 대기시간**: FCFS 대비 **76.11% 감소**
+- **원인**: Short 요청이 Q0에서 빠르게 처리되고, Long 요청은 하위 큐로 강등
+- **공정성**: Boosting이 Long 요청의 기아(Starvation)를 방지
+
 ---
 
 ## 확장성 분석 (Theoretical Scalability)

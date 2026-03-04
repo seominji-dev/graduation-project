@@ -16,12 +16,27 @@ const createRoutes = require('./api/routes');
 const PORT = process.env.PORT || 3000;
 const SCHEDULER_TYPE = process.env.SCHEDULER_TYPE || 'FCFS';
 
+// 지원하는 스케줄러 타입 목록
+const VALID_SCHEDULER_TYPES = ['FCFS', 'PRIORITY', 'MLFQ', 'WFQ'];
+
 /**
  * 스케줄러 생성 팩토리
  * @param {string} type - 스케줄러 타입 (FCFS, Priority, MLFQ, WFQ)
  */
 function createScheduler(type) {
-  switch (type.toUpperCase()) {
+  const normalizedType = type.toUpperCase();
+
+  // 유효하지 않은 스케줄러 타입 검증 (FR-1.2.2)
+  if (!VALID_SCHEDULER_TYPES.includes(normalizedType)) {
+    console.warn(
+      `알 수 없는 스케줄러 타입: "${type}". ` +
+      `지원 타입: ${VALID_SCHEDULER_TYPES.join(', ')}. ` +
+      `FCFS를 기본값으로 사용합니다.`
+    );
+    return new FCFSScheduler();
+  }
+
+  switch (normalizedType) {
     case 'FCFS':
       return new FCFSScheduler();
     case 'PRIORITY':
@@ -34,9 +49,6 @@ function createScheduler(type) {
       return mlfq;
     case 'WFQ':
       return new WFQScheduler();
-    default:
-      console.warn(`알 수 없는 스케줄러 타입: ${type}, FCFS를 사용합니다.`);
-      return new FCFSScheduler();
   }
 }
 

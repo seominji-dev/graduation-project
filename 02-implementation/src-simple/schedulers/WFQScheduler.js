@@ -32,12 +32,36 @@ class WFQScheduler extends BaseScheduler {
   }
 
   /**
+   * 가중치 유효성 검증 (FR-1.3.1)
+   * @param {number} weight - 검증할 가중치 값
+   * @returns {boolean} 유효 여부
+   */
+  _isValidWeight(weight) {
+    return typeof weight === 'number' && weight > 0 && weight <= 1000;
+  }
+
+  /**
    * 테넌트 등록
    * @param {string} tenantId - 테넌트 ID
    * @param {string} tier - 테넌트 등급 (enterprise, premium, standard, free)
+   * @param {number} [customWeight] - 커스텀 가중치 (0 < weight <= 1000)
    */
-  registerTenant(tenantId, tier = 'standard') {
-    const weight = DEFAULT_WEIGHTS[tier] || DEFAULT_WEIGHTS.standard;
+  registerTenant(tenantId, tier = 'standard', customWeight = null) {
+    let weight;
+    if (customWeight !== null) {
+      if (!this._isValidWeight(customWeight)) {
+        console.warn(
+          `유효하지 않은 가중치: ${customWeight} (tenantId: ${tenantId}). ` +
+          `0 < weight <= 1000 범위여야 합니다. 기본값을 사용합니다.`
+        );
+        weight = DEFAULT_WEIGHTS[tier] || DEFAULT_WEIGHTS.standard;
+      } else {
+        weight = customWeight;
+      }
+    } else {
+      weight = DEFAULT_WEIGHTS[tier] || DEFAULT_WEIGHTS.standard;
+    }
+
     this.tenants.set(tenantId, {
       weight,
       virtualTime: this.globalVirtualTime,

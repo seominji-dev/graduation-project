@@ -3,6 +3,7 @@
  * 요청 로그 및 통계를 JSON 파일로 영구 저장
  *
  * 학부생 수준 - 네이티브 모듈 없이 순수 Node.js로 구현
+ * 비동기 I/O 사용으로 Node.js 이벤트 루프 차단 방지
  */
 const fs = require('fs');
 const path = require('path');
@@ -17,50 +18,59 @@ class JSONStore {
 
   /**
    * 저장소 초기화 - 디렉토리 및 파일 생성
+   * 서버 시작 시 1회 호출되므로 동기 I/O 사용 (mkdirSync 허용)
    */
   initialize() {
-    // 디렉토리 생성
+    // 디렉토리 생성 (서버 초기화 시점 — 동기 허용)
     if (!fs.existsSync(this.dataDir)) {
       fs.mkdirSync(this.dataDir, { recursive: true });
     }
 
-    // 로그 파일 초기화
+    // 로그 파일 초기화 (서버 초기화 시점 — 동기 허용)
     if (!fs.existsSync(this.logsFile)) {
-      this._writeJSON(this.logsFile, []);
+      fs.writeFileSync(this.logsFile, JSON.stringify([], null, 2), 'utf-8');
     }
 
-    // 통계 파일 초기화
+    // 통계 파일 초기화 (서버 초기화 시점 — 동기 허용)
     if (!fs.existsSync(this.statsFile)) {
-      this._writeJSON(this.statsFile, []);
+      fs.writeFileSync(this.statsFile, JSON.stringify([], null, 2), 'utf-8');
     }
   }
 
   /**
-   * JSON 파일 읽기
+   * JSON 파일 읽기 (비동기)
+   * @param {string} filePath - 읽을 파일 경로
+   * @returns {Promise<Array>} 파싱된 JSON 배열
    */
-  _readJSON(filePath) {
+  async _readJSON(filePath) {
     try {
-      const data = fs.readFileSync(filePath, 'utf-8');
+      const data = await fs.promises.readFile(filePath, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
+      // JSON 파싱 실패 시 빈 배열로 복구 + 경고 로그 (FR-1.2.3)
+      console.warn(`JSON 파일 읽기 실패 (${filePath}): ${error.message}, 빈 배열로 복구합니다.`);
       return [];
     }
   }
 
   /**
-   * JSON 파일 쓰기
+   * JSON 파일 쓰기 (비동기)
+   * @param {string} filePath - 쓸 파일 경로
+   * @param {*} data - 저장할 데이터
+   * @returns {Promise<void>}
    */
-  _writeJSON(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  async _writeJSON(filePath, data) {
+    await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
   }
 
   /**
    * 요청 로그 저장
    * @param {Object} request - 완료된 요청 객체
    * @param {string} schedulerType - 사용된 스케줄러 타입
+   * @returns {Promise<void>}
    */
-  saveRequestLog(request, schedulerType) {
-    const logs = this._readJSON(this.logsFile);
+  async saveRequestLog(request, schedulerType) {
+    const logs = await this._readJSON(this.logsFile);
 
     const waitTime = request.startedAt ? request.startedAt - request.createdAt : null;
     const processingTime = request.completedAt && request.startedAt
@@ -84,16 +94,17 @@ class JSONStore {
       error: request.error
     });
 
-    this._writeJSON(this.logsFile, logs);
+    await this._writeJSON(this.logsFile, logs);
   }
 
   /**
    * 스케줄러 통계 저장
    * @param {string} schedulerType
    * @param {Object} stats
+   * @returns {Promise<void>}
    */
-  saveSchedulerStats(schedulerType, stats) {
-    const allStats = this._readJSON(this.statsFile);
+  async saveSchedulerStats(schedulerType, stats) {
+    const allStats = await this._readJSON(this.statsFile);
 
     allStats.push({
       schedulerType: schedulerType,
@@ -104,16 +115,16 @@ class JSONStore {
       recordedAt: Date.now()
     });
 
-    this._writeJSON(this.statsFile, allStats);
+    await this._writeJSON(this.statsFile, allStats);
   }
 
   /**
    * 최근 요청 로그 조회
    * @param {number} limit
-   * @returns {Array}
+   * @returns {Promise<Array>}
    */
-  getRecentLogs(limit = 100) {
-    const logs = this._readJSON(this.logsFile);
+  async getRecentLogs(limit = 100) {
+    const logs = await this._readJSON(this.logsFile);
     // 최신순 정렬 후 limit 적용
     return logs
       .sort((a, b) => b.createdAt - a.createdAt)
@@ -123,10 +134,10 @@ class JSONStore {
   /**
    * 테넌트별 통계 조회
    * @param {string} tenantId
-   * @returns {Object}
+   * @returns {Promise<Object>}
    */
-  getTenantStats(tenantId) {
-    const logs = this._readJSON(this.logsFile);
+  async getTenantStats(tenantId) {
+    const logs = await this._readJSON(this.logsFile);
     const tenantLogs = logs.filter(log => log.tenantId === tenantId);
 
     if (tenantLogs.length === 0) {
@@ -155,10 +166,10 @@ class JSONStore {
 
   /**
    * 스케줄러별 성능 비교
-   * @returns {Array}
+   * @returns {Promise<Array>}
    */
-  getSchedulerComparison() {
-    const logs = this._readJSON(this.logsFile);
+  async getSchedulerComparison() {
+    const logs = await this._readJSON(this.logsFile);
     const completedLogs = logs.filter(l => l.status === 'completed');
 
     // 스케줄러 타입별로 그룹화
@@ -189,10 +200,11 @@ class JSONStore {
 
   /**
    * 모든 데이터 초기화 (테스트용)
+   * @returns {Promise<void>}
    */
-  clear() {
-    this._writeJSON(this.logsFile, []);
-    this._writeJSON(this.statsFile, []);
+  async clear() {
+    await this._writeJSON(this.logsFile, []);
+    await this._writeJSON(this.statsFile, []);
   }
 }
 

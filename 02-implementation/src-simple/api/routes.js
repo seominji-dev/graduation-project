@@ -142,7 +142,7 @@ function createRoutes(deps) {
 
       // 로그 저장
       const completedRequest = memoryQueue.getRequest(request.id);
-      jsonStore.saveRequestLog(completedRequest, scheduler.name);
+      await jsonStore.saveRequestLog(completedRequest, scheduler.name);
 
       res.json({
         message: '요청이 처리되었습니다',
@@ -163,9 +163,9 @@ function createRoutes(deps) {
    * GET /api/stats
    * 전체 통계 조회
    */
-  router.get('/stats', (req, res) => {
+  router.get('/stats', async (req, res) => {
     const queueStats = memoryQueue.getStats();
-    const schedulerComparison = jsonStore.getSchedulerComparison();
+    const schedulerComparison = await jsonStore.getSchedulerComparison();
 
     res.json({
       current: {
@@ -181,8 +181,8 @@ function createRoutes(deps) {
    * GET /api/stats/tenant/:tenantId
    * 테넌트별 통계 조회
    */
-  router.get('/stats/tenant/:tenantId', (req, res) => {
-    const stats = jsonStore.getTenantStats(req.params.tenantId);
+  router.get('/stats/tenant/:tenantId', async (req, res) => {
+    const stats = await jsonStore.getTenantStats(req.params.tenantId);
     res.json(stats);
   });
 
@@ -190,9 +190,9 @@ function createRoutes(deps) {
    * GET /api/logs
    * 최근 요청 로그 조회
    */
-  router.get('/logs', (req, res) => {
+  router.get('/logs', async (req, res) => {
     const limit = parseInt(req.query.limit) || 100;
-    const logs = jsonStore.getRecentLogs(limit);
+    const logs = await jsonStore.getRecentLogs(limit);
     res.json({ count: logs.length, logs });
   });
 
