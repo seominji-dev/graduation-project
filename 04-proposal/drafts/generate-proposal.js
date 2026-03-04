@@ -332,13 +332,23 @@ async function generateProposal() {
             'LLM API 서빙 분야에서는 추론 성능 최적화를 위한 다양한 연구가 진행되어 왔다.'
           ),
           textParagraph(
-            'Kwon et al.은 vLLM을 통해 PagedAttention 기법을 제안하여 LLM 서빙 시 KV 캐시 메모리를 효율적으로 ' +
-            '관리하는 방법을 제시하였다 [5]. Yu et al.은 ORCA 시스템에서 iteration-level 스케줄링을 통해 ' +
-            'LLM 추론의 처리량을 향상시켰다 [6]. Agrawal et al.은 Sarathi-Serve에서 chunked prefill 기법으로 ' +
-            'prefill과 decode 단계를 효율적으로 분리하여 서빙 성능을 개선하였다 [7].'
+            'Kwon et al.은 vLLM 시스템에서 PagedAttention 기법을 제안하였다 [5]. 이 기법은 운영체제의 가상 메모리 ' +
+            '페이징 기법에서 착안하여, LLM 추론 시 KV 캐시 메모리를 비연속적 블록으로 관리한다. 이를 통해 ' +
+            '기존 대비 메모리 활용률을 최대 55% 향상시키고, 처리량(throughput)을 2-4배 개선하였다.'
           ),
           textParagraph(
-            '그러나 이들 연구는 주로 GPU 메모리 관리와 배치 처리 최적화에 집중하고 있으며, ' +
+            'Yu et al.은 ORCA 시스템에서 iteration-level 스케줄링을 도입하였다 [6]. 기존의 요청 단위 배치 처리 방식과 ' +
+            '달리, 매 디코딩 반복(iteration)마다 새로운 요청을 동적으로 삽입하는 방식으로 ' +
+            'GPU 활용률과 처리량을 향상시켰다.'
+          ),
+          textParagraph(
+            'Agrawal et al.은 Sarathi-Serve 시스템에서 chunked prefill 기법을 제안하였다 [7]. LLM 추론의 ' +
+            'prefill(입력 처리) 단계와 decode(출력 생성) 단계가 서로 다른 연산 특성을 가지는 점에 ' +
+            '착안하여, prefill 연산을 작은 청크로 분할하고 decode 연산과 인터리빙하는 방식으로 ' +
+            '지연시간 변동을 감소시켰다.'
+          ),
+          textParagraph(
+            '그러나 이들 연구는 주로 GPU 메모리 관리, 배치 처리 최적화, 추론 파이프라인 효율화에 집중하고 있으며, ' +
             '다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 상대적으로 다루어지지 않았다. ' +
             '본 연구는 이 간극을 메우기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.'
           ),
@@ -532,17 +542,21 @@ async function generateProposal() {
           }),
           multiRunParagraph([
             { text: '런타임 알고리즘 교체. ', bold: true },
-            { text: '서버 재시작 없이 REST API를 통해 스케줄링 알고리즘을 실시간으로 전환할 수 있다.' }
+            { text: '서버 재시작 없이 REST API(PUT /api/scheduler)를 통해 스케줄링 알고리즘을 실시간으로 ' +
+              '전환할 수 있다. 워크로드 특성 변화에 따라 운영 중 최적 알고리즘을 선택할 수 있으며, ' +
+              '알고리즘 간 성능 비교 실험을 동일 환경에서 수행할 수 있다.' }
           ]),
           multiRunParagraph([
             { text: '이중 수준 공정성 측정. ', bold: true },
             { text: 'WFQ 스케줄러에서 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(개별 테넌트 내 요청 간 ' +
-              '공정성)를 분리 측정하여, "의도된 불공정(가중치 기반 차등)"이 올바르게 동작하는지 모니터링한다.' }
+              '공정성)를 분리 측정한다. 시스템 수준 JFI는 가중치 비율에 따른 의도적 차등 서비스가 올바르게 ' +
+              '동작하는지를 검증하고, 테넌트 수준 JFI는 동일 등급 내 요청 간의 공평한 처리를 모니터링한다.' }
           ]),
           multiRunParagraph([
             { text: '기아 방지. ', bold: true },
             { text: 'Priority 스케줄러의 Aging 메커니즘과 MLFQ 스케줄러의 Boost 메커니즘을 통해 ' +
-              '낮은 우선순위 요청의 무기한 대기를 방지한다.' }
+              '낮은 우선순위 요청의 무기한 대기를 방지한다. Aging은 대기 시간이 임계값을 초과한 요청의 ' +
+              '우선순위를 자동 상향하며, Boost는 주기적으로 모든 요청을 최상위 큐(Q0)로 복귀시킨다.' }
           ]),
 
           // ===== 4. 예비 실험 결과 =====
@@ -614,7 +628,7 @@ async function generateProposal() {
               new TableRow({ children: [
                 cell('MLFQ', { width: 2000, align: AlignmentType.CENTER }),
                 cell('2,572ms', { width: 2500, align: AlignmentType.CENTER }),
-                cell('짧은 요청: 동시 경쟁 환경에서 81% 개선', { width: 4500 })
+                cell('짧은 요청: 동시 경쟁 환경에서 81.14% 개선', { width: 4500 })
               ]}),
               new TableRow({ children: [
                 cell('WFQ', { width: 2000, align: AlignmentType.CENTER }),
@@ -638,7 +652,7 @@ async function generateProposal() {
           multiRunParagraph([
             { text: 'RQ3 (WFQ): ', bold: true },
             { text: 'Enterprise 테넌트(가중치 100)는 Free 테넌트(가중치 1) 대비 5.8배 빠른 응답을 받았으며' +
-              '(849ms vs 4,894ms), 테넌트 수준 JFI는 0.92-0.98로 높은 내부 공정성을 달성하였다.' }
+              '(849ms vs 4,894ms), 시스템 수준 JFI는 0.89, 테넌트 수준 JFI는 0.92-0.98로 높은 내부 공정성을 달성하였다.' }
           ]),
 
           // ===== 5. 연구 계획 =====
@@ -653,7 +667,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '관련연구 확충: LLM 서빙 시스템 최신 논문 조사 및 분석 (vLLM, ORCA, Sarathi-Serve 등)',
+              text: '관련연구 확충: LLM 서빙 시스템 최신 논문 및 멀티테넌트 스케줄링 관련 연구를 추가 조사하여, 본 연구의 차별성을 보다 명확히 제시',
               font: FONT, size: 22
             })]
           }),
@@ -661,7 +675,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '실험 설계 보강: 대규모 실험(1,000건 이상), 다양한 워크로드 시나리오 추가',
+              text: '실험 설계 보강: 대규모 실험(1,000건 이상)과 다양한 워크로드 시나리오(버스트 트래픽, 비균등 테넌트 분포 등) 추가',
               font: FONT, size: 22
             })]
           }),
@@ -669,7 +683,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '공정성 분석 심화: JFI 외 추가 공정성 지표(Max-Min Fairness 등) 검토',
+              text: '공정성 분석 심화: JFI 외 추가 공정성 지표(Max-Min Fairness 등) 적용 가능성 검토 및 알고리즘 간 공정성-성능 트레이드오프 분석',
               font: FONT, size: 22
             })]
           }),
@@ -677,7 +691,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 120, line: 360 },
             children: [new TextRun({
-              text: '최종 보고서 작성: 학술 논문 수준의 최종 보고서 작성',
+              text: '시스템 설계 문서화: 아키텍처 상세 설계, 알고리즘 의사코드, API 명세를 체계적으로 정리',
               font: FONT, size: 22
             })]
           }),
@@ -691,27 +705,37 @@ async function generateProposal() {
             })]
           }),
           new Table({
-            columnWidths: [1800, 4200, 3000],
+            columnWidths: [1500, 3700, 2500, 1300],
             rows: [
               new TableRow({ tableHeader: true, children: [
-                cell('기간', { bold: true, shading: COLOR_HEADER_BG, width: 1800, align: AlignmentType.CENTER }),
-                cell('활동', { bold: true, shading: COLOR_HEADER_BG, width: 4200, align: AlignmentType.CENTER }),
-                cell('산출물', { bold: true, shading: COLOR_HEADER_BG, width: 3000, align: AlignmentType.CENTER })
+                cell('기간', { bold: true, shading: COLOR_HEADER_BG, width: 1500, align: AlignmentType.CENTER }),
+                cell('주요 활동', { bold: true, shading: COLOR_HEADER_BG, width: 3700, align: AlignmentType.CENTER }),
+                cell('산출물', { bold: true, shading: COLOR_HEADER_BG, width: 2500, align: AlignmentType.CENTER }),
+                cell('마감일', { bold: true, shading: COLOR_HEADER_BG, width: 1300, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('3월', { width: 1800, align: AlignmentType.CENTER }),
-                cell('관련연구 조사, 제안서 작성', { width: 4200 }),
-                cell('제안서 (본 문서)', { width: 3000 })
+                cell('3월', { width: 1500, align: AlignmentType.CENTER }),
+                cell('관련연구 체계적 조사, 제안서 작성', { width: 3700 }),
+                cell('제안서 (본 문서)', { width: 2500 }),
+                cell('3/22', { width: 1300, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('4월', { width: 1800, align: AlignmentType.CENTER }),
-                cell('시스템 설계 상세화, 실험 확대', { width: 4200 }),
-                cell('중간보고서', { width: 3000 })
+                cell('4월', { width: 1500, align: AlignmentType.CENTER }),
+                cell('시스템 설계 상세화, 실험 시나리오 확대, 대규모 실험', { width: 3700 }),
+                cell('중간보고서', { width: 2500 }),
+                cell('4/12', { width: 1300, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('5월', { width: 1800, align: AlignmentType.CENTER }),
-                cell('최종 실험, 보고서 작성, 발표 준비', { width: 4200 }),
-                cell('최종보고서, 발표', { width: 3000 })
+                cell('5월 초-중', { width: 1500, align: AlignmentType.CENTER }),
+                cell('추가 실험, 결과 분석, 최종 보고서 집필', { width: 3700 }),
+                cell('최종보고서 + 소스코드', { width: 2500 }),
+                cell('5/24', { width: 1300, align: AlignmentType.CENTER })
+              ]}),
+              new TableRow({ children: [
+                cell('5월 말', { width: 1500, align: AlignmentType.CENTER }),
+                cell('발표 자료 준비, 시스템 데모 구성', { width: 3700 }),
+                cell('발표 PPT, 실시간 데모', { width: 2500 }),
+                cell('5/26-29', { width: 1300, align: AlignmentType.CENTER })
               ]})
             ]
           }),
