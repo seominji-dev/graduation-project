@@ -210,7 +210,7 @@ async function generateProposal() {
               ]}),
               new TableRow({ children: [
                 cell('지도교수', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-                cell('이장호', { width: 4800 })
+                cell('이장호 교수님', { width: 4800 })
               ]})
             ]
           }),
