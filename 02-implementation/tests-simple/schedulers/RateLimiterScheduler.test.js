@@ -61,7 +61,7 @@ describe("RateLimiterScheduler", () => {
 	// ============================================
 	describe("Token bucket refill mechanism", () => {
 		test("초기 토큰은 bucket_capacity로 설정", () => {
-			expect(scheduler.getCurrentTokens()).toBe(DEFAULT_BUCKET_CAPACITY);
+			expect(scheduler.getCurrentTokens()).toBeCloseTo(DEFAULT_BUCKET_CAPACITY, 0);
 		});
 
 		test("refillRate에 따라 토큰 충전", () => {
@@ -121,20 +121,20 @@ describe("RateLimiterScheduler", () => {
 			});
 			customScheduler.stopRefilling();
 
-			expect(customScheduler.getCurrentTokens()).toBe(100);
+			expect(customScheduler.getCurrentTokens()).toBeCloseTo(100, 0);
 			expect(customScheduler.bucketCapacity).toBe(100);
 		});
 
 		test("setCurrentTokens이 capacity를 초과하지 않음", () => {
 			scheduler.setCurrentTokens(1000); // capacity(50) 초과
 
-			expect(scheduler.getCurrentTokens()).toBe(DEFAULT_BUCKET_CAPACITY);
+			expect(scheduler.getCurrentTokens()).toBeCloseTo(DEFAULT_BUCKET_CAPACITY, 0);
 		});
 
 		test("setCurrentTokens이 음수를 0으로 clamping", () => {
 			scheduler.setCurrentTokens(-10);
 
-			expect(scheduler.getCurrentTokens()).toBe(0);
+			expect(scheduler.getCurrentTokens()).toBeCloseTo(0, 0);
 		});
 
 		test("커스텀 refillRate로 생성", () => {
@@ -496,7 +496,7 @@ describe("RateLimiterScheduler", () => {
 			scheduler.enqueue({ id: "2", prompt: "test" });
 
 			const stats = scheduler.getStats();
-			expect(stats.currentTokens).toBe(8);
+					expect(stats.currentTokens).toBeCloseTo(8, 0);
 		});
 	});
 

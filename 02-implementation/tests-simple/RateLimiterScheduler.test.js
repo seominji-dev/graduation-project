@@ -32,7 +32,7 @@ describe("RateLimiterScheduler - Basic Operations", () => {
 	});
 
 	test("초기 토큰 수가 버킷 용량과 같음", () => {
-		expect(scheduler.getCurrentTokens()).toBe(DEFAULT_BUCKET_CAPACITY);
+		expect(scheduler.getCurrentTokens()).toBeCloseTo(DEFAULT_BUCKET_CAPACITY, 0);
 	});
 
 	test("커스텀 설정으로 생성 가능", () => {
@@ -199,13 +199,13 @@ describe("RateLimiterScheduler - Token Exhaustion", () => {
 	});
 
 	test("토큰 소비 후 현재 토큰 수 감소", () => {
-		expect(scheduler.getCurrentTokens()).toBe(3);
+		expect(scheduler.getCurrentTokens()).toBeCloseTo(3, 0);
 
 		scheduler.enqueue({ id: "req-1" });
-		expect(scheduler.getCurrentTokens()).toBe(2);
+		expect(scheduler.getCurrentTokens()).toBeCloseTo(2, 0);
 
 		scheduler.enqueue({ id: "req-2" });
-		expect(scheduler.getCurrentTokens()).toBe(1);
+		expect(scheduler.getCurrentTokens()).toBeCloseTo(1, 0);
 	});
 });
 

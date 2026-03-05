@@ -223,6 +223,7 @@ class RateLimiterScheduler extends BaseScheduler {
    */
   setCurrentTokens(tokens) {
     this.currentTokens = Math.min(this.bucketCapacity, Math.max(0, tokens));
+    this.lastRefillTime = Date.now();
   }
 
   /**
