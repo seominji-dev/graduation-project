@@ -2,9 +2,9 @@
  * MLFQ (Multi-Level Feedback Queue) 스케줄러
  * 다단계 피드백 큐 - 4개의 우선순위 레벨
  *
- * Q0: 500ms (최고 우선순위, 대화형 Short 요청)
- * Q1: 1500ms
- * Q2: 4000ms
+ * Q0: 1000ms (최고 우선순위, 대화형 Short 요청)
+ * Q1: 3000ms
+ * Q2: 8000ms
  * Q3: 무제한 (배치 작업)
  *
  * MLFQ 5가지 규칙:
