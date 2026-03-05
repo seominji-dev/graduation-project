@@ -628,7 +628,7 @@ async function generateProposal() {
               new TableRow({ children: [
                 cell('MLFQ', { width: 2000, align: AlignmentType.CENTER }),
                 cell('2,572ms', { width: 2500, align: AlignmentType.CENTER }),
-                cell('짧은 요청: 동시 경쟁 환경에서 81.14% 개선', { width: 4500 })
+                cell('짧은 요청: 선점형 모드에서 73.78% 개선 (10 시드 검증)', { width: 4500 })
               ]}),
               new TableRow({ children: [
                 cell('WFQ', { width: 2000, align: AlignmentType.CENTER }),
@@ -647,7 +647,7 @@ async function generateProposal() {
           multiRunParagraph([
             { text: 'RQ2 (MLFQ): ', bold: true },
             { text: '시간 슬라이스 기반 선점형 모드에서, 짧은 요청과 긴 요청이 동시에 경쟁하는 환경에서 ' +
-              '짧은 요청의 대기시간이 81.14% 개선되었다(p < 0.001).' }
+              '짧은 요청의 대기시간이 평균 73.78% 개선되었다(10 시드 다중 실험, 95% CI: [72.36, 75.20], p < 0.001, Cohen\'s d = 15.9).' }
           ]),
           multiRunParagraph([
             { text: 'RQ3 (WFQ): ', bold: true },

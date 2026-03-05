@@ -62,6 +62,9 @@ function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // 정적 파일 서빙 (대시보드)
+  app.use(express.static(path.join(__dirname, 'public')));
+
   // CORS 설정 (간단한 버전)
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -94,6 +97,7 @@ function createServer() {
       name: 'LLM Scheduler API',
       version: '1.0.0',
       scheduler: scheduler.name,
+      dashboard: '/dashboard.html',
       endpoints: {
         health: 'GET /api/health',
         submitRequest: 'POST /api/requests',

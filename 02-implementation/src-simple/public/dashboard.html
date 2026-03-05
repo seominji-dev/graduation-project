@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Scheduler Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', '맑은 고딕', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(135deg, #1a237e, #283593);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { font-size: 20px; font-weight: 600; }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-ok { background: #4caf50; }
+    .status-err { background: #f44336; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    /* 카드 그리드 */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+    .card-value { font-size: 28px; font-weight: 700; color: #1a237e; }
+    .card-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+    /* 섹션 */
+    .section {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .section h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e8eaf6;
+    }
+
+    /* 테이블 */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; text-align: left; font-size: 13px; }
+    th { background: #f5f5f5; font-weight: 600; color: #555; }
+    tr:not(:last-child) td { border-bottom: 1px solid #eee; }
+
+    /* 큐 시각화 */
+    .queue-bar {
+      display: flex;
+      height: 32px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #e0e0e0;
+      margin-bottom: 8px;
+    }
+    .queue-bar div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      transition: width 0.5s ease;
+    }
+    .q-pending { background: #ff9800; }
+    .q-processing { background: #2196f3; }
+    .q-completed { background: #4caf50; }
+    .q-failed { background: #f44336; }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+    .legend span::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .legend .l-pending::before { background: #ff9800; }
+    .legend .l-processing::before { background: #2196f3; }
+    .legend .l-completed::before { background: #4caf50; }
+    .legend .l-failed::before { background: #f44336; }
+
+    /* 스케줄러 선택 */
+    .scheduler-select {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .scheduler-select button {
+      padding: 8px 18px;
+      border: 2px solid #c5cae9;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .scheduler-select button:hover { border-color: #3f51b5; color: #3f51b5; }
+    .scheduler-select button.active {
+      background: #3f51b5;
+      color: white;
+      border-color: #3f51b5;
+    }
+
+    /* 요청 폼 */
+    .demo-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .demo-form label { font-size: 12px; color: #666; display: block; margin-bottom: 4px; }
+    .demo-form input, .demo-form select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .demo-form input:focus, .demo-form select:focus { outline: none; border-color: #3f51b5; }
+    .btn {
+      padding: 8px 20px;
+      background: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .btn:hover { background: #303f9f; }
+    .btn-green { background: #4caf50; }
+    .btn-green:hover { background: #388e3c; }
+
+    /* 로그 */
+    .log-list { max-height: 200px; overflow-y: auto; }
+    .log-item {
+      padding: 6px 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 12px;
+      color: #555;
+    }
+    .log-item .log-time { color: #aaa; margin-right: 8px; }
+
+    .refresh-info { font-size: 11px; color: #bbb; text-align: right; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>LLM Scheduler Dashboard</h1>
+  <span class="status-badge status-ok" id="health-badge">연결 중...</span>
+</header>
+
+<div class="container">
+  <!-- 요약 카드 -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">현재 스케줄러</div>
+      <div class="card-value" id="scheduler-name">-</div>
+    </div>
+    <div class="card">
+      <div class="card-label">큐 대기 중</div>
+      <div class="card-value" id="queue-size">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">총 처리 완료</div>
+      <div class="card-value" id="total-completed">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">공정성 지수 (JFI)</div>
+      <div class="card-value" id="fairness-value">-</div>
+      <div class="card-sub">Jain's Fairness Index</div>
+    </div>
+  </div>
+
+  <!-- 큐 상태 시각화 -->
+  <div class="section">
+    <h2>큐 상태</h2>
+    <div class="queue-bar" id="queue-bar"></div>
+    <div class="legend">
+      <span class="l-pending">대기</span>
+      <span class="l-processing">처리 중</span>
+      <span class="l-completed">완료</span>
+      <span class="l-failed">실패</span>
+    </div>
+  </div>
+
+  <!-- 스케줄러 전환 -->
+  <div class="section">
+    <h2>스케줄러 전환</h2>
+    <div class="scheduler-select" id="scheduler-buttons">
+      <button data-type="FCFS">FCFS</button>
+      <button data-type="PRIORITY">Priority</button>
+      <button data-type="MLFQ">MLFQ</button>
+      <button data-type="WFQ">WFQ</button>
+    </div>
+  </div>
+
+  <!-- 데모: 요청 제출 -->
+  <div class="section">
+    <h2>요청 제출 (데모)</h2>
+    <div class="demo-form">
+      <div>
+        <label>프롬프트</label>
+        <input type="text" id="prompt-input" value="Hello, explain OS scheduling" style="width:260px">
+      </div>
+      <div>
+        <label>우선순위</label>
+        <select id="priority-input">
+          <option value="LOW">LOW</option>
+          <option value="NORMAL" selected>NORMAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="URGENT">URGENT</option>
+        </select>
+      </div>
+      <div>
+        <label>테넌트</label>
+        <input type="text" id="tenant-input" value="tenant-A" style="width:120px">
+      </div>
+      <div>
+        <label>등급</label>
+        <select id="tier-input">
+          <option value="free">Free</option>
+          <option value="standard" selected>Standard</option>
+          <option value="premium">Premium</option>
+          <option value="enterprise">Enterprise</option>
+        </select>
+      </div>
+      <button class="btn" onclick="submitRequest()">요청 제출</button>
+      <button class="btn btn-green" onclick="processNext()">다음 처리</button>
+    </div>
+  </div>
+
+  <!-- 알고리즘별 성능 비교 -->
+  <div class="section">
+    <h2>알고리즘별 실험 결과 (25-2학기)</h2>
+    <table>
+      <thead>
+        <tr><th>스케줄러</th><th>평균 대기시간</th><th>핵심 발견</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FCFS</td><td>2,572ms</td><td>베이스라인</td></tr>
+        <tr><td>Priority</td><td>2,826ms</td><td>URGENT 1,122ms (62% 감소)</td></tr>
+        <tr><td>MLFQ</td><td>2,572ms</td><td>Short 73.78% 개선 (10 시드 검증)</td></tr>
+        <tr><td>WFQ</td><td>2,819ms</td><td>Enterprise 5.8x 빠름</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 최근 로그 -->
+  <div class="section">
+    <h2>최근 요청 로그</h2>
+    <div class="log-list" id="log-list">
+      <div class="log-item" style="color:#bbb">데이터를 불러오는 중...</div>
+    </div>
+  </div>
+
+  <div class="refresh-info">3초마다 자동 갱신 | <span id="last-update">-</span></div>
+</div>
+
+<script>
+  const API = '';  // 같은 호스트
+
+  // 상태 갱신
+  async function refresh() {
+    try {
+      const [healthRes, statusRes, fairnessRes, reqsRes] = await Promise.all([
+        fetch(API + '/api/health'),
+        fetch(API + '/api/scheduler/status'),
+        fetch(API + '/api/fairness'),
+        fetch(API + '/api/requests?status=all')
+      ]);
+
+      const health = await healthRes.json();
+      const status = await statusRes.json();
+      const fairness = await fairnessRes.json();
+      const reqs = await reqsRes.json();
+
+      // 헬스
+      const badge = document.getElementById('health-badge');
+      badge.textContent = health.status === 'ok' ? '정상' : '오류';
+      badge.className = 'status-badge ' + (health.status === 'ok' ? 'status-ok' : 'status-err');
+
+      // 카드
+      document.getElementById('scheduler-name').textContent = status.schedulerType || '-';
+      document.getElementById('queue-size').textContent = status.queueSize || 0;
+
+      const completed = status.completed || 0;
+      document.getElementById('total-completed').textContent = completed;
+
+      const jfi = fairness.fairnessIndex;
+      document.getElementById('fairness-value').textContent =
+        jfi != null ? jfi.toFixed(3) : 'N/A';
+
+      // 스케줄러 버튼 active 표시
+      document.querySelectorAll('#scheduler-buttons button').forEach(btn => {
+        btn.classList.toggle('active',
+          btn.dataset.type === (status.schedulerType || '').toUpperCase());
+      });
+
+      // 큐 바
+      const pending = status.pending || 0;
+      const processing = status.processing || 0;
+      const failed = status.failed || 0;
+      const total = pending + processing + completed + failed || 1;
+      const bar = document.getElementById('queue-bar');
+      bar.innerHTML = '';
+      if (pending > 0) bar.innerHTML += '<div class="q-pending" style="width:' + (pending/total*100) + '%">' + pending + '</div>';
+      if (processing > 0) bar.innerHTML += '<div class="q-processing" style="width:' + (processing/total*100) + '%">' + processing + '</div>';
+      if (completed > 0) bar.innerHTML += '<div class="q-completed" style="width:' + (completed/total*100) + '%">' + completed + '</div>';
+      if (failed > 0) bar.innerHTML += '<div class="q-failed" style="width:' + (failed/total*100) + '%">' + failed + '</div>';
+      if (total <= 1 && pending === 0 && completed === 0) {
+        bar.innerHTML = '<div style="width:100%;color:#999;font-size:12px;display:flex;align-items:center;justify-content:center">요청 없음</div>';
+      }
+
+      // 최근 요청 로그
+      const logList = document.getElementById('log-list');
+      if (reqs.requests && reqs.requests.length > 0) {
+        const recent = reqs.requests.slice(-20).reverse();
+        logList.innerHTML = recent.map(r => {
+          const time = r.createdAt ? new Date(r.createdAt).toLocaleTimeString('ko-KR') : '-';
+          const st = r.status || 'unknown';
+          return '<div class="log-item"><span class="log-time">' + time + '</span>' +
+            '[' + st + '] ' + (r.prompt || '').substring(0, 60) +
+            (r.priority ? ' <b>(' + r.priority + ')</b>' : '') +
+            '</div>';
+        }).join('');
+      } else {
+        logList.innerHTML = '<div class="log-item" style="color:#bbb">요청 기록 없음</div>';
+      }
+
+      document.getElementById('last-update').textContent =
+        new Date().toLocaleTimeString('ko-KR');
+
+    } catch (e) {
+      document.getElementById('health-badge').textContent = '연결 실패';
+      document.getElementById('health-badge').className = 'status-badge status-err';
+    }
+  }
+
+  // 요청 제출
+  async function submitRequest() {
+    const body = {
+      prompt: document.getElementById('prompt-input').value,
+      priority: document.getElementById('priority-input').value,
+      tenantId: document.getElementById('tenant-input').value,
+      tier: document.getElementById('tier-input').value
+    };
+    await fetch(API + '/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    refresh();
+  }
+
+  // 다음 요청 처리
+  async function processNext() {
+    await fetch(API + '/api/scheduler/process', { method: 'POST' });
+    refresh();
+  }
+
+  // 스케줄러 전환 (서버에 PUT 스케줄러 API가 없으므로 안내만 표시)
+  document.querySelectorAll('#scheduler-buttons button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      alert('스케줄러 전환: SCHEDULER_TYPE=' + btn.dataset.type + ' 환경변수로 서버를 재시작하세요.');
+    });
+  });
+
+  // 3초 간격 자동 갱신
+  refresh();
+  setInterval(refresh, 3000);
+</script>
+
+</body>
+</html>
