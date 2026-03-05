@@ -1,0 +1,103 @@
+[
+  {
+    "id": "[1]",
+    "authors": "A. Silberschatz, P. B. Galvin, G. Gagne",
+    "title": "Operating System Concepts",
+    "edition": "10th",
+    "publisher": "Wiley",
+    "year": 2018,
+    "url": "https://www.os-book.com/",
+    "type": "textbook",
+    "verified": true,
+    "note": "OS 스케줄링 이론 (FCFS, Priority, MLFQ 등)"
+  },
+  {
+    "id": "[2]",
+    "authors": "R. H. Arpaci-Dusseau, A. C. Arpaci-Dusseau",
+    "title": "Operating Systems: Three Easy Pieces",
+    "edition": "Version 1.10",
+    "publisher": "Arpaci-Dusseau Books",
+    "year": 2023,
+    "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+    "type": "textbook",
+    "verified": true,
+    "note": "MLFQ 5가지 규칙, 무료 온라인 교재"
+  },
+  {
+    "id": "[3]",
+    "authors": "J. F. Kurose, K. W. Ross",
+    "title": "Computer Networking: A Top-Down Approach",
+    "edition": "8th",
+    "publisher": "Pearson",
+    "year": 2021,
+    "url": "https://gaia.cs.umass.edu/kurose_ross/",
+    "type": "textbook",
+    "verified": true,
+    "note": "WFQ, GPS 이론, Jain's Fairness Index, Token Bucket"
+  },
+  {
+    "id": "[4]",
+    "authors": "W. Kwon, Z. Li, S. Zhuang, Y. Sheng, Y. Liang, C. H. Liang, Z. Dao, E. P. Xing, I. Stoica, T. Zhang",
+    "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+    "venue": "Proceedings of the 29th ACM Symposium on Operating Systems Principles (SOSP '23)",
+    "pages": "611-626",
+    "year": 2023,
+    "url": "https://docs.vllm.ai/",
+    "github": "https://github.com/vllm-project/vllm",
+    "type": "conference-paper",
+    "verified": true,
+    "note": "PagedAttention, OS 가상 메모리 페이징을 LLM KV 캐시에 적용"
+  },
+  {
+    "id": "[5]",
+    "authors": "Hugging Face",
+    "title": "Text Generation Inference (TGI)",
+    "year": 2024,
+    "url": "https://huggingface.co/docs/text-generation-inference/",
+    "github": "https://github.com/huggingface/text-generation-inference",
+    "type": "software",
+    "verified": true,
+    "note": "오픈소스 LLM 서빙 도구, Continuous Batching, Flash Attention"
+  },
+  {
+    "id": "[6]",
+    "authors": "Ollama",
+    "title": "Ollama - Get up and running with large language models",
+    "year": 2024,
+    "url": "https://ollama.com/",
+    "github": "https://github.com/ollama/ollama",
+    "type": "software",
+    "verified": true,
+    "note": "로컬 LLM 실행 도구, REST API 제공, 본 연구 프로토타입 백엔드"
+  },
+  {
+    "id": "[7]",
+    "authors": "Express.js",
+    "title": "Express - Node.js Web Application Framework",
+    "year": 2024,
+    "url": "https://expressjs.com/",
+    "type": "documentation",
+    "verified": true,
+    "note": "본 연구 API 계층 프레임워크"
+  },
+  {
+    "id": "[8]",
+    "authors": "Node.js",
+    "title": "Node.js Documentation",
+    "year": 2024,
+    "url": "https://nodejs.org/docs/latest/api/",
+    "type": "documentation",
+    "verified": true,
+    "note": "본 연구 런타임 환경 (Node.js 22 LTS)"
+  },
+  {
+    "id": "[9]",
+    "authors": "Jest",
+    "title": "Jest - Delightful JavaScript Testing",
+    "year": 2024,
+    "url": "https://jestjs.io/",
+    "type": "documentation",
+    "verified": true,
+    "note": "단위 테스트 프레임워크 (307개 테스트, 99.76% 커버리지)"
+  }
+]
