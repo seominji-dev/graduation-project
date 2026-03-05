@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #ffffff; font-family: 'Times New Roman', Georgia, serif;
+  display: flex; flex-direction: column;
+}
+.figure-area {
+  margin: 24pt 30pt 8pt 30pt;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+.cards-row {
+  display: flex; gap: 10pt; flex: 1;
+}
+.card {
+  flex: 1;
+  border: 1pt solid #333333;
+  display: flex; flex-direction: column;
+}
+.card-header {
+  background: #333333;
+  padding: 6pt 8pt;
+}
+.card-header-white {
+  background: #666666;
+  padding: 6pt 8pt;
+}
+.card-body {
+  padding: 8pt 10pt;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+.section-label {
+  border-bottom: 0.5pt solid #999999;
+  padding-bottom: 3pt;
+  margin-bottom: 5pt; margin-top: 8pt;
+}
+.arrow-bar {
+  margin: 10pt 0 4pt 0;
+  border-top: 1.5pt solid #333333;
+  display: flex; justify-content: space-between;
+  padding-top: 3pt;
+}
+.ref-line {
+  margin-top: 4pt;
+  padding-top: 4pt;
+  border-top: 0.5pt solid #cccccc;
+}
+</style>
+</head>
+<body>
+<div class="figure-area">
+  <!-- 4 algorithm cards -->
+  <div class="cards-row">
+    <!-- FCFS -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">FCFS</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">First-Come First-Served</p>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Characteristics</p>
+        </div>
+        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+          <li>Simple FIFO queue</li>
+          <li>Non-preemptive</li>
+          <li>O(1) scheduling</li>
+        </ul>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Limitation</p>
+        </div>
+        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">Convoy effect; no service differentiation</p>
+      </div>
+    </div>
+    <!-- Priority -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">Priority</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">Priority-based + Aging</p>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Characteristics</p>
+        </div>
+        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+          <li>4-level priority (URGENT~LOW)</li>
+          <li>Aging for starvation prevention</li>
+          <li>Dynamic priority adjustment</li>
+        </ul>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Limitation</p>
+        </div>
+        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">Potential starvation without aging</p>
+      </div>
+    </div>
+    <!-- MLFQ -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">MLFQ</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">Multi-Level Feedback Queue</p>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Characteristics</p>
+        </div>
+        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+          <li>Adaptive classification</li>
+          <li>Time quantum per level</li>
+          <li>Preemptive scheduling</li>
+        </ul>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Limitation</p>
+        </div>
+        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">Parameter tuning complexity</p>
+      </div>
+    </div>
+    <!-- WFQ -->
+    <div class="card">
+      <div class="card-header">
+        <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">WFQ</h3>
+      </div>
+      <div class="card-body">
+        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">Weighted Fair Queuing</p>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Characteristics</p>
+        </div>
+        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+          <li>Weight-proportional service</li>
+          <li>Virtual Finish Time</li>
+          <li>JFI fairness metric</li>
+        </ul>
+        <div class="section-label">
+          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">Limitation</p>
+        </div>
+        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">Computational overhead of VFT</p>
+      </div>
+    </div>
+  </div>
+  <!-- Complexity arrow -->
+  <div class="arrow-bar">
+    <p style="font-size:8pt; color:#555555; margin:0; font-style:italic;">Simple</p>
+    <p style="font-size:8pt; color:#555555; margin:0;">Implementation Complexity / Performance Optimization  &#8594;</p>
+    <p style="font-size:8pt; color:#555555; margin:0; font-style:italic;">Complex</p>
+  </div>
+  <!-- Reference -->
+  <div class="ref-line">
+    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">[1] Silberschatz et al., Operating System Concepts, 10th ed., 2018.  [2] Arpaci-Dusseau, OSTEP, 2018.</p>
+  </div>
+</div>
+</body>
+</html>

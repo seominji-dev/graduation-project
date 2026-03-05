@@ -312,43 +312,46 @@ async function generateProposal() {
           ]),
           multiRunParagraph([
             { text: 'MLFQ (Multi-Level Feedback Queue)', bold: true },
-            { text: '는 Corbato et al.이 CTSS(Compatible Time-Sharing System)에서 최초로 제안한 알고리즘으로 [2], ' +
-              '작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정한다. 짧은 작업은 높은 우선순위 큐에서 빠르게 ' +
-              '처리되고, 긴 작업은 점차 하위 큐로 이동한다. Arpaci-Dusseau & Arpaci-Dusseau는 MLFQ의 5가지 핵심 ' +
-              '규칙을 정리하며, 현대 운영체제에서 가장 널리 사용되는 스케줄링 알고리즘임을 설명하였다 [3].' }
+            { text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다. ' +
+              '짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 긴 작업은 점차 하위 큐로 이동한다. ' +
+              'Arpaci-Dusseau & Arpaci-Dusseau는 MLFQ의 5가지 핵심 규칙을 정리하며, ' +
+              '현대 운영체제에서 가장 널리 사용되는 스케줄링 알고리즘임을 설명하였다 [2, Ch.8].' }
           ]),
           multiRunParagraph([
             { text: 'WFQ (Weighted Fair Queuing)', bold: true },
-            { text: '는 Demers, Keshav, & Shenker가 제안한 공정 큐잉 알고리즘으로 [4], ' +
-              'GPS(Generalized Processor Sharing) 이론을 기반으로 한다. 각 흐름(flow)에 가중치를 부여하여 ' +
+            { text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘으로, ' +
+              'GPS(Generalized Processor Sharing) 이론을 기반으로 한다 [3, Ch.7]. 각 흐름(flow)에 가중치를 부여하여 ' +
               '가중치에 비례하는 서비스를 제공하며, Virtual Finish Time 개념을 사용하여 스케줄링 순서를 결정한다.' }
           ]),
+          textParagraph(
+            '[그림 1] OS 스케줄링 알고리즘 개념 비교 (참조: figures/proposal-figures.pptx, 슬라이드 1)',
+            { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '808080', size: 20 } }
+          ),
 
           new Paragraph({
             heading: HeadingLevel.HEADING_2,
-            children: [new TextRun({ text: '2.2 LLM 서빙 최적화 연구', font: FONT })]
+            children: [new TextRun({ text: '2.2 LLM 서빙 시스템', font: FONT })]
           }),
           textParagraph(
-            'LLM API 서빙 분야에서는 추론 성능 최적화를 위한 다양한 연구가 진행되어 왔다.'
+            'LLM 서빙 분야에서는 추론 성능 최적화를 위한 다양한 기술이 개발되어 왔다.'
           ),
           textParagraph(
-            'Kwon et al.은 vLLM 시스템에서 PagedAttention 기법을 제안하였다 [5]. 이 기법은 운영체제의 가상 메모리 ' +
-            '페이징 기법에서 착안하여, LLM 추론 시 KV 캐시 메모리를 비연속적 블록으로 관리한다. 이를 통해 ' +
-            '기존 대비 메모리 활용률을 최대 55% 향상시키고, 처리량(throughput)을 2-4배 개선하였다.'
+            'vLLM은 UC Berkeley에서 개발한 고성능 LLM 추론 엔진으로, PagedAttention이라는 핵심 기술을 도입하였다 [4]. ' +
+            '이 기법은 운영체제의 가상 메모리 페이징 기법에서 착안하여, LLM 추론 시 KV(Key-Value) 캐시 메모리를 ' +
+            '비연속적 블록으로 관리한다. vLLM 공식 문서에 따르면, 기존 대비 메모리 활용률을 최대 55% 향상시키고 ' +
+            '처리량(throughput)을 2-4배 개선하였다.'
           ),
           textParagraph(
-            'Yu et al.은 ORCA 시스템에서 iteration-level 스케줄링을 도입하였다 [6]. 기존의 요청 단위 배치 처리 방식과 ' +
-            '달리, 매 디코딩 반복(iteration)마다 새로운 요청을 동적으로 삽입하는 방식으로 ' +
-            'GPU 활용률과 처리량을 향상시켰다.'
+            'Hugging Face TGI(Text Generation Inference)는 오픈소스 LLM 배포 도구로, continuous batching과 ' +
+            'Flash Attention 등의 기술을 활용하여 생산 환경에서의 추론 효율성을 높인다 [5]. ' +
+            'TGI는 Docker 기반으로 손쉬운 배포를 지원하며, OpenAI 호환 API를 제공한다.'
           ),
           textParagraph(
-            'Agrawal et al.은 Sarathi-Serve 시스템에서 chunked prefill 기법을 제안하였다 [7]. LLM 추론의 ' +
-            'prefill(입력 처리) 단계와 decode(출력 생성) 단계가 서로 다른 연산 특성을 가지는 점에 ' +
-            '착안하여, prefill 연산을 작은 청크로 분할하고 decode 연산과 인터리빙하는 방식으로 ' +
-            '지연시간 변동을 감소시켰다.'
+            'Ollama는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구로, REST API를 통해 다양한 ' +
+            '오픈소스 모델(Llama, Mistral, Gemma 등)을 제공한다 [6]. 본 연구의 프로토타입에서 LLM 백엔드로 사용하였다.'
           ),
           textParagraph(
-            '그러나 이들 연구는 주로 GPU 메모리 관리, 배치 처리 최적화, 추론 파이프라인 효율화에 집중하고 있으며, ' +
+            '그러나 기존 LLM 서빙 시스템들은 주로 GPU 메모리 관리와 추론 파이프라인 효율화에 집중하고 있으며, ' +
             '다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 상대적으로 다루어지지 않았다. ' +
             '본 연구는 이 간극을 메우기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.'
           ),
@@ -358,10 +361,10 @@ async function generateProposal() {
             children: [new TextRun({ text: '2.3 공정성 측정', font: FONT })]
           }),
           textParagraph(
-            'Jain, Chiu, & Hawe는 공유 컴퓨터 시스템에서 자원 배분의 공정성을 정량적으로 측정하기 위한 ' +
-            'Jain\'s Fairness Index(JFI)를 제안하였다 [8]. JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 ' +
-            '값을 가지며, 본 연구는 JFI를 멀티테넌트 LLM API 환경에 적용하여, 시스템 수준과 테넌트 수준의 ' +
-            '이중 공정성 측정 방법론을 제시한다.'
+            'Jain\'s Fairness Index(JFI)는 공유 자원 시스템에서 자원 배분의 공정성을 정량적으로 측정하기 위한 ' +
+            '지표이다 [3, Ch.9]. 운영체제 및 네트워크 교과서에서 범용 공정성 지표로 널리 소개되고 있다. ' +
+            'JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가지며, 본 연구는 JFI를 멀티테넌트 LLM API ' +
+            '환경에 적용하여, 시스템 수준과 테넌트 수준의 이중 공정성 측정 방법론을 제시한다.'
           ),
 
           // ===== 3. 제안 시스템 =====
@@ -424,6 +427,17 @@ async function generateProposal() {
           }),
           emptyLine(),
 
+          // [그림 2] OS-LLM 개념 매핑도 플레이스홀더
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 120, after: 40 },
+            children: [new TextRun({
+              text: '[그림 2] OS-LLM 개념 매핑도 (참조: figures/proposal-figures.pptx, 슬라이드 2)',
+              font: FONT, size: 20, italics: true, color: '666666'
+            })]
+          }),
+          emptyLine(),
+
           new Paragraph({
             heading: HeadingLevel.HEADING_2,
             children: [new TextRun({ text: '3.2 시스템 아키텍처', font: FONT })]
@@ -438,7 +452,7 @@ async function generateProposal() {
             alignment: AlignmentType.CENTER,
             spacing: { before: 120, after: 80 },
             children: [new TextRun({
-              text: '그림 1. 시스템 아키텍처 (4계층 구조)',
+              text: '[그림 3] 시스템 아키텍처 4계층 구조 (참조: figures/proposal-figures.pptx, 슬라이드 3)',
               font: FONT, size: 20, bold: true, color: COLOR_DARK
             })]
           }),
@@ -638,7 +652,16 @@ async function generateProposal() {
             ]
           }),
           emptyLine(),
-
+          // [그림 4] 알고리즘별 성능 비교 차트 플레이스홀더
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 120, after: 40 },
+            children: [new TextRun({
+              text: '[그림 4] 알고리즘별 성능 비교 차트 (참조: figures/proposal-figures.pptx, 슬라이드 4)',
+              font: FONT, size: 20, italics: true, color: '666666'
+            })]
+          }),
+          emptyLine(),
           multiRunParagraph([
             { text: 'RQ1 (Priority Scheduling): ', bold: true },
             { text: 'URGENT 요청은 FCFS 대비 62% 빠르게 처리되었다(Cohen\'s d = 0.78, p < 0.001). ' +
@@ -747,35 +770,39 @@ async function generateProposal() {
             children: [new TextRun({ text: '참고문헌', font: FONT })]
           }),
           textParagraph(
-            '[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. Wiley, 2018.'
+            '[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. ' +
+            '(번역판: 박민규 역, 운영체제, 홍릉과학출판사, 2020). Wiley, 2018. Available: https://www.os-book.com/'
           ),
           textParagraph(
-            '[2] F. J. Corbato, M. M. Daggett, and R. C. Daley, "An experimental time-sharing system," ' +
-            'in Proceedings of the AFIPS Spring Joint Computer Conference, 1962, pp. 335-344.'
+            '[2] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, ' +
+            'Version 1.10. Arpaci-Dusseau Books, 2023. Available: https://pages.cs.wisc.edu/~remzi/OSTEP/ (무료 공개 교재)'
           ),
           textParagraph(
-            '[3] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces. ' +
-            'Arpaci-Dusseau Books, 2018.'
+            '[3] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 8th ed. ' +
+            '(번역판: 최종원 외 역, 컴퓨터 네트워킹 하향식 접근, 퍼스트북, 2022). Pearson, 2021. ' +
+            'Available: https://gaia.cs.umass.edu/kurose_ross/'
           ),
           textParagraph(
-            '[4] A. Demers, S. Keshav, and S. Shenker, "Analysis and simulation of a fair queueing algorithm," ' +
-            'in ACM SIGCOMM \'89 Proceedings, 1989, pp. 1-12.'
+            '[4] vLLM Project, "vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention," 2024. ' +
+            'Available: https://docs.vllm.ai/ (GitHub: https://github.com/vllm-project/vllm)'
           ),
           textParagraph(
-            '[5] W. Kwon et al., "Efficient memory management for large language model serving with PagedAttention," ' +
-            'in Proceedings of SOSP \'23, 2023, pp. 611-626.'
+            '[5] Hugging Face, "Text Generation Inference (TGI) Documentation," 2024. ' +
+            'Available: https://huggingface.co/docs/text-generation-inference/'
           ),
           textParagraph(
-            '[6] G. I. Yu et al., "Orca: A distributed serving system for Transformer-Based generative models," ' +
-            'in Proceedings of OSDI \'22, 2022, pp. 521-538.'
+            '[6] Ollama, "Ollama Documentation," 2024. ' +
+            'Available: https://ollama.com/ (GitHub: https://github.com/ollama/ollama)'
           ),
           textParagraph(
-            '[7] A. Agrawal et al., "Sarathi-Serve: CoDe Interleaving for Stall-free LLM Serving," ' +
-            'arXiv:2308.16369, 2024.'
+            '[7] Express.js, "Express - Node.js Web Application Framework," 2024. ' +
+            'Available: https://expressjs.com/'
           ),
           textParagraph(
-            '[8] R. Jain, D. M. Chiu, and W. R. Hawe, "A quantitative measure of fairness and discrimination ' +
-            'for resource allocation in shared computer systems," DEC Research Report TR-301, 1984.'
+            '[8] Node.js, "Node.js Documentation," 2024. Available: https://nodejs.org/docs/latest/api/'
+          ),
+          textParagraph(
+            '[9] Jest, "Jest - Delightful JavaScript Testing," 2024. Available: https://jestjs.io/'
           )
         ]
       }

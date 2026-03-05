@@ -273,32 +273,46 @@ async function generateMidtermReport() {
         ]),
         multiRunParagraph([
           { text: 'MLFQ (Multi-Level Feedback Queue)', bold: true },
-          { text: '는 Corbato et al.이 CTSS에서 최초로 제안하였으며 [2], 작업의 실행 특성을 관찰하여 ' +
-            '우선순위를 동적으로 조정한다. Arpaci-Dusseau & Arpaci-Dusseau는 MLFQ의 5가지 핵심 규칙을 정리하였다 [3].' }
+          { text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다. ' +
+            '현대 운영체제에서 가장 널리 사용되는 스케줄링 알고리즘 중 하나이며, 5가지 핵심 규칙(Rule 1-5)에 따라 ' +
+            '작업을 분류하고 큐 간 이동시킨다 [2, Ch.8].' }
         ]),
         multiRunParagraph([
           { text: 'WFQ (Weighted Fair Queuing)', bold: true },
-          { text: '는 Demers et al.이 제안한 알고리즘으로 [4], GPS 이론을 기반으로 각 흐름에 ' +
-            '가중치에 비례하는 서비스를 제공한다.' }
+          { text: '는 GPS(Generalized Processor Sharing) 이론을 기반으로 한 공정 큐잉 알고리즘이다. ' +
+            '각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공하며, ' +
+            'Virtual Finish Time 개념을 사용하여 스케줄링 순서를 결정한다 [3, Ch.7].' }
         ]),
+        emptyLine(),
+        textParagraph('[그림 1] OS 스케줄링 알고리즘 개념 비교 (참조: figures/midterm-figures.pptx, 슬라이드 1)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
+        emptyLine(),
 
-        heading2('2.2 LLM 서빙 최적화 연구'),
+        heading2('2.2 LLM 서빙 시스템'),
         textParagraph(
-          'Kwon et al.은 vLLM에서 PagedAttention 기법을 제안하여, KV 캐시 메모리를 비연속적 블록으로 관리하여 ' +
-          '메모리 활용률을 55% 향상시켰다 [5]. Yu et al.은 ORCA에서 iteration-level 스케줄링으로 ' +
-          'GPU 활용률을 개선하였다 [6]. Agrawal et al.은 Sarathi-Serve에서 chunked prefill 기법을 ' +
-          '제안하여 지연시간 변동을 감소시켰다 [7].'
+          'LLM API 서빙 분야에서는 추론 성능 최적화를 위한 다양한 오픈소스 프로젝트가 활발히 개발되고 있다.'
         ),
         textParagraph(
-          '그러나 이들 연구는 GPU 메모리 관리와 추론 파이프라인 효율화에 집중하고 있다. ' +
+          'vLLM은 PagedAttention 기법을 도입한 고성능 LLM 추론 엔진이다 [4]. 운영체제의 가상 메모리 페이징 기법에서 ' +
+          '착안하여 KV 캐시 메모리를 비연속적 블록으로 관리하며, 기존 대비 메모리 활용률을 크게 향상시키고 처리량을 개선한다.'
+        ),
+        textParagraph(
+          'Text Generation Inference(TGI)는 HuggingFace에서 개발한 LLM 추론 서버로, continuous batching과 ' +
+          '토큰 스트리밍 기능을 제공한다 [5]. 프로덕션 환경에서의 LLM 배포를 위한 최적화된 기능을 갖추고 있다.'
+        ),
+        textParagraph(
+          'Ollama는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구로, REST API를 통해 다양한 모델을 ' +
+          '호출할 수 있다 [6]. 본 연구에서는 Ollama를 실험용 LLM 백엔드로 사용한다.'
+        ),
+        textParagraph(
+          '그러나 이들 시스템은 주로 GPU 메모리 관리와 추론 파이프라인 효율화에 집중하고 있다. ' +
           '다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 상대적으로 다루어지지 않았으며, ' +
           '본 연구는 이 간극을 메우기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.'
         ),
 
         heading2('2.3 공정성 측정'),
         textParagraph(
-          'Jain et al.은 공유 컴퓨터 시스템에서 자원 배분의 공정성을 정량적으로 측정하기 위한 ' +
-          'Jain\'s Fairness Index(JFI)를 제안하였다 [8]. JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가진다. ' +
+          'Jain\'s Fairness Index(JFI)는 공유 컴퓨터 시스템에서 자원 배분의 공정성을 정량적으로 측정하기 위한 ' +
+          '지표이다 [3, Ch.9]. JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가진다. ' +
           '본 연구는 JFI를 멀티테넌트 LLM API 환경에 적용하여, 시스템 수준과 테넌트 수준의 이중 공정성 측정 방법론을 제시한다.'
         ),
 
@@ -328,6 +342,8 @@ async function generateMidtermReport() {
           ]
         }),
         emptyLine(),
+        textParagraph('[그림 2] OS-LLM 개념 매핑도 (참조: figures/midterm-figures.pptx, 슬라이드 2)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
+        emptyLine(),
 
         heading2('3.2 시스템 아키텍처'),
         textParagraph('시스템은 4계층 구조로 설계되었다.'),
@@ -335,6 +351,9 @@ async function generateMidtermReport() {
         bulletItem('API 계층: Express.js 기반 HTTP 서버, 요청 접수, 스케줄러 전환, 통계 조회'),
         bulletItem('스케줄러 엔진: 5가지 알고리즘이 공통 인터페이스를 구현, Strategy 패턴으로 런타임 교체'),
         bulletItem('저장소 계층: 메모리 배열 큐, JSON 파일 로그, Ollama 로컬 LLM'),
+        emptyLine(),
+        textParagraph('[그림 3] 시스템 아키텍처 4계층 구조 (참조: figures/midterm-figures.pptx, 슬라이드 3)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
+        emptyLine(),
 
         heading2('3.3 스케줄링 알고리즘 설계'),
 
@@ -362,6 +381,8 @@ async function generateMidtermReport() {
           ]
         }),
         emptyLine(),
+        textParagraph('[그림 4] MLFQ 큐 구조 및 요청 이동 흐름 (참조: figures/midterm-figures.pptx, 슬라이드 4)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
+        emptyLine(),
         textParagraph('의사코드 1. MLFQ 선점 처리 흐름', { runOptions: { bold: true, italics: true } }),
         ...codeBlock([
           'function processNextRequest():',
@@ -379,6 +400,8 @@ async function generateMidtermReport() {
           '        else:',
           '            continue processing'
         ]),
+        emptyLine(),
+        textParagraph('[그림 5] MLFQ 의사코드 시각화 (참조: figures/midterm-figures.pptx, 슬라이드 5)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
         emptyLine(),
 
         heading3('3.3.4 WFQ'),
@@ -474,6 +497,8 @@ async function generateMidtermReport() {
           ]
         }),
         emptyLine(),
+        textParagraph('[그림 6] 알고리즘별 성능 비교 차트 (참조: figures/midterm-figures.pptx, 슬라이드 6)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
+        emptyLine(),
         multiRunParagraph([
           { text: 'RQ1 (Priority Scheduling): ', bold: true },
           { text: 'URGENT 요청은 FCFS 대비 62% 빠르게 처리되었다(Cohen\'s d = 0.78, p < 0.001).' }
@@ -509,6 +534,8 @@ async function generateMidtermReport() {
             new TableRow({ children: [cell('Cohen\'s d', { width: 4500 }), cell('15.905 (큰 효과)', { width: 4500, align: AlignmentType.CENTER })]})
           ]
         }),
+        emptyLine(),
+        textParagraph('[그림 7] 다중 시드 실험 결과 및 신뢰구간 (참조: figures/midterm-figures.pptx, 슬라이드 7)', { alignment: AlignmentType.CENTER, runOptions: { italics: true, color: '666666' } }),
         emptyLine(),
 
         // ===== 5. 향후 계획 =====
@@ -566,13 +593,14 @@ async function generateMidtermReport() {
         // ===== 참고문헌 =====
         heading1('참고문헌'),
         textParagraph('[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. Wiley, 2018.'),
-        textParagraph('[2] F. J. Corbato, M. M. Daggett, and R. C. Daley, "An experimental time-sharing system," in Proc. AFIPS Spring Joint Computer Conference, 1962, pp. 335-344.'),
-        textParagraph('[3] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces. Arpaci-Dusseau Books, 2018.'),
-        textParagraph('[4] A. Demers, S. Keshav, and S. Shenker, "Analysis and simulation of a fair queueing algorithm," in ACM SIGCOMM \'89 Proceedings, 1989, pp. 1-12.'),
-        textParagraph('[5] W. Kwon et al., "Efficient memory management for large language model serving with PagedAttention," in Proc. SOSP \'23, 2023, pp. 611-626.'),
-        textParagraph('[6] G. I. Yu et al., "Orca: A distributed serving system for Transformer-Based generative models," in Proc. OSDI \'22, 2022, pp. 521-538.'),
-        textParagraph('[7] A. Agrawal et al., "Sarathi-Serve: CoDe Interleaving for Stall-free LLM Serving," arXiv:2308.16369, 2024.'),
-        textParagraph('[8] R. Jain, D. M. Chiu, and W. R. Hawe, "A quantitative measure of fairness and discrimination for resource allocation in shared computer systems," DEC Research Report TR-301, 1984.')
+        textParagraph('[2] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, v1.10, Arpaci-Dusseau Books, 2023. Available: https://pages.cs.wisc.edu/~remzi/OSTEP/'),
+        textParagraph('[3] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 8th ed., Pearson, 2021. (퍼스트북 번역판: 컴퓨터 네트워킹: 하향식 접근)'),
+        textParagraph('[4] vLLM Project, "vLLM: Easy, Fast, and Cheap LLM Serving," 2024. Available: https://docs.vllm.ai/'),
+        textParagraph('[5] HuggingFace, "Text Generation Inference," 2024. Available: https://huggingface.co/docs/text-generation-inference/'),
+        textParagraph('[6] Ollama, "Ollama Documentation," 2024. Available: https://ollama.com/'),
+        textParagraph('[7] Express.js, "Express - Node.js Web Application Framework," 2024. Available: https://expressjs.com/'),
+        textParagraph('[8] Node.js Foundation, "Node.js Documentation," 2024. Available: https://nodejs.org/docs/latest-v22.x/api/'),
+        textParagraph('[9] Jest, "Jest - Delightful JavaScript Testing," 2024. Available: https://jestjs.io/')
       ]
     }]
   });

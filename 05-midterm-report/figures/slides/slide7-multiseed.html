@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 960pt; height: 540pt; margin: 0; padding: 0;
+  background: #ffffff; font-family: 'Times New Roman', Georgia, serif;
+  display: flex; flex-direction: column;
+}
+.figure-area {
+  margin: 20pt 36pt 10pt 36pt;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+.title-line {
+  border-bottom: 1.5pt solid #333333;
+  padding-bottom: 6pt;
+  margin-bottom: 12pt;
+}
+.content-row {
+  display: flex; gap: 16pt;
+  flex: 1;
+}
+.table-area {
+  flex: 3;
+  display: flex; flex-direction: column;
+}
+.table-header {
+  display: flex;
+  background: #333333;
+  border: 1pt solid #333333;
+}
+.table-header-cell {
+  flex: 1;
+  padding: 6pt 8pt;
+  text-align: center;
+}
+.table-row {
+  display: flex;
+  border: 1pt solid #333333;
+  border-top: none;
+}
+.table-row-alt {
+  display: flex;
+  border: 1pt solid #333333;
+  border-top: none;
+  background: #f9f9f9;
+}
+.table-cell {
+  flex: 1;
+  padding: 5pt 8pt;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.stats-area {
+  flex: 2;
+  display: flex; flex-direction: column; gap: 10pt;
+}
+.stat-section {
+  border: 1pt solid #333333;
+  padding: 10pt 14pt;
+}
+.stat-highlight {
+  border: 1.5pt solid #333333;
+  background: #333333;
+  padding: 10pt 14pt;
+}
+.footer-note {
+  margin-top: 6pt;
+  padding-top: 4pt;
+  border-top: 0.5pt solid #cccccc;
+}
+</style>
+</head>
+<body>
+<div class="figure-area">
+  <div class="title-line">
+    <p style="font-size:12pt; font-weight:bold; color:#333333; margin:0;">MLFQ 다중 시드 실험 결과 (Multi-Seed Validation, n=10)</p>
+  </div>
+  <div class="content-row">
+    <!-- Table -->
+    <div class="table-area">
+      <div class="table-header">
+        <div class="table-header-cell"><p style="font-size:9pt; font-weight:bold; color:#ffffff; margin:0;">시드 (Seed)</p></div>
+        <div class="table-header-cell"><p style="font-size:9pt; font-weight:bold; color:#ffffff; margin:0;">개선율 (%)</p></div>
+        <div class="table-header-cell" style="border-left:0.5pt solid #555555;"><p style="font-size:9pt; font-weight:bold; color:#ffffff; margin:0;">시드 (Seed)</p></div>
+        <div class="table-header-cell"><p style="font-size:9pt; font-weight:bold; color:#ffffff; margin:0;">개선율 (%)</p></div>
+      </div>
+      <!-- Row 1 -->
+      <div class="table-row">
+        <div class="table-cell"><p style="font-size:9pt; color:#333333; margin:0;">12345</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">76.11</p></div>
+        <div class="table-cell" style="border-left:0.5pt solid #cccccc;"><p style="font-size:9pt; color:#333333; margin:0;">27182</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">73.10</p></div>
+      </div>
+      <!-- Row 2 -->
+      <div class="table-row-alt">
+        <div class="table-cell"><p style="font-size:9pt; color:#333333; margin:0;">42</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">73.25</p></div>
+        <div class="table-cell" style="border-left:0.5pt solid #cccccc;"><p style="font-size:9pt; color:#333333; margin:0;">65535</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">75.33</p></div>
+      </div>
+      <!-- Row 3 -->
+      <div class="table-row">
+        <div class="table-cell"><p style="font-size:9pt; color:#333333; margin:0;">7777</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">72.84</p></div>
+        <div class="table-cell" style="border-left:0.5pt solid #cccccc;"><p style="font-size:9pt; color:#333333; margin:0;">11111</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">72.98</p></div>
+      </div>
+      <!-- Row 4 -->
+      <div class="table-row-alt">
+        <div class="table-cell"><p style="font-size:9pt; color:#333333; margin:0;">99999</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">74.92</p></div>
+        <div class="table-cell" style="border-left:0.5pt solid #cccccc;"><p style="font-size:9pt; color:#333333; margin:0;">54321</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">74.15</p></div>
+      </div>
+      <!-- Row 5 -->
+      <div class="table-row">
+        <div class="table-cell"><p style="font-size:9pt; color:#333333; margin:0;">31415</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">71.56</p></div>
+        <div class="table-cell" style="border-left:0.5pt solid #cccccc;"><p style="font-size:9pt; color:#333333; margin:0;">88888</p></div>
+        <div class="table-cell"><p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">73.56</p></div>
+      </div>
+      <!-- Chart placeholder -->
+      <div class="placeholder" id="seed-chart" style="flex:1; margin-top:10pt; border:1pt solid #cccccc; min-height:80pt;"></div>
+    </div>
+    <!-- Stats -->
+    <div class="stats-area">
+      <div class="stat-section">
+        <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0 0 6pt 0;">기술 통계</p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">평균 (Mean): <span style="font-weight:bold;">73.78%</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">표준편차 (SD): <span style="font-weight:bold;">1.98%</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">변동계수 (CV): <span style="font-weight:bold;">2.68%</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">최솟값: <span style="font-weight:bold;">71.56%</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">최댓값: <span style="font-weight:bold;">76.11%</span></p>
+      </div>
+      <div class="stat-section">
+        <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0 0 6pt 0;">통계적 유의성</p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">95% CI: <span style="font-weight:bold;">[72.36, 75.20]</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">p-value: <span style="font-weight:bold;">&lt; 0.001</span></p>
+        <p style="font-size:9pt; color:#333333; margin:3pt 0;">Cohen's d: <span style="font-weight:bold;">15.905</span></p>
+      </div>
+      <div class="stat-highlight">
+        <p style="font-size:9pt; font-weight:bold; color:#ffffff; margin:0 0 4pt 0;">결론</p>
+        <p style="font-size:8pt; color:#ffffff; margin:0;">MLFQ는 10개 독립 시드 실험에서 단문 요청 대기 시간을 평균 73.78% 개선. CV 2.68%로 높은 재현성 확인.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <div class="footer-note">
+    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">대응 표본 t-검정 (paired t-test), n=10, 각 시드 500개 요청, 혼합 워크로드</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 960pt; height: 540pt; margin: 0; padding: 0;
+  background: #ffffff; font-family: 'Times New Roman', Georgia, serif;
+  display: flex; flex-direction: column;
+}
+.figure-area {
+  margin: 20pt 36pt 10pt 36pt;
+  flex: 1;
+  display: flex; flex-direction: row; gap: 16pt;
+}
+.queues-area {
+  flex: 3;
+  display: flex; flex-direction: column; gap: 6pt;
+}
+.queue-row {
+  display: flex; align-items: center; gap: 8pt;
+}
+.queue-label {
+  width: 70pt;
+  border: 1.5pt solid #333333;
+  background: #333333;
+  padding: 8pt 8pt;
+  text-align: center;
+}
+.queue-label-alt {
+  width: 70pt;
+  border: 1.5pt solid #555555;
+  background: #555555;
+  padding: 8pt 8pt;
+  text-align: center;
+}
+.queue-bar {
+  flex: 1;
+  border: 1pt solid #333333;
+  padding: 6pt 12pt;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.queue-bar-alt {
+  flex: 1;
+  border: 1pt solid #666666;
+  padding: 6pt 12pt;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.demote-arrow {
+  display: flex; align-items: center; justify-content: center;
+  padding: 2pt 0 2pt 38pt;
+}
+.params-area {
+  flex: 2;
+  display: flex; flex-direction: column; gap: 10pt;
+}
+.param-box {
+  border: 1pt solid #333333;
+  padding: 10pt 14pt;
+}
+.rule-box {
+  border: 1pt solid #333333;
+  padding: 8pt 14pt;
+  flex: 1;
+}
+.bottom-ref {
+  margin-top: 6pt;
+  padding-top: 4pt;
+  border-top: 0.5pt solid #cccccc;
+}
+</style>
+</head>
+<body>
+<div class="figure-area">
+  <!-- Left: Queue structure -->
+  <div class="queues-area">
+    <!-- Q0 -->
+    <div class="queue-row">
+      <div class="queue-label">
+        <p style="font-size:11pt; font-weight:bold; color:#ffffff; margin:0;">Q0</p>
+        <p style="font-size:7pt; color:#cccccc; margin:1pt 0 0 0;">최고 우선순위</p>
+      </div>
+      <div class="queue-bar">
+        <p style="font-size:10pt; color:#333333; margin:0;">타임 퀀텀: <span style="font-weight:bold;">1,000 ms</span></p>
+        <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">단문 요청 (Short)</p>
+      </div>
+    </div>
+    <div class="demote-arrow"><p style="font-size:10pt; color:#333333; margin:0;">▼ 초과 시 강등</p></div>
+    <!-- Q1 -->
+    <div class="queue-row">
+      <div class="queue-label-alt">
+        <p style="font-size:11pt; font-weight:bold; color:#ffffff; margin:0;">Q1</p>
+        <p style="font-size:7pt; color:#cccccc; margin:1pt 0 0 0;">높은 우선순위</p>
+      </div>
+      <div class="queue-bar-alt">
+        <p style="font-size:10pt; color:#333333; margin:0;">타임 퀀텀: <span style="font-weight:bold;">3,000 ms</span></p>
+        <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">중간 요청 (Medium)</p>
+      </div>
+    </div>
+    <div class="demote-arrow"><p style="font-size:10pt; color:#333333; margin:0;">▼ 초과 시 강등</p></div>
+    <!-- Q2 -->
+    <div class="queue-row">
+      <div class="queue-label">
+        <p style="font-size:11pt; font-weight:bold; color:#ffffff; margin:0;">Q2</p>
+        <p style="font-size:7pt; color:#cccccc; margin:1pt 0 0 0;">보통 우선순위</p>
+      </div>
+      <div class="queue-bar">
+        <p style="font-size:10pt; color:#333333; margin:0;">타임 퀀텀: <span style="font-weight:bold;">8,000 ms</span></p>
+        <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">장문 요청 (Long)</p>
+      </div>
+    </div>
+    <div class="demote-arrow"><p style="font-size:10pt; color:#333333; margin:0;">▼ 초과 시 강등</p></div>
+    <!-- Q3 -->
+    <div class="queue-row">
+      <div class="queue-label-alt">
+        <p style="font-size:11pt; font-weight:bold; color:#ffffff; margin:0;">Q3</p>
+        <p style="font-size:7pt; color:#cccccc; margin:1pt 0 0 0;">최저 우선순위</p>
+      </div>
+      <div class="queue-bar-alt">
+        <p style="font-size:10pt; color:#333333; margin:0;">타임 퀀텀: <span style="font-weight:bold;">∞ (FCFS)</span></p>
+        <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">초장문 요청</p>
+      </div>
+    </div>
+    <!-- Boost arrow -->
+    <div style="display:flex; align-items:center; margin-top:10pt; padding: 6pt 0; border-top: 1pt solid #333333;">
+      <p style="font-size:10pt; color:#333333; margin:0;">↑↑↑  <span style="font-weight:bold;">Boost</span> (5초 주기) — 모든 요청을 Q0로 복귀</p>
+    </div>
+  </div>
+  <!-- Right: Parameters -->
+  <div class="params-area">
+    <div class="param-box">
+      <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0 0 6pt 0;">MLFQ 매개변수</p>
+      <p style="font-size:9pt; color:#333333; margin:2pt 0;">큐 수: <span style="font-weight:bold;">4단계</span></p>
+      <p style="font-size:9pt; color:#333333; margin:2pt 0;">타임슬라이스: <span style="font-weight:bold;">500 ms</span></p>
+      <p style="font-size:9pt; color:#333333; margin:2pt 0;">Boost 주기: <span style="font-weight:bold;">5,000 ms</span></p>
+      <p style="font-size:9pt; color:#333333; margin:2pt 0;">큐 시간 배수: <span style="font-weight:bold;">×1, ×3, ×8, ∞</span></p>
+    </div>
+    <div class="rule-box">
+      <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0 0 6pt 0;">OSTEP 규칙 적용</p>
+      <p style="font-size:8pt; color:#333333; margin:3pt 0;"><span style="font-weight:bold;">Rule 1:</span> Priority(A) > Priority(B) → A 먼저</p>
+      <p style="font-size:8pt; color:#333333; margin:3pt 0;"><span style="font-weight:bold;">Rule 2:</span> Priority(A) = Priority(B) → RR</p>
+      <p style="font-size:8pt; color:#333333; margin:3pt 0;"><span style="font-weight:bold;">Rule 3:</span> 새 요청은 Q0 진입</p>
+      <p style="font-size:8pt; color:#333333; margin:3pt 0;"><span style="font-weight:bold;">Rule 4:</span> Allotment 초과 시 강등</p>
+      <p style="font-size:8pt; color:#333333; margin:3pt 0;"><span style="font-weight:bold;">Rule 5:</span> 주기적 Boost</p>
+    </div>
+  </div>
+</div>
+<div style="margin: 0 36pt;">
+  <div class="bottom-ref">
+    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">Ref: Arpaci-Dusseau, Operating Systems: Three Easy Pieces, Ch.8 "Scheduling: The Multi-Level Feedback Queue"</p>
+  </div>
+</div>
+</body>
+</html>

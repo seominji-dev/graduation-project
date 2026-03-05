@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #ffffff; font-family: 'Times New Roman', Georgia, serif;
+  display: flex; flex-direction: column;
+}
+.figure-area {
+  margin: 24pt 30pt 8pt 30pt;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+.header-row {
+  display: flex; gap: 0; margin-bottom: 10pt;
+}
+.header-os {
+  flex: 3;
+  border: 1.5pt solid #333333;
+  background: #333333;
+  padding: 5pt;
+}
+.header-arrow {
+  flex: 1.5;
+  display: flex; align-items: center; justify-content: center;
+}
+.header-llm {
+  flex: 3;
+  border: 1.5pt solid #333333;
+  background: #666666;
+  padding: 5pt;
+}
+.mapping-row {
+  display: flex; gap: 0; margin-bottom: 6pt;
+}
+.os-box {
+  flex: 3;
+  border: 1pt solid #333333;
+  padding: 6pt 10pt;
+  display: flex; align-items: center; justify-content: center;
+}
+.arrow-box {
+  flex: 1.5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.llm-box {
+  flex: 3;
+  border: 1pt solid #666666;
+  background: #f5f5f5;
+  padding: 6pt 10pt;
+  display: flex; align-items: center; justify-content: center;
+}
+.bottom-note {
+  margin-top: auto;
+  border-top: 0.5pt solid #cccccc;
+  padding-top: 6pt;
+}
+</style>
+</head>
+<body>
+<div class="figure-area">
+  <!-- Column headers -->
+  <div class="header-row">
+    <div class="header-os">
+      <p style="margin:0; font-size:12pt; font-weight:bold; color:#ffffff; text-align:center;">Operating System Domain</p>
+    </div>
+    <div class="header-arrow">
+      <p style="margin:0; font-size:10pt; color:#999999; font-style:italic;">Mapping</p>
+    </div>
+    <div class="header-llm">
+      <p style="margin:0; font-size:12pt; font-weight:bold; color:#ffffff; text-align:center;">LLM API Domain</p>
+    </div>
+  </div>
+
+  <!-- Row 1 -->
+  <div class="mapping-row">
+    <div class="os-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Process</p>
+    </div>
+    <div class="arrow-box">
+      <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
+      <p style="margin:0; font-size:7.5pt; color:#888888; font-style:italic;">Scheduling unit</p>
+    </div>
+    <div class="llm-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">LLM API Request</p>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="mapping-row">
+    <div class="os-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">CPU Time</p>
+    </div>
+    <div class="arrow-box">
+      <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
+      <p style="margin:0; font-size:7.5pt; color:#888888; font-style:italic;">Allocated resource</p>
+    </div>
+    <div class="llm-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">API Call Quota</p>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="mapping-row">
+    <div class="os-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Priority</p>
+    </div>
+    <div class="arrow-box">
+      <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
+      <p style="margin:0; font-size:7.5pt; color:#888888; font-style:italic;">Ordering criterion</p>
+    </div>
+    <div class="llm-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Tenant Grade / Urgency</p>
+    </div>
+  </div>
+
+  <!-- Row 4 -->
+  <div class="mapping-row">
+    <div class="os-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Scheduling Algorithm</p>
+    </div>
+    <div class="arrow-box">
+      <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
+      <p style="margin:0; font-size:7.5pt; color:#888888; font-style:italic;">Dispatch policy</p>
+    </div>
+    <div class="llm-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Request Processing Order</p>
+    </div>
+  </div>
+
+  <!-- Row 5 -->
+  <div class="mapping-row">
+    <div class="os-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Preemption</p>
+    </div>
+    <div class="arrow-box">
+      <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
+      <p style="margin:0; font-size:7.5pt; color:#888888; font-style:italic;">Control mechanism</p>
+    </div>
+    <div class="llm-box">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#333333;">Request Suspension / Queue Move</p>
+    </div>
+  </div>
+
+  <!-- Bottom note -->
+  <div class="bottom-note">
+    <p style="font-size:8pt; color:#666666; margin:0; font-style:italic; text-align:center;">This research applies proven OS scheduling theory to LLM API request management domain.</p>
+  </div>
+</div>
+</body>
+</html>
