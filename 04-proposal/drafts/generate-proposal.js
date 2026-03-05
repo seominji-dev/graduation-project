@@ -254,8 +254,8 @@ async function generateProposal() {
             children: [new TextRun({ text: '1.2 연구 동기와 목적', font: FONT })]
           }),
           textParagraph(
-            '3학년 운영체제 수업에서 학습한 프로세스 스케줄링 알고리즘(FCFS, Priority Scheduling, MLFQ, WFQ 등)은 ' +
-            'CPU 자원을 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다. 본 연구는 이 검증된 이론을 ' +
+            '운영체제의 프로세스 스케줄링 알고리즘(FCFS, Priority Scheduling, MLFQ, WFQ 등)은 ' +
+            'CPU 자원을 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1]. 본 연구는 이 검증된 이론을 ' +
             'LLM API 요청 관리라는 새로운 도메인에 적용함으로써, OS 이론의 실제 응용 가능성을 탐구하고자 한다.'
           ),
           textParagraph('구체적인 연구 목적은 다음과 같다.'),
@@ -302,7 +302,7 @@ async function generateProposal() {
           multiRunParagraph([
             { text: 'FCFS (First-Come, First-Served)', bold: true },
             { text: '는 가장 단순한 스케줄링 알고리즘으로, 요청 도착 순서대로 처리한다. ' +
-              '구현이 간단하나 긴 작업이 짧은 작업을 지연시키는 호위 효과(Convoy Effect)가 발생한다는 단점이 있다.' }
+              '구현이 간단하나, 긴 작업이 짧은 작업을 지연시키는 호위 효과(Convoy Effect)가 발생하는 단점이 있다 [1].' }
           ]),
           multiRunParagraph([
             { text: 'Priority Scheduling', bold: true },
@@ -315,7 +315,7 @@ async function generateProposal() {
             { text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다. ' +
               '짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 긴 작업은 점차 하위 큐로 이동한다. ' +
               'Arpaci-Dusseau & Arpaci-Dusseau는 MLFQ의 5가지 핵심 규칙을 정리하며, ' +
-              '현대 운영체제에서 가장 널리 사용되는 스케줄링 알고리즘임을 설명하였다 [2, Ch.8].' }
+              '현대 운영체제에서 가장 널리 사용되는 스케줄링 알고리즘 중 하나임을 설명하였다 [2].' }
           ]),
           multiRunParagraph([
             { text: 'WFQ (Weighted Fair Queuing)', bold: true },
@@ -330,30 +330,36 @@ async function generateProposal() {
 
           new Paragraph({
             heading: HeadingLevel.HEADING_2,
-            children: [new TextRun({ text: '2.2 LLM 서빙 시스템', font: FONT })]
+            children: [new TextRun({ text: '2.2 LLM 서빙 시스템과 스케줄링', font: FONT })]
           }),
           textParagraph(
-            'LLM 서빙 분야에서는 추론 성능 최적화를 위한 다양한 기술이 개발되어 왔다.'
+            'LLM 서빙 분야에서는 추론 성능 최적화를 위한 다양한 기술이 개발되어 왔다. ' +
+            '이 절에서는 대표적인 LLM 서빙 시스템의 특징과, 본 연구와의 관련성을 살펴본다.'
           ),
           textParagraph(
             'vLLM은 UC Berkeley에서 개발한 고성능 LLM 추론 엔진으로, PagedAttention이라는 핵심 기술을 도입하였다 [4]. ' +
-            '이 기법은 운영체제의 가상 메모리 페이징 기법에서 착안하여, LLM 추론 시 KV(Key-Value) 캐시 메모리를 ' +
-            '비연속적 블록으로 관리한다. vLLM 공식 문서에 따르면, 기존 대비 메모리 활용률을 최대 55% 향상시키고 ' +
-            '처리량(throughput)을 2-4배 개선하였다.'
+            '이 기법은 운영체제의 가상 메모리 페이징에서 착안하여, LLM 추론 시 KV(Key-Value) 캐시 메모리를 ' +
+            '비연속적 블록으로 관리한다. vLLM은 OS의 메모리 관리 기법을 LLM에 성공적으로 적용한 사례로, ' +
+            '기존 대비 메모리 활용률을 크게 향상시키고 처리량(throughput)을 2-4배 개선하였다. ' +
+            '그러나 vLLM의 스케줄링은 FCFS 기반의 Continuous Batching에 한정되어 있으며, ' +
+            '테넌트 간 차등 서비스나 공정성 보장 메커니즘은 제공하지 않는다.'
           ),
           textParagraph(
-            'Hugging Face TGI(Text Generation Inference)는 오픈소스 LLM 배포 도구로, continuous batching과 ' +
+            'Hugging Face TGI(Text Generation Inference)는 오픈소스 LLM 배포 도구로, Continuous Batching과 ' +
             'Flash Attention 등의 기술을 활용하여 생산 환경에서의 추론 효율성을 높인다 [5]. ' +
-            'TGI는 Docker 기반으로 손쉬운 배포를 지원하며, OpenAI 호환 API를 제공한다.'
+            'Docker 기반으로 손쉬운 배포를 지원하지만, 역시 다중 사용자 환경에서의 요청 우선순위 관리나 ' +
+            '공정성 보장 기능은 포함하지 않는다.'
           ),
           textParagraph(
             'Ollama는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구로, REST API를 통해 다양한 ' +
             '오픈소스 모델(Llama, Mistral, Gemma 등)을 제공한다 [6]. 본 연구의 프로토타입에서 LLM 백엔드로 사용하였다.'
           ),
           textParagraph(
-            '그러나 기존 LLM 서빙 시스템들은 주로 GPU 메모리 관리와 추론 파이프라인 효율화에 집중하고 있으며, ' +
+            '기존 LLM 서빙 시스템들은 주로 GPU 메모리 관리와 추론 파이프라인 효율화에 집중하고 있으며, ' +
             '다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 상대적으로 다루어지지 않았다. ' +
-            '본 연구는 이 간극을 메우기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.'
+            '본 연구는 이 간극을 메우기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다. ' +
+            '특히 vLLM이 OS의 메모리 관리 기법을 LLM에 적용한 것처럼, 본 연구는 OS의 프로세스 스케줄링 기법을 ' +
+            'LLM 요청 관리에 적용한다는 점에서 유사한 접근 방식을 취한다.'
           ),
 
           new Paragraph({
@@ -362,9 +368,10 @@ async function generateProposal() {
           }),
           textParagraph(
             'Jain\'s Fairness Index(JFI)는 공유 자원 시스템에서 자원 배분의 공정성을 정량적으로 측정하기 위한 ' +
-            '지표이다 [3, Ch.9]. 운영체제 및 네트워크 교과서에서 범용 공정성 지표로 널리 소개되고 있다. ' +
-            'JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가지며, 본 연구는 JFI를 멀티테넌트 LLM API ' +
-            '환경에 적용하여, 시스템 수준과 테넌트 수준의 이중 공정성 측정 방법론을 제시한다.'
+            '지표이다 [3]. 운영체제 및 네트워크 교과서에서 범용 공정성 지표로 널리 소개되고 있다. ' +
+            'JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가지며, 각 사용자가 받는 자원의 양을 ' +
+            '통계적으로 비교하여 공정성을 수치화한다. 본 연구는 JFI를 멀티테넌트 LLM API ' +
+            '환경에 적용하여, 시스템 수준(전체 테넌트 간)과 테넌트 수준(동일 등급 내 요청 간)의 이중 공정성 측정 방법론을 제시한다.'
           ),
 
           // ===== 3. 제안 시스템 =====
@@ -443,9 +450,9 @@ async function generateProposal() {
             children: [new TextRun({ text: '3.2 시스템 아키텍처', font: FONT })]
           }),
           textParagraph(
-            '시스템은 4계층 구조로 설계되었다. 클라이언트 계층, API 계층(Express.js), ' +
-            '스케줄러 엔진(5가지 알고리즘, 런타임 교체 가능), 저장소 계층(메모리 배열, JSON 파일, Ollama LLM)으로 ' +
-            '구성된다.'
+            '시스템은 4계층 구조로 설계되었다. 클라이언트 계층을 통해 REST API 요청이 수신되고, ' +
+            'API 계층(Express.js)에서 요청을 분류한다 [7][8]. 스케줄러 엔진이 런타임에 교체 가능한 5가지 알고리즘으로 ' +
+            '요청을 스케줄링하고, 저장소 계층에서 상태 데이터를 관리한다.'
           ),
           // 아키텍처 다이어그램을 텍스트로 표현
           new Paragraph({
@@ -517,8 +524,8 @@ async function generateProposal() {
             children: [new TextRun({ text: '3.3.2 Priority Scheduling with Aging', font: FONT })]
           }),
           textParagraph(
-            '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원하며, Aging 메커니즘을 통해 기아 현상을 방지한다. ' +
-            '대기 시간이 임계값을 초과하면 요청의 우선순위가 자동으로 상승한다.'
+            '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원하며, Aging 메커니즘을 통해 기아 현상을 방지한다 [1]. ' +
+            '대기 시간이 임계값을 초과하면 요청의 우선순위가 자동으로 한 단계 상승한다.'
           ),
 
           new Paragraph({
@@ -527,7 +534,7 @@ async function generateProposal() {
           }),
           textParagraph(
             '4단계 피드백 큐(Q0-Q3)를 구현하며, 큐별 타임 퀀텀을 차등 설정한다(Q0: 500ms, Q1: 1,500ms, Q2: 4,000ms, Q3: 무제한). ' +
-            '시간 슬라이스(500ms) 기반 선점형(preemptive) 모드를 지원하여, 타임 퀀텀을 초과한 요청은 하위 큐로 이동시킨다. ' +
+            '시간 슬라이스(500ms) 기반 선점형(preemptive) 모드를 지원하여, 타임 퀄텀을 초과한 요청은 하위 큐로 이동시킨다 [2]. ' +
             '이를 통해 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 Boost 메커니즘으로 모든 요청을 Q0로 복귀시켜 ' +
             '기아를 방지한다.'
           ),
@@ -538,7 +545,7 @@ async function generateProposal() {
           }),
           textParagraph(
             'GPS 이론에 기반한 가중치 공정 큐잉 알고리즘으로, 테넌트 등급별 가중치(Enterprise: 100, Premium: 50, ' +
-            'Standard: 10, Free: 1)에 비례하여 자원을 분배한다. Virtual Finish Time을 계산하여 스케줄링 순서를 결정하며, ' +
+            'Standard: 10, Free: 1)에 비례하여 자원을 분배한다 [3]. Virtual Finish Time을 계산하여 스케줄링 순서를 결정하며, ' +
             '이중 수준 JFI(시스템 수준, 테넌트 수준)로 공정성을 정량적으로 모니터링한다.'
           ),
 
@@ -547,7 +554,7 @@ async function generateProposal() {
             children: [new TextRun({ text: '3.3.5 Rate Limiter', font: FONT })]
           }),
           textParagraph(
-            '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다. 버스트 용량을 제어하여 시스템 과부하를 방지한다.'
+            '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다 [3]. 버스트 용량을 제어하여 시스템 과부하를 방지하는 보조 메커니즘으로 활용한다.'
           ),
 
           new Paragraph({
@@ -568,9 +575,8 @@ async function generateProposal() {
           ]),
           multiRunParagraph([
             { text: '기아 방지. ', bold: true },
-            { text: 'Priority 스케줄러의 Aging 메커니즘과 MLFQ 스케줄러의 Boost 메커니즘을 통해 ' +
-              '낮은 우선순위 요청의 무기한 대기를 방지한다. Aging은 대기 시간이 임계값을 초과한 요청의 ' +
-              '우선순위를 자동 상향하며, Boost는 주기적으로 모든 요청을 최상위 큐(Q0)로 복귀시킨다.' }
+            { text: 'Priority 스케줄러의 Aging과 MLFQ 스케줄러의 Boost 메커니즘을 통해 ' +
+              '낮은 우선순위 요청의 무기한 대기를 방지한다.' }
           ]),
 
           // ===== 4. 예비 실험 결과 =====
@@ -590,22 +596,27 @@ async function generateProposal() {
           new Paragraph({
             numbering: { reference: 'bullet-list', level: 0 },
             spacing: { after: 60, line: 360 },
-            children: [new TextRun({ text: '런타임: Node.js 22 LTS, Express.js 4.18', font: FONT, size: 22 })]
+            children: [new TextRun({ text: '런타임: Node.js 22 LTS, Express.js 4.18 [7][8]', font: FONT, size: 22 })]
           }),
           new Paragraph({
             numbering: { reference: 'bullet-list', level: 0 },
             spacing: { after: 60, line: 360 },
-            children: [new TextRun({ text: '테스트: Jest 29.x (307개 테스트, 커버리지 99.76%)', font: FONT, size: 22 })]
+            children: [new TextRun({ text: '테스트: Jest 29.x (307개 단위 테스트, 커버리지 99.76%) [9]', font: FONT, size: 22 })]
           }),
           new Paragraph({
             numbering: { reference: 'bullet-list', level: 0 },
             spacing: { after: 60, line: 360 },
-            children: [new TextRun({ text: 'LLM: Ollama (로컬 실행)', font: FONT, size: 22 })]
+            children: [new TextRun({ text: 'LLM 백엔드: Ollama (로컬 실행) [6]', font: FONT, size: 22 })]
+          }),
+          new Paragraph({
+            numbering: { reference: 'bullet-list', level: 0 },
+            spacing: { after: 60, line: 360 },
+            children: [new TextRun({ text: '외부 의존성: 2개 패키지 (express, jest)', font: FONT, size: 22 })]
           }),
           new Paragraph({
             numbering: { reference: 'bullet-list', level: 0 },
             spacing: { after: 120, line: 360 },
-            children: [new TextRun({ text: '의존성: 2개 패키지 (express, jest)', font: FONT, size: 22 })]
+            children: [new TextRun({ text: '통계 검증: 10개 시드 기반 다중 실험 (시드당 500건 요청, 총 5,000건)', font: FONT, size: 22 })]
           }),
 
           new Paragraph({
@@ -690,7 +701,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '관련연구 확충: LLM 서빙 시스템 최신 논문 및 멀티테넌트 스케줄링 관련 연구를 추가 조사하여, 본 연구의 차별성을 보다 명확히 제시',
+              text: '관련연구 보강: LLM 서빙 시스템의 최신 스케줄링 기법과 멀티테넌트 자원 관리에 대한 관련연구를 추가 조사하여, 본 연구의 차별성을 보다 명확히 제시',
               font: FONT, size: 22
             })]
           }),
@@ -698,7 +709,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '실험 설계 보강: 대규모 실험(1,000건 이상)과 다양한 워크로드 시나리오(버스트 트래픽, 비균등 테넌트 분포 등) 추가',
+              text: '실험 설계 확대: 대규모 실험(1,000건 이상)과 다양한 워크로드 시나리오(버스트 트래픽, 비균등 테넌트 분포 등)를 추가하여 알고리즘의 확장성을 검증',
               font: FONT, size: 22
             })]
           }),
@@ -706,7 +717,7 @@ async function generateProposal() {
             numbering: { reference: 'num-plan', level: 0 },
             spacing: { after: 80, line: 360 },
             children: [new TextRun({
-              text: '공정성 분석 심화: JFI 외 추가 공정성 지표(Max-Min Fairness 등) 적용 가능성 검토 및 알고리즘 간 공정성-성능 트레이드오프 분석',
+              text: '공정성 분석 심화: JFI 외 추가 공정성 지표 적용을 검토하고, 공정성과 성능 간의 트레이드오프를 분석',
               font: FONT, size: 22
             })]
           }),
@@ -770,39 +781,40 @@ async function generateProposal() {
             children: [new TextRun({ text: '참고문헌', font: FONT })]
           }),
           textParagraph(
-            '[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. ' +
-            '(번역판: 박민규 역, 운영체제, 홍릉과학출판사, 2020). Wiley, 2018. Available: https://www.os-book.com/'
+            '[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed., ' +
+            'Wiley, 2018. [온라인] Available: https://www.os-book.com/'
           ),
           textParagraph(
             '[2] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, ' +
-            'Version 1.10. Arpaci-Dusseau Books, 2023. Available: https://pages.cs.wisc.edu/~remzi/OSTEP/ (무료 공개 교재)'
+            'Version 1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/'
           ),
           textParagraph(
-            '[3] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 8th ed. ' +
-            '(번역판: 최종원 외 역, 컴퓨터 네트워킹 하향식 접근, 퍼스트북, 2022). Pearson, 2021. ' +
-            'Available: https://gaia.cs.umass.edu/kurose_ross/'
+            '[3] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 8th ed., ' +
+            'Pearson, 2021. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/'
           ),
           textParagraph(
-            '[4] vLLM Project, "vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention," 2024. ' +
-            'Available: https://docs.vllm.ai/ (GitHub: https://github.com/vllm-project/vllm)'
+            '[4] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," ' +
+            'in Proc. 29th ACM Symp. on Operating Systems Principles (SOSP \'23), 2023, pp. 611-626. ' +
+            '[온라인] Available: https://github.com/vllm-project/vllm (문서: https://docs.vllm.ai/)'
           ),
           textParagraph(
-            '[5] Hugging Face, "Text Generation Inference (TGI) Documentation," 2024. ' +
-            'Available: https://huggingface.co/docs/text-generation-inference/'
+            '[5] Hugging Face, "Text Generation Inference (TGI)," 2024. ' +
+            '[온라인] Available: https://huggingface.co/docs/text-generation-inference/ ' +
+            '(GitHub: https://github.com/huggingface/text-generation-inference)'
           ),
           textParagraph(
-            '[6] Ollama, "Ollama Documentation," 2024. ' +
-            'Available: https://ollama.com/ (GitHub: https://github.com/ollama/ollama)'
+            '[6] Ollama, "Ollama - Get up and running with large language models," 2024. ' +
+            '[온라인] Available: https://ollama.com/ (GitHub: https://github.com/ollama/ollama)'
           ),
           textParagraph(
             '[7] Express.js, "Express - Node.js Web Application Framework," 2024. ' +
-            'Available: https://expressjs.com/'
+            '[온라인] Available: https://expressjs.com/'
           ),
           textParagraph(
-            '[8] Node.js, "Node.js Documentation," 2024. Available: https://nodejs.org/docs/latest/api/'
+            '[8] Node.js, "Node.js Documentation," 2024. [온라인] Available: https://nodejs.org/docs/latest/api/'
           ),
           textParagraph(
-            '[9] Jest, "Jest - Delightful JavaScript Testing," 2024. Available: https://jestjs.io/'
+            '[9] Jest, "Jest - Delightful JavaScript Testing," 2024. [온라인] Available: https://jestjs.io/'
           )
         ]
       }
