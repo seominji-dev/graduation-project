@@ -546,14 +546,6 @@ function createDocument() {
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 40 },
           children: [
-            new TextRun({ text: '테스트', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Jest 29.x (307개 단위 테스트, 코드 커버리지 99.76%) [9]', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
             new TextRun({ text: 'LLM 백엔드', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: ': Ollama (로컬 실행) [6]', font: 'Arial', size: 22 })
           ]
@@ -563,7 +555,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '외부 의존성', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 2개 패키지 (express, jest)', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 1개 패키지 (express)', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -752,10 +744,6 @@ function createDocument() {
           spacing: { after: 80 },
           children: [new TextRun({ text: '[8] Node.js, "Node.js Documentation," 2024. [온라인] Available: https://nodejs.org/docs/latest/api/', font: 'Arial', size: 20 })]
         }),
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '[9] Jest, "Jest - Delightful JavaScript Testing," 2024. [온라인] Available: https://jestjs.io/', font: 'Arial', size: 20 })]
-        })
       ]
     }]
   });

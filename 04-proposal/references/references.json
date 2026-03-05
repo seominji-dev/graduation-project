@@ -89,15 +89,5 @@
     "type": "documentation",
     "verified": true,
     "note": "본 연구 런타임 환경 (Node.js 22 LTS)"
-  },
-  {
-    "id": "[9]",
-    "authors": "Jest",
-    "title": "Jest - Delightful JavaScript Testing",
-    "year": 2024,
-    "url": "https://jestjs.io/",
-    "type": "documentation",
-    "verified": true,
-    "note": "단위 테스트 프레임워크 (307개 테스트, 99.76% 커버리지)"
   }
 ]

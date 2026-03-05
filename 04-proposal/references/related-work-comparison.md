@@ -31,7 +31,7 @@
 | **Target Scale** | 프로덕션 (수천 req/s) | 프로덕션 | 프로덕션 | 프로덕션 | 프로덕션 | **교육/연구** (알고리즘 비교 실험) |
 | **Batching Strategy** | Continuous Batching | Continuous Batching | Iteration-level Batching | SplitFuse Batching | In-Flight Batching | 단일 요청 순차 처리 |
 | **Runtime Switching** | 불가 | 불가 | 불가 | 불가 | 불가 | **런타임 알고리즘 교체 지원** |
-| **Reproducibility** | 부분적 | 부분적 | 논문만 | 부분적 | 부분적 | **시드 기반 완전 재현** (307개 테스트) |
+| **Reproducibility** | 부분적 | 부분적 | 논문만 | 부분적 | 부분적 | **시드 기반 완전 재현** |
 
 ---
 
@@ -56,7 +56,7 @@
    - 테넌트 등급별 가중치 기반 차등 서비스 제공 및 공정성 정량 측정
 
 5. **완전 재현 가능한 실험 환경**
-   - 시드 기반 결정론적 실험, 307개 단위 테스트, 99.76% 코드 커버리지
+   - 시드 기반 결정론적 실험 설계로 결과 재현 보장
 
 ### 3.2 학술적 기여
 
