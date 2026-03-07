@@ -145,85 +145,92 @@ async function generateMidtermReport() {
         }
       ]
     },
-    sections: [{
-      properties: {
-        page: {
-          margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
-          pageNumbers: { start: 1 }
-        }
+    sections: [
+      // ===== Section 1: 표지 (페이지 번호 없음) =====
+      {
+        properties: {
+          page: {
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+          }
+        },
+        children: [
+          emptyLine(), emptyLine(), emptyLine(), emptyLine(),
+          new Paragraph({
+            alignment: AlignmentType.CENTER, spacing: { after: 80 },
+            children: [new TextRun({ text: '2026학년도 졸업프로젝트', font: FONT, size: 24, color: '666666' })]
+          }),
+          emptyLine(),
+          new Paragraph({
+            alignment: AlignmentType.CENTER, spacing: { after: 200 },
+            children: [new TextRun({ text: '중 간 보 고 서', font: FONT, size: 44, bold: true, color: COLOR_BLACK })]
+          }),
+          emptyLine(),
+          new Paragraph({
+            alignment: AlignmentType.CENTER, spacing: { after: 120 },
+            children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 활용한', font: FONT, size: 30, bold: true })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER, spacing: { after: 300 },
+            children: [new TextRun({ text: '다중 사용자 LLM API 요청 관리 시스템', font: FONT, size: 30, bold: true })]
+          }),
+          emptyLine(), emptyLine(), emptyLine(), emptyLine(),
+          new Table({
+            columnWidths: [2400, 4800],
+            rows: [
+              new TableRow({ children: [
+                cell('학 과', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
+                cell('컴퓨터공학과', { width: 4800 })
+              ]}),
+              new TableRow({ children: [
+                cell('학 번', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
+                cell('C235180', { width: 4800 })
+              ]}),
+              new TableRow({ children: [
+                cell('성 명', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
+                cell('서민지', { width: 4800 })
+              ]}),
+              new TableRow({ children: [
+                cell('지도교수', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
+                cell('이장호', { width: 4800 })
+              ]}),
+              new TableRow({ children: [
+                cell('제출일', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
+                cell('2026년 4월', { width: 4800 })
+              ]})
+            ]
+          }),
+          emptyLine(), emptyLine(),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: '홍익대학교 컴퓨터공학과', font: FONT, size: 24, color: '666666' })]
+          })
+        ]
       },
-      headers: {
-        default: new Header({ children: [new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          children: [new TextRun({ text: '홍익대학교 컴퓨터공학과 졸업프로젝트', font: FONT, size: 16, color: '888888' })]
-        })] })
-      },
-      footers: {
-        default: new Footer({ children: [new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [
-            new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18 }),
-            new TextRun({ text: ' / ', font: FONT, size: 18 }),
-            new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 18 })
-          ]
-        })] })
-      },
-      children: [
-        // ===== 표지 =====
-        emptyLine(), emptyLine(), emptyLine(), emptyLine(),
-        new Paragraph({
-          alignment: AlignmentType.CENTER, spacing: { after: 80 },
-          children: [new TextRun({ text: '2026학년도 졸업프로젝트', font: FONT, size: 24, color: '666666' })]
-        }),
-        emptyLine(),
-        new Paragraph({
-          alignment: AlignmentType.CENTER, spacing: { after: 200 },
-          children: [new TextRun({ text: '중 간 보 고 서', font: FONT, size: 44, bold: true, color: COLOR_BLACK })]
-        }),
-        emptyLine(),
-        new Paragraph({
-          alignment: AlignmentType.CENTER, spacing: { after: 120 },
-          children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 활용한', font: FONT, size: 30, bold: true })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER, spacing: { after: 300 },
-          children: [new TextRun({ text: '다중 사용자 LLM API 요청 관리 시스템', font: FONT, size: 30, bold: true })]
-        }),
-        emptyLine(), emptyLine(), emptyLine(), emptyLine(),
-        new Table({
-          columnWidths: [2400, 4800],
-          rows: [
-            new TableRow({ children: [
-              cell('학 과', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-              cell('컴퓨터공학과', { width: 4800 })
-            ]}),
-            new TableRow({ children: [
-              cell('학 번', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-              cell('C235180', { width: 4800 })
-            ]}),
-            new TableRow({ children: [
-              cell('성 명', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-              cell('서민지', { width: 4800 })
-            ]}),
-            new TableRow({ children: [
-              cell('지도교수', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-              cell('이장호', { width: 4800 })
-            ]}),
-            new TableRow({ children: [
-              cell('제출일', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-              cell('2026년 4월', { width: 4800 })
-            ]})
-          ]
-        }),
-        emptyLine(), emptyLine(),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: '홍익대학교 컴퓨터공학과', font: FONT, size: 24, color: '666666' })]
-        }),
-
-        // ===== 페이지 나누기 =====
-        new Paragraph({ children: [new PageBreak()] }),
-
+      // ===== Section 2: 본문 (페이지 번호 1부터 시작) =====
+      {
+        properties: {
+          page: {
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+            pageNumbers: { start: 1 }
+          }
+        },
+        headers: {
+          default: new Header({ children: [new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: '홍익대학교 컴퓨터공학과 졸업프로젝트', font: FONT, size: 16, color: '888888' })]
+          })] })
+        },
+        footers: {
+          default: new Footer({ children: [new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ text: '- ', font: FONT, size: 18, color: '888888' }),
+              new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18, color: '888888' }),
+              new TextRun({ text: ' -', font: FONT, size: 18, color: '888888' })
+            ]
+          })] })
+        },
+        children: [
         // ===== 1. 서론 =====
         heading1('1. 서론'),
 

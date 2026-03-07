@@ -119,76 +119,85 @@ function createDocument() {
         }
       ]
     },
-    sections: [{
-      properties: {
-        page: {
-          margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
-          size: { width: 12240, height: 15840 }
-        }
-      },
-      headers: {
-        default: new Header({
-          children: [new Paragraph({
-            alignment: AlignmentType.RIGHT,
-            children: [new TextRun({ text: '홍익대학교 컴퓨터공학과 졸업프로젝트 제안서', font: 'Arial', size: 16, color: COLORS.GRAY })]
-          })]
-        })
-      },
-      footers: {
-        default: new Footer({
-          children: [new Paragraph({
+    sections: [
+      // ===== Section 1: 표지 (페이지 번호 없음) =====
+      {
+        properties: {
+          page: {
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+            size: { width: 12240, height: 15840 }
+          }
+        },
+        children: [
+          new Paragraph({ spacing: { before: 1200 }, children: [] }),
+          new Paragraph({
             alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({ children: [PageNumber.CURRENT], font: 'Arial', size: 18 }),
-              new TextRun({ text: ' / ', font: 'Arial', size: 18 }),
-              new TextRun({ children: [PageNumber.TOTAL_PAGES], font: 'Arial', size: 18 })
-            ]
-          })]
-        })
+            spacing: { after: 200 },
+            children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 활용한', font: 'Arial', size: 36, bold: true })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [new TextRun({ text: '다중 사용자 LLM API 요청 관리 시스템', font: 'Arial', size: 36, bold: true })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 600 },
+            children: [new TextRun({ text: 'Multi-User LLM API Request Management System\nUsing OS Scheduling Algorithms', font: 'Arial', size: 22, italics: true, color: COLORS.GRAY })]
+          }),
+          new Paragraph({ spacing: { before: 400 }, children: [] }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 80 },
+            children: [new TextRun({ text: '홍익대학교 컴퓨터공학과', font: 'Arial', size: 24 })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 80 },
+            children: [new TextRun({ text: 'C235180 서민지', font: 'Arial', size: 24 })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 80 },
+            children: [new TextRun({ text: '지도교수: 이장호 교수님', font: 'Arial', size: 24 })]
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 200, after: 0 },
+            children: [new TextRun({ text: '2026년 3월', font: 'Arial', size: 22, color: COLORS.GRAY })]
+          })
+        ]
       },
-      children: [
-        // ===== 제목 페이지 =====
-        new Paragraph({ spacing: { before: 1200 }, children: [] }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 200 },
-          children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 활용한', font: 'Arial', size: 36, bold: true })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 200 },
-          children: [new TextRun({ text: '다중 사용자 LLM API 요청 관리 시스템', font: 'Arial', size: 36, bold: true })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 600 },
-          children: [new TextRun({ text: 'Multi-User LLM API Request Management System\nUsing OS Scheduling Algorithms', font: 'Arial', size: 22, italics: true, color: COLORS.GRAY })]
-        }),
-        new Paragraph({ spacing: { before: 400 }, children: [] }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '홍익대학교 컴퓨터공학과', font: 'Arial', size: 24 })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 80 },
-          children: [new TextRun({ text: 'C235180 서민지', font: 'Arial', size: 24 })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '지도교수: 이장호 교수님', font: 'Arial', size: 24 })]
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 200, after: 0 },
-          children: [new TextRun({ text: '2026년 3월', font: 'Arial', size: 22, color: COLORS.GRAY })]
-        }),
-
-        // 페이지 나눔
-        new Paragraph({ children: [new PageBreak()] }),
-
+      // ===== Section 2: 본문 (페이지 번호 1부터 시작) =====
+      {
+        properties: {
+          page: {
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+            size: { width: 12240, height: 15840 },
+            pageNumbers: { start: 1 }
+          }
+        },
+        headers: {
+          default: new Header({
+            children: [new Paragraph({
+              alignment: AlignmentType.RIGHT,
+              children: [new TextRun({ text: '홍익대학교 컴퓨터공학과 졸업프로젝트 제안서', font: 'Arial', size: 16, color: COLORS.GRAY })]
+            })]
+          })
+        },
+        footers: {
+          default: new Footer({
+            children: [new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: '- ', font: 'Arial', size: 18, color: '888888' }),
+                new TextRun({ children: [PageNumber.CURRENT], font: 'Arial', size: 18, color: '888888' }),
+                new TextRun({ text: ' -', font: 'Arial', size: 18, color: '888888' })
+              ]
+            })]
+          })
+        },
+        children: [
         // ===== 1. 서론 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
