@@ -5,7 +5,7 @@
 html { background: #ffffff; }
 body {
   width: 720pt; height: 405pt; margin: 0; padding: 0;
-  background: #ffffff; font-family: 'Times New Roman', Georgia, serif;
+  background: #ffffff; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
   display: flex; flex-direction: column;
 }
 .figure-area {
@@ -60,28 +60,28 @@ body {
 
   <!-- Phase 1: Request Arrival -->
   <div class="phase-label">
-    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">PHASE 1: Request Ingestion</p>
+    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">단계 1: 요청 수신</p>
   </div>
   <div class="flow-row">
     <div class="flow-box" style="background:#333333; min-width:100pt;">
-      <p style="margin:0; font-size:10pt; font-weight:bold; color:#ffffff;">Client</p>
-      <p style="margin:0; font-size:7.5pt; color:#cccccc;">REST API Call</p>
+      <p style="margin:0; font-size:10pt; font-weight:bold; color:#ffffff;">클라이언트</p>
+      <p style="margin:0; font-size:7.5pt; color:#cccccc;">REST API 호출</p>
       <p style="margin:0; font-size:7.5pt; color:#cccccc;">POST /api/requests</p>
     </div>
     <div class="flow-arrow">
       <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
     </div>
     <div class="flow-box" style="background:#f5f5f5; flex:1;">
-      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">API Layer (Express.js)</p>
-      <p style="margin:0; font-size:7.5pt; color:#666666;">Request validation &middot; Tenant identification &middot; Priority assignment</p>
+      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">API 계층 (Express.js)</p>
+      <p style="margin:0; font-size:7.5pt; color:#666666;">요청 검증 &middot; 테넌트 식별 &middot; 우선순위 할당</p>
     </div>
     <div class="flow-arrow">
       <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
     </div>
     <div class="flow-box" style="background:#f5f5f5; min-width:100pt;">
       <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">Rate Limiter</p>
-      <p style="margin:0; font-size:7.5pt; color:#666666;">Token Bucket check</p>
-      <p style="margin:0; font-size:7pt; color:#999999; font-style:italic;">Reject if over limit</p>
+      <p style="margin:0; font-size:7.5pt; color:#666666;">토큰 버킷 확인</p>
+      <p style="margin:0; font-size:7pt; color:#999999; font-style:italic;">한도 초과 시 거부</p>
     </div>
   </div>
 
@@ -92,34 +92,34 @@ body {
 
   <!-- Phase 2: Scheduling Decision -->
   <div class="phase-label">
-    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">PHASE 2: Scheduling Decision (Runtime-Swappable)</p>
+    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">단계 2: 스케줄링 결정 (런타임 교체 가능)</p>
   </div>
   <div class="flow-row">
     <div class="branch-container">
       <div class="branch-box" style="background:#e8e8e8;">
         <p style="margin:0; font-size:9pt; font-weight:bold; color:#333333;">FCFS</p>
-        <p style="margin:0; font-size:7pt; color:#666666;">Arrival order</p>
+        <p style="margin:0; font-size:7pt; color:#666666;">도착 순서</p>
       </div>
       <div class="branch-box" style="background:#e8e8e8;">
         <p style="margin:0; font-size:9pt; font-weight:bold; color:#333333;">Priority</p>
-        <p style="margin:0; font-size:7pt; color:#666666;">4-level + Aging</p>
+        <p style="margin:0; font-size:7pt; color:#666666;">4단계 + 에이징</p>
       </div>
       <div class="branch-box" style="background:#d5e8f0; border-color:#2b579a;">
         <p style="margin:0; font-size:9pt; font-weight:bold; color:#2b579a;">MLFQ</p>
-        <p style="margin:0; font-size:7pt; color:#555555;">4 queues + Preemption</p>
-        <p style="margin:0; font-size:6.5pt; color:#888888; font-style:italic;">Q0:500ms Q1:1.5s Q2:4s Q3:∞</p>
+        <p style="margin:0; font-size:7pt; color:#555555;">4단계 큐 + 선점</p>
+        <p style="margin:0; font-size:6.5pt; color:#888888; font-style:italic;">Q0:500ms Q1:1.5s Q2:4s Q3:무제한</p>
       </div>
       <div class="branch-box" style="background:#d5e8f0; border-color:#2b579a;">
         <p style="margin:0; font-size:9pt; font-weight:bold; color:#2b579a;">WFQ</p>
-        <p style="margin:0; font-size:7pt; color:#555555;">Virtual Finish Time</p>
-        <p style="margin:0; font-size:6.5pt; color:#888888; font-style:italic;">Weight: 100/50/10/1</p>
+        <p style="margin:0; font-size:7pt; color:#555555;">가상 종료 시각</p>
+        <p style="margin:0; font-size:6.5pt; color:#888888; font-style:italic;">가중치: 100/50/10/1</p>
       </div>
     </div>
   </div>
 
   <!-- Scheduler Selection note -->
   <div style="display:flex; justify-content:center; padding: 1pt 0;">
-    <p style="margin:0; font-size:7pt; color:#999999; font-style:italic;">PUT /api/scheduler &#8594; Runtime algorithm switch (no restart)</p>
+    <p style="margin:0; font-size:7pt; color:#999999; font-style:italic;">PUT /api/scheduler &#8594; 런타임 알고리즘 전환 (재시작 불필요)</p>
   </div>
 
   <!-- Arrow down -->
@@ -129,52 +129,52 @@ body {
 
   <!-- Phase 3: Execution -->
   <div class="phase-label">
-    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">PHASE 3: Execution &amp; Response</p>
+    <p style="margin:0; font-size:8pt; color:#888888; font-weight:bold;">단계 3: 실행 및 응답</p>
   </div>
   <div class="flow-row">
     <div class="flow-box" style="background:#f5f5f5; flex:1;">
-      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">Request Manager</p>
-      <p style="margin:0; font-size:7.5pt; color:#666666;">Dequeue next request &middot; Forward to LLM backend</p>
+      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">요청 관리자</p>
+      <p style="margin:0; font-size:7.5pt; color:#666666;">다음 요청 추출 &middot; LLM 백엔드로 전달</p>
     </div>
     <div class="flow-arrow">
       <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
     </div>
     <div class="flow-box" style="background:#333333; min-width:110pt;">
       <p style="margin:0; font-size:10pt; font-weight:bold; color:#ffffff;">Ollama (LLM)</p>
-      <p style="margin:0; font-size:7.5pt; color:#cccccc;">Local inference</p>
+      <p style="margin:0; font-size:7.5pt; color:#cccccc;">로컬 추론</p>
     </div>
     <div class="flow-arrow">
       <p style="margin:0; font-size:14pt; color:#333333;">&#8594;</p>
     </div>
     <div class="flow-box" style="background:#f5f5f5; min-width:90pt;">
-      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">Response</p>
-      <p style="margin:0; font-size:7.5pt; color:#666666;">Wait time logged</p>
-      <p style="margin:0; font-size:7.5pt; color:#666666;">JFI calculated</p>
+      <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">응답</p>
+      <p style="margin:0; font-size:7.5pt; color:#666666;">대기시간 기록</p>
+      <p style="margin:0; font-size:7.5pt; color:#666666;">JFI 계산</p>
     </div>
   </div>
 
   <!-- Detail cards: Key mechanisms -->
   <div class="detail-row">
     <div class="detail-card">
-      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">Starvation Prevention</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">Priority: Aging (auto-promote)</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">MLFQ: Periodic Boost (all &#8594; Q0)</p>
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">기아 방지</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">Priority: 에이징 (자동 승격)</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">MLFQ: 주기적 부스트 (전체 &#8594; Q0)</p>
     </div>
     <div class="detail-card">
-      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">MLFQ Preemption</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">Time slice: 500ms check interval</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">Exceeds quantum &#8594; demote to lower queue</p>
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">MLFQ 선점</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">시간 슬라이스: 500ms 확인 주기</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">퀀텀 초과 &#8594; 하위 큐로 이동</p>
     </div>
     <div class="detail-card">
-      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">Dual-Level Fairness</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">System JFI: across all tenants</p>
-      <p style="margin:0; font-size:7pt; color:#666666;">Tenant JFI: within same tier (0.92~0.98)</p>
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">이중 수준 공정성</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">시스템 JFI: 전체 테넌트 간</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">테넌트 JFI: 동일 등급 내 (0.92~0.98)</p>
     </div>
   </div>
 
   <!-- Bottom note -->
   <div class="bottom-note">
-    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">Stack: Node.js 22 LTS + Express.js 4.18 | Storage: Memory Arrays + JSON Files | 307 tests, 99.76% coverage</p>
+    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">Node.js 22 LTS + Express.js 4.18 | 메모리 배열 + JSON 파일 | 307 tests, 99.76% coverage</p>
   </div>
 </div>
 </body>
