@@ -214,7 +214,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '운영체제의 프로세스 스케줄링 알고리즘은 CPU 자원을 여러 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1]. 본 연구는 이 검증된 이론을 LLM API 요청 관리라는 새로운 분야에 적용함으로써, OS 이론의 실제 응용 가능성을 탐구하고자 한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '운영체제의 프로세스 스케줄링 알고리즘은 CPU 자원을 여러 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1]. 본 연구는 이 검증된 이론을 LLM API 요청 관리라는 새로운 분야에 적용함으로써, 이 이론을 LLM API 요청 관리에 활용할 수 있는지 확인하고자 한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 60 },
@@ -291,7 +291,7 @@ function createDocument() {
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '[그림 1] 스케줄링 알고리즘 개념 비교 (별첨: fig-1-scheduling-comparison.pptx)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
+          children: [new TextRun({ text: '[그림 1] 스케줄링 알고리즘 개념 비교 (별첨: proposal-figures.pptx, 슬라이드 1)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
         }),
 
         new Paragraph({
@@ -306,7 +306,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'vLLM', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '은 UC Berkeley에서 개발한 고성능 LLM 추론 엔진이다 [4]. 운영체제의 가상 메모리 페이징에서 착안한 PagedAttention 기법으로, 추론 시 메모리를 효율적으로 관리하여 처리량을 2~4배 개선하였다. 그러나 요청 스케줄링은 선착순에 한정되어 있으며, 테넌트 간 공정성 보장 기능은 제공하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '은 UC Berkeley에서 개발한 고성능 LLM 추론 엔진이다 [4]. 그러나 요청 스케줄링은 선착순에 한정되어 있으며, 테넌트 간 공정성 보장 기능은 제공하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -320,12 +320,12 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Ollama', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구로, REST API를 통해 다양한 오픈소스 모델을 제공한다 [6]. 본 연구의 프로토타입에서 LLM 백엔드로 활용하였다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구이다 [6]. 본 연구의 프로토타입에서 LLM 백엔드로 활용하였다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 GPU 메모리 관리와 추론 효율화에 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 충분히 연구되지 않았다. 본 연구는 이 부족한 부분을 보완하기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 추론 효율화에 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 부분을 보완하기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -439,7 +439,7 @@ function createDocument() {
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '[그림 2] 시스템 아키텍처 (4계층 구조) (별첨: fig-2-system-architecture.pptx)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
+          children: [new TextRun({ text: '[그림 2] 시스템 아키텍처 (4계층 구조) (별첨: proposal-figures.pptx, 슬라이드 2)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
         }),
 
         new Paragraph({
@@ -506,8 +506,8 @@ function createDocument() {
         new Paragraph({
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '이중 수준 공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'WFQ 스케줄러에서 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(개별 테넌트 내 요청 간 공정성)를 분리 측정한다. 시스템 수준 JFI는 가중치 비율에 따른 의도적 차등이 올바르게 동작하는지를 확인하고, 테넌트 수준 JFI는 동일 등급 내 요청 간의 공평한 처리를 확인한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '두 가지 수준의 공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: 'WFQ 스케줄러에서 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(같은 등급 내 요청 간 공정성)를 나누어 측정한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -521,7 +521,7 @@ function createDocument() {
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '[그림 3] 요청 처리 흐름도 (별첨: fig-3-request-flow.pptx)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
+          children: [new TextRun({ text: '[그림 3] 요청 처리 흐름도 (별첨: proposal-figures.pptx, 슬라이드 3)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
         }),
 
         // ===== 4. 예비 실험 결과 =====
@@ -567,13 +567,13 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '실험 규모', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 10개 시드 기반 다중 실험 (시드당 500건 요청, 총 5,000건)', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 다중 시드 기반 반복 실험 (총 5,000건 요청)', font: 'Arial', size: 22 })
           ]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.2 주요 성과 요약')]
+          children: [new TextRun('4.2 주요 결과')]
         }),
 
         // 표 2
@@ -619,7 +619,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '시간 슬라이스 기반 선점형 모드에서, 짧은 요청과 긴 요청이 동시에 경쟁하는 환경에서 짧은 요청의 대기시간이 약 74% 개선되었다 (10개 시드 다중 실험).', font: 'Arial', size: 22 })
+            new TextRun({ text: '선점형 모드에서, 짧은 요청과 긴 요청이 동시에 경쟁하는 환경에서 짧은 요청의 대기시간이 약 74% 개선되었다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -643,32 +643,32 @@ function createDocument() {
           numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '관련연구 보강', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': LLM 서빙 시스템의 최신 스케줄링 기법과 다중 사용자 자원 관리에 대한 관련연구를 추가 조사하여, 본 연구의 차별점을 명확히 한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '관련연구 추가 조사', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': LLM 서빙 분야의 스케줄링 기법을 더 찾아보고, 본 연구와 다른 점을 정리한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '실험 설계 확대', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 더 큰 규모(1,000건 이상)와 다양한 워크로드 시나리오(버스트 트래픽, 비균등 테넌트 분포 등)를 추가하여 시스템이 더 큰 규모에서도 잘 동작하는지 확인한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '실험 규모 확대', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 더 많은 요청(1,000건 이상)과 다양한 상황(갑자기 요청이 몰리는 경우, 테넌트 비율이 다른 경우 등)에서 실험해 본다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '공정성 분석 심화', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': JFI 외 추가 공정성 지표 적용을 검토하고, 공정성과 성능 간의 장단점을 비교한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '공정성 지표 추가 검토', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': JFI 외에 다른 공정성 지표도 적용할 수 있는지 살펴보고, 공정성과 성능 사이의 장단점을 비교한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '시스템 설계 문서화', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 아키텍처 상세 설계, 알고리즘 의사코드, API 명세를 정리한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '설계 문서 정리', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 아키텍처 상세 설계, 알고리즘 설명, API 명세를 정리한다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -730,7 +730,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[4] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," in Proc. 29th ACM Symp. on Operating Systems Principles (SOSP \'23), 2023, pp. 611-626. [온라인] Available: https://github.com/vllm-project/vllm', font: 'Arial', size: 20 })]
+          children: [new TextRun({ text: '[4] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," arXiv preprint, 2023. [온라인] Available: https://arxiv.org/abs/2309.06180', font: 'Arial', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
@@ -756,7 +756,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v7) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v9) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
