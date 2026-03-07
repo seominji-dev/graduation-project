@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v7.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v8.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -397,7 +397,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템은 4계층 구조로 설계되었다 (그림 2 참조).', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템은 4계층 구조로 설계되었으며, 외부 LLM 백엔드와 연동한다 (그림 2 참조).', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
@@ -430,6 +430,10 @@ function createDocument() {
             new TextRun({ text: '저장소 계층', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: ': 메모리 배열과 JSON 파일로 상태 데이터를 관리한다.', font: 'Arial', size: 22 })
           ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: 'LLM 추론은 외부 백엔드인 Ollama [6]에 위임하며, 스케줄러가 결정한 순서에 따라 요청을 전달한다.', font: 'Arial', size: 22 })]
         }),
         // 그림 2 참조
         new Paragraph({

@@ -117,25 +117,13 @@ body {
     <p style="margin:0; font-size:12pt; color:#888888;">&#9660;</p>
   </div>
 
-  <!-- Layer 4: Storage + LLM Backend side by side -->
-  <div style="display: flex; gap: 8pt;">
-    <div class="layer-box" style="flex: 1;">
-      <div class="layer-name-alt">
-        <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">저장소 계층</p>
-      </div>
-      <div class="layer-detail">
-        <p style="margin:0; font-size:10pt; color:#333333;">메모리 배열 (큐) &middot; JSON 파일 (로그)</p>
-      </div>
+  <!-- Layer 4: Storage -->
+  <div class="layer-box">
+    <div class="layer-name-alt">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">저장소 계층</p>
     </div>
-    <div class="layer-box" style="min-width: 160pt; border-style: dashed;">
-      <div class="layer-name" style="width: auto; padding: 10pt 12pt;">
-        <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">LLM 백엔드</p>
-        <p style="margin:0; font-size:8pt; color:#cccccc;">(외부 서비스)</p>
-      </div>
-      <div class="layer-detail">
-        <p style="margin:0; font-size:10pt; color:#333333;">Ollama</p>
-        <p style="margin:0; font-size:8pt; color:#666666;">로컬 추론 엔진</p>
-      </div>
+    <div class="layer-detail">
+      <p style="margin:0; font-size:10pt; color:#333333;">메모리 배열 (큐) &middot; JSON 파일 (로그) &middot; Ollama (LLM 백엔드)</p>
     </div>
   </div>
 
