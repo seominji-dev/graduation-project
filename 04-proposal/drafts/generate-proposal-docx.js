@@ -293,7 +293,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3]. GPS(Generalized Processor Sharing)는 자원을 완벽히 공평하게 나누는 이상적인 모델이며, WFQ는 이를 현실에서 구현할 수 있도록 근사한 것이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3]. GPS(Generalized Processor Sharing)는 자원을 완벽히 공평하게 나누는 이상적인 모델이며, WFQ는 이를 현실에서 비슷하게 만든 것이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -516,7 +516,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '두 가지 수준의 공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'WFQ 스케줄러에서 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(같은 등급 내 요청 간 공정성)를 분리 측정한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'WFQ 스케줄러에서 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(같은 등급 내 요청 간 공정성)를 나누어 측정한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({

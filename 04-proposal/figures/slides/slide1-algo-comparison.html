@@ -18,15 +18,15 @@ body {
 }
 .card {
   flex: 1;
-  border: 1pt solid #333333;
+  border: 1pt solid #2b579a;
   display: flex; flex-direction: column;
 }
 .card-header {
-  background: #333333;
+  background: #2b579a;
   padding: 6pt 8pt;
 }
 .card-header-white {
-  background: #666666;
+  background: #4472C4;
   padding: 6pt 8pt;
 }
 .card-body {
@@ -41,7 +41,7 @@ body {
 }
 .arrow-bar {
   margin: 10pt 0 4pt 0;
-  border-top: 1.5pt solid #333333;
+  border-top: 1.5pt solid #2b579a;
   display: flex; justify-content: space-between;
   padding-top: 3pt;
 }
@@ -62,19 +62,19 @@ body {
         <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">FCFS</h3>
       </div>
       <div class="card-body">
-        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">선착순 처리</p>
+        <p style="font-size:10pt; color:#555555; text-align:center; margin:4pt 0;">선착순 처리</p>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">특징</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">특징</p>
         </div>
-        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+        <ul style="font-size:9.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
           <li>단순 FIFO 큐</li>
           <li>비선점형</li>
           <li>O(1) 스케줄링</li>
         </ul>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">한계</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">한계</p>
         </div>
-        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">호위 효과 발생, 차등 서비스 불가</p>
+        <p style="font-size:9.5pt; color:#333333; margin:2pt 0;">호위 효과 발생, 차등 서비스 불가</p>
       </div>
     </div>
     <!-- Priority -->
@@ -83,19 +83,19 @@ body {
         <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">Priority</h3>
       </div>
       <div class="card-body">
-        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">우선순위 기반 + 에이징</p>
+        <p style="font-size:10pt; color:#555555; text-align:center; margin:4pt 0;">우선순위 기반 + 에이징</p>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">특징</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">특징</p>
         </div>
-        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+        <ul style="font-size:9.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
           <li>4단계 우선순위 (URGENT~LOW)</li>
           <li>에이징으로 기아 방지</li>
           <li>동적 우선순위 조정</li>
         </ul>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">한계</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">한계</p>
         </div>
-        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">에이징 없으면 기아 발생 가능</p>
+        <p style="font-size:9.5pt; color:#333333; margin:2pt 0;">에이징 없으면 기아 발생 가능</p>
       </div>
     </div>
     <!-- MLFQ -->
@@ -104,19 +104,19 @@ body {
         <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">MLFQ</h3>
       </div>
       <div class="card-body">
-        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">다단계 피드백 큐</p>
+        <p style="font-size:10pt; color:#555555; text-align:center; margin:4pt 0;">다단계 피드백 큐</p>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">특징</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">특징</p>
         </div>
-        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+        <ul style="font-size:9.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
           <li>적응형 분류</li>
           <li>큐별 타임 퀀텀</li>
           <li>선점형 스케줄링</li>
         </ul>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">한계</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">한계</p>
         </div>
-        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">파라미터 튜닝 복잡</p>
+        <p style="font-size:9.5pt; color:#333333; margin:2pt 0;">파라미터 튜닝 복잡</p>
       </div>
     </div>
     <!-- WFQ -->
@@ -125,19 +125,19 @@ body {
         <h3 style="margin:0; color:#ffffff; font-size:13pt; text-align:center;">WFQ</h3>
       </div>
       <div class="card-body">
-        <p style="font-size:9pt; color:#555555; text-align:center; margin:4pt 0;">가중치 공정 큐잉</p>
+        <p style="font-size:10pt; color:#555555; text-align:center; margin:4pt 0;">가중치 공정 큐잉</p>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">특징</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">특징</p>
         </div>
-        <ul style="font-size:8.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
+        <ul style="font-size:9.5pt; color:#333333; margin:2pt 0; padding-left:14pt;">
           <li>가중치 비례 서비스</li>
           <li>가상 종료 시각 계산</li>
           <li>JFI 공정성 지표</li>
         </ul>
         <div class="section-label">
-          <p style="font-size:9pt; font-weight:bold; color:#333333; margin:0;">한계</p>
+          <p style="font-size:10pt; font-weight:bold; color:#333333; margin:0;">한계</p>
         </div>
-        <p style="font-size:8.5pt; color:#333333; margin:2pt 0;">VFT 계산 부담</p>
+        <p style="font-size:9.5pt; color:#333333; margin:2pt 0;">VFT 계산 부담</p>
       </div>
     </div>
   </div>
@@ -149,17 +149,17 @@ body {
         <p style="margin:0; font-size:8.5pt; color:#dddddd;">토큰 버킷 알고리즘</p>
       </div>
       <div style="display:flex; padding:5pt 10pt; gap:20pt;">
-        <p style="font-size:8.5pt; color:#333333; margin:0;"><b>역할:</b> 테넌트별 요청 빈도 제한</p>
-        <p style="font-size:8.5pt; color:#333333; margin:0;"><b>방법:</b> 버스트 용량 제어</p>
-        <p style="font-size:8.5pt; color:#333333; margin:0;"><b>목적:</b> 과부하 방지 (보조 수단)</p>
+        <p style="font-size:9.5pt; color:#333333; margin:0;"><b>역할:</b> 테넌트별 요청 빈도 제한</p>
+        <p style="font-size:9.5pt; color:#333333; margin:0;"><b>방법:</b> 버스트 용량 제어</p>
+        <p style="font-size:9.5pt; color:#333333; margin:0;"><b>목적:</b> 과부하 방지 (보조 수단)</p>
       </div>
     </div>
   </div>
   <!-- Complexity arrow -->
   <div class="arrow-bar">
-    <p style="font-size:8pt; color:#555555; margin:0; font-style:italic;">단순</p>
-    <p style="font-size:8pt; color:#555555; margin:0;">구현 복잡도 / 성능 최적화  &#8594;</p>
-    <p style="font-size:8pt; color:#555555; margin:0; font-style:italic;">복잡</p>
+    <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">단순</p>
+    <p style="font-size:9pt; color:#555555; margin:0;">구현 복잡도 / 성능 최적화  &#8594;</p>
+    <p style="font-size:9pt; color:#555555; margin:0; font-style:italic;">복잡</p>
   </div>
   <!-- Reference -->
   <div class="ref-line">
