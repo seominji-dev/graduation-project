@@ -309,7 +309,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'LLM 서빙 분야에서는 추론 성능 최적화를 위한 다양한 기술이 개발되어 왔다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: 'LLM 서빙(LLM을 사용자에게 제공하는 것) 분야에서는 LLM 응답 속도를 높이기 위한 다양한 기술이 개발되어 왔다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -429,7 +429,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '스케줄러 엔진', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 런타임에 교체 가능한 5가지 알고리즘으로 요청 처리 순서를 결정한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 서버 실행 중에(런타임) 교체 가능한 5가지 알고리즘으로 요청 처리 순서를 결정한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -765,7 +765,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v9) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v10) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
