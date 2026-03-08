@@ -110,6 +110,14 @@ function createDocument() {
           }]
         },
         {
+          reference: 'architecture-layers',
+          levels: [{
+            level: 0, format: LevelFormat.DECIMAL, text: '%1.',
+            alignment: AlignmentType.LEFT,
+            style: { paragraph: { indent: { left: 720, hanging: 360 } } }
+          }]
+        },
+        {
           reference: 'bullet-list',
           levels: [{
             level: 0, format: LevelFormat.BULLET, text: '\u2022',
@@ -233,8 +241,8 @@ function createDocument() {
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '5가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링), WFQ(공정 배분), Rate Limiter(속도 제한)를 LLM API 환경에 맞게 구현한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '4가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -242,7 +250,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '알고리즘별 성능 비교', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 같은 조건에서 대기시간, 처리량, 공정성을 비교한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘을 같은 조건에서 대기시간, 처리량, 공정성 기준으로 비교한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -409,7 +417,7 @@ function createDocument() {
           children: [new TextRun({ text: '시스템은 4계층 구조로 설계되었으며, 외부 LLM 백엔드와 연동한다 (그림 2 참조).', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
+          numbering: { reference: 'architecture-layers', level: 0 },
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '클라이언트 계층', bold: true, font: 'Arial', size: 22 }),
@@ -417,7 +425,7 @@ function createDocument() {
           ]
         }),
         new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
+          numbering: { reference: 'architecture-layers', level: 0 },
           spacing: { after: 40 },
           children: [
             new TextRun({ text: 'API 계층', bold: true, font: 'Arial', size: 22 }),
@@ -425,15 +433,15 @@ function createDocument() {
           ]
         }),
         new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
+          numbering: { reference: 'architecture-layers', level: 0 },
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '스케줄러 엔진', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 서버 실행 중에(런타임) 교체 가능한 5가지 알고리즘으로 요청 처리 순서를 결정한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 서버 실행 중에(런타임) 교체 가능한 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
+          numbering: { reference: 'architecture-layers', level: 0 },
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '저장소 계층', bold: true, font: 'Arial', size: 22 }),
@@ -442,7 +450,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'LLM 추론은 외부 백엔드인 Ollama [6]에 위임하며, 스케줄러가 결정한 순서에 따라 요청을 전달한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '요청이 스케줄러에 도달하기 전에, Rate Limiter가 전처리 단계에서 과도한 요청을 제한한다. LLM 추론은 외부 백엔드인 Ollama [6]에 위임하며, 스케줄러가 결정한 순서에 따라 요청을 전달한다.', font: 'Arial', size: 22 })]
         }),
         // 그림 2 참조
         new Paragraph({
@@ -493,15 +501,6 @@ function createDocument() {
         }),
 
         new Paragraph({
-          heading: HeadingLevel.HEADING_3,
-          children: [new TextRun('3.3.5 Rate Limiter')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다 [3]. 토큰 버킷이란, 일정 시간마다 토큰(요청 권한)이 생기고, 요청할 때마다 토큰을 하나씩 쓰는 방식이다. 토큰이 없으면 요청이 거부된다. 시스템 과부하를 방지하는 보조 수단으로 활용한다.', font: 'Arial', size: 22 })]
-        }),
-
-        new Paragraph({
           heading: HeadingLevel.HEADING_2,
           children: [new TextRun('3.4 핵심 기술 특징')]
         }),
@@ -524,6 +523,13 @@ function createDocument() {
           children: [
             new TextRun({ text: '기아 방지: ', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: 'Priority 스케줄러의 에이징과 MLFQ 스케줄러의 부스트를 통해 낮은 우선순위 요청이 끝없이 기다리는 것을 방지한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: 'Rate Limiter (속도 제한): ', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다 [3]. 토큰 버킷이란, 일정 시간마다 토큰(요청 권한)이 생기고, 요청할 때마다 토큰을 하나씩 쓰는 방식이다. 토큰이 없으면 요청이 거부된다. 스케줄링 알고리즘과는 별도로, 요청이 스케줄러에 도달하기 전 단계에서 시스템 과부하를 방지하는 보조 기능이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 3 참조
@@ -661,7 +667,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '실험 규모 확대', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 더 많은 요청(1,000건 이상)과 다양한 상황(갑자기 요청이 몰리는 경우, 테넌트 비율이 다른 경우 등)에서 실험해 본다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 더 많은 요청(10,000건 이상)과 다양한 상황(갑자기 요청이 몰리는 경우, 테넌트 비율이 다른 경우 등)에서 실험해 본다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -669,7 +675,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '공정성 지표 추가 검토', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': JFI 외에 다른 공정성 지표도 적용할 수 있는지 살펴보고, 공정성과 성능 사이의 장단점을 비교한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': JFI 외에 다른 공정성 지표도 적용할 수 있는지 살펴보고, 공정성과 성능 사이의 장단점을 살펴본다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({

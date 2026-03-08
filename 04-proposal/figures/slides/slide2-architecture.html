@@ -62,7 +62,7 @@ body {
       <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">클라이언트 계층</p>
     </div>
     <div class="layer-detail">
-      <p style="margin:0; font-size:10pt; color:#333333;">REST API 클라이언트 &middot; 대시보드</p>
+      <p style="margin:0; font-size:10pt; color:#333333;">REST API 클라이언트</p>
     </div>
   </div>
 
@@ -85,7 +85,22 @@ body {
     <p style="margin:0; font-size:12pt; color:#888888;">&#9660;</p>
   </div>
 
-  <!-- Layer 3: Scheduler Engine -->
+  <!-- Layer 3a: Rate Limiter (preprocessing) -->
+  <div class="layer-box" style="border-color: #4472C4;">
+    <div class="layer-name-alt" style="width: 180pt;">
+      <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">Rate Limiter</p>
+      <p style="margin:0; font-size:9pt; color:#cccccc;">(전처리 단계)</p>
+    </div>
+    <div class="layer-detail">
+      <p style="margin:0; font-size:10pt; color:#333333;">토큰 버킷 알고리즘 &middot; 테넌트별 요청 빈도 제한 &middot; 과부하 방지</p>
+    </div>
+  </div>
+
+  <div class="arrow-row">
+    <p style="margin:0; font-size:12pt; color:#888888;">&#9660;</p>
+  </div>
+
+  <!-- Layer 3b: Scheduler Engine -->
   <div class="layer-box" style="border-width: 2pt; border-color: #2b579a;">
     <div class="layer-name">
       <p style="margin:0; font-size:11pt; font-weight:bold; color:#ffffff;">스케줄러 엔진</p>
@@ -105,11 +120,8 @@ body {
         <div class="chip">
           <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">WFQ</p>
         </div>
-        <div class="chip">
-          <p style="margin:0; font-size:10pt; font-weight:bold; color:#333333;">Rate Limiter</p>
-        </div>
       </div>
-      <p style="margin:0; font-size:9pt; color:#666666; font-style:italic;">기능: 에이징, 부스트, 이중 수준 JFI 측정</p>
+      <p style="margin:0; font-size:9pt; color:#666666; font-style:italic;">기능: 에이징, 부스트, 두 가지 수준 JFI 측정</p>
     </div>
   </div>
 
