@@ -153,9 +153,28 @@ body {
     </div>
   </div>
 
+  <!-- Detail cards: Key mechanisms -->
+  <div class="detail-row">
+    <div class="detail-card">
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">기아 방지</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">Priority: 에이징 (자동 승격)</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">MLFQ: 주기적 부스트 (전체 &#8594; Q0)</p>
+    </div>
+    <div class="detail-card">
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">MLFQ 선점</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">시간 슬라이스: 500ms 확인 주기</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">퀀텀 초과 &#8594; 하위 큐로 이동</p>
+    </div>
+    <div class="detail-card">
+      <p style="margin:0; font-size:8pt; font-weight:bold; color:#333333;">이중 수준 공정성</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">시스템 JFI: 전체 테넌트 간</p>
+      <p style="margin:0; font-size:7pt; color:#666666;">테넌트 JFI: 동일 등급 내 (0.92~0.98)</p>
+    </div>
+  </div>
+
   <!-- Bottom note -->
   <div class="bottom-note">
-    <p style="font-size:7.5pt; color:#999999; margin:0; font-style:italic;">핵심: 에이징/부스트로 기아 방지 &middot; MLFQ 선점으로 짧은 요청 우선 &middot; JFI로 공정성 측정</p>
+    <p style="font-size:7pt; color:#999999; margin:0; font-style:italic;">Node.js 22 LTS + Express.js 4.18 | 메모리 배열 + JSON 파일 | 307 tests, 99.76% coverage</p>
   </div>
 </div>
 </body>

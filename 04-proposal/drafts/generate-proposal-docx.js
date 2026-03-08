@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v9.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v10.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -234,7 +234,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '5가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(베이스라인), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링), WFQ(공정 배분), Rate Limiter(속도 제한)를 LLM API 환경에 맞게 구현한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링), WFQ(공정 배분), Rate Limiter(속도 제한)를 LLM API 환경에 맞게 구현한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -242,7 +242,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '알고리즘별 성능 비교', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 동일한 워크로드에서 대기시간, 처리량, 공정성 지표를 비교한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 같은 조건에서 대기시간, 처리량, 공정성을 비교한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -315,7 +315,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'vLLM', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '은 UC Berkeley에서 개발한 고성능 LLM 추론 엔진이다 [4]. 그러나 요청 스케줄링은 선착순에 한정되어 있으며, 테넌트 간 공정성 보장 기능은 제공하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '은 UC Berkeley에서 개발한 LLM 서빙 도구이다 [4]. 그러나 요청 스케줄링은 선착순에 한정되어 있으며, 테넌트 간 공정성 보장 기능은 제공하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -334,7 +334,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 추론 효율화에 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 부분을 보완하기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 LLM의 응답 속도를 높이는 데 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 부분을 보완하기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -462,7 +462,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청의 도착 타임스탬프를 기준으로 처리 순서를 결정한다. 구현이 간단하며 다른 알고리즘의 성능 비교를 위한 베이스라인으로 사용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하며 다른 알고리즘과 비교할 때 기준(베이스라인)으로 사용한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -471,7 +471,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 에이징을 통해, 대기 시간이 임계값을 초과하면 요청의 우선순위가 자동으로 한 단계 상승하여 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 에이징을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -509,7 +509,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '런타임 알고리즘 교체: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '서버 재시작 없이 REST API(PUT /api/scheduler)를 통해 스케줄링 알고리즘을 실시간으로 전환할 수 있다. 이를 통해 워크로드 변화에 따라 운영 중 최적 알고리즘을 선택할 수 있으며, 알고리즘 간 성능 비교 실험을 동일 환경에서 수행할 수 있다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '서버 재시작 없이 REST API(PUT /api/scheduler)를 통해 스케줄링 알고리즘을 실시간으로 전환할 수 있다. 이를 통해 작업량(워크로드)이 바뀔 때 운영 중 최적 알고리즘을 선택할 수 있으며, 알고리즘 간 성능 비교 실험을 동일 환경에서 수행할 수 있다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -523,7 +523,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '기아 방지: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'Priority 스케줄러의 에이징과 MLFQ 스케줄러의 부스트를 통해 낮은 우선순위 요청의 무기한 대기를 방지한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'Priority 스케줄러의 에이징과 MLFQ 스케줄러의 부스트를 통해 낮은 우선순위 요청이 끝없이 기다리는 것을 방지한다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 3 참조
@@ -576,7 +576,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '실험 규모', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 다중 시드 기반 반복 실험 (총 5,000건 요청)', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 약 5,000건의 요청으로 반복 실험', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -599,7 +599,7 @@ function createDocument() {
             ]}),
             new TableRow({ children: [
               dataCell('FCFS', 2000, { bold: true }), dataCell('2,572ms', 2500, { align: AlignmentType.CENTER }),
-              dataCell('베이스라인. 도착 순서대로 처리', 4860)
+              dataCell('기준. 도착 순서대로 처리', 4860)
             ]}),
             new TableRow({ children: [
               dataCell('Priority', 2000, { bold: true }), dataCell('2,826ms', 2500, { align: AlignmentType.CENTER }),
@@ -621,21 +621,21 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Priority Scheduling: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'URGENT 요청은 FCFS 대비 62% 빠르게 처리되었다. 에이징에 의해 낮은 우선순위 요청도 무기한 대기 없이 처리됨을 확인하였다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'URGENT 요청은 FCFS 대비 62% 빠르게 처리되었다. 에이징 덕분에 낮은 우선순위 요청도 오래 기다리지 않고 처리되었다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '선점형 모드에서, 짧은 요청과 긴 요청이 동시에 경쟁하는 환경에서 짧은 요청의 대기시간이 약 74% 개선되었다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '선점형 모드에서, 짧은 요청과 긴 요청이 섞여 있는 상황에서 짧은 요청의 대기시간이 약 74% 줄어들었다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'Enterprise 테넌트(가중치 100)는 Free 테넌트(가중치 1) 대비 5.8배 빠른 응답을 받았다. 테넌트 수준 JFI는 0.92~0.98로 높은 내부 공정성을 유지하였다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'Enterprise 테넌트(가중치 100)는 Free 테넌트(가중치 1) 대비 5.8배 빠른 응답을 받았다. 같은 등급 안에서의 공정성(테넌트 수준 JFI)도 0.92~0.98로 높게 나타났다.', font: 'Arial', size: 22 })
           ]
         }),
 
