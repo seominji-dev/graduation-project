@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v10.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v11.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -322,14 +322,14 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Hugging Face TGI', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 오픈소스 LLM 배포 도구로, Docker 기반의 간편한 배포를 지원한다 [5]. 다중 사용자 환경에서의 요청 우선순위 관리나 공정성 보장 기능은 포함하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 오픈소스 LLM 서빙 도구이다 [5]. 다중 사용자 환경에서의 요청 우선순위 관리나 공정성 보장 기능은 포함하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Ollama', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구이다 [6]. 본 연구의 프로토타입에서 LLM 백엔드로 활용하였다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구이다 [6]. 본 연구의 프로토타입(시험 제작 모델)에서 LLM 백엔드로 활용하였다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -386,7 +386,7 @@ function createDocument() {
               dataCell('프로세스 (Process)', 2200), dataCell('LLM API 요청', 2400), dataCell('스케줄링의 기본 단위', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('API 호출 쿼터', 2400), dataCell('할당되는 자원', 4760)
+              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('API 호출 허용량', 2400), dataCell('할당되는 자원', 4760)
             ]}),
             new TableRow({ children: [
               dataCell('우선순위 (Priority)', 2200), dataCell('테넌트 등급, 요청 긴급도', 2400), dataCell('처리 순서 결정 기준', 4760)
@@ -413,7 +413,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '클라이언트 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': REST API를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': REST API(웹 요청 인터페이스)를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -765,7 +765,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v10) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v11) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
