@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v12.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v13.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -309,7 +309,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 근사하여 구현한 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 만든 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 1 참조
