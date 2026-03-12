@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 각 사용자가 받는 자원의 양, n은 사용자 수이다. 본 연구는 JFI를 모든 스케줄링 알고리즘에 적용하여 공정성을 비교하며, 시스템 수준(전체 테넌트 간)과 테넌트 수준(동일 등급 내 요청 간)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 각 사용자가 받는 자원의 양, n은 사용자 수이다. 본 연구는 최종적으로 JFI를 모든 스케줄링 알고리즘에 적용하여 공정성을 비교할 계획이며, 시스템 수준(전체 테넌트 간)과 테넌트 수준(동일 등급 내 요청 간)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -672,7 +672,10 @@ function createDocument() {
           ]
         }),
 
-        new Paragraph({ spacing: { before: 120 }, children: [] }),
+        new Paragraph({
+          spacing: { before: 120, after: 120 },
+          children: [new TextRun({ text: '4가지 알고리즘 모두 처리량은 약 8.17 req/s로 유사하다. 이는 처리량이 스케줄러가 아닌 LLM 백엔드의 추론 속도에 의해 결정되기 때문이다. 따라서 본 연구에서는 대기시간과 공정성을 중심으로 알고리즘을 비교한다.', font: 'Arial', size: 22 })]
+        }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
@@ -697,15 +700,8 @@ function createDocument() {
         new Paragraph({
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '처리량: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '4가지 알고리즘 모두 약 8.17 req/s로, 처리량에는 큰 차이가 없었다. 처리량은 스케줄러가 아닌 LLM 백엔드의 추론 속도에 의해 결정되기 때문이다. 따라서 본 연구에서는 대기시간과 공정성을 중심으로 알고리즘을 비교한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
             new TextRun({ text: '공정성: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '예비 실험에서는 WFQ의 JFI를 중심으로 측정하였으며, 나머지 알고리즘에 대한 JFI 비교는 본 실험에서 추가로 진행할 예정이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '예비 실험에서는 공정성을 핵심 설계 목표로 삼은 WFQ의 JFI를 우선 측정하였으며, 나머지 알고리즘에 대한 JFI 비교는 본 실험에서 추가로 진행할 예정이다.', font: 'Arial', size: 22 })
           ]
         }),
 
