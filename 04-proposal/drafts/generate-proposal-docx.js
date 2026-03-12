@@ -415,7 +415,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템은 4계층 구조로 설계되었으며, 외부 LLM 백엔드와 연동한다 (그림 2 참조).', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템은 4계층 구조로 구성되며, 외부 LLM 백엔드와 연동한다 (그림 2 참조).', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'architecture-layers', level: 0 },
