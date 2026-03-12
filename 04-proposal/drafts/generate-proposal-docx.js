@@ -574,176 +574,134 @@ function createDocument() {
           ]
         }),
 
-        // ===== 4. 예비 실험 결과 =====
+        // ===== 4. 실험 계획 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
-          children: [new TextRun('4. 예비 실험 결과')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '겨울방학 동안 시제품(프로토타입)을 구현하고 예비 실험을 수행하였다.', font: 'Arial', size: 22 })]
+          children: [new TextRun('4. 실험 계획')]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.1 실험 환경')]
+          children: [new TextRun('4.1 실험 설계')]
         }),
         new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '서버', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Node.js 22 LTS, Express.js 4.18 [7][8]', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: 'LLM 백엔드', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Ollama(로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구) [6]', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '외부 의존성', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 1개 패키지 (express)', font: 'Arial', size: 22 })
-          ]
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '3.6절의 구현 환경에서 다음과 같은 조건으로 실험을 수행할 계획이다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '실험 규모', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 약 5,000건의 요청으로 반복 실험', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 약 5,000~10,000건의 요청으로 반복 실험을 수행한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: '요청 구성', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 짧은 요청 40%, 중간 요청 40%, 긴 요청 20%의 비율로 구성한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: '요청 간 지연', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 50~500ms 범위에서 다양하게 설정하여 실제 서비스 환경에 가깝게 구성한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '요청 구성', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 짧은 요청 40%, 중간 요청 40%, 긴 요청 20%의 비율로 구성', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '변인 통제: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '본 예비 실험은 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행하였다. Rate Limiter를 포함한 시스템 과부하 방지 테스트는 본 실험에서 별도로 진행할 예정이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '변인 통제', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행한다. Rate Limiter를 포함한 시스템 과부하 방지 테스트는 별도로 진행할 예정이다.', font: 'Arial', size: 22 })
           ]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.2 주요 결과')]
+          children: [new TextRun('4.2 실험 시나리오')]
         }),
-
-        // 표 2
         new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 120, after: 60 },
-          children: [new TextRun({ text: '표 2. 알고리즘별 성능 비교 요약', bold: true, font: 'Arial', size: 20 })]
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '다양한 조건에서 알고리즘의 특성을 비교하기 위해, 다음과 같은 시나리오를 설계한다.', font: 'Arial', size: 22 })]
         }),
-        new Table({
-          columnWidths: [1600, 2000, 1600, 4160],
-          rows: [
-            new TableRow({ tableHeader: true, children: [
-              headerCell('스케줄러', 1600), headerCell('평균 대기시간', 2000), headerCell('처리량(req/s)', 1600), headerCell('핵심 발견', 4160)
-            ]}),
-            new TableRow({ children: [
-              dataCell('FCFS', 1600, { bold: true }), dataCell('2,572ms', 2000, { align: AlignmentType.CENTER }),
-              dataCell('8.17', 1600, { align: AlignmentType.CENTER }), dataCell('기준. 도착 순서대로 처리', 4160)
-            ]}),
-            new TableRow({ children: [
-              dataCell('Priority', 1600, { bold: true }), dataCell('2,826ms', 2000, { align: AlignmentType.CENTER }),
-              dataCell('8.16', 1600, { align: AlignmentType.CENTER }), dataCell('URGENT 요청 1,122ms (FCFS 대비 62% 감소)', 4160)
-            ]}),
-            new TableRow({ children: [
-              dataCell('MLFQ', 1600, { bold: true }), dataCell('2,572ms', 2000, { align: AlignmentType.CENTER }),
-              dataCell('8.17', 1600, { align: AlignmentType.CENTER }), dataCell('짧은 요청 대기시간 약 74% 감소 (호위 효과 완화 확인)', 4160)
-            ]}),
-            new TableRow({ children: [
-              dataCell('WFQ', 1600, { bold: true }), dataCell('2,819ms', 2000, { align: AlignmentType.CENTER }),
-              dataCell('8.17', 1600, { align: AlignmentType.CENTER }), dataCell('Enterprise 849ms vs Free 4,894ms (5.8배 차이)', 4160)
-            ]})
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: '정상 부하', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 일정한 간격으로 요청이 도착하는 기본 상황에서 각 알고리즘의 대기시간과 처리량을 측정한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: '버스트 부하', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 특정 시점에 요청이 급증하는 상황을 재현하여, 각 알고리즘이 과부하에 어떻게 대응하는지 관찰한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: '테넌트 비율 변동', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': Enterprise/Premium/Standard/Free 테넌트의 비율을 달리하여 공정성 변화를 관찰한다.', font: 'Arial', size: 22 })
           ]
         }),
 
         new Paragraph({
-          spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '4가지 알고리즘 모두 처리량은 약 8.17 req/s로 유사하다. 이는 처리량이 스케줄러가 아닌 LLM 백엔드의 추론 속도에 의해 결정되기 때문이다. 따라서 본 연구에서는 대기시간과 공정성을 중심으로 알고리즘을 비교한다.', font: 'Arial', size: 22 })]
+          heading: HeadingLevel.HEADING_2,
+          children: [new TextRun('4.3 평가 방법')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'Priority Scheduling: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'URGENT 요청은 FCFS 대비 62% 빠르게 처리되었다. 에이징 덕분에 낮은 우선순위 요청도 오래 기다리지 않고 처리되었다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'MLFQ: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '짧은 요청과 긴 요청이 섞여 있는 상황에서, 짧은 요청의 대기시간이 FCFS 대비 약 74% 줄어들었다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'WFQ: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'Enterprise 테넌트(가중치 100)는 Free 테넌트(가중치 1) 대비 5.8배 빠른 응답을 받았다. 같은 등급 안에서의 공정성(테넌트 수준 JFI)은 0.92~0.98로 높게 나타났다. 전체 테넌트 간 공정성(시스템 수준 JFI)은 0.32로, 등급별로 의도적으로 차등 서비스를 제공하므로 낮은 값이 정상적인 결과이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '공정성: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '예비 실험에서는 공정성을 핵심 설계 목표로 삼은 WFQ의 JFI를 우선 측정하였으며, 나머지 알고리즘에 대한 JFI 비교는 본 실험에서 추가로 진행할 예정이다.', font: 'Arial', size: 22 })
-          ]
+          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성)를 4가지 알고리즘 모두에 동일하게 적용하여 비교한다. 공정성은 시스템 수준(전체 테넌트 간 JFI)과 테넌트 수준(같은 등급 내 JFI)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
         }),
 
-        // ===== 5. 연구 계획 =====
+        // ===== 5. 연구 일정 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
-          children: [new TextRun('5. 26-1학기 연구 계획')]
+          children: [new TextRun('5. 연구 일정')]
         }),
         new Paragraph({
           spacing: { after: 60 },
-          children: [new TextRun({ text: '겨울방학 동안의 예비 구현 결과를 바탕으로, 26-1학기에는 다음을 추가로 진행한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '26-1학기에는 다음과 같은 활동을 진행한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '관련연구 추가 조사', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: '시스템 구현', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 제안 시스템의 4가지 스케줄링 알고리즘과 Rate Limiter를 구현한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'future-plans', level: 0 },
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: '성능 비교 실험', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 4.1~4.2절에서 설계한 조건과 시나리오에 따라 알고리즘별 대기시간, 처리량, 공정성을 비교한다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'future-plans', level: 0 },
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: '관련연구 조사', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: ': LLM 서빙 분야의 스케줄링 기법을 더 찾아보고, 본 연구와 다른 점을 정리한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '실험 규모 확대', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 더 많은 요청(10,000건 이상)으로 실험하고, 요청 간 지연(Delay)을 50~500ms 범위로 다양하게 설정하여 실제 서비스 환경에 가까운 조건에서 실험해 본다. 갑자기 요청이 몰리는 경우, 테넌트 비율이 다른 경우 등 다양한 상황을 추가한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '공정성 지표 추가 검토', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 알고리즘 모두에 JFI를 적용하여 비교하고, JFI 외에 다른 공정성 지표도 적용할 수 있는지 살펴본다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '설계 문서 정리', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 아키텍처 상세 설계, 알고리즘 설명, API 명세를 정리한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '결과 정리', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 실험 결과와 아키텍처 설계를 문서로 정리하여 보고서에 포함한다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -751,7 +709,7 @@ function createDocument() {
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 60 },
-          children: [new TextRun({ text: '표 3. 26-1학기 연구 일정', bold: true, font: 'Arial', size: 20 })]
+          children: [new TextRun({ text: '표 2. 26-1학기 연구 일정', bold: true, font: 'Arial', size: 20 })]
         }),
         new Table({
           columnWidths: [1800, 3200, 2560, 1800],
@@ -767,13 +725,13 @@ function createDocument() {
             ]}),
             new TableRow({ children: [
               dataCell('4월', 1800, { align: AlignmentType.CENTER }),
-              dataCell('시스템 설계 보완, 추가 실험', 3200),
+              dataCell('시스템 구현, 본격 실험 수행', 3200),
               dataCell('중간보고서', 2560),
               dataCell('4/12', 1800, { align: AlignmentType.CENTER })
             ]}),
             new TableRow({ children: [
               dataCell('5월 초~중', 1800, { align: AlignmentType.CENTER }),
-              dataCell('추가 실험, 결과 분석, 최종보고서 작성', 3200),
+              dataCell('실험 결과 분석, 최종보고서 작성', 3200),
               dataCell('최종보고서 + 소스코드', 2560),
               dataCell('5/24', 1800, { align: AlignmentType.CENTER })
             ]}),
