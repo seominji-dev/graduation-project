@@ -343,7 +343,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 LLM의 응답 속도를 높이는 데 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 부분을 보완하기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 LLM의 응답 속도를 높이는 데 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 문제를 다루기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 각 사용자가 받는 자원의 양, n은 사용자 수이다. 본 연구는 최종적으로 JFI를 모든 스케줄링 알고리즘에 적용하여 공정성을 비교할 계획이며, 시스템 수준(전체 테넌트 간)과 테넌트 수준(동일 등급 내 요청 간)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 각 사용자가 받는 자원의 양, n은 사용자 수이다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -489,7 +489,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 피드백 큐(Q0~Q3)를 구현하며, 큐별 타임 퀀텀을 차등 설정한다(Q0: 500ms, Q1: 1,500ms, Q2: 4,000ms, Q3: 무제한) [2]. 본 알고리즘은 선점형(Preemptive) 방식으로 동작한다. 즉, 처리 중인 요청의 할당 시간(타임 퀀텀)이 지나면 해당 요청을 잠시 멈추고 다른 요청에게 순서를 넘긴다. 타임 퀀텀을 초과한 요청은 하위 큐로 이동시켜, 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 부스트(Boost)로 모든 요청을 최상위 큐(Q0)로 복귀시켜 기아를 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '4단계 피드백 큐(Q0~Q3)를 구현하며, 큐별 타임 퀀텀을 차등 설정한다(Q0: 1,000ms, Q1: 3,000ms, Q2: 8,000ms, Q3: 무제한) [2]. 본 알고리즘은 선점형(Preemptive) 방식으로 동작한다. 즉, 처리 중인 요청의 할당 시간(타임 퀀텀)이 지나면 해당 요청을 잠시 멈추고 다른 요청에게 순서를 넘긴다. 타임 퀀텀을 초과한 요청은 하위 큐로 이동시켜, 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 부스트(Boost)로 모든 요청을 최상위 큐(Q0)로 복귀시켜 기아를 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -498,7 +498,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례하여 자원을 분배하는 알고리즘이다 [3]. 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용하였다. 스케줄러는 각 요청의 예상 처리 비용을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례하여 자원을 분배하는 알고리즘이다 [3]. 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 스케줄러는 각 요청의 예상 처리 비용을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -509,14 +509,14 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '실시간 알고리즘 교체: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '서버 재시작 없이 REST API를 통해 스케줄링 알고리즘을 실시간(런타임)으로 전환할 수 있다. 이 기능은 운영 환경에서 워크로드가 바뀔 때 최적 알고리즘을 선택하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 하나의 알고리즘을 고정하고 전체 실험을 완료한 뒤 다음 알고리즘으로 전환하는 방식으로 진행하며, 실험 도중에는 알고리즘을 교체하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '서버 재시작 없이 REST API를 통해 프로그램 실행 중(런타임)에 스케줄링 알고리즘을 전환할 수 있다. 이 기능은 운영 환경에서 워크로드가 바뀔 때 최적 알고리즘을 선택하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 하나의 알고리즘을 고정하고 전체 실험을 완료한 뒤 다음 알고리즘으로 전환하는 방식으로 진행하며, 실험 도중에는 알고리즘을 교체하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. WFQ 스케줄러에서는 시스템 수준 JFI(전체 테넌트 간 공정성)와 테넌트 수준 JFI(같은 등급 내 요청 간 공정성)를 나누어 측정한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. 측정은 시스템 수준(전체 테넌트 간 공정성)과 테넌트 수준(같은 등급 내 요청 간 공정성)으로 나누어 진행한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
