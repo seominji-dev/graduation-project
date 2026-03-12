@@ -831,7 +831,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v12) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v13) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
