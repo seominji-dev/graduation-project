@@ -422,7 +422,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '클라이언트 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': REST API(웹 요청 인터페이스)를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': REST(웹 통신 규약) API를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -438,7 +438,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '스케줄러 엔진', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다. 알고리즘은 REST API(PUT /api/scheduler)를 통해 교체할 수 있으며, 이 기능은 운영 중 워크로드(작업량) 변화에 대응하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 알고리즘을 고정한 채 진행하며, 실험 도중 교체하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다. 알고리즘은 REST API(PUT /api/scheduler)를 통해 교체하도록 설계하며, 이 기능은 운영 중 워크로드(작업량) 변화에 대응하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 알고리즘을 고정한 채 진행하며, 실험 도중 교체하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -509,7 +509,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '실시간 알고리즘 교체: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '서버 재시작 없이 REST API를 통해 프로그램 실행 중(런타임)에 스케줄링 알고리즘을 전환할 수 있다. 이 기능은 운영 환경에서 워크로드가 바뀔 때 최적 알고리즘을 선택하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 하나의 알고리즘을 고정하고 전체 실험을 완료한 뒤 다음 알고리즘으로 전환하는 방식으로 진행하며, 실험 도중에는 알고리즘을 교체하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '서버 재시작 없이 REST API를 통해 프로그램 실행 중(런타임)에 스케줄링 알고리즘을 전환하도록 설계한다. 이 기능은 운영 환경에서 워크로드가 바뀔 때 최적 알고리즘을 선택하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 하나의 알고리즘을 고정하고 전체 실험을 완료한 뒤 다음 알고리즘으로 전환하는 방식으로 진행하며, 실험 도중에는 알고리즘을 교체하지 않는다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
