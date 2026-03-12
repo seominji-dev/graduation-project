@@ -89,5 +89,38 @@
     "type": "documentation",
     "verified": true,
     "note": "본 연구 런타임 환경 (Node.js 22 LTS)"
+  },
+  {
+    "id": "[9]",
+    "authors": "혀니앤",
+    "title": "[운영체제] 스케줄링 알고리즘",
+    "venue": "velog",
+    "year": 2022,
+    "url": "https://velog.io/@jeongopo/%EC%9A%B4%EC%98%81%EC%B2%B4%EC%A0%9C-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%A7%81-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98",
+    "type": "blog",
+    "verified": true,
+    "note": "FCFS, SJF, Priority, RR 등 OS 스케줄링 알고리즘 한국어 설명"
+  },
+  {
+    "id": "[10]",
+    "authors": "폐프의삶",
+    "title": "[OS] MLFQ",
+    "venue": "tistory",
+    "year": 2025,
+    "url": "https://waste-programmer.tistory.com/32",
+    "type": "blog",
+    "verified": true,
+    "note": "MLFQ 동작 원리, 기아 문제와 해결 방안 한국어 설명"
+  },
+  {
+    "id": "[11]",
+    "authors": "JSH 기술 블로그",
+    "title": "라우터의 패킷 지연과 패킷 스케줄링 방법",
+    "venue": "tistory",
+    "year": 2021,
+    "url": "https://studyandwrite.tistory.com/442",
+    "type": "blog",
+    "verified": true,
+    "note": "WFQ, 라운드 로빈, 우선순위 큐잉 등 네트워크 스케줄링 한국어 설명"
   }
 ]
