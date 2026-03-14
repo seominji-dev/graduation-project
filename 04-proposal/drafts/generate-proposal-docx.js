@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 각 사용자가 받는 자원의 양, n은 사용자 수이다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 처리받은 요청 수이며, n은 테넌트 수이다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -438,7 +438,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '스케줄러 엔진', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다. 알고리즘은 REST API(PUT /api/scheduler)를 통해 교체하도록 설계하며, 이 기능은 운영 중 작업량(워크로드) 변화에 대응하기 위한 서비스용 부가 기능이다. 성능 비교 실험에서는 알고리즘을 고정한 채 진행하며, 실험 도중 교체하지 않는다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다. 스케줄링 알고리즘은 실행 중 교체할 수 있으며, 상세 내용은 3.4절에서 설명한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -480,7 +480,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급과 요청 헤더의 긴급도 필드를 조합하여 결정한다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급을 기준으로 결정하되, 요청 헤더의 긴급도 플래그가 설정된 경우 우선순위를 한 단계 상승시킨다. 기본 매핑은 Enterprise=HIGH, Premium=NORMAL, Standard=LOW, Free=LOW이며, 긴급도 플래그가 켜지면 각각 URGENT, HIGH, NORMAL, LOW로 한 단계씩 올라간다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -498,7 +498,12 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례하여 자원을 분배하는 알고리즘이다 [3]. 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 스케줄러는 각 요청의 예상 처리 시간을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례하여 자원을 분배하는 알고리즘이다 [3]. 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 스케줄러는 각 요청의 예상 처리 시간을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다. WFQ는 테넌트 등급별 가중치만을 기준으로 자원을 배분하며, 개별 요청의 긴급도 필드는 사용하지 않는다. 이는 WFQ의 목적이 긴급 요청 우선 처리가 아니라 등급 간 비례적 자원 배분이기 때문이다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
+        }),
+
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '정리하면, Priority는 등급과 긴급도를 조합하여 절대적 순서를 매기는 방식(높은 우선순위가 항상 먼저)이고, WFQ는 등급만을 기준으로 비례적 배분을 수행하는 방식(모든 등급이 가중치 비율대로 서비스)이다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -509,7 +514,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. 측정은 시스템 수준(전체 테넌트 간 공정성)과 테넌트 수준(같은 등급 내 요청 간 공정성)으로 나누어 진행한다. WFQ처럼 등급별로 의도적인 차등 서비스를 제공하는 시스템에서는 전체 테넌트 간 JFI가 낮게 나오는 것이 오히려 정상이다. 따라서 같은 등급 내에서 JFI를 따로 측정하여, 시스템이 설계 의도대로 동작하는지 확인한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. 측정은 시스템 수준(전체 테넌트 간 공정성)과 테넌트 수준(같은 등급 내 요청 간 공정성)으로 나누어 진행한다. WFQ처럼 등급별로 의도적인 차등 서비스를 제공하는 시스템에서는 전체 테넌트 간 JFI가 낮게 나오는 것이 오히려 정상이다. 따라서 같은 등급 내에서 JFI를 따로 측정하여, 시스템이 설계 의도대로 동작하는지 확인한다. 구체적으로, 시스템 수준 JFI에서 xi는 테넌트 i가 전체 시스템에서 처리받은 요청 수이다. FCFS와 MLFQ에서는 이 값이 1에 가까워야 공정한 것이며, WFQ에서는 등급별 가중치에 따라 처리량이 달라지므로 낮게 나오는 것이 정상이다. 테넌트 수준 JFI에서 xi는 같은 등급 내 테넌트 i가 처리받은 요청 수이며, 모든 알고리즘에서 1에 가까워야 같은 등급 내 공정성이 보장된 것이다. 즉, 시스템 수준에서 xi는 가중치를 반영하지 않은 처리 요청 수이므로, 등급별 가중치가 다른 WFQ에서는 JFI가 낮게 나오며, 이는 가중치에 비례한 차등 서비스가 의도대로 동작하고 있음을 의미한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -572,6 +577,44 @@ function createDocument() {
             new TextRun({ text: '공정성(Fairness)', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: ': JFI를 사용하여 자원이 사용자 간에 얼마나 고르게 배분되었는지를 측정한다. 0에서 1 사이의 값이며, 1에 가까울수록 공정하다.', font: 'Arial', size: 22 })
           ]
+        }),
+
+        // ===== 3.6 구현 환경 =====
+        new Paragraph({
+          heading: HeadingLevel.HEADING_2,
+          children: [new TextRun('3.6 구현 환경')]
+        }),
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [new TextRun({ text: '본 시스템은 다음과 같은 환경에서 구현한다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: '서버', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': Node.js 22 LTS, Express.js 4.18 [7][8]', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: 'LLM 백엔드', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': Ollama(로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구) [6]', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: '외부 의존성', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 1개 패키지 (express)', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: 'Node.js와 Express.js는 웹 서버를 구축하기 위한 도구이며, Ollama는 로컬 컴퓨터에서 LLM을 실행하여 외부 API 비용 없이 실험할 수 있게 해준다. 4가지 스케줄링 알고리즘과 Rate Limiter를 모두 구현하여 성능 비교 실험에 활용한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 4. 실험 계획 =====
