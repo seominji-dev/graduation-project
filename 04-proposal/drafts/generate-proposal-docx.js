@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v14.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v21.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -378,6 +378,10 @@ function createDocument() {
           spacing: { after: 120 },
           children: [new TextRun({ text: '본 연구에서 제안하는 시스템은 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 다중 사용자 요청 관리 시스템이다. 표 1은 OS 개념과 LLM 도메인 간의 대응 관계를 정리한 것이다.', font: 'Arial', size: 22 })]
         }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '시스템은 4가지 스케줄링 알고리즘(FCFS, Priority, MLFQ, WFQ)을 구현하고, 동일한 요청 환경에서 각 알고리즘의 성능을 비교한다. FCFS는 다른 알고리즘의 성능을 평가하기 위한 기준(베이스라인)으로 사용한다.', font: 'Arial', size: 22 })]
+        }),
 
         // 표 1
         new Paragraph({
@@ -471,7 +475,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하며 다른 알고리즘과 비교할 때 기준(베이스라인)으로 사용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하며 다른 알고리즘과 비교할 때 기준(베이스라인)으로 사용한다. 본 시스템에서는 도착 시각 기준으로 정렬된 단일 큐를 사용하여, 앞선 요청이 완료되어야 다음 요청이 처리되는 비선점형 방식으로 동작한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -489,7 +493,11 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 피드백 큐(Q0~Q3)를 구현하며, 큐별 타임 퀀텀을 차등 설정한다(Q0: 1,000ms, Q1: 3,000ms, Q2: 8,000ms, Q3: 무제한) [2]. 본 알고리즘은 선점형(Preemptive) 방식으로 동작한다. 즉, 처리 중인 요청의 할당 시간(타임 퀀텀)이 지나면 해당 요청을 잠시 멈추고 다른 요청에게 순서를 넘긴다. 타임 퀀텀을 초과한 요청은 하위 큐로 이동시켜, 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 부스트(Boost)로 모든 요청을 최상위 큐(Q0)로 복귀시켜 기아를 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '본 알고리즘은 선점형(Preemptive) 방식으로 동작한다. 선점형이란, 처리 중인 요청의 할당 시간(타임 퀀텀)이 지나면 해당 요청을 잠시 멈추고 다른 요청에게 순서를 넘기는 방식을 말한다. MLFQ는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2]. 4단계 피드백 큐(Q0~Q3)를 구현하며, 상위 큐일수록 짧은 타임 퀀텀을, 하위 큐일수록 긴 타임 퀀텀을 설정한다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '타임 퀀텀을 초과한 요청은 하위 큐로 이동시켜, 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 부스트(Boost)로 모든 요청을 최상위 큐(Q0)로 복귀시켜 기아를 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -498,7 +506,11 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치(Enterprise: 100, Premium: 50, Standard: 10, Free: 1)에 비례하여 자원을 분배하는 알고리즘이다 [3]. 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 스케줄러는 각 요청의 예상 처리 시간을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다. WFQ는 테넌트 등급별 가중치만을 기준으로 자원을 배분하며, 개별 요청의 긴급도 필드는 사용하지 않는다. 이는 WFQ의 목적이 긴급 요청 우선 처리가 아니라 등급 간 비례적 자원 배분이기 때문이다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 예상 처리 시간을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: 'WFQ는 테넌트 등급별 가중치만을 기준으로 자원을 배분하며, 개별 요청의 긴급도 필드는 사용하지 않는다. 이는 WFQ의 목적이 긴급 요청 우선 처리가 아니라 등급 간 비례적 자원 배분이기 때문이다. WFQ는 가중치 기반으로 자원을 비례 배분하는 구조이므로, Priority의 에이징이나 MLFQ의 부스트와 같은 별도의 기아 방지 장치가 필요하지 않다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -856,7 +868,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v18) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v21) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
