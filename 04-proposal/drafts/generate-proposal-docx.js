@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v22.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v23.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -399,7 +399,7 @@ function createDocument() {
               dataCell('프로세스 (Process)', 2200), dataCell('LLM API 요청', 2400), dataCell('스케줄링의 기본 단위', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('요청 처리 시간', 2400), dataCell('할당되는 자원', 4760)
+              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('LLM 추론 시간', 2400), dataCell('할당되는 자원', 4760)
             ]}),
             new TableRow({ children: [
               dataCell('우선순위 (Priority)', 2200), dataCell('테넌트 등급, 요청 긴급도', 2400), dataCell('처리 순서 결정 기준', 4760)
@@ -475,7 +475,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하며 다른 알고리즘과 비교할 때 기준(베이스라인)으로 사용한다. 본 시스템에서는 도착 시각 기준으로 정렬된 단일 큐를 사용하여, 앞선 요청이 완료되어야 다음 요청이 처리되는 비선점형 방식으로 동작한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '선착순 처리 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하며 다른 알고리즘과 비교할 때 기준(베이스라인)으로 사용한다. 본 시스템에서는 도착 시각 기준으로 정렬된 단일 큐를 사용하여, 앞선 요청이 완료되어야 다음 요청이 처리되는 비선점형(Non-preemptive, 실행 중인 요청을 중단하지 않는) 방식으로 동작한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -506,7 +506,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 비용(Cost)을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 본 시스템에서는 요청 간 비용 차이를 별도로 모델링하지 않고, 모든 요청의 비용을 균일하게 1로 설정한다(Cost = 1). 따라서 ΔVFT = 1 / Weight가 되어, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 비용(Cost)을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 본 시스템에서는 요청 간 비용 차이를 별도로 수학적으로 표현(모델링)하지 않고, 모든 요청의 비용을 균일하게 1로 설정한다(Cost = 1). 따라서 ΔVFT = 1 / Weight가 되어, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -531,7 +531,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS, Priority, MLFQ에서는 1에 가까울수록 공정하다. 반면 WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. 이 경우 낮은 JFI는 불공정이 아니라, 가중치 기반 차등 서비스가 설계대로 동작하고 있음을 의미한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS와 MLFQ에서는 등급과 무관하게 요청을 처리하므로 1에 가까울수록 공정하다. Priority에서는 에이징이 기아를 방지하지만, 높은 등급의 요청이 먼저 처리되므로 실험 시간 내에 등급별 처리량 차이가 발생할 수 있어, 시스템 수준 JFI가 1보다 낮을 수 있다. WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. Priority와 WFQ 모두 시스템 수준 JFI가 낮게 나올 수 있으나, 그 원인은 다르다. Priority는 처리 순서의 차이에서, WFQ는 가중치 기반 비례 배분에서 비롯된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -637,10 +637,10 @@ function createDocument() {
           children: [new TextRun({ text: 'Node.js와 Express.js는 웹 서버를 구축하기 위한 도구이며, Ollama는 로컬 컴퓨터에서 LLM을 실행하여 외부 API 비용 없이 실험할 수 있게 해준다. 4가지 스케줄링 알고리즘과 Rate Limiter를 모두 구현하여 성능 비교 실험에 활용한다.', font: 'Arial', size: 22 })]
         }),
 
-        // ===== 4. 실험 계획 =====
+        // ===== 4. 실험 계획 및 연구 일정 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
-          children: [new TextRun('4. 실험 계획')]
+          children: [new TextRun('4. 실험 계획 및 연구 일정')]
         }),
 
         new Paragraph({
@@ -671,14 +671,6 @@ function createDocument() {
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 40 },
           children: [
-            new TextRun({ text: '요청 간 지연', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 50~500ms 범위에서 다양하게 설정하여 실제 서비스 환경에 가깝게 구성한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
             new TextRun({ text: 'LLM 모델', bold: true, font: 'Arial', size: 22 }),
             new TextRun({ text: ': Ollama에서 실행 가능한 경량 모델(llama3, gemma 등)을 사용하여 로컬 환경에서 실험한다.', font: 'Arial', size: 22 })
           ]
@@ -688,7 +680,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '변인 통제', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행한다. Rate Limiter를 포함한 시스템 과부하 방지 테스트는 별도로 진행할 예정이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행한다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -731,52 +723,19 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성)를 4가지 알고리즘 모두에 동일하게 적용하여 비교한다. 공정성은 시스템 수준(전체 테넌트 간 JFI)과 테넌트 수준(같은 등급 내 JFI)으로 나누어 측정한다. 실험 결과는 알고리즘별로 대기시간 분포, 처리량 추이, JFI 변화를 표와 그래프로 정리하여 비교한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성)를 4가지 알고리즘 모두에 동일하게 적용하여 비교한다. 공정성은 시스템 수준(전체 테넌트 간 JFI)과 테넌트 수준(같은 등급 내 JFI)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
         }),
 
-        // ===== 5. 연구 일정 =====
+        // ===== 4.4 연구 일정 =====
         new Paragraph({
-          heading: HeadingLevel.HEADING_1,
-          children: [new TextRun('5. 연구 일정')]
+          heading: HeadingLevel.HEADING_2,
+          children: [new TextRun('4.4 연구 일정')]
         }),
         new Paragraph({
           spacing: { after: 60 },
-          children: [new TextRun({ text: '26-1학기에는 다음과 같은 활동을 진행한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '26-1학기에는 시스템 구현, 성능 비교 실험, 관련연구 추가 조사, 결과 정리를 진행한다.', font: 'Arial', size: 22 })]
         }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '시스템 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 제안 시스템의 4가지 스케줄링 알고리즘과 Rate Limiter를 구현한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '성능 비교 실험', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4.1~4.2절에서 설계한 조건과 시나리오에 따라 알고리즘별 대기시간, 처리량, 공정성을 비교한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '관련연구 조사', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': LLM 서빙 분야의 스케줄링 기법을 더 찾아보고, 본 연구와 다른 점을 정리한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'future-plans', level: 0 },
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '결과 정리', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 실험 결과와 아키텍처 설계를 문서로 정리하여 보고서에 포함한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-
-        // 표 3
+        // 표 2
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 60 },
