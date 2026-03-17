@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v21.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v22.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 처리받은 요청 수이며, n은 테넌트 수이다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. 본 시스템에서는 스케줄러가 요청 단위로 동작하므로, xi를 처리 완료된 요청 수로 정의한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -399,7 +399,7 @@ function createDocument() {
               dataCell('프로세스 (Process)', 2200), dataCell('LLM API 요청', 2400), dataCell('스케줄링의 기본 단위', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('API 호출 허용량', 2400), dataCell('할당되는 자원', 4760)
+              dataCell('CPU 시간 (CPU Time)', 2200), dataCell('요청 처리 시간', 2400), dataCell('할당되는 자원', 4760)
             ]}),
             new TableRow({ children: [
               dataCell('우선순위 (Priority)', 2200), dataCell('테넌트 등급, 요청 긴급도', 2400), dataCell('처리 순서 결정 기준', 4760)
@@ -506,7 +506,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 예상 처리 시간을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 즉, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 비용(Cost)을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 본 시스템에서는 요청 간 비용 차이를 별도로 모델링하지 않고, 모든 요청의 비용을 균일하게 1로 설정한다(Cost = 1). 따라서 ΔVFT = 1 / Weight가 되어, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -526,12 +526,16 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. 측정은 시스템 수준(전체 테넌트 간 공정성)과 테넌트 수준(같은 등급 내 요청 간 공정성)으로 나누어 진행한다. WFQ처럼 등급별로 의도적인 차등 서비스를 제공하는 시스템에서는 전체 테넌트 간 JFI가 낮게 나오는 것이 오히려 정상이다. 따라서 같은 등급 내에서 JFI를 따로 측정하여, 시스템이 설계 의도대로 동작하는지 확인한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '2.3절에서 정의한 JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교한다. 공정성은 두 가지 수준으로 나누어 측정한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '구체적으로, 시스템 수준 JFI에서 xi는 테넌트 i가 전체 시스템에서 처리받은 요청 수이다. FCFS와 MLFQ에서는 이 값이 1에 가까워야 공정한 것이며, WFQ에서는 등급별 가중치에 따라 처리량이 달라지므로 낮게 나오는 것이 정상이다. 테넌트 수준 JFI에서 xi는 같은 등급 내 테넌트 i가 처리받은 요청 수이며, 모든 알고리즘에서 1에 가까워야 같은 등급 내 공정성이 보장된 것이다. 즉, 시스템 수준에서 xi는 가중치를 반영하지 않은 처리 요청 수이므로, 등급별 가중치가 다른 WFQ에서는 JFI가 낮게 나오며, 이는 가중치에 비례한 차등 서비스가 의도대로 동작하고 있음을 의미한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS, Priority, MLFQ에서는 1에 가까울수록 공정하다. 반면 WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. 이 경우 낮은 JFI는 불공정이 아니라, 가중치 기반 차등 서비스가 설계대로 동작하고 있음을 의미한다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '테넌트 수준 JFI: 같은 등급 내 테넌트만을 대상으로 xi = 해당 등급 내 테넌트 i의 처리 완료 요청 수로 측정한다. 같은 등급의 테넌트끼리 공정하게 서비스를 받았는지를 평가하며, 모든 알고리즘에서 1에 가까워야 한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -544,7 +548,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Rate Limiter (속도 제한): ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다 [3]. 토큰 버킷이란, 일정 시간마다 토큰(요청 권한)이 생기고, 요청할 때마다 토큰을 하나씩 쓰는 방식이다. 토큰이 없으면 요청이 거부된다. 스케줄링 알고리즘과는 별도로, 요청이 스케줄러에 도달하기 전 단계에서 시스템 과부하를 방지하는 보조 기능이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '토큰 버킷(Token Bucket) 알고리즘으로 테넌트별 요청 빈도를 제한한다 [3]. 토큰 버킷이란, 일정 시간마다 버킷 토큰(요청 허가 단위)이 생성되고, 요청 1건마다 버킷 토큰을 하나 소비하여 요청 빈도를 제한하는 방식이다. 여기서 \'버킷 토큰\'은 요청 허가를 나타내는 개념으로, LLM이 처리하는 언어 토큰과는 다른 개념이다. 버킷 토큰이 없으면 요청이 거부된다. 스케줄링 알고리즘과는 별도로, 요청이 스케줄러에 도달하기 전 단계에서 시스템 과부하를 방지하는 보조 기능이다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -583,7 +587,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '처리량(Throughput)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 단위 시간당 처리 완료되는 요청의 수(req/s)이다. 시스템이 얼마나 효율적으로 요청을 소화하는지를 나타낸다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 단위 시간당 처리 완료되는 요청의 수(req/s)이다. 부가 지표로 단위 시간당 생성된 토큰 수(tokens/s)도 함께 기록한다. 시스템이 얼마나 효율적으로 요청을 소화하는지를 나타낸다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -868,7 +872,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v21) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v22) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
