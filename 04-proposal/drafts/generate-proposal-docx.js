@@ -250,7 +250,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '4가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링: 요청 패턴을 관찰하여 자원 독점을 방지), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), 다단계 피드백 큐(Multi-Level Feedback Queue, MLFQ; 요청 패턴을 관찰하여 자원 독점을 방지하는 적응형 스케줄링), 가중 공정 큐잉(Weighted Fair Queuing, WFQ; 등급별 비례 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -288,7 +288,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'FCFS(First-Come, First-Served)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 가장 단순한 스케줄링 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하나 호위 효과가 발생하는 단점이 있다 [1][9].', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 가장 단순한 스케줄링 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하나 호위 효과(Convoy Effect, 처리 시간이 긴 요청이 뒤따르는 짧은 요청들의 처리를 지연시키는 현상)가 발생하는 단점이 있다 [1][9].', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -309,7 +309,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3][11]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 만든 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3][11]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 근사하여 구현한 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -501,7 +501,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '이를 통해 긴 응답을 유발하는 요청 패턴을 가진 테넌트의 후속 요청이 낮은 우선순위로 처리되어, 짧은 응답의 요청을 보내는 테넌트가 먼저 서비스를 받을 수 있다. 이 방식은 OS MLFQ의 핵심 원리인 \'실행 특성 관찰을 통한 동적 우선순위 조정\'을 유지하면서, LLM 추론을 중단할 수 없는 제약에 맞게 적응(adaptation)한 것이다. 다만, 피드백이 개별 요청이 아닌 테넌트 단위로 적용되므로, 한 테넌트가 긴 요청과 짧은 요청을 번갈아 보내는 경우 짧은 요청이 불필요하게 하위 큐에 배치될 수 있다. 주기적 부스트(Boost)가 이 문제를 완화하며, 부스트 주기를 조정하여 피드백의 지속 시간을 제어할 수 있다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '이를 통해 긴 응답을 유발하는 요청 패턴을 가진 테넌트의 후속 요청이 낮은 우선순위로 처리되어, 짧은 응답의 요청을 보내는 테넌트가 먼저 서비스를 받게 된다. 이 방식은 OS MLFQ의 핵심 원리인 \'실행 특성 관찰을 통한 동적 우선순위 조정\'을 유지하면서, LLM 추론을 중단할 수 없는 제약에 맞게 적응(adaptation)한 것이다. 다만, 피드백이 개별 요청이 아닌 테넌트 단위로 적용되므로, 한 테넌트가 긴 요청과 짧은 요청을 번갈아 보내는 경우 짧은 요청이 불필요하게 하위 큐에 배치될 수 있다. 주기적 부스트(Boost)가 이 문제를 완화하며, 부스트 주기를 조정하여 피드백의 지속 시간을 제어한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
