@@ -230,7 +230,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '현재 대부분의 LLM 서비스는 선착순(First-Come, First-Served, FCFS) 처리 방식이나 단순 속도 제한(Rate Limiting)에 의존하고 있다. 이러한 방식은 다음과 같은 한계를 가진다. 첫째, 긴 요청이 뒤따르는 짧은 요청들의 처리를 지연시키는 호위 효과(Convoy Effect)가 발생한다. 둘째, 긴급한 요청도 도착 순서를 기다려야 하며, 사용자 등급에 따른 차등 서비스 제공이 불가능하다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '현재 대부분의 LLM 서비스는 선착순(First-Come, First-Served, FCFS) 처리 방식이나 단순 속도 제한(Rate Limiting)에 의존하고 있다. 이러한 방식은 다음과 같은 한계를 가진다. 첫째, 긴급한 요청도 도착 순서를 기다려야 하므로 시간에 민감한 요청의 빠른 처리가 불가능하다. 둘째, 사용자 등급에 따른 차등 서비스를 제공할 수 없어, 높은 등급의 테넌트와 무료 사용자가 동일한 대기 조건을 갖게 된다. 셋째, 자원이 테넌트 간에 공정하게 배분되고 있는지 측정하거나 보장할 수단이 없다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -250,7 +250,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '4가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링: 요청 패턴을 학습하여 자원 독점을 방지), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -302,7 +302,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ(Multi-Level Feedback Queue)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 할당된 시간(타임 퀀텀)을 초과한 긴 작업은 점차 하위 큐로 이동한다. 타임 퀀텀(Time Quantum)이란, 각 작업에 주어지는 최대 실행 시간으로, 이 시간이 지나면 다음 작업에게 순서를 양보해야 한다 [2][10].', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 할당된 시간(타임 퀀텀)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. 본 시스템에서는 스케줄러가 요청 단위로 동작하므로, xi를 처리 완료된 요청 수로 정의한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. LLM 요청은 처리 전에 응답 길이를 예측할 수 없으므로, 토큰 수 기반의 자원량 측정이 어렵다. 본 시스템에서는 스케줄러가 요청 단위로 동작하는 점을 고려하여, xi를 측정 구간 동안 테넌트 i가 처리 완료한 요청 수로 정의한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -408,7 +408,7 @@ function createDocument() {
               dataCell('스케줄링 알고리즘', 2200), dataCell('요청 처리 순서 결정', 2400), dataCell('자원 배분 정책', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('선점 (Preemption)', 2200), dataCell('요청 중단 및 큐 이동', 2400), dataCell('긴 요청 제어 방법', 4760)
+              dataCell('타임 퀀텀 초과 시 강등', 2200), dataCell('완료 시간 기반 큐 재배치', 2400), dataCell('LLM 추론은 중단 불가하므로 완료 후 피드백으로 적응', 4760)
             ]})
           ]
         }),
@@ -493,11 +493,15 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 알고리즘은 선점형(Preemptive) 방식으로 동작한다. 선점형이란, 처리 중인 요청의 할당 시간(타임 퀀텀)이 지나면 해당 요청을 잠시 멈추고 다른 요청에게 순서를 넘기는 방식을 말한다. MLFQ는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2]. 4단계 피드백 큐(Q0~Q3)를 구현하며, 상위 큐일수록 짧은 타임 퀀텀을, 하위 큐일수록 긴 타임 퀀텀을 설정한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: 'MLFQ는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2]. OS에서 MLFQ는 타임 퀀텀을 초과한 프로세스를 중단(선점)하고 하위 큐로 강등시키는 방식으로 동작한다. 그러나 LLM 추론은 한번 시작되면 완료될 때까지 중단할 수 없다(Ollama는 요청 처리 중 선점을 지원하지 않음). 따라서 본 시스템에서는 비선점형(Non-preemptive) MLFQ로 적응시켜 구현한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '타임 퀀텀을 초과한 요청은 하위 큐로 이동시켜, 짧은 요청이 긴 요청에 의해 지연되는 것을 방지한다. 주기적 부스트(Boost)로 모든 요청을 최상위 큐(Q0)로 복귀시켜 기아를 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '구체적으로, 4단계 피드백 큐(Q0~Q3)를 구현하되, 피드백을 요청 처리 중(intra-request)이 아닌 요청 간(inter-request)으로 적용한다. 새로운 요청은 최상위 큐(Q0)에 진입한다. 요청이 완료된 후, 실제 처리 시간이 해당 큐의 시간 임계값을 초과한 경우, 해당 테넌트의 다음 요청을 하위 큐에 배치한다. 스케줄러는 항상 가장 높은 우선순위 큐(Q0)부터 요청을 꺼내어 처리한다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '이를 통해 긴 응답을 유발하는 요청 패턴을 가진 테넌트의 후속 요청이 낮은 우선순위로 처리되어, 짧은 응답의 요청을 보내는 테넌트가 먼저 서비스를 받을 수 있다. 이 방식은 OS MLFQ의 핵심 원리인 \'실행 특성 관찰을 통한 동적 우선순위 조정\'을 유지하면서, LLM 추론을 중단할 수 없는 제약에 맞게 적응(adaptation)한 것이다. 다만, 피드백이 개별 요청이 아닌 테넌트 단위로 적용되므로, 한 테넌트가 긴 요청과 짧은 요청을 번갈아 보내는 경우 짧은 요청이 불필요하게 하위 큐에 배치될 수 있다. 주기적 부스트(Boost)가 이 문제를 완화하며, 부스트 주기를 조정하여 피드백의 지속 시간을 제어할 수 있다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -506,7 +510,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 비용(Cost)을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. 본 시스템에서는 요청 간 비용 차이를 별도로 수학적으로 표현(모델링)하지 않고, 모든 요청의 비용을 균일하게 1로 설정한다(Cost = 1). 따라서 ΔVFT = 1 / Weight가 되어, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '테넌트 등급별 가중치에 비례하여 자원을 분배하는 알고리즘이다 [3]. 2.1절에서 설명한 GPS의 이상적 모델을 개별 요청 단위로 구현한 것이 WFQ이며, 본 시스템에서는 네트워크의 흐름(flow) 개념을 테넌트 등급별 가중치로 치환하여 적용한다. 등급이 높은 테넌트에 큰 가중치를, 낮은 등급에 작은 가중치를 부여한다(Enterprise=100, Premium=50, Standard=10, Free=1). 스케줄러는 각 요청의 비용(Cost)을 테넌트의 가중치로 나눈 값(ΔVFT = Cost / Weight)을 누적하여 가상 종료 시각(Virtual Finish Time, VFT)을 산출한다. LLM 요청은 처리 전에 응답 길이를 예측할 수 없으므로, 요청 간 비용 차이를 사전에 산정할 수 없다. 따라서 본 시스템에서는 모든 요청의 비용을 균일하게 1로 설정한다(Cost = 1). 따라서 ΔVFT = 1 / Weight가 되어, 가중치가 높은 테넌트의 요청일수록 VFT의 증가폭이 작게 계산되므로, 가장 작은 VFT를 가진 요청이 우선적으로 스케줄링된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -831,7 +835,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v22) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v24) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
