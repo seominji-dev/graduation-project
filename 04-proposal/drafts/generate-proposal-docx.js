@@ -302,14 +302,14 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ(Multi-Level Feedback Queue)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 할당된 시간(타임 퀀텀)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 할당된 시간(타임 퀀텀)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive, 실행 중인 작업을 중단할 수 있는 방식)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3][11]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 근사하여 구현한 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3][11]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 만든 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -426,7 +426,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: '클라이언트 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': REST(웹 통신 규약) API를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': REST(웹 API 설계 방식) API를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -484,7 +484,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급을 기준으로 결정하되, 요청 헤더의 긴급도 플래그가 설정된 경우 우선순위를 한 단계 상승시킨다. 기본 매핑은 Enterprise=HIGH, Premium=NORMAL, Standard=LOW, Free=LOW이며, 긴급도 플래그가 켜지면 각각 URGENT, HIGH, NORMAL, LOW로 한 단계씩 올라간다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급을 기준으로 결정하되, 요청 헤더의 긴급도 플래그가 설정된 경우 우선순위를 한 단계 상승시킨다. 기본 매핑은 Enterprise=HIGH, Premium=NORMAL, Standard=LOW, Free=LOW이며, 긴급도 플래그가 켜지면 Enterprise/Premium/Standard는 각각 URGENT, HIGH, NORMAL로 한 단계씩 올라간다. Free 등급은 긴급도 플래그와 무관하게 LOW를 유지한다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
