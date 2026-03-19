@@ -250,7 +250,7 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '4가지 스케줄링 알고리즘 구현', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링: 요청 패턴을 학습하여 자원 독점을 방지), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), MLFQ(적응형 스케줄링: 요청 패턴을 관찰하여 자원 독점을 방지), WFQ(공정 배분)를 LLM API 환경에 맞게 구현한다. 추가로, 시스템 과부하를 방지하기 위한 Rate Limiter(속도 제한)를 보조 기능으로 구현한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -497,7 +497,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '구체적으로, 4단계 피드백 큐(Q0~Q3)를 구현하되, 피드백을 요청 처리 중(intra-request)이 아닌 요청 간(inter-request)으로 적용한다. 새로운 요청은 최상위 큐(Q0)에 진입한다. 요청이 완료된 후, 실제 처리 시간이 해당 큐의 시간 임계값을 초과한 경우, 해당 테넌트의 다음 요청을 하위 큐에 배치한다. 스케줄러는 항상 가장 높은 우선순위 큐(Q0)부터 요청을 꺼내어 처리한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '구체적으로, 4단계 피드백 큐(Q0~Q3)를 구현하되, 피드백을 요청 처리 중(intra-request)이 아닌 요청 간(inter-request)으로 적용한다. 새로운 요청은 최상위 큐(Q0)에 진입한다. 요청이 완료된 후, 실제 처리 시간이 해당 큐의 시간 임계값을 초과한 경우, 해당 테넌트의 다음 요청을 하위 큐에 배치한다. 초과하지 않은 경우에는 동일한 큐에 유지한다. 스케줄러는 항상 가장 높은 우선순위 큐(Q0)부터 요청을 꺼내어 처리한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -535,7 +535,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS와 MLFQ에서는 등급과 무관하게 요청을 처리하므로 1에 가까울수록 공정하다. Priority에서는 에이징이 기아를 방지하지만, 높은 등급의 요청이 먼저 처리되므로 실험 시간 내에 등급별 처리량 차이가 발생할 수 있어, 시스템 수준 JFI가 1보다 낮을 수 있다. WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. Priority와 WFQ 모두 시스템 수준 JFI가 낮게 나올 수 있으나, 그 원인은 다르다. Priority는 처리 순서의 차이에서, WFQ는 가중치 기반 비례 배분에서 비롯된다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS에서는 등급과 무관하게 도착 순서대로 처리하므로, 시스템 수준 JFI가 1에 가까울수록 공정하다. MLFQ는 등급이 아닌 요청 행동 패턴에 따라 큐를 조정하므로, 행동 차이가 큰 경우 시스템 수준 JFI가 낮아질 수 있다. Priority에서는 에이징이 기아를 방지하지만, 높은 등급의 요청이 먼저 처리되므로 실험 시간 내에 등급별 처리량 차이가 발생할 수 있어, 시스템 수준 JFI가 1보다 낮을 수 있다. WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. Priority와 WFQ 모두 시스템 수준 JFI가 낮게 나올 수 있으나, 그 원인은 다르다. Priority는 처리 순서의 차이에서, WFQ는 가중치 기반 비례 배분에서 비롯된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
