@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v23.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v24.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -302,14 +302,14 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ(Multi-Level Feedback Queue)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 할당된 시간(타임 퀀텀)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive, 실행 중인 작업을 중단할 수 있는 방식)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 타임 퀀텀(Time Quantum, 한 번에 할당되는 최대 실행 시간)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive, 실행 중인 작업을 중단할 수 있는 방식)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다 [3][11]. GPS(Generalized Processor Sharing)는 자원을 무한히 분할하여 완벽히 공평하게 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 만든 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다 [3][11]. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다. GPS(Generalized Processor Sharing)는 자원을 가중치에 비례하여 동시에 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 구현한 실용적인 스케줄링 기법이다.', font: 'Arial', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -361,7 +361,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. LLM 요청은 처리 전에 응답 길이를 예측할 수 없으므로, 토큰 수 기반의 자원량 측정이 어렵다. 본 시스템에서는 스케줄러가 요청 단위로 동작하는 점을 고려하여, xi를 측정 구간 동안 테넌트 i가 처리 완료한 요청 수로 정의한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. 본 시스템에서는 스케줄러가 각 요청을 동일한 비용으로 취급하고 요청 단위로 동작하므로, 스케줄링 기준과 측정 기준을 일치시키기 위해 xi를 측정 구간 동안 테넌트 i가 처리 완료한 요청 수로 정의한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -484,7 +484,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급을 기준으로 결정하되, 요청 헤더의 긴급도 플래그가 설정된 경우 우선순위를 한 단계 상승시킨다. 기본 매핑은 Enterprise=HIGH, Premium=NORMAL, Standard=LOW, Free=LOW이며, 긴급도 플래그가 켜지면 Enterprise/Premium/Standard는 각각 URGENT, HIGH, NORMAL로 한 단계씩 올라간다. Free 등급은 긴급도 플래그와 무관하게 LOW를 유지한다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '4단계 우선순위(URGENT > HIGH > NORMAL > LOW)를 지원한다 [1]. 요청의 우선순위는 API 계층에서 테넌트 등급과 긴급도 플래그를 조합하여 결정한다. 기본 매핑은 Enterprise=HIGH, Premium=NORMAL, Standard=LOW, Free=LOW이며, 긴급도 플래그가 켜지면 Enterprise/Premium/Standard는 각각 URGENT, HIGH, NORMAL로 한 단계씩 올라간다. Free 등급은 긴급도 플래그가 설정되어 있더라도 API 계층에서 이를 무시하여 항상 LOW를 유지한다. 에이징(Aging)을 통해, 대기 시간이 일정 시간을 넘으면 요청의 우선순위가 자동으로 한 단계 올라가서 기아 현상을 방지한다.', font: 'Arial', size: 22 })]
         }),
 
         new Paragraph({
@@ -497,7 +497,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '구체적으로, 4단계 피드백 큐(Q0~Q3)를 구현하되, 피드백을 요청 처리 중(intra-request)이 아닌 요청 간(inter-request)으로 적용한다. 새로운 요청은 최상위 큐(Q0)에 진입한다. 요청이 완료된 후, 실제 처리 시간이 해당 큐의 시간 임계값을 초과한 경우, 해당 테넌트의 다음 요청을 하위 큐에 배치한다. 초과하지 않은 경우에는 동일한 큐에 유지한다. 스케줄러는 항상 가장 높은 우선순위 큐(Q0)부터 요청을 꺼내어 처리한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '구체적으로, 4단계 피드백 큐(Q0~Q3)를 구현하되, 피드백을 요청 처리 중(intra-request)이 아닌 요청 간(inter-request)으로 적용한다. 테넌트의 첫 요청 또는 부스트 이후 첫 요청은 최상위 큐(Q0)에 진입한다. 요청이 완료된 후, 실제 처리 시간이 해당 큐의 시간 임계값을 초과한 경우, 해당 테넌트의 다음 요청을 하위 큐에 배치한다. 초과하지 않은 경우에는 동일한 큐에 유지한다. 스케줄러는 항상 가장 높은 우선순위 큐(Q0)부터 요청을 꺼내어 처리한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -535,7 +535,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS에서는 등급과 무관하게 도착 순서대로 처리하므로, 시스템 수준 JFI가 1에 가까울수록 공정하다. MLFQ는 등급이 아닌 요청 행동 패턴에 따라 큐를 조정하므로, 행동 차이가 큰 경우 시스템 수준 JFI가 낮아질 수 있다. Priority에서는 에이징이 기아를 방지하지만, 높은 등급의 요청이 먼저 처리되므로 실험 시간 내에 등급별 처리량 차이가 발생할 수 있어, 시스템 수준 JFI가 1보다 낮을 수 있다. WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. Priority와 WFQ 모두 시스템 수준 JFI가 낮게 나올 수 있으나, 그 원인은 다르다. Priority는 처리 순서의 차이에서, WFQ는 가중치 기반 비례 배분에서 비롯된다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '시스템 수준 JFI: 전체 테넌트를 대상으로 xi = 테넌트 i의 처리 완료 요청 수로 측정한다. 모든 테넌트가 동일한 수의 요청을 처리받았는지를 평가한다. FCFS에서는 등급과 무관하게 도착 순서대로 처리하므로, 각 테넌트가 동일한 수의 요청을 보내는 조건에서 시스템 수준 JFI가 1에 가깝다. MLFQ는 요청 행동 패턴에 따라 큐를 조정하므로, 하위 큐로 강등된 테넌트는 처리 횟수가 줄어들 수 있어 시스템 수준 JFI가 낮아질 수 있다. Priority에서는 에이징이 기아를 방지하지만, 높은 등급의 요청이 먼저 처리되므로 실험 시간 내에 등급별 처리량 차이가 발생할 수 있어, 시스템 수준 JFI가 1보다 낮을 수 있다. WFQ는 등급별 가중치에 비례하여 의도적으로 차등 배분하므로, 시스템 수준 JFI가 1보다 낮게 나오는 것이 정상이다. WFQ의 비례 배분이 의도대로 작동하는지는, 각 테넌트의 처리량을 해당 등급의 가중치로 나눈 정규화 값(xi / wi)에 JFI를 적용한 가중치 정규화 JFI로 검증한다. 이 값이 1에 가까우면 가중치 비율대로 공정하게 배분된 것이다. Priority와 WFQ 모두 시스템 수준 JFI가 낮게 나올 수 있으나, 그 원인은 다르다. Priority는 처리 순서의 차이에서, WFQ는 가중치 기반 비례 배분에서 비롯된다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -545,7 +545,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '기아 방지: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'Priority 스케줄러의 에이징과 MLFQ 스케줄러의 부스트를 통해 낮은 우선순위 요청이 끝없이 기다리는 것을 방지한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'Priority 스케줄러의 에이징과 MLFQ 스케줄러의 부스트를 통해 낮은 우선순위 요청이 끝없이 기다리는 것을 방지한다. 에이징은 개별 요청의 대기 시간에 따라 우선순위를 점진적으로 높이므로, 고정된 우선순위로 처리 순서를 결정하는 Priority에 적합하다. 부스트는 모든 테넌트를 주기적으로 최상위 큐로 복귀시키므로, 누적된 행동 피드백으로 테넌트를 강등시키는 MLFQ에 적합하다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -591,15 +591,23 @@ function createDocument() {
           spacing: { after: 60 },
           children: [
             new TextRun({ text: '처리량(Throughput)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 단위 시간당 처리 완료되는 요청의 수(req/s)이다. 부가 지표로 단위 시간당 생성된 토큰 수(tokens/s)도 함께 기록한다. 시스템이 얼마나 효율적으로 요청을 소화하는지를 나타낸다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 단위 시간당 처리 완료되는 요청의 수(req/s)이다. 시스템이 얼마나 효율적으로 요청을 소화하는지를 나타낸다.', font: 'Arial', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'performance-metrics', level: 0 },
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: '공정성(Fairness)', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': JFI를 사용하여 자원이 사용자 간에 얼마나 고르게 배분되었는지를 측정한다. 0에서 1 사이의 값이며, 1에 가까울수록 공정하다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'performance-metrics', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '공정성(Fairness)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': JFI를 사용하여 자원이 사용자 간에 얼마나 고르게 배분되었는지를 측정한다. 0에서 1 사이의 값이며, 1에 가까울수록 공정하다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '생성 속도(Generation Speed)', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 단위 시간당 LLM이 생성한 출력 토큰 수(tokens/s)이다. LLM 백엔드가 얼마나 많은 텍스트를 생성했는지를 나타내며, 처리량(req/s)과는 독립적인 지표이다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -625,7 +633,7 @@ function createDocument() {
           spacing: { after: 40 },
           children: [
             new TextRun({ text: 'LLM 백엔드', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Ollama(로컬 환경에서 LLM을 간편하게 실행할 수 있는 도구) [6]', font: 'Arial', size: 22 })
+            new TextRun({ text: ': Ollama [6]', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
@@ -638,7 +646,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'Node.js와 Express.js는 웹 서버를 구축하기 위한 도구이며, Ollama는 로컬 컴퓨터에서 LLM을 실행하여 외부 API 비용 없이 실험할 수 있게 해준다. 4가지 스케줄링 알고리즘과 Rate Limiter를 모두 구현하여 성능 비교 실험에 활용한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: 'Node.js와 Express.js는 웹 서버를 구축하기 위한 도구이며, Ollama는 로컬 컴퓨터에서 LLM을 실행하여 외부 API 비용 없이 실험할 수 있게 해준다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 4. 실험 계획 및 연구 일정 =====
@@ -684,7 +692,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: '변인 통제', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: ': 4가지 스케줄링 알고리즘 간의 순수 성능 비교가 목적이므로, 전처리 모듈인 Rate Limiter는 비활성화한 상태에서 진행한다. 또한, 공정성 지표의 비교 기준을 통일하기 위해 각 테넌트는 동일한 수의 요청을 생성하도록 통제한다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -727,7 +735,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성)를 4가지 알고리즘 모두에 동일하게 적용하여 비교한다. 공정성은 시스템 수준(전체 테넌트 간 JFI)과 테넌트 수준(같은 등급 내 JFI)으로 나누어 측정한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성, 생성 속도)를 4가지 알고리즘 모두에 동일하게 적용하여 비교한다. 공정성은 시스템 수준(전체 테넌트 간 JFI), 테넌트 수준(같은 등급 내 JFI), 그리고 WFQ의 가중치 비례 배분 검증을 위한 가중치 정규화 JFI로 나누어 측정한다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 4.4 연구 일정 =====
