@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v25.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v26.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -95,30 +95,6 @@ function createDocument() {
       config: [
         {
           reference: 'research-goals',
-          levels: [{
-            level: 0, format: LevelFormat.DECIMAL, text: '%1.',
-            alignment: AlignmentType.LEFT,
-            style: { paragraph: { indent: { left: 720, hanging: 360 } } }
-          }]
-        },
-        {
-          reference: 'future-plans',
-          levels: [{
-            level: 0, format: LevelFormat.DECIMAL, text: '%1.',
-            alignment: AlignmentType.LEFT,
-            style: { paragraph: { indent: { left: 720, hanging: 360 } } }
-          }]
-        },
-        {
-          reference: 'architecture-layers',
-          levels: [{
-            level: 0, format: LevelFormat.DECIMAL, text: '%1.',
-            alignment: AlignmentType.LEFT,
-            style: { paragraph: { indent: { left: 720, hanging: 360 } } }
-          }]
-        },
-        {
-          reference: 'performance-metrics',
           levels: [{
             level: 0, format: LevelFormat.DECIMAL, text: '%1.',
             alignment: AlignmentType.LEFT,
@@ -239,7 +215,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '운영체제의 프로세스 스케줄링 알고리즘은 CPU 자원을 여러 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1][9]. 본 연구는 이 이론을 LLM API 요청 관리에 활용할 수 있는지 확인하고자 한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '운영체제의 프로세스 스케줄링 알고리즘은 CPU 자원을 여러 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1][9]. 본 연구는 이 이론을 LLM API 요청 관리에 활용할 수 있는지 탐구하고자 한다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 60 },
@@ -249,24 +225,24 @@ function createDocument() {
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '4가지 스케줄링 알고리즘 적용', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': FCFS(기준 알고리즘), Priority Scheduling(긴급 요청 우선), 다단계 피드백 큐(Multi-Level Feedback Queue, MLFQ; 요청 패턴을 관찰하여 자원 독점을 방지하는 적응형 스케줄링), 가중 공정 큐잉(Weighted Fair Queuing, WFQ; 등급별 비례 배분)을 LLM API 환경에 맞게 구현하고자 한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: 'OS 스케줄링 알고리즘의 LLM 환경 적용', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 대표적인 OS 스케줄링 알고리즘들을 LLM API 환경에 맞게 적용하는 방안을 탐구하고자 한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '알고리즘별 성능 비교', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘을 같은 조건에서 대기시간, 처리량, 공정성 기준으로 비교하고자 한다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '알고리즘 간 성능 비교', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 여러 스케줄링 알고리즘을 동일한 조건에서 대기시간, 처리량, 공정성 등의 기준으로 비교하고자 한다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '공정성 측정', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Jain\'s Fairness Index(JFI)를 활용하여 다중 사용자 환경의 공정성을 측정하고자 한다. JFI는 자원이 얼마나 고르게 나뉘었는지를 0에서 1 사이 점수로 나타내는 지표이다.', font: 'Arial', size: 22 })
+            new TextRun({ text: '공정성 측정 방법 탐구', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': Jain\'s Fairness Index(JFI) 등의 공정성 지표를 활용하여 다중 사용자 환경에서 자원 배분의 공정성을 측정하는 방법을 탐구하고자 한다.', font: 'Arial', size: 22 })
           ]
         }),
 
@@ -361,7 +337,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 측정 구간 동안 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다. 본 시스템에서는 스케줄러가 각 요청을 동일한 비용으로 취급하고 요청 단위로 동작하므로, 스케줄링 기준과 측정 기준을 일치시키기 위해 xi를 측정 구간 동안 테넌트 i가 처리 완료한 요청 수로 정의한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다.', font: 'Arial', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -377,10 +353,6 @@ function createDocument() {
         new Paragraph({
           spacing: { after: 120 },
           children: [new TextRun({ text: '본 연구에서 제안하는 시스템은 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 다중 사용자 요청 관리 시스템이다. 표 1은 OS 개념과 LLM 도메인 간의 대응 관계를 정리한 것이다.', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템은 4가지 스케줄링 알고리즘(FCFS, Priority, MLFQ, WFQ)을 구현하여 동일한 요청 환경에서 각 알고리즘의 성능을 비교할 계획이다. FCFS는 다른 알고리즘의 성능을 평가하기 위한 기준(베이스라인)으로 사용할 예정이다.', font: 'Arial', size: 22 })]
         }),
 
         // 표 1
@@ -406,293 +378,84 @@ function createDocument() {
             ]}),
             new TableRow({ children: [
               dataCell('스케줄링 알고리즘', 2200), dataCell('요청 처리 순서 결정', 2400), dataCell('자원 배분 정책', 4760)
-            ]}),
-            new TableRow({ children: [
-              dataCell('타임 퀀텀 초과 시 강등', 2200), dataCell('완료 시간 기반 큐 재배치', 2400), dataCell('LLM 추론은 중단 불가하므로 완료 후 피드백으로 적응', 4760)
             ]})
           ]
         }),
 
         new Paragraph({
+          spacing: { before: 120, after: 120 },
+          children: [new TextRun({ text: '시스템은 복수의 스케줄링 알고리즘을 구현하여, 동일한 요청 환경에서 각 알고리즘의 성능을 비교하는 것을 목표로 한다. FCFS를 기준(베이스라인) 알고리즘으로 삼고, Priority Scheduling, MLFQ, WFQ 등의 알고리즘을 적용하여 비교할 계획이다.', font: 'Arial', size: 22 })]
+        }),
+
+        new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.2 시스템 아키텍처')]
+          children: [new TextRun('3.2 핵심 연구 과제')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '시스템은 4계층 구조로 설계할 계획이며, 외부 LLM 백엔드와 연동한다 (그림 2 참조).', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          numbering: { reference: 'architecture-layers', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '클라이언트 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': REST(웹 API 설계 방식) API를 통해 LLM 요청을 수신한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'architecture-layers', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: 'API 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Express.js 기반 컨트롤러가 요청을 분류하고 스케줄러에 전달한다 [7][8]. 요청 분류 시, 테넌트의 구독 등급과 요청의 긴급도 정보를 기준으로 우선순위를 부여할 예정이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'architecture-layers', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '스케줄러 엔진', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 4가지 스케줄링 알고리즘으로 요청 처리 순서를 결정한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'architecture-layers', level: 0 },
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '저장소 계층', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 메모리 배열과 JSON 파일로 상태 데이터를 관리한다.', font: 'Arial', size: 22 })
-          ]
+          children: [new TextRun({ text: '본 연구에서 탐구해야 할 핵심 과제는 OS 스케줄링 이론을 LLM 환경에 맞게 적응시키는 것이다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '요청이 스케줄러에 도달하기 전에, Rate Limiter가 전처리 단계에서 과도한 요청을 제한한다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: 'OS에서 프로세스 스케줄링은 CPU 시간을 짧은 단위(타임 퀀텀)로 나누어 여러 프로세스에 번갈아 할당하는 선점형(Preemptive) 방식이 일반적이다. 그러나 LLM 추론은 한번 시작되면 중간에 중단할 수 없으므로, 비선점형(Non-preemptive) 환경에서 동작해야 한다. 이러한 차이로 인해, 2.1절에서 소개한 알고리즘들을 그대로 적용할 수 없으며, LLM 도메인의 특성에 맞는 적응 방안을 연구해야 한다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '예를 들어, MLFQ의 경우 OS에서는 타임 퀀텀을 초과한 프로세스를 즉시 중단하고 하위 큐로 강등시키지만, LLM 환경에서는 요청 완료 후의 결과를 바탕으로 피드백을 적용하는 방식으로 변환해야 할 것이다. 이처럼 각 알고리즘의 핵심 원리를 유지하면서 LLM 환경에 맞게 변환하는 것이 본 연구의 주요 과제이다.', font: 'Arial', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '또한, 알고리즘 비교를 위한 적절한 평가 지표를 선정하고, 대기시간, 처리량, 공정성(JFI) 등의 관점에서 각 알고리즘의 특성을 분석하고자 한다.', font: 'Arial', size: 22 })]
         }),
         // 그림 2 참조
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '[그림 2] 시스템 아키텍처 (4계층 구조) (별첨: proposal-figures.pptx, 슬라이드 2)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
+          children: [new TextRun({ text: '[그림 2] OS 스케줄링과 LLM 요청 관리의 개념적 대응 (별첨: proposal-figures.pptx, 슬라이드 2)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.3 스케줄링 알고리즘 적용 방향')]
+          children: [new TextRun('3.3 기대 효과')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 연구에서는 2.1절에서 소개한 4가지 OS 스케줄링 알고리즘을 LLM API 환경에 맞게 적용하고자 한다. 각 알고리즘의 적용 방향은 다음과 같다.', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'FCFS', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 요청 도착 순서대로 처리하는 기본 알고리즘으로, 다른 알고리즘과의 성능 비교를 위한 베이스라인으로 활용할 예정이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'Priority Scheduling', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '은 테넌트 등급과 요청 긴급도를 기반으로 우선순위를 부여하여 중요한 요청을 먼저 처리하는 방식이다. 기아 현상을 방지하기 위해 에이징(Aging) 기법을 함께 적용할 계획이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'MLFQ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 요청 처리 결과를 관찰하여 테넌트의 우선순위를 동적으로 조정하는 방식이다. 다만, LLM 추론은 한번 시작되면 중단할 수 없으므로, OS의 선점형 MLFQ를 비선점형으로 적응시키는 방안을 연구할 예정이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'WFQ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '는 테넌트 등급별 가중치에 비례하여 자원을 배분하는 방식이다. 네트워크의 흐름(flow) 개념을 테넌트 등급으로 치환하여 적용할 계획이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '각 알고리즘의 구체적인 설계와 구현 방식은 중간보고서에서 상세히 다룰 예정이다.', font: 'Arial', size: 22 })]
-        }),
-
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.4 핵심 기술 특징')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '본 시스템에서 구현하고자 하는 핵심 기술 특징은 다음과 같다.', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '공정성 측정: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '2.3절에서 정의한 JFI를 4가지 스케줄링 알고리즘 모두에 적용하여, 각 알고리즘이 자원을 얼마나 공정하게 배분하는지 비교할 계획이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '기아 방지: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: 'Priority 스케줄러에는 에이징을, MLFQ 스케줄러에는 주기적 부스트(Boost)를 적용하여 낮은 우선순위 요청이 끝없이 기다리는 것을 방지하고자 한다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: 'Rate Limiter (속도 제한): ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '토큰 버킷(Token Bucket) 알고리즘을 활용하여 테넌트별 요청 빈도를 제한하는 전처리 기능을 구현할 예정이다 [3].', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '실시간 알고리즘 교체: ', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: '서버 재시작 없이 런타임에 스케줄링 알고리즘을 전환할 수 있는 기능을 설계할 계획이다.', font: 'Arial', size: 22 })
-          ]
-        }),
-        // 그림 3 참조
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '[그림 3] 요청 처리 흐름도 (별첨: proposal-figures.pptx, 슬라이드 3)', font: 'Arial', size: 20, italics: true, color: COLORS.GRAY })]
-        }),
-
-        // ===== 3.5 성능 평가 지표 =====
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.5 성능 평가 지표')]
-        }),
-        new Paragraph({
-          spacing: { after: 60 },
-          children: [new TextRun({ text: '본 연구에서 스케줄링 알고리즘을 비교하기 위해 사용할 평가 지표는 다음과 같다.', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          numbering: { reference: 'performance-metrics', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '대기시간(Wait Time)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 요청이 큐에 등록된 시점부터 처리가 시작될 때까지 걸리는 시간(ms)', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'performance-metrics', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '처리량(Throughput)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 단위 시간당 처리 완료되는 요청의 수(req/s)', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'performance-metrics', level: 0 },
-          spacing: { after: 60 },
-          children: [
-            new TextRun({ text: '공정성(Fairness)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': JFI를 사용하여 자원 배분의 공정성을 측정 (0~1)', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'performance-metrics', level: 0 },
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '생성 속도(Generation Speed)', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 단위 시간당 LLM이 생성한 출력 토큰 수(tokens/s)', font: 'Arial', size: 22 })
-          ]
-        }),
-
-        // ===== 3.6 구현 환경 =====
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.6 구현 환경')]
-        }),
-        new Paragraph({
-          spacing: { after: 60 },
-          children: [new TextRun({ text: '본 시스템은 다음과 같은 환경에서 구현할 예정이다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '본 시스템이 구현될 경우, 다음과 같은 효과를 기대할 수 있다.', font: 'Arial', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
+          spacing: { after: 60 },
           children: [
-            new TextRun({ text: '서버', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Node.js 22 LTS, Express.js 4.18 [7][8]', font: 'Arial', size: 22 })
+            new TextRun({ text: '차등적 서비스 제공', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 테넌트 등급이나 요청 긴급도에 따라 처리 순서를 조정하여, 중요한 요청을 우선적으로 처리할 수 있다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
+          spacing: { after: 60 },
           children: [
-            new TextRun({ text: 'LLM 백엔드', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': Ollama [6]', font: 'Arial', size: 22 })
+            new TextRun({ text: '공정성 보장', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 공정성 지표를 통해 자원 배분의 균형을 정량적으로 측정하고, 특정 테넌트가 자원을 독점하는 것을 방지할 수 있다.', font: 'Arial', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '외부 의존성', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 1개 패키지 (express)', font: 'Arial', size: 22 })
+            new TextRun({ text: '알고리즘 비교 데이터 확보', bold: true, font: 'Arial', size: 22 }),
+            new TextRun({ text: ': 여러 스케줄링 전략을 동일한 환경에서 비교함으로써, LLM 서빙 환경에 적합한 스케줄링 방식에 대한 실험적 근거를 제공할 수 있다.', font: 'Arial', size: 22 })
           ]
         }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: 'Node.js와 Express.js는 웹 서버를 구축하기 위한 도구이며, Ollama는 로컬 컴퓨터에서 LLM을 실행하여 외부 API 비용 없이 실험할 수 있게 해주는 도구이다.', font: 'Arial', size: 22 })]
-        }),
 
-        // ===== 4. 실험 계획 및 연구 일정 =====
+        // ===== 4. 연구 일정 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
-          children: [new TextRun('4. 실험 계획 및 연구 일정')]
+          children: [new TextRun('4. 연구 일정')]
         }),
 
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.1 실험 설계')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '3.6절의 구현 환경에서 다양한 부하 조건의 요청을 생성하여 반복 실험을 수행할 계획이다. Ollama에서 실행 가능한 경량 모델(llama3, gemma 등)을 사용하여 로컬 환경에서 실험할 예정이다.', font: 'Arial', size: 22 })]
-        }),
-
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.2 실험 시나리오')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '다양한 조건에서 알고리즘의 특성을 비교하기 위해, 다음과 같은 시나리오를 설계할 계획이다.', font: 'Arial', size: 22 })]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '정상 부하', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 일정한 간격으로 요청이 도착하는 기본 상황', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: '버스트 부하', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 특정 시점에 요청이 급증하는 상황', font: 'Arial', size: 22 })
-          ]
-        }),
-        new Paragraph({
-          numbering: { reference: 'bullet-list', level: 0 },
-          spacing: { after: 120 },
-          children: [
-            new TextRun({ text: '테넌트 비율 변동', bold: true, font: 'Arial', size: 22 }),
-            new TextRun({ text: ': 테넌트 등급 비율을 달리하여 공정성 변화를 관찰하는 상황', font: 'Arial', size: 22 })
-          ]
-        }),
-
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.3 평가 방법')]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '3.5절에서 정의한 평가 지표(대기시간, 처리량, 공정성, 생성 속도)를 4가지 알고리즘 모두에 동일하게 적용하여 비교할 계획이다.', font: 'Arial', size: 22 })]
-        }),
-
-        // ===== 4.4 연구 일정 =====
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('4.4 연구 일정')]
-        }),
         new Paragraph({
           spacing: { after: 60 },
-          children: [new TextRun({ text: '26-1학기에는 시스템 구현, 성능 비교 실험, 관련연구 추가 조사, 결과 정리를 진행할 계획이다.', font: 'Arial', size: 22 })]
+          children: [new TextRun({ text: '26-1학기에는 시스템 설계 및 구현, 성능 비교 실험, 결과 분석을 진행할 계획이다.', font: 'Arial', size: 22 })]
         }),
         // 표 2
         new Paragraph({
@@ -714,20 +477,20 @@ function createDocument() {
             ]}),
             new TableRow({ children: [
               dataCell('4월', 1800, { align: AlignmentType.CENTER }),
-              dataCell('시스템 구현, 본격 실험 수행', 3200),
+              dataCell('시스템 설계 및 구현', 3200),
               dataCell('중간보고서', 2560),
               dataCell('4/12', 1800, { align: AlignmentType.CENTER })
             ]}),
             new TableRow({ children: [
               dataCell('5월 초~중', 1800, { align: AlignmentType.CENTER }),
-              dataCell('실험 결과 분석, 최종보고서 작성', 3200),
+              dataCell('실험 수행 및 결과 분석', 3200),
               dataCell('최종보고서 + 소스코드', 2560),
               dataCell('5/24', 1800, { align: AlignmentType.CENTER })
             ]}),
             new TableRow({ children: [
               dataCell('5월 말', 1800, { align: AlignmentType.CENTER }),
               dataCell('발표 자료 준비, 시스템 데모 구성', 3200),
-              dataCell('발표 PPT, 실시간 데모', 2560),
+              dataCell('발표 PPT, 데모', 2560),
               dataCell('5/26~29', 1800, { align: AlignmentType.CENTER })
             ]})
           ]
@@ -790,7 +553,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v25) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v26) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);
