@@ -351,11 +351,26 @@ function createDocument() {
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: 'JFI = (\u03A3xi)\u00B2 / (n \u00B7 \u03A3xi\u00B2)', font: '맑은 고딕', size: 22, italics: true })]
+          children: [
+            new TextRun({ text: 'JFI = (\u03A3x', font: '맑은 고딕', size: 22, italics: true }),
+            new TextRun({ text: 'i', font: '맑은 고딕', size: 22, italics: true, subScript: true }),
+            new TextRun({ text: ')\u00B2 / (n \u00B7 \u03A3x', font: '맑은 고딕', size: 22, italics: true }),
+            new TextRun({ text: 'i', font: '맑은 고딕', size: 22, italics: true, subScript: true }),
+            new TextRun({ text: '\u00B2)', font: '맑은 고딕', size: 22, italics: true })
+          ]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 사용자 i가 할당받은 자원량이며, n은 사용자 수이다. 본 프로젝트에서도 이 지표를 활용하여 스케줄링 알고리즘의 공정성을 측정해볼 계획이다. 다음 장에서는 이들 알고리즘과 JFI를 활용한 제안 시스템의 구조를 설명한다.', font: '맑은 고딕', size: 22 })]
+          children: [
+            new TextRun({ text: '여기서 ', font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: 'x', font: '맑은 고딕', size: 22, italics: true }),
+            new TextRun({ text: 'i', font: '맑은 고딕', size: 22, italics: true, subScript: true }),
+            new TextRun({ text: '는 사용자 ', font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: 'i', font: '맑은 고딕', size: 22, italics: true }),
+            new TextRun({ text: '가 할당받은 자원량이며, ', font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: 'n', font: '맑은 고딕', size: 22, italics: true }),
+            new TextRun({ text: '은 사용자 수이다. 본 프로젝트에서도 이 지표를 활용하여 스케줄링 알고리즘의 공정성을 측정해볼 계획이다. 다음 장에서는 이들 알고리즘과 JFI를 활용한 제안 시스템의 구조를 설명한다.', font: '맑은 고딕', size: 22 })
+          ]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -597,15 +612,27 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[3] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed., Wiley, 2018. [온라인] Available: https://www.os-book.com/', font: '맑은 고딕', size: 20 })]
+          children: [
+            new TextRun({ text: '[3] A. Silberschatz, P. B. Galvin, and G. Gagne, ', font: '맑은 고딕', size: 20 }),
+            new TextRun({ text: 'Operating System Concepts', font: '맑은 고딕', size: 20, italics: true }),
+            new TextRun({ text: ', 10th ed., Wiley, 2018. [온라인] Available: https://www.os-book.com/', font: '맑은 고딕', size: 20 })
+          ]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, Version 1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/', font: '맑은 고딕', size: 20 })]
+          children: [
+            new TextRun({ text: '[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, ', font: '맑은 고딕', size: 20 }),
+            new TextRun({ text: 'Operating Systems: Three Easy Pieces', font: '맑은 고딕', size: 20, italics: true }),
+            new TextRun({ text: ', Version 1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/', font: '맑은 고딕', size: 20 })
+          ]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[5] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 9th ed., Pearson, 2025. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/', font: '맑은 고딕', size: 20 })]
+          children: [
+            new TextRun({ text: '[5] J. F. Kurose and K. W. Ross, ', font: '맑은 고딕', size: 20 }),
+            new TextRun({ text: 'Computer Networking: A Top-Down Approach', font: '맑은 고딕', size: 20, italics: true }),
+            new TextRun({ text: ', 9th ed., Pearson, 2025. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/', font: '맑은 고딕', size: 20 })
+          ]
         }),
         new Paragraph({
           spacing: { after: 80 },
