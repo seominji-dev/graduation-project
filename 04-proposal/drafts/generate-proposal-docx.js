@@ -143,7 +143,11 @@ function createDocument() {
             spacing: { after: 600 },
             children: [new TextRun({ text: 'Using OS Scheduling Algorithms', font: '맑은 고딕', size: 22, italics: true, color: COLORS.GRAY })]
           }),
-          new Paragraph({ spacing: { before: 400 }, children: [] }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 400, after: 400 },
+            children: [new TextRun({ text: '졸업프로젝트 제안서', font: '맑은 고딕', size: 28, bold: true, color: COLORS.DARK_GRAY })]
+          }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 80 },
