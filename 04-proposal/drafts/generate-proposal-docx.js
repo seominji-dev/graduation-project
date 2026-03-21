@@ -126,7 +126,7 @@ function createDocument() {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 200 },
-            children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 활용한', font: '맑은 고딕', size: 36, bold: true })]
+            children: [new TextRun({ text: '스케줄링 알고리즘을 활용한', font: '맑은 고딕', size: 36, bold: true })]
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -141,7 +141,7 @@ function createDocument() {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 600 },
-            children: [new TextRun({ text: 'Using OS Scheduling Algorithms', font: '맑은 고딕', size: 22, italics: true, color: COLORS.GRAY })]
+            children: [new TextRun({ text: 'Using Scheduling Algorithms', font: '맑은 고딕', size: 22, italics: true, color: COLORS.GRAY })]
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -229,7 +229,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '3학년 운영체제 수업에서 프로세스 스케줄링 알고리즘을 배우면서, "이 알고리즘들을 LLM API 요청 관리에 적용해보면 어떨까?"라는 궁금증에서 이 프로젝트를 시작하게 되었다. 운영체제의 스케줄링 이론을 LLM API 환경에 적용해보고, 알고리즘별 성능과 공정성을 비교해보는 것이 본 프로젝트의 목적이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '3학년 운영체제 수업에서 프로세스 스케줄링 알고리즘을 배우면서, "이 알고리즘들을 LLM API 요청 관리에 적용해보면 어떨까?"라는 궁금증에서 이 프로젝트를 시작하게 되었다. 스케줄링 이론을 LLM API 환경에 적용해보고, 알고리즘별 성능과 공정성을 비교해보는 것이 본 프로젝트의 목적이다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 60 },
@@ -239,7 +239,7 @@ function createDocument() {
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: 'OS 스케줄링 알고리즘 적용', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: '스케줄링 알고리즘 적용', bold: true, font: '맑은 고딕', size: 22 }),
             new TextRun({ text: ': FCFS, Priority Scheduling, MLFQ, WFQ의 네 가지 대표적인 스케줄링 알고리즘을 LLM API 환경에 맞게 구현해본다.', font: '맑은 고딕', size: 22 })
           ]
         }),
@@ -271,12 +271,12 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '이 장에서는 본 프로젝트에서 활용할 OS 스케줄링 알고리즘의 이론적 배경, 기존 LLM 서빙 도구의 현황, 그리고 공정성 측정 방법을 살펴본다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '이 장에서는 본 프로젝트에서 활용할 스케줄링 알고리즘의 이론적 배경, 기존 LLM 서빙 도구의 현황, 그리고 공정성 측정 방법을 살펴본다.', font: '맑은 고딕', size: 22 })]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('2.1 OS 스케줄링 알고리즘')]
+          children: [new TextRun('2.1 스케줄링 알고리즘')]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -307,7 +307,7 @@ function createDocument() {
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 사용되는 공정 큐잉 알고리즘이다 [5]. 각 흐름(flow)에 가중치를 부여하고, 패킷마다 가상 완료 시각(Virtual Finish Time)을 계산하여 이 값이 가장 작은 패킷을 먼저 전송한다. 가상 완료 시각은 처리 비용을 가중치로 나누어 구하기 때문에, 가중치가 큰 흐름일수록 값이 작아져 더 자주 선택된다. 이론적으로는 GPS(Generalized Processor Sharing)라는 이상적인 모델이 있지만 실제로 구현이 어려워, 이에 가깝게 구현한 것이 WFQ이다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 사용되는 공정 큐잉 알고리즘이다 [5]. 각 흐름(flow)에 가중치를 부여하고, 패킷마다 가상 완료 시각(Virtual Finish Time)을 계산하여 이 값이 가장 작은 패킷을 먼저 전송한다. 가상 완료 시각은 처리 비용을 가중치로 나누어 구하기 때문에, 가중치가 큰 흐름일수록 값이 작아져 더 자주 선택된다. 이론적으로는 GPS(Generalized Processor Sharing)라는, 가중치에 비례하여 자원을 나누는 이상적인 모델이 있지만 실제로 구현이 어려워, 이에 가깝게 구현한 것이 WFQ이다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -341,7 +341,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '조사한 도구들은 주로 응답 속도를 높이는 데 집중하고 있었으며, 다중 사용자 환경에서의 요청 스케줄링이나 사용자 간 공정성 문제는 상대적으로 덜 다루어진 것으로 보인다. 본 프로젝트는 이 부분에 OS 스케줄링 이론을 적용해보려고 한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '조사한 도구들은 주로 응답 속도를 높이는 데 집중하고 있었으며, 다중 사용자 환경에서의 요청 스케줄링이나 사용자 간 공정성 문제는 상대적으로 덜 다루어진 것으로 보인다. 본 프로젝트는 이 부분에 스케줄링 이론을 적용해보려고 한다.', font: '맑은 고딕', size: 22 })]
         }),
 
         new Paragraph({
@@ -389,7 +389,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 프로젝트에서는 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 시스템을 구현해보려고 한다. 기본 아이디어는, OS에서 프로세스가 CPU를 할당받기 위해 대기하는 것처럼, LLM API 요청도 대기열에서 순서를 기다리는 구조를 만드는 것이다. 표 1은 OS 개념과 LLM 환경 간의 대응 관계를 정리한 것이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '본 프로젝트에서는 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 시스템을 구현해보려고 한다. 기본 아이디어는, OS에서 프로세스가 CPU를 할당받기 위해 대기하는 것처럼, LLM API 요청도 대기열에서 순서를 기다리는 구조를 만드는 것이다. 표 1은 OS 개념과 LLM 환경 간의 대응 관계를 정리한 것이다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // 표 1
@@ -444,7 +444,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 LLM 환경에 그대로 적용할 수는 없으므로, 본 프로젝트의 핵심인 스케줄러를 중심으로 다음과 같은 설계 방침을 정했다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '스케줄링 알고리즘을 LLM 환경에 그대로 적용할 수는 없으므로, 본 프로젝트의 핵심인 스케줄러를 중심으로 다음과 같은 설계 방침을 정했다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
@@ -598,7 +598,7 @@ function createDocument() {
 
         new Paragraph({
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '이상으로 본 프로젝트의 배경, 관련 연구, 시스템 설계 방향, 그리고 연구 일정을 정리하였다. 위 일정에 따라 네 가지 스케줄링 알고리즘을 구현하고 성능과 공정성을 비교하여, OS 스케줄링 이론이 LLM API 요청 관리에서 실제로 의미 있는 차이를 만들 수 있는지 확인해보려고 한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '이상으로 본 프로젝트의 배경, 관련 연구, 시스템 설계 방향, 그리고 연구 일정을 정리하였다. 위 일정에 따라 네 가지 스케줄링 알고리즘을 구현하고 성능과 공정성을 비교하여, 스케줄링 이론이 LLM API 요청 관리에서 실제로 의미 있는 차이를 만들 수 있는지 확인해보려고 한다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // ===== 참고문헌 =====
