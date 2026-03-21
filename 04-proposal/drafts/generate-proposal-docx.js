@@ -1,6 +1,6 @@
 /**
  * 제안서 DOCX 생성 스크립트
- * proposal-v27.md 마크다운 기반으로 최종 제출용 DOCX 생성
+ * proposal-v28.md 마크다운 기반으로 최종 제출용 DOCX 생성
  *
  * 사용법: node generate-proposal-docx.js
  * 출력: 04-proposal/final/proposal.docx
@@ -204,58 +204,70 @@ function createDocument() {
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('1.1 연구 배경')]
+          children: [new TextRun('1.1 배경')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'ChatGPT, Claude, Gemini 등 대규모 언어 모델(Large Language Model, LLM) API 서비스가 빠르게 확산되면서, 여러 사용자가 동시에 LLM API를 호출하는 다중 사용자(Multi-tenant) 환경이 보편화되고 있다. 다중 사용자 환경이란, 하나의 서버가 여러 고객(테넌트)의 요청을 동시에 처리하는 구조를 말한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '최근 ChatGPT, Claude, Gemini 등 대규모 언어 모델(Large Language Model, LLM) API 서비스가 다양한 분야에서 활용되고 있다. 이에 따라 기업이나 연구실에서도 하나의 LLM API 계정을 여러 구성원이 공유하거나, 자체 LLM 서버를 구축하여 여러 사용자에게 서비스하는 사례를 찾아볼 수 있다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '현재 대부분의 LLM 서비스는 선착순(First-Come, First-Served, FCFS) 처리 방식이나 단순 속도 제한(Rate Limiting)에 의존하고 있다. 이러한 방식은 다음과 같은 한계를 가진다. 첫째, 긴급한 요청도 도착 순서를 기다려야 하므로 시간에 민감한 요청의 빠른 처리가 불가능하다. 둘째, 사용자 등급에 따른 차등 서비스를 제공할 수 없어, 높은 등급의 테넌트와 무료 사용자가 동일한 대기 조건을 갖게 된다. 셋째, 자원이 테넌트 간에 공정하게 배분되고 있는지 측정하거나 보장할 수단이 없다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '이러한 다중 사용자 환경에서는 요청을 어떻게 관리할지가 문제가 된다. 주요 API 제공업체를 살펴보면, OpenAI는 조직(Organization) 단위로 분당 요청 수와 토큰 수에 한도를 두고 있고 [1], Anthropic도 사용 등급(Usage Tier)별로 호출 한도를 적용하고 있다 [2]. 그러나 이는 계정 단위의 관리이므로, 같은 계정을 공유하는 사용자들 사이에서 누가 얼마나 사용할지를 조율하는 것은 별개의 문제이다. 자체 LLM 서버를 운영하는 경우에도 마찬가지로, 사용자별 요청 관리 기능은 기본으로 제공되지 않는 것으로 보인다 (자세한 내용은 2장에서 살펴본다).', font: '맑은 고딕', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '사용자별 관리 기능이 별도로 없다 보니, 요청은 결국 도착한 순서대로(First-Come, First-Served, FCFS) 처리되거나 호출 빈도 제한(Rate Limiting) 수준에서 관리되는 것으로 보인다. 이 경우 긴급한 요청도 순서를 기다려야 하고, 사용자별로 자원을 다르게 배분하기 어려우며, 자원이 공정하게 나누어지고 있는지 확인하기도 쉽지 않다.', font: '맑은 고딕', size: 22 })]
         }),
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('1.2 연구 동기와 목적')]
+          children: [new TextRun('1.2 동기 및 목적')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '운영체제의 프로세스 스케줄링 알고리즘은 CPU 자원을 여러 프로세스에 효율적으로 배분하기 위해 수십 년간 연구되어 온 이론이다 [1][9]. 본 연구는 이 이론을 LLM API 요청 관리에 활용할 수 있는지 탐구하고자 한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '3학년 운영체제 수업에서 프로세스 스케줄링 알고리즘을 배우면서, "이 알고리즘들을 LLM API 요청 관리에 적용해보면 어떨까?"라는 궁금증에서 이 프로젝트를 시작하게 되었다. 운영체제의 스케줄링 이론을 LLM API 환경에 적용해보고, 알고리즘별 성능과 공정성을 비교해보는 것이 본 프로젝트의 목적이다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 60 },
-          children: [new TextRun({ text: '구체적인 연구 목적은 다음과 같다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '이 프로젝트에서는 구체적으로 다음 세 가지를 해보려고 한다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: 'OS 스케줄링 알고리즘의 LLM 환경 적용', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': 대표적인 OS 스케줄링 알고리즘들을 LLM API 환경에 맞게 적용하는 방안을 탐구하고자 한다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: 'OS 스케줄링 알고리즘 적용', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': FCFS, Priority Scheduling, MLFQ, WFQ의 네 가지 대표적인 스케줄링 알고리즘을 LLM API 환경에 맞게 구현해본다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '알고리즘 간 성능 비교', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': 여러 스케줄링 알고리즘을 동일한 조건에서 대기시간, 처리량, 공정성 등의 기준으로 비교하고자 한다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '알고리즘별 성능 비교', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 평균 대기시간, 처리량 등의 지표로 각 알고리즘의 효율성을 비교해본다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'research-goals', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '공정성 측정 방법 탐구', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': Jain\'s Fairness Index(JFI) 등의 공정성 지표를 활용하여 다중 사용자 환경에서 자원 배분의 공정성을 측정하는 방법을 탐구하고자 한다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '공정성 분석', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': Jain\'s Fairness Index(JFI)를 활용하여, 각 알고리즘이 사용자 간 자원을 얼마나 공정하게 배분하는지 분석해본다.', font: '맑은 고딕', size: 22 })
           ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '다음 장에서는 이들 알고리즘의 이론적 배경과 관련 도구를 살펴본다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // ===== 2. 관련 연구 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
           children: [new TextRun('2. 관련 연구')]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '이 장에서는 본 프로젝트에서 활용할 OS 스케줄링 알고리즘의 이론적 배경, 기존 LLM 서빙 도구의 현황, 그리고 공정성 측정 방법을 살펴본다.', font: '맑은 고딕', size: 22 })]
         }),
 
         new Paragraph({
@@ -264,34 +276,34 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '프로세스 스케줄링은 운영체제의 핵심 기능 중 하나로, CPU 자원을 여러 프로세스에 효율적으로 배분하기 위한 다양한 알고리즘이 연구되어 왔다 [1][9].', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '프로세스 스케줄링은 운영체제의 핵심 기능 중 하나로, CPU 자원을 여러 프로세스에 배분하기 위한 다양한 알고리즘이 있다 [3][4].', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'FCFS(First-Come, First-Served)', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '는 가장 단순한 스케줄링 알고리즘으로, 요청이 도착한 순서대로 처리한다. 구현이 간단하나 호위 효과(Convoy Effect, 처리 시간이 긴 요청이 뒤따르는 짧은 요청들의 처리를 지연시키는 현상)가 발생하는 단점이 있다 [1][9].', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '는 요청이 도착한 순서대로 처리하는 가장 단순한 방식이다. 구현이 간단하지만, 처리 시간이 긴 요청 때문에 짧은 요청들까지 지연되는 호위 효과(Convoy Effect)가 발생할 수 있다 [3].', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Priority Scheduling', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '은 각 프로세스에 우선순위를 부여하여 높은 우선순위의 프로세스를 먼저 처리한다. 그러나 낮은 우선순위의 프로세스가 계속 밀려 처리되지 못하는 기아(Starvation) 현상이 발생할 수 있다. 이를 해결하기 위해, 오래 기다린 프로세스의 우선순위를 점진적으로 높여주는 에이징(Aging) 기법이 사용된다 [1][9].', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '은 각 프로세스에 우선순위를 부여하여 우선순위가 높은 프로세스를 먼저 처리한다. 다만 우선순위가 낮은 프로세스가 계속 밀려 처리되지 못하는 기아 현상이 발생할 수 있으며, 이를 방지하기 위해 오래 기다린 프로세스의 우선순위를 점진적으로 높여주는 에이징 기법이 사용된다 [3].', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'MLFQ(Multi-Level Feedback Queue)', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '는 작업의 실행 특성을 관찰하여 우선순위를 동적으로 조정하는 알고리즘이다 [2][10]. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 타임 퀀텀(Time Quantum, 한 번에 할당되는 최대 실행 시간)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형(Preemptive, 실행 중인 작업을 중단할 수 있는 방식)으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [2][10].', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '는 여러 개의 큐를 두고, 작업의 실행 특성에 따라 우선순위를 동적으로 조정하는 알고리즘이다. 짧은 작업은 높은 우선순위 큐에서 빠르게 처리되고, 타임 퀀텀(Time Quantum, 한 번에 할당되는 최대 실행 시간)을 초과한 긴 작업은 점차 하위 큐로 이동한다. OS에서 MLFQ는 선점형으로 동작하여, 타임 퀀텀을 초과한 프로세스를 중단하고 하위 큐로 강등시킨다 [4].', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'WFQ(Weighted Fair Queuing)', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '는 네트워크 분야에서 제안된 공정 큐잉 알고리즘이다 [3][11]. 각 흐름(flow)에 가중치를 부여하여 가중치에 비례하는 서비스를 제공한다. GPS(Generalized Processor Sharing)는 자원을 가중치에 비례하여 동시에 배분하는 이상적인 수학적 모델이며, WFQ는 이를 개별 요청(Discrete request) 단위의 현실 시스템에서 비슷하게 구현한 실용적인 스케줄링 기법이다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '는 네트워크 분야에서 사용되는 공정 큐잉 알고리즘이다 [5]. 각 흐름(flow)에 가중치를 부여하고, 패킷마다 가상 완료 시각(Virtual Finish Time)을 계산하여 이 값이 가장 작은 패킷을 먼저 전송한다. 가상 완료 시각은 처리 비용을 가중치로 나누어 구하기 때문에, 가중치가 큰 흐름일수록 값이 작아져 더 자주 선택된다. 이론적으로는 GPS(Generalized Processor Sharing)라는 이상적인 모델이 있지만 실제로 구현이 어려워, 이에 가깝게 구현한 것이 WFQ이다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         // 그림 1 참조
@@ -303,29 +315,29 @@ function createDocument() {
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('2.2 LLM 서빙 시스템과 스케줄링')]
+          children: [new TextRun('2.2 LLM 서빙과 스케줄링')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'LLM 서빙(LLM을 사용자에게 제공하는 것) 분야에서는 LLM 응답 속도를 높이기 위한 다양한 기술이 개발되어 왔다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: 'LLM 서빙(LLM을 사용자에게 제공하는 것) 분야에서 가장 널리 사용되는 오픈소스 도구를 조사해보았다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'vLLM', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '은 UC Berkeley에서 개발한 LLM 서빙 도구이다 [4]. 그러나 요청 스케줄링은 선착순에 한정되어 있으며, 테넌트 간 공정성 보장 기능은 제공하지 않는다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '은 UC Berkeley에서 개발한 LLM 서빙 도구로, PagedAttention이라는 메모리 관리 기법으로 높은 처리 성능을 보여준다 [6]. 다만 공식 문서와 소스 코드를 조사한 결과, 요청 스케줄링은 선착순 방식에 가까우며 사용자 간 공정성을 보장하는 별도의 기능은 확인하지 못했다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
           children: [
             new TextRun({ text: 'Hugging Face TGI', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: '는 오픈소스 LLM 서빙 도구이다 [5]. 다중 사용자 환경에서의 요청 우선순위 관리나 공정성 보장 기능은 포함하지 않는다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: '는 오픈소스 LLM 서빙 도구로, 다양한 LLM을 쉽게 배포할 수 있도록 도와준다 [7]. 그러나 공식 문서에서 다중 사용자 환경에서의 요청 우선순위 관리나 공정성 보장 기능은 찾아볼 수 없었다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '기존 LLM 서빙 시스템들은 주로 LLM의 응답 속도를 높이는 데 집중하고 있으며, 다중 사용자 환경에서의 요청 스케줄링과 테넌트 간 공정성 문제는 아직 많이 다루어지지 않았다. 본 연구는 이 문제를 다루기 위해 OS 스케줄링 이론을 LLM 요청 관리에 적용하고자 한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '조사한 도구들은 주로 응답 속도를 높이는 데 집중하고 있었으며, 다중 사용자 환경에서의 요청 스케줄링이나 사용자 간 공정성 문제는 상대적으로 덜 다루어진 것으로 보인다. 본 프로젝트는 이 부분에 OS 스케줄링 이론을 적용해보려고 한다.', font: '맑은 고딕', size: 22 })]
         }),
 
         new Paragraph({
@@ -334,7 +346,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'Jain\'s Fairness Index(JFI)는 공유 자원 시스템에서 자원 배분의 공정성을 측정하기 위한 지표이다 [3]. JFI는 0(완전 불공정)부터 1(완전 공정) 사이의 값을 가지며, 1에 가까울수록 자원이 공평하게 배분된 것이다. 반대로, 특정 사용자가 자원을 받지 못하면 0에 가까워진다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '여러 사용자가 자원을 공유하는 시스템에서, 자원 배분의 공정성을 측정하는 지표로 Jain\'s Fairness Index(JFI)가 있다 [5]. JFI는 네트워크 대역폭 배분, CPU 스케줄링 등 자원 공유 문제에서 사용되는 지표로, 0에서 1 사이의 값 하나로 공정성을 직관적으로 나타낼 수 있어 본 프로젝트의 알고리즘 비교에 적합할 것으로 보았다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           alignment: AlignmentType.CENTER,
@@ -343,7 +355,7 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '여기서 xi는 테넌트 i가 할당받은 자원량이며, n은 테넌트 수이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '여기서 xi는 사용자 i가 할당받은 자원량이며, n은 사용자 수이다. 본 프로젝트에서도 이 지표를 활용하여 스케줄링 알고리즘의 공정성을 측정해볼 계획이다. 다음 장에서는 이들 알고리즘과 JFI를 활용한 제안 시스템의 구조를 설명한다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // ===== 3. 제안 시스템 =====
@@ -358,20 +370,20 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 연구에서 제안하는 시스템은 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 다중 사용자 요청 관리 시스템이다. 표 1은 OS 개념과 LLM 도메인 간의 대응 관계를 정리한 것이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '본 프로젝트에서는 OS 스케줄링 알고리즘을 LLM API 요청 관리에 적용한 시스템을 구현해보려고 한다. 기본 아이디어는, OS에서 프로세스가 CPU를 할당받기 위해 대기하는 것처럼, LLM API 요청도 대기열에서 순서를 기다리는 구조를 만드는 것이다. 표 1은 OS 개념과 LLM 환경 간의 대응 관계를 정리한 것이다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // 표 1
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 60 },
-          children: [new TextRun({ text: '표 1. OS 개념과 LLM 도메인 대응 관계', bold: true, font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '표 1. OS 개념과 LLM 환경 대응 관계', bold: true, font: '맑은 고딕', size: 20 })]
         }),
         new Table({
           columnWidths: [2200, 2400, 4760],
           rows: [
             new TableRow({ tableHeader: true, children: [
-              headerCell('OS 개념', 2200), headerCell('LLM 도메인', 2400), headerCell('설명', 4760)
+              headerCell('OS 개념', 2200), headerCell('LLM 환경 대응', 2400), headerCell('설명', 4760)
             ]}),
             new TableRow({ children: [
               dataCell('프로세스 (Process)', 2200), dataCell('LLM API 요청', 2400), dataCell('스케줄링의 기본 단위', 4760)
@@ -380,38 +392,25 @@ function createDocument() {
               dataCell('CPU 시간 (CPU Time)', 2200), dataCell('LLM 추론 시간', 2400), dataCell('할당되는 자원', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('우선순위 (Priority)', 2200), dataCell('테넌트 등급, 요청 긴급도', 2400), dataCell('처리 순서 결정 기준', 4760)
+              dataCell('준비 큐 (Ready Queue)', 2200), dataCell('요청 대기열', 2400), dataCell('처리를 기다리는 작업의 저장소', 4760)
             ]}),
             new TableRow({ children: [
-              dataCell('스케줄링 알고리즘', 2200), dataCell('요청 처리 순서 결정', 2400), dataCell('자원 배분 정책', 4760)
+              dataCell('우선순위 (Priority)', 2200), dataCell('사용자 등급, 요청 긴급도', 2400), dataCell('처리 순서 결정 기준', 4760)
             ]})
           ]
         }),
 
         new Paragraph({
           spacing: { before: 120, after: 120 },
-          children: [new TextRun({ text: '시스템은 복수의 스케줄링 알고리즘을 구현하여, 동일한 요청 환경에서 각 알고리즘의 성능을 비교하는 것을 목표로 한다. FCFS를 기준(베이스라인) 알고리즘으로 삼고, Priority Scheduling, MLFQ, WFQ 등의 알고리즘을 적용하여 비교할 계획이다.', font: '맑은 고딕', size: 22 })]
-        }),
-
-        new Paragraph({
-          heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.2 핵심 연구 과제')]
+          children: [new TextRun({ text: '시스템의 전체 흐름은 다음과 같다. 사용자가 REST API를 통해 요청을 보내면, 먼저 호출 빈도 제한(Rate Limiting)으로 과도한 요청을 걸러낸 뒤 대기열에 등록한다. 스케줄러는 선택된 알고리즘에 따라 대기열에서 다음에 처리할 요청을 결정하고, 해당 요청을 LLM API에 전달한다. 응답이 돌아오면 사용자에게 결과를 전달하고, 스케줄러는 다음 요청을 꺼내 같은 과정을 반복한다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 연구에서 탐구해야 할 핵심 과제는 OS 스케줄링 이론을 LLM 환경에 맞게 적응시키는 것이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '이처럼 호출 빈도 제한은 요청의 진입을 관리하는 전처리 단계이고, 사용자 간 자원 배분은 스케줄러가 담당한다. 시스템은 요청 수신부(REST API), 대기열, 스케줄러, LLM 연결부의 네 부분으로 구성하며, Node.js와 Express.js를 사용하여 구현할 계획이다.', font: '맑은 고딕', size: 22 })]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: 'OS에서 프로세스 스케줄링은 CPU 시간을 짧은 단위(타임 퀀텀)로 나누어 여러 프로세스에 번갈아 할당하는 선점형(Preemptive) 방식이 일반적이다. 그러나 LLM 추론은 한번 시작되면 중간에 중단할 수 없으므로, 비선점형(Non-preemptive) 환경에서 동작해야 한다. 이러한 차이로 인해, 2.1절에서 소개한 알고리즘들을 그대로 적용할 수 없으며, LLM 도메인의 특성에 맞는 적응 방안을 연구해야 한다.', font: '맑은 고딕', size: 22 })]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '예를 들어, MLFQ의 경우 OS에서는 타임 퀀텀을 초과한 프로세스를 즉시 중단하고 하위 큐로 강등시키지만, LLM 환경에서는 요청 완료 후의 결과를 바탕으로 피드백을 적용하는 방식으로 변환해야 할 것이다. 이처럼 각 알고리즘의 핵심 원리를 유지하면서 LLM 환경에 맞게 변환하는 것이 본 연구의 주요 과제이다.', font: '맑은 고딕', size: 22 })]
-        }),
-        new Paragraph({
-          spacing: { after: 120 },
-          children: [new TextRun({ text: '또한, 알고리즘 비교를 위한 적절한 평가 지표를 선정하고, 대기시간, 처리량, 공정성(JFI) 등의 관점에서 각 알고리즘의 특성을 분석하고자 한다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '스케줄링 알고리즘은 교체 가능하도록 설계하여, 스케줄러만 바꾸면 나머지 부분은 그대로 유지한 채 네 가지 알고리즘을 같은 조건에서 비교할 수 있게 하려고 한다.', font: '맑은 고딕', size: 22 })]
         }),
         // 그림 2 참조
         new Paragraph({
@@ -422,35 +421,105 @@ function createDocument() {
 
         new Paragraph({
           heading: HeadingLevel.HEADING_2,
-          children: [new TextRun('3.3 기대 효과')]
+          children: [new TextRun('3.2 설계 방침')]
         }),
         new Paragraph({
           spacing: { after: 120 },
-          children: [new TextRun({ text: '본 시스템이 구현될 경우, 다음과 같은 효과를 기대할 수 있다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: 'OS 스케줄링 알고리즘을 LLM 환경에 그대로 적용할 수는 없으므로, 본 프로젝트의 핵심인 스케줄러를 중심으로 다음과 같은 설계 방침을 정했다.', font: '맑은 고딕', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: '첫째, 모든 알고리즘을 ', font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: '비선점형', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ' 방식으로 설계한다. 2장에서 살펴본 것처럼 OS에서 MLFQ 등은 선점형으로 동작하여 실행 중인 프로세스를 중단할 수 있지만, LLM 추론은 한번 시작되면 중간에 중단하기 어렵기 때문이다. 따라서 스케줄러는 대기열에서 다음 요청을 선택하는 시점에만 알고리즘을 적용하고, 이미 처리 중인 요청은 완료될 때까지 기다린다.', font: '맑은 고딕', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: '둘째, 각 알고리즘의 ', font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: '핵심 원리는 그대로 유지하면서, 스케줄링 기준은 LLM 환경에 맞게 조정', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: '한다. FCFS는 별도의 변형 없이 그대로 적용하지만, 나머지 세 알고리즘은 다음과 같이 조정한다.', font: '맑은 고딕', size: 22 })
+          ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '차등적 서비스 제공', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': 테넌트 등급이나 요청 긴급도에 따라 처리 순서를 조정하여, 중요한 요청을 우선적으로 처리할 수 있다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: 'Priority Scheduling', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 사용자 등급(예: 일반, 프리미엄)을 우선순위로, 대기 시간을 에이징 기준으로 사용한다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 60 },
           children: [
-            new TextRun({ text: '공정성 보장', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': 공정성 지표를 통해 자원 배분의 균형을 정량적으로 측정하고, 특정 테넌트가 자원을 독점하는 것을 방지할 수 있다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: 'MLFQ', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 타임 퀀텀 초과 대신 해당 사용자의 최근 요청들의 평균 추론 시간을 기준으로 큐를 재배정하여, 짧은 요청이 빠르게 처리될 수 있도록 한다.', font: '맑은 고딕', size: 22 })
           ]
         }),
         new Paragraph({
           numbering: { reference: 'bullet-list', level: 0 },
           spacing: { after: 120 },
           children: [
-            new TextRun({ text: '알고리즘 비교 데이터 확보', bold: true, font: '맑은 고딕', size: 22 }),
-            new TextRun({ text: ': 여러 스케줄링 전략을 동일한 환경에서 비교함으로써, LLM 서빙 환경에 적합한 스케줄링 방식에 대한 실험적 근거를 제공할 수 있다.', font: '맑은 고딕', size: 22 })
+            new TextRun({ text: 'WFQ', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 사용자별 가중치에 따라 가상 완료 시각을 계산하여, 가중치에 비례한 서비스를 제공하도록 설계한다.', font: '맑은 고딕', size: 22 })
           ]
+        }),
+
+        new Paragraph({
+          heading: HeadingLevel.HEADING_2,
+          children: [new TextRun('3.3 평가 계획')]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '구현한 네 가지 알고리즘의 성능과 공정성을 비교하기 위해 평균 대기시간, 처리량, 공정성 지수(JFI)를 측정 지표로 사용한다.', font: '맑은 고딕', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '실험은 여러 사용자가 동시에 요청을 보내는 상황을 만들어 진행할 계획이다. 테스트 스크립트를 작성하여 사용자 수(예: 3명, 5명, 10명), 요청 빈도(저부하, 고부하), LLM API 동시 요청 수 등을 조절하면서 다양한 부하 시나리오를 재현해보려고 한다. 또한 사용자별 요청 패턴을 달리하여(예: 짧은 질문 위주 사용자와 긴 문서 요청 사용자의 혼합), 알고리즘별 반응 차이도 관찰할 계획이다.', font: '맑은 고딕', size: 22 })]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: 'FCFS를 기준(베이스라인)으로 삼고, 나머지 세 알고리즘을 같은 조건에서 실행한 뒤 위 세 가지 지표로 결과를 비교하여, 각 알고리즘이 어떤 상황에서 유리하고 어떤 한계가 있는지를 파악해보려고 한다.', font: '맑은 고딕', size: 22 })]
+        }),
+
+        new Paragraph({
+          heading: HeadingLevel.HEADING_2,
+          children: [new TextRun('3.4 기대 효과')]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '본 프로젝트를 통해 다음과 같은 점들을 확인해볼 수 있을 것이다.', font: '맑은 고딕', size: 22 })]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: '등급별 서비스와 공정성 비교', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': Priority Scheduling이나 WFQ처럼 사용자 등급에 따라 자원을 다르게 배분하는 방식과, JFI로 측정되는 균등한 배분은 동시에 만족시키기 어려운 면이 있다. 같은 조건에서 두 가지를 함께 비교하여, 어떤 상황에서 어떤 방식이 더 적합한지 살펴보려고 한다.', font: '맑은 고딕', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 60 },
+          children: [
+            new TextRun({ text: '다른 서비스에도 적용할 수 있는 구조', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 본 시스템의 대기열-스케줄러 구조는 LLM API에만 쓸 수 있는 것이 아니라, 대기열과 우선순위 관리가 필요한 다른 API 서비스에도 비슷하게 적용해볼 수 있을 것이다.', font: '맑은 고딕', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          numbering: { reference: 'bullet-list', level: 0 },
+          spacing: { after: 120 },
+          children: [
+            new TextRun({ text: 'OS 이론이 실제로 유용한지 확인', bold: true, font: '맑은 고딕', size: 22 }),
+            new TextRun({ text: ': 교과서에서 다루는 스케줄링 알고리즘이 실제 서비스 환경에서도 의미 있는 성능 차이를 만들어내는지 실험을 통해 확인해볼 수 있다.', font: '맑은 고딕', size: 22 })
+          ]
+        }),
+        new Paragraph({
+          spacing: { after: 120 },
+          children: [new TextRun({ text: '다음 장에서는 이러한 목표를 달성하기 위한 구체적인 연구 일정을 정리한다.', font: '맑은 고딕', size: 22 })]
         }),
 
         // ===== 4. 연구 일정 =====
@@ -461,13 +530,13 @@ function createDocument() {
 
         new Paragraph({
           spacing: { after: 60 },
-          children: [new TextRun({ text: '26-1학기에는 시스템 설계 및 구현, 성능 비교 실험, 결과 분석을 진행할 계획이다.', font: '맑은 고딕', size: 22 })]
+          children: [new TextRun({ text: '3장에서 설명한 시스템을 한 학기 동안 구현하고 실험까지 마무리하는 것을 목표로 한다. 시스템 구현이 완료되어야 실험을 진행할 수 있으므로, 4월까지 구현을 마치고 5월에 실험과 분석에 집중하는 일정을 계획하였다.', font: '맑은 고딕', size: 22 })]
         }),
         // 표 2
         new Paragraph({
           alignment: AlignmentType.CENTER,
           spacing: { before: 120, after: 60 },
-          children: [new TextRun({ text: '표 2. 26-1학기 연구 일정', bold: true, font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '표 2. 2026년 1학기 연구 일정', bold: true, font: '맑은 고딕', size: 20 })]
         }),
         new Table({
           columnWidths: [1800, 3200, 2560, 1800],
@@ -482,10 +551,16 @@ function createDocument() {
               dataCell('3/22', 1800, { align: AlignmentType.CENTER })
             ]}),
             new TableRow({ children: [
-              dataCell('4월', 1800, { align: AlignmentType.CENTER }),
-              dataCell('시스템 설계 및 구현', 3200),
+              dataCell('4월 초', 1800, { align: AlignmentType.CENTER }),
+              dataCell('시스템 설계, 기본 구조 구현', 3200),
               dataCell('중간보고서', 2560),
               dataCell('4/12', 1800, { align: AlignmentType.CENTER })
+            ]}),
+            new TableRow({ children: [
+              dataCell('4월 중~말', 1800, { align: AlignmentType.CENTER }),
+              dataCell('스케줄링 알고리즘 구현 및 단위 테스트', 3200),
+              dataCell('동작 가능한 프로토타입', 2560),
+              dataCell('4/30', 1800, { align: AlignmentType.CENTER })
             ]}),
             new TableRow({ children: [
               dataCell('5월 초~중', 1800, { align: AlignmentType.CENTER }),
@@ -502,6 +577,11 @@ function createDocument() {
           ]
         }),
 
+        new Paragraph({
+          spacing: { before: 120, after: 120 },
+          children: [new TextRun({ text: '이상으로 본 프로젝트의 배경, 관련 연구, 시스템 설계 방향, 그리고 연구 일정을 정리하였다. 위 일정에 따라 네 가지 스케줄링 알고리즘을 구현하고 성능과 공정성을 비교하여, OS 스케줄링 이론이 LLM API 요청 관리에서 실제로 의미 있는 차이를 만들 수 있는지 확인해보려고 한다.', font: '맑은 고딕', size: 22 })]
+        }),
+
         // ===== 참고문헌 =====
         new Paragraph({
           heading: HeadingLevel.HEADING_1,
@@ -509,47 +589,31 @@ function createDocument() {
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[1] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed., Wiley, 2018. [온라인] Available: https://www.os-book.com/', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[1] OpenAI, "Rate limits," OpenAI API Documentation. [온라인] Available: https://platform.openai.com/docs/guides/rate-limits (접속: 2026-03-14)', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[2] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, Version 1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[2] Anthropic, "Rate limits," Anthropic API Documentation. [온라인] Available: https://docs.anthropic.com/en/api/rate-limits (접속: 2026-03-14)', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[3] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 8th ed., Pearson, 2021. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[3] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed., Wiley, 2018. [온라인] Available: https://www.os-book.com/', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[4] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," arXiv preprint, 2023. [온라인] Available: https://arxiv.org/abs/2309.06180', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, Operating Systems: Three Easy Pieces, Version 1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[5] Hugging Face, "Text Generation Inference (TGI)," 2024. [온라인] Available: https://huggingface.co/docs/text-generation-inference/', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[5] J. F. Kurose and K. W. Ross, Computer Networking: A Top-Down Approach, 9th ed., Pearson, 2025. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[6] Ollama, "Ollama - Get up and running with large language models," 2024. [온라인] Available: https://ollama.com/', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[6] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," in Proc. 29th ACM Symposium on Operating Systems Principles (SOSP \'23), 2023. [온라인] Available: https://arxiv.org/abs/2309.06180', font: '맑은 고딕', size: 20 })]
         }),
         new Paragraph({
           spacing: { after: 80 },
-          children: [new TextRun({ text: '[7] Express.js, "Express - Node.js Web Application Framework," 2024. [온라인] Available: https://expressjs.com/', font: '맑은 고딕', size: 20 })]
-        }),
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '[8] Node.js, "Node.js Documentation," 2024. [온라인] Available: https://nodejs.org/docs/latest/api/', font: '맑은 고딕', size: 20 })]
-        }),
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '[9] 혀니앤, "[운영체제] 스케줄링 알고리즘," velog, 2022. [온라인] Available: https://velog.io/@jeongopo/운영체제-스케줄링-알고리즘', font: '맑은 고딕', size: 20 })]
-        }),
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '[10] 폐프의삶, "[OS] MLFQ," tistory, 2025. [온라인] Available: https://waste-programmer.tistory.com/32', font: '맑은 고딕', size: 20 })]
-        }),
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [new TextRun({ text: '[11] JSH 기술 블로그, "라우터의 패킷 지연과 패킷 스케줄링 방법," tistory, 2021. [온라인] Available: https://studyandwrite.tistory.com/442', font: '맑은 고딕', size: 20 })]
+          children: [new TextRun({ text: '[7] Hugging Face, "Text Generation Inference (TGI)." [온라인] Available: https://huggingface.co/docs/text-generation-inference/ (접속: 2026-03-14)', font: '맑은 고딕', size: 20 })]
         }),
       ]
     }]
@@ -559,7 +623,7 @@ function createDocument() {
 }
 
 async function main() {
-  console.log('=== 제안서 DOCX 생성 (v27) ===\n');
+  console.log('=== 제안서 DOCX 생성 (v28) ===\n');
 
   const doc = createDocument();
   const buffer = await Packer.toBuffer(doc);

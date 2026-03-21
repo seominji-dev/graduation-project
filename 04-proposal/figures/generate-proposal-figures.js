@@ -2,13 +2,12 @@
  * 제안서 그림 생성 스크립트
  * html2pptx 워크플로우 사용 (IEEE 학술 스타일)
  *
- * 슬라이드 구성 (2장, v27):
+ * 슬라이드 구성 (2장, v28):
  *   1. 스케줄링 알고리즘 비교 다이어그램 (FCFS, Priority, MLFQ, WFQ)
  *   2. OS 스케줄링과 LLM 요청 관리의 개념적 대응
  *
- * v27 변경사항:
- *   - Slide 1: Rate Limiter 보조 기능 섹션 제거 (제안서 경량화)
- *   - Slide 2: 하단 노트를 탐구적 어조로 변경
+ * v28 변경사항:
+ *   - Slide 1: WFQ 카드 특징 표현 수정 (JFI → 가중치 비례 배분)
  *
  * 사용법: node generate-proposal-figures.js
  * 출력: proposal-figures.pptx
