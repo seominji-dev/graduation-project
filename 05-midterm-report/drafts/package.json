@@ -1,0 +1,12 @@
+{
+  "name": "midterm-report-generator",
+  "version": "3.0.0",
+  "description": "DOCX generator for midterm report v3",
+  "type": "commonjs",
+  "scripts": {
+    "generate": "node generate-midterm-v3.js"
+  },
+  "dependencies": {
+    "docx": "^9.6.0"
+  }
+}
