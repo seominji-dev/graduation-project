@@ -630,12 +630,12 @@ function createFig5(pptx) {
     {
       name: 'FCFS',
       labels: ['짧은 요청 평균 대기시간'],
-      values: [634]
+      values: [635]
     },
     {
       name: 'MLFQ (선점형)',
       labels: ['짧은 요청 평균 대기시간'],
-      values: [172]
+      values: [170]
     }
   ], {
     x: 0.3, y: 4.1, w: 4.5, h: 1.5,

@@ -1,0 +1,36 @@
+{
+  "name": "llm-scheduler-simple",
+  "version": "1.0.0",
+  "description": "OS 스케줄링 기법을 활용한 LLM API 요청 최적화 시스템 (학부생 버전)",
+  "main": "src-simple/index.js",
+  "scripts": {
+    "start": "node src-simple/index.js",
+    "start:fcfs": "SCHEDULER_TYPE=FCFS node src-simple/index.js",
+    "start:priority": "SCHEDULER_TYPE=Priority node src-simple/index.js",
+    "start:mlfq": "SCHEDULER_TYPE=MLFQ node src-simple/index.js",
+    "start:wfq": "SCHEDULER_TYPE=WFQ node src-simple/index.js",
+    "test": "jest --config jest-simple.config.js",
+    "test:coverage": "jest --config jest-simple.config.js --coverage",
+    "experiment": "node experiments-simple/run-experiments.js"
+  },
+  "keywords": [
+    "llm",
+    "scheduler",
+    "fcfs",
+    "priority",
+    "mlfq",
+    "wfq",
+    "queue"
+  ],
+  "author": "서민지",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
