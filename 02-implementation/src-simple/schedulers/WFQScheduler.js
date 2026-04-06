@@ -82,9 +82,12 @@ class WFQScheduler extends BaseScheduler {
     }
 
     // Virtual finish time 계산
+    // 처리 비용(Cost)은 요청 1건당 1로 고정한다.
+    // 이유: (1) LLM 출력 토큰 수는 생성 완료 전까지 알 수 없고,
+    //       (2) JFI도 처리 건수 기준이므로 스케줄링과 측정 기준을 일치시킨다.
     const tenant = this.tenants.get(tenantId);
     const startTime = Math.max(tenant.virtualTime, this.globalVirtualTime);
-    const serviceTime = request.estimatedTokens || 100;
+    const serviceTime = 1;
     request.virtualFinishTime = startTime + (serviceTime / tenant.weight);
     request.tenantId = tenantId;
     request.createdAt = request.createdAt !== undefined ? request.createdAt : Date.now();
