@@ -156,10 +156,10 @@ function runPriorityExperiment(requests) {
 
 	// 처리 시뮬레이션
 	while (!scheduler.isEmpty()) {
-		// aging 시뮬레이션 (실제 대기 시간 반영)
+		// aging 시뮬레이션 (실제 PriorityScheduler의 AGING_INTERVAL_MS = 5000ms와 동��)
 		for (const qReq of scheduler.queue) {
 			const waitTime = currentTime - qReq.createdAt;
-			if (waitTime > 500 && qReq.effectivePriority < PRIORITY.URGENT) {
+			if (waitTime > 5000 && qReq.effectivePriority < PRIORITY.URGENT) {
 				qReq.effectivePriority = Math.min(
 					qReq.effectivePriority + 1,
 					PRIORITY.URGENT,
