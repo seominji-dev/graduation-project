@@ -562,7 +562,7 @@ function createFig5(pptx) {
     {
       name: '평균 대기시간 (ms)',
       labels: ['FCFS', 'Priority', 'MLFQ', 'WFQ'],
-      values: [2572, 2826, 2572, 2819]
+      values: [2572, 2677, 2572, 2476]
     }
   ], {
     x: 0.3, y: 1.1, w: 4.5, h: 2.5,
@@ -577,9 +577,9 @@ function createFig5(pptx) {
   });
 
   // 차트 (a) 평균 참조선 시뮬레이션 (수평 대시 사각형)
-  // 평균 = (2572+2826+2572+2819)/4 = 2697.25, 차트 높이 비율로 위치 추정
+  // 평균 = (2572+2677+2572+2476)/4 = 2574.25, 차트 높이 비율로 위치 추정
   // 차트 영역: y=1.1 ~ y=3.6 (높이 2.5), valAxis 최대값 약 3000으로 추정
-  const avgVal = 2697;
+  const avgVal = 2574;
   const chartTop = 1.1;
   const chartH = 2.5;
   const chartInnerTop = chartTop + 0.15;    // 차트 내부 상단 여백
@@ -591,7 +591,7 @@ function createFig5(pptx) {
     x: 0.9, y: refLineY, w: 3.5, h: 0.015,
     fill: { color: 'DC2626' }, line: { style: 'none' }
   });
-  slide.addText('avg: 2,697ms', {
+  slide.addText('avg: 2,574ms', {
     x: 3.2, y: refLineY - 0.22, w: 1.3, h: 0.2,
     fontSize: 7, fontFace: FONT, color: 'DC2626', align: 'center', bold: true
   });
@@ -606,7 +606,7 @@ function createFig5(pptx) {
     {
       name: '대기시간 (ms)',
       labels: ['Enterprise\n(w=100)', 'Premium\n(w=50)', 'Standard\n(w=10)', 'Free\n(w=1)'],
-      values: [849, 2103, 3431, 4894]
+      values: [429, 1817, 3116, 4543]
     }
   ], {
     x: 5.3, y: 1.1, w: 4.2, h: 2.5,
@@ -621,7 +621,7 @@ function createFig5(pptx) {
   });
 
   // 차트 3: MLFQ 선점형 효과 (짧은 요청)
-  slide.addText('(c) MLFQ 선점형 효과 — 짧은 요청 대기시간 (10회 반복)', {
+  slide.addText('(c) MLFQ 선점형 효과 — 짧은 요청 대기시간 (5회 반복)', {
     x: 0.3, y: 3.8, w: 9.0, h: 0.3,
     fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -630,12 +630,12 @@ function createFig5(pptx) {
     {
       name: 'FCFS',
       labels: ['짧은 요청 평균 대기시간'],
-      values: [651]
+      values: [634]
     },
     {
       name: 'MLFQ (선점형)',
       labels: ['짧은 요청 평균 대기시간'],
-      values: [170]
+      values: [172]
     }
   ], {
     x: 0.3, y: 4.1, w: 4.5, h: 1.5,
@@ -655,7 +655,7 @@ function createFig5(pptx) {
   });
 
   // "약 74% 감소" 볼드 주석 (두 막대 사이)
-  slide.addText('약 74% 감소', {
+  slide.addText('약 73% 감소', {
     x: 1.5, y: 4.3, w: 1.5, h: 0.35,
     fontSize: 11, fontFace: FONT, bold: true, color: 'DC2626', align: 'center', valign: 'middle'
   });
@@ -670,12 +670,12 @@ function createFig5(pptx) {
     { text: '핵심 결과 요약\n', options: { fontSize: 12, bold: true, color: COLORS.black } },
     { text: '\n', options: { fontSize: 4 } },
     { text: 'Priority: ', options: { fontSize: 10, bold: true, color: COLORS.warning } },
-    { text: 'URGENT 요청 56% 빠름\n', options: { fontSize: 10, color: COLORS.black } },
+    { text: 'URGENT 약 42ms (거의 즉시)\n', options: { fontSize: 10, color: COLORS.black } },
     { text: 'WFQ: ', options: { fontSize: 10, bold: true, color: COLORS.accent } },
-    { text: 'Enterprise vs Free 5.8배 차이\n', options: { fontSize: 10, color: COLORS.black } },
+    { text: 'Enterprise vs Free 약 10배 차이\n', options: { fontSize: 10, color: COLORS.black } },
     { text: '         JFI = 0.32\n', options: { fontSize: 9, color: COLORS.accent, italic: true } },
     { text: 'MLFQ: ', options: { fontSize: 10, bold: true, color: COLORS.primary } },
-    { text: '짧은 요청 약 74% 개선', options: { fontSize: 10, color: COLORS.black } },
+    { text: '짧은 요청 약 73% 개선', options: { fontSize: 10, color: COLORS.black } },
   ], {
     x: 5.5, y: 4.15, w: 3.8, h: 1.4,
     fontFace: FONT, valign: 'middle'
@@ -754,6 +754,18 @@ async function main() {
     await pptx.writeFile({ fileName: outputPath });
     console.log(`  PPTX: ${fig.name}.pptx`);
   }
+
+  // 통합 PPTX (모든 슬라이드를 하나의 파일로)
+  const allPptx = new PptxGenJS();
+  allPptx.layout = 'LAYOUT_WIDE';
+  allPptx.author = '서민지 (C235180)';
+  allPptx.title = '중간보고서 그림';
+  for (const fig of figures) {
+    fig.fn(allPptx);
+  }
+  const allPath = path.join(OUTPUT_DIR, 'midterm-figures.pptx');
+  await allPptx.writeFile({ fileName: allPath });
+  console.log(`  통합 PPTX: midterm-figures.pptx (${figures.length}장)`);
 
   // PNG 스크린샷 생성
   console.log('\nPNG 플레이스홀더 생성 중...');
