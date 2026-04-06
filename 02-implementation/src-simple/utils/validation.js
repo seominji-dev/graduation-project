@@ -266,48 +266,17 @@ function safeParseFloat(value, defaultValue = 0.0, min = -Infinity, max = Infini
 }
 
 /**
- * 문자열 이스케이프 (XSS 방지)
+ * 문자열 정리 (공백 제거, 제어 문자 제거)
  *
- * @param {string} str - 이스케이프할 문자열
- * @returns {string} 이스케이프된 문자열
+ * @param {string} str - 정리할 문자열
+ * @returns {string} 정리된 문자열
  */
-function escapeString(str) {
+function cleanString(str) {
   if (typeof str !== 'string') {
     return '';
   }
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
-}
-
-/**
- * SQL 인젝션 방지 (NoSQL용)
- *
- * @param {string} str - 검증할 문자열
- * @returns {boolean} 안전하면 true, 위험하면 false
- */
-function isSafeString(str) {
-  if (typeof str !== 'string') {
-    return false;
-  }
-  // NoSQL 인젝션 패턴 검사
-  const dangerousPatterns = [
-    /\$where/,
-    /\$ne/,
-    /\$gt/,
-    /\$lt/,
-    /\$in/,
-    /\$or/,
-    /\$and/,
-    /javascript:/i,
-    /<script>/i
-  ];
-
-  return !dangerousPatterns.some(pattern => pattern.test(str));
+  // 제어 문자 제거 후 앞뒤 공백 제거
+  return str.replace(/[\x00-\x1F\x7F]/g, '').trim();
 }
 
 /**
@@ -333,7 +302,6 @@ module.exports = {
   formatValidationErrors,
   safeParseInt,
   safeParseFloat,
-  escapeString,
-  isSafeString,
+  cleanString,
   isRequestSizeValid
 };

@@ -46,11 +46,7 @@ class PriorityScheduler extends BaseScheduler {
 
   /**
    * 모든 대기 요청에 Aging 적용
-   *
-   * 참고: Aging 메커니즘은 구현되어 있으나 본 시스템에서는 비활성화되어 있습니다.
-   * Priority 우선순위는 요청 제출 시점의 고정값을 사용합니다.
-   * Aging을 활성화하려면 외부에서 startAging()를 주기적으로 호출해야 합니다.
-   * 현재 커버리지 96.66%는 목표(85%)를 초과 달성하였으므로 이는 의도적인 설계 선택입니다.
+   * 오래 기다린 요청의 우선순위를 높여주는 메커니즘
    */
   applyAging() {
     const now = Date.now();

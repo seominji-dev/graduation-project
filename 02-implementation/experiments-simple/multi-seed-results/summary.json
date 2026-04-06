@@ -5,14 +5,9 @@
       23456,
       34567,
       45678,
-      56789,
-      67890,
-      78901,
-      89012,
-      90123,
-      11111
+      56789
     ],
-    "seedCount": 10,
+    "seedCount": 5,
     "requestCount": 500,
     "numBursts": 25,
     "requestsPerBurst": 20,
@@ -34,173 +29,60 @@
     },
     "categoryDistribution": "40% short, 40% medium, 20% long",
     "simulationType": "preemptive (MLFQ) vs non-preemptive (FCFS)",
-    "timestamp": "2026-03-05T01:51:52.910Z"
+    "timestamp": "2026-04-06T10:38:08.518Z"
   },
-  "descriptiveStatistics": {
-    "fcfs": {
-      "mean": 651298.68,
-      "stddev": 27065.69,
-      "min": 618879.81,
-      "max": 714226.6,
-      "n": 10,
-      "ci95": {
-        "lower": 631938.4,
-        "upper": 670658.96,
-        "mean": 651298.68,
-        "se": 8558.92
-      }
-    },
-    "mlfq": {
-      "mean": 603255.63,
-      "stddev": 27937.42,
-      "min": 565882.24,
-      "max": 639927.63,
-      "n": 10,
-      "ci95": {
-        "lower": 583271.79,
-        "upper": 623239.47,
-        "mean": 603255.63,
-        "se": 8834.59
-      }
-    }
+  "fcfsOverall": {
+    "mean": 638872.68,
+    "min": 618879.81,
+    "max": 667126.69,
+    "count": 5
   },
-  "categoryStatistics": {
-    "fcfs_short": {
-      "mean": 650515.55,
-      "stddev": 41734.35,
-      "min": 597926.32,
-      "max": 756451.55,
-      "n": 10,
-      "ci95": {
-        "lower": 620662.67,
-        "upper": 680368.43,
-        "mean": 650515.55,
-        "se": 13197.56
-      }
-    },
-    "mlfq_short": {
-      "mean": 170029.4,
-      "stddev": 9138.46,
-      "min": 152207.5,
-      "max": 186019.45,
-      "n": 10,
-      "ci95": {
-        "lower": 163492.59,
-        "upper": 176566.21,
-        "mean": 170029.4,
-        "se": 2889.83
-      }
-    },
-    "fcfs_medium": {
-      "mean": 655154.41,
-      "stddev": 25062.79,
-      "min": 616965.8,
-      "max": 692010.49,
-      "n": 10,
-      "ci95": {
-        "lower": 637226.81,
-        "upper": 673082,
-        "mean": 655154.41,
-        "se": 7925.55
-      }
-    },
-    "mlfq_medium": {
-      "mean": 736713.8,
-      "stddev": 27251.13,
-      "min": 683206.03,
-      "max": 771606.88,
-      "n": 10,
-      "ci95": {
-        "lower": 717220.87,
-        "upper": 756206.73,
-        "mean": 736713.8,
-        "se": 8617.57
-      }
-    },
-    "fcfs_long": {
-      "mean": 646510.46,
-      "stddev": 26420,
-      "min": 608333.45,
-      "max": 681477.17,
-      "n": 10,
-      "ci95": {
-        "lower": 627612.05,
-        "upper": 665408.87,
-        "mean": 646510.46,
-        "se": 8354.74
-      }
-    },
-    "mlfq_long": {
-      "mean": 1241013.5,
-      "stddev": 31884.89,
-      "min": 1201483.92,
-      "max": 1294206.33,
-      "n": 10,
-      "ci95": {
-        "lower": 1218206.01,
-        "upper": 1263820.99,
-        "mean": 1241013.5,
-        "se": 10082.89
-      }
-    }
+  "mlfqOverall": {
+    "mean": 595888.53,
+    "min": 570974.48,
+    "max": 639927.63,
+    "count": 5
   },
-  "statisticalTests": {
-    "FCFS_vs_MLFQ_overall": {
-      "tValue": 5.7555,
-      "df": 9,
-      "pValue": 0.001,
-      "significant": true
-    },
-    "FCFS_vs_MLFQ_short": {
-      "tValue": 36.3638,
-      "df": 9,
-      "pValue": 0.001,
-      "significant": true
-    },
-    "FCFS_vs_MLFQ_medium": {
-      "tValue": -6.6096,
-      "df": 9,
-      "pValue": 0.001,
-      "significant": true
-    },
-    "FCFS_vs_MLFQ_long": {
-      "tValue": -117.8179,
-      "df": 9,
-      "pValue": 0.001,
-      "significant": true
-    }
+  "fcfsShortWait": {
+    "mean": 634303.73,
+    "min": 597926.32,
+    "max": 666252.89,
+    "count": 5
   },
-  "effectSizes": {
-    "FCFS_vs_MLFQ_overall": {
-      "d": 1.7467,
-      "interpretation": "큰 효과 (large)"
-    },
-    "FCFS_vs_MLFQ_short": {
-      "d": 15.905,
-      "interpretation": "큰 효과 (large)"
-    },
-    "FCFS_vs_MLFQ_medium": {
-      "d": -3.1154,
-      "interpretation": "큰 효과 (large)"
-    },
-    "FCFS_vs_MLFQ_long": {
-      "d": -20.3039,
-      "interpretation": "큰 효과 (large)"
-    }
+  "mlfqShortWait": {
+    "mean": 172267.69,
+    "min": 160080.64,
+    "max": 186019.45,
+    "count": 5
   },
-  "mlfqShortImprovement": {
-    "mean": 73.78,
-    "stddev": 1.98,
+  "fcfsMediumWait": {
+    "mean": 642458,
+    "min": 616965.8,
+    "max": 672223.9,
+    "count": 5
+  },
+  "mlfqMediumWait": {
+    "mean": 737405.63,
+    "min": 706576.92,
+    "max": 771606.88,
+    "count": 5
+  },
+  "fcfsLongWait": {
+    "mean": 642668.97,
+    "min": 608333.45,
+    "max": 681477.17,
+    "count": 5
+  },
+  "mlfqLongWait": {
+    "mean": 1228837.51,
+    "min": 1201483.92,
+    "max": 1258449.55,
+    "count": 5
+  },
+  "shortImprovement": {
+    "mean": 72.83,
     "min": 71.36,
-    "max": 77.45,
-    "n": 10,
-    "ci95": {
-      "lower": 72.36,
-      "upper": 75.2,
-      "mean": 73.78,
-      "se": 0.63
-    },
-    "unit": "%",
-    "description": "MLFQ Short 요청 대기시간 개선율 (FCFS 대비)"
+    "max": 75.14,
+    "count": 5
   }
 }

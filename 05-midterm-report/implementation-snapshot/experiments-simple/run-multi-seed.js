@@ -1,8 +1,8 @@
 /**
  * 다중 시드 실험 실행기
  *
- * 10개의 서로 다른 시드로 동일 실험을 반복하여
- * 통계적 엄밀성을 확보한다.
+ * 5개의 서로 다른 시드로 동일 실험을 반복하여
+ * 결과의 재현성을 확인한다.
  *
  * mlfq-concurrent-competition-experiment.js의 선점형 시뮬레이션을
  * 시드 파라미터화하여 래핑한 스크립트
@@ -19,7 +19,7 @@ const {
   MLFQScheduler,
 } = require('../src-simple/schedulers');
 
-const { descriptiveStats, pairedTTest, cohensD } = require('./stats-utils');
+const { descriptiveStats } = require('./stats-utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,8 +27,8 @@ const path = require('path');
 // 실험 설정
 // ============================================
 
-// 10개 시드 (재현 가능)
-const SEEDS = [12345, 23456, 34567, 45678, 56789, 67890, 78901, 89012, 90123, 11111];
+// 5개 시드 (재현 가능)
+const SEEDS = [12345, 23456, 34567, 45678, 56789];
 
 const REQUEST_COUNT = 500;
 const NUM_BURSTS = 25;           // 25 버스트 × 20 요청 = 500 요청
@@ -217,7 +217,7 @@ function analyzeResults(results, schedulerName) {
 
 function runMultiSeedExperiments() {
   console.log('═'.repeat(70));
-  console.log('  다중 시드 실험 (Multi-Seed Statistical Validation)');
+  console.log('  다중 시드 실험 (Multi-Seed Reproducibility Check)');
   console.log('═'.repeat(70));
   console.log(`  시드 수: ${SEEDS.length}, 요청 수: ${REQUEST_COUNT} (${NUM_BURSTS} bursts × ${REQUESTS_PER_BURST})`);
   console.log(`  스케줄러: FCFS (비선점) vs MLFQ (선점형)`);
@@ -285,11 +285,17 @@ function runMultiSeedExperiments() {
   }
 
   // ============================================
-  // 통계 요약
+  // 결과 요약
   // ============================================
   console.log('\n' + '═'.repeat(70));
-  console.log('  통계 요약');
+  console.log('  결과 요약');
   console.log('═'.repeat(70));
+
+  // Short 개선율 계산
+  const improvements = categoryResults.fcfs.short.map((fcfsVal, i) => {
+    const mlfqVal = categoryResults.mlfq.short[i];
+    return fcfsVal > 0 ? ((fcfsVal - mlfqVal) / fcfsVal) * 100 : 0;
+  });
 
   const summary = {
     experimentConfig: {
@@ -305,72 +311,20 @@ function runMultiSeedExperiments() {
       simulationType: 'preemptive (MLFQ) vs non-preemptive (FCFS)',
       timestamp: new Date().toISOString(),
     },
-    descriptiveStatistics: {
-      fcfs: descriptiveStats(seedResults.fcfs),
-      mlfq: descriptiveStats(seedResults.mlfq),
-    },
-    categoryStatistics: {
-      fcfs_short:  descriptiveStats(categoryResults.fcfs.short),
-      mlfq_short:  descriptiveStats(categoryResults.mlfq.short),
-      fcfs_medium: descriptiveStats(categoryResults.fcfs.medium),
-      mlfq_medium: descriptiveStats(categoryResults.mlfq.medium),
-      fcfs_long:   descriptiveStats(categoryResults.fcfs.long),
-      mlfq_long:   descriptiveStats(categoryResults.mlfq.long),
-    },
-    statisticalTests: {},
-    effectSizes: {},
-    mlfqShortImprovement: {},
+    fcfsOverall: descriptiveStats(seedResults.fcfs),
+    mlfqOverall: descriptiveStats(seedResults.mlfq),
+    fcfsShortWait: descriptiveStats(categoryResults.fcfs.short),
+    mlfqShortWait: descriptiveStats(categoryResults.mlfq.short),
+    fcfsMediumWait: descriptiveStats(categoryResults.fcfs.medium),
+    mlfqMediumWait: descriptiveStats(categoryResults.mlfq.medium),
+    fcfsLongWait: descriptiveStats(categoryResults.fcfs.long),
+    mlfqLongWait: descriptiveStats(categoryResults.mlfq.long),
+    shortImprovement: descriptiveStats(improvements),
   };
 
-  // 대응표본 t-검정
-  const overallTest = pairedTTest(seedResults.fcfs, seedResults.mlfq);
-  const overallEffect = cohensD(seedResults.fcfs, seedResults.mlfq);
-  summary.statisticalTests['FCFS_vs_MLFQ_overall'] = overallTest;
-  summary.effectSizes['FCFS_vs_MLFQ_overall'] = overallEffect;
-
-  console.log(
-    `  전체: t=${overallTest.tValue}, p=${overallTest.pValue}, ` +
-    `${overallTest.significant ? '유의 ✓' : '미유의'} | d=${overallEffect.d} (${overallEffect.interpretation})`
-  );
-
-  // Short 카테고리 검정
-  if (categoryResults.fcfs.short.length > 0 && categoryResults.mlfq.short.length > 0) {
-    const shortTest = pairedTTest(categoryResults.fcfs.short, categoryResults.mlfq.short);
-    const shortEffect = cohensD(categoryResults.fcfs.short, categoryResults.mlfq.short);
-    summary.statisticalTests['FCFS_vs_MLFQ_short'] = shortTest;
-    summary.effectSizes['FCFS_vs_MLFQ_short'] = shortEffect;
-
-    // 개선율 계산
-    const improvements = categoryResults.fcfs.short.map((fcfsVal, i) => {
-      const mlfqVal = categoryResults.mlfq.short[i];
-      return ((fcfsVal - mlfqVal) / fcfsVal) * 100;
-    });
-
-    summary.mlfqShortImprovement = {
-      ...descriptiveStats(improvements),
-      unit: '%',
-      description: 'MLFQ Short 요청 대기시간 개선율 (FCFS 대비)',
-    };
-
-    console.log(
-      `  Short: t=${shortTest.tValue}, p=${shortTest.pValue}, ` +
-      `${shortTest.significant ? '유의 ✓' : '미유의'} | d=${shortEffect.d} (${shortEffect.interpretation})`
-    );
-    console.log(
-      `\n  MLFQ Short 개선율: ${summary.mlfqShortImprovement.mean}% ` +
-      `(95% CI: [${summary.mlfqShortImprovement.ci95.lower}, ${summary.mlfqShortImprovement.ci95.upper}])`
-    );
-  }
-
-  // Medium, Long 카테고리 검정
-  for (const cat of ['medium', 'long']) {
-    if (categoryResults.fcfs[cat].length > 0 && categoryResults.mlfq[cat].length > 0) {
-      const test = pairedTTest(categoryResults.fcfs[cat], categoryResults.mlfq[cat]);
-      const effect = cohensD(categoryResults.fcfs[cat], categoryResults.mlfq[cat]);
-      summary.statisticalTests[`FCFS_vs_MLFQ_${cat}`] = test;
-      summary.effectSizes[`FCFS_vs_MLFQ_${cat}`] = effect;
-    }
-  }
+  console.log(`  FCFS 전체 평균: ${summary.fcfsOverall.mean}ms`);
+  console.log(`  MLFQ 전체 평균: ${summary.mlfqOverall.mean}ms`);
+  console.log(`  Short 개선율: 약 ${Math.round(summary.shortImprovement.mean)}%`);
 
   // 요약 저장
   const summaryFile = path.join(OUTPUT_DIR, 'summary.json');
@@ -378,7 +332,7 @@ function runMultiSeedExperiments() {
 
   console.log(`\n결과 저장: ${OUTPUT_DIR}/`);
   console.log(`  - seed-*.json: ${SEEDS.length}개 시드별 결과`);
-  console.log(`  - summary.json: 통계 요약`);
+  console.log(`  - summary.json: 결과 요약`);
   console.log('\n' + '═'.repeat(70));
   console.log('  다중 시드 실험 완료');
   console.log('═'.repeat(70));
