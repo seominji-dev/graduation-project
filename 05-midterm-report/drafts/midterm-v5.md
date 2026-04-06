@@ -132,8 +132,8 @@ JFI = (x₁ + x₂ + ... + xₙ)² / (n × (x₁² + x₂² + ... + xₙ²))
 
 셋째, 각 알고리즘의 **핵심 원리는 유지하면서 스케줄링 기준은 LLM 환경에 맞게 조정**하였다.
 
-- **Priority Scheduling**: 요청 우선순위(URGENT, HIGH, NORMAL, LOW)에 따라 긴급한 요청을 먼저 처리한다. 오래 기다린 요청의 우선순위를 높여주는 에이징 기법도 구현하였다.
-- **MLFQ**: 4단계 큐(Q0~Q3)를 두고, 큐별로 다른 시간 할당량을 적용한다. 새 요청은 Q0에 들어가고, 시간 할당량을 초과하면 하위 큐로 내려간다. 제안서에서는 사용자의 최근 평균 추론 ��간을 기준으로 큐를 재배정하는 비선점형 방식을 계획하였으나, 구현 과정에서 OSTEP 교과서 [4]의 표준 MLFQ 규칙을 따르는 것이 알고리즘의 특성을 더 명���하게 비교할 수 있다고 판단하여 변경하였다.
+- **Priority Scheduling**: 요청 우선순위(URGENT, HIGH, NORMAL, LOW)에 따라 긴급한 요청을 먼저 처리한다. 제안서에서는 사용자 등급을 우선순위로 사용하도록 계획하였으나, 요청별 긴급도를 기준으로 변경하여 우선순위 스케줄링의 본래 목적을 더 명확히 보여줄 수 있도록 하였다. 오래 기다린 요청의 우선순위를 높여주는 에이징 기법도 구현하였으나, 본 실험 조건(순차 도착, 총 500ms 이내)에서는 에이징 주기(5초)가 도래하지 않아 에이징 효과는 관측되지 않았다.
+- **MLFQ**: 4단계 큐(Q0~Q3)를 두고, 큐별로 다른 시간 할당량을 적용한다. 새 요청은 Q0에 들어가고, 시간 할당량을 초과하면 하위 큐로 내려간다. 제안서에서는 사용자의 최근 평균 추론 시간을 기준으로 큐를 재배정하는 비선점형 방식을 계획하였으나, 구현 과정에서 OSTEP 교과서 [4]의 표준 MLFQ 규칙을 따르는 것이 알고리즘의 특성을 더 명확하게 비교할 수 있다고 판단하여 변경하였다.
 - **WFQ**: 사용자 등급(Enterprise, Premium, Standard, Free)에 따라 가중치(100, 50, 10, 1)를 부여하고, 가중치에 비례한 가상 완료 시각을 계산하여 서비스를 차등 제공한다.
 
 ### 3.4 데이터 처리 흐름
@@ -260,7 +260,7 @@ $$VFT_i = VFT_{i-1} + \frac{1}{가중치}$$
 
 - **스케줄러**: 4개 알고리즘 모두 동작 확인 (FCFS, Priority, MLFQ, WFQ)
 - **테스트**: 12개 테스트 스위트에서 307개 단위 테스트 전체 통과
-- **테스트 커버리지**: 99.76% (Lines 기준)
+- **테스트 커버리지**: 96.53% (Lines 기준)
 - **알고리즘 선택**: 서버 시작 시 환경변수(`SCHEDULER_TYPE`)로 스케줄링 알고리즘을 선택할 수 있다
 
 ---
@@ -304,7 +304,7 @@ $$VFT_i = VFT_{i-1} + \frac{1}{가중치}$$
 
 **Priority Scheduling**: URGENT 우선순위 요청은 평균 1,122ms로, FCFS의 전체 평균(2,572ms)보다 약 56% 빠르게 처리되었다. 긴급한 요청을 우선 처리하는 효과를 확인할 수 있었다.
 
-**WFQ**: Enterprise 등급 사용자(가중치 100)의 평균 대기시간은 849ms인 반면, Free 등급(가중치 1)은 4,894ms로 약 5.8배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 제공되는 것을 확인하였다. 2.3절에서 소개한 JFI로 공정성을 측정한 결과, WFQ의 시스템 수준 JFI는 0.32로 나타났다. 이 값이 1보다 낮은 이유는 WFQ가 의도적으로 사용자 등급에 따라 자원을 다르게 배분하는 방식이기 때문이다. 실험에서 4명의 사용자에게 각각 25건씩 동일 수의 요청이 처리되었으며, 같은 등급 내에서는 대기시간 편차가 작아 등급 내 배분은 고르게 이루어졌다.
+**WFQ**: Enterprise 등급 사용자(가중치 100)의 평균 대기시간은 849ms인 반면, Free 등급(가중치 1)은 4,894ms로 약 5.8배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 제공되는 것을 확인하였다. 2.3절에서 소개한 JFI로 공정성을 측정한 결과, WFQ의 시스템 수준 JFI는 0.32로 나타났다. JFI는 정규화 처리량(처리 건수 / 가중치)을 기준으로 계산하였는데, Enterprise(25/100=0.25)부터 Free(25/1=25)까지 정규화 값의 차이가 크므로 시스템 전체 JFI는 낮게 나타난다. 이는 WFQ가 의도적으로 사용자 등급에 따라 자원을 차등 배분하는 방식이기 때문이며, 같은 등급 내에서는 대기시간 편차가 작아 등급 내 배분은 고르게 이루어졌다.
 
 **MLFQ**: 비선점형 모드에서는 FCFS와 동일한 결과가 나왔다 (평균 대기시간 2,572ms, 처리량 18.0 req/s). MLFQ의 핵심인 "짧은 요청 우선 처리"는 실행 중인 요청을 중단하고 하위 큐로 보내는 선점 동작에 의존하는데, 비선점형에서는 모든 요청이 중단 없이 완료되므로 큐 간 이동이 발생하지 않기 때문이다. 이 결과는 3.3절에서 언급한 선점형 시뮬레이션을 추가 구현하게 된 직접적인 계기이다.
 
@@ -349,22 +349,22 @@ $$VFT_i = VFT_{i-1} + \frac{1}{가중치}$$
 
 ## 참고문헌
 
-[1] OpenAI, "Rate limits," OpenAI API Documentation. Available: https://platform.openai.com/docs/guides/rate-limits
+[1] OpenAI, "Rate limits," OpenAI API Documentation. [온라인] Available: https://platform.openai.com/docs/guides/rate-limits (접속: 2026-03-14)
 
-[2] Anthropic, "Rate limits," Anthropic API Documentation. Available: https://docs.anthropic.com/en/api/rate-limits (리다이렉트: https://platform.claude.com/docs/en/api/rate-limits)
+[2] Anthropic, "Rate limits," Anthropic API Documentation. [온라인] Available: https://docs.anthropic.com/en/api/rate-limits (접속: 2026-03-14)
 
-[3] A. Silberschatz, P. B. Galvin, and G. Gagne, "Operating System Concepts," 10th ed., Wiley, 2018. Available: https://www.os-book.com/
+[3] A. Silberschatz, P. B. Galvin, and G. Gagne, "Operating System Concepts," 10th ed., Wiley, 2018. [온라인] Available: https://www.os-book.com/
 
-[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, "Operating Systems: Three Easy Pieces," v1.10, Arpaci-Dusseau Books, 2023. Available: https://pages.cs.wisc.edu/~remzi/OSTEP/
+[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, "Operating Systems: Three Easy Pieces," v1.10, Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/
 
-[5] J. F. Kurose and K. W. Ross, "Computer Networking: A Top-Down Approach," 9th ed., Pearson, 2025. Available: https://gaia.cs.umass.edu/kurose_ross/
+[5] J. F. Kurose and K. W. Ross, "Computer Networking: A Top-Down Approach," 9th ed., Pearson, 2025. [온라인] Available: https://gaia.cs.umass.edu/kurose_ross/
 
-[6] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," Proc. 29th ACM SOSP, 2023. Available: https://arxiv.org/abs/2309.06180
+[6] W. Kwon et al., "Efficient Memory Management for Large Language Model Serving with PagedAttention," Proc. 29th ACM SOSP, 2023. [온라인] Available: https://arxiv.org/abs/2309.06180
 
-[7] Hugging Face, "Text Generation Inference (TGI)." Available: https://huggingface.co/docs/text-generation-inference/
+[7] Hugging Face, "Text Generation Inference (TGI)." [온라인] Available: https://huggingface.co/docs/text-generation-inference/ (접속: 2026-03-14)
 
-[8] Ollama, "Ollama Documentation." Available: https://ollama.com/
+[8] Ollama, "Ollama Documentation." [온라인] Available: https://ollama.com/ (접속: 2026-03-14)
 
-[9] Express.js, "Express - Node.js Web Application Framework." Available: https://expressjs.com/
+[9] Express.js, "Express - Node.js Web Application Framework." [온라인] Available: https://expressjs.com/ (접속: 2026-03-14)
 
-[10] Node.js Foundation, "Node.js Documentation." Available: https://nodejs.org/docs/latest-v22.x/api/
+[10] Node.js Foundation, "Node.js Documentation." [온라인] Available: https://nodejs.org/docs/latest-v22.x/api/ (접속: 2026-03-14)
