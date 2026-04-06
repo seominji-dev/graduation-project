@@ -1,0 +1,504 @@
+{
+  "timestamp": "2026-02-10T11:37:42.547Z",
+  "experiments": {
+    "baseline": {
+      "config": {
+        "type": "baseline",
+        "numRequests": 100,
+        "distribution": {
+          "short": 33,
+          "medium": 44,
+          "long": 23
+        }
+      },
+      "stats": {
+        "fcfs": {
+          "scheduler": "FCFS",
+          "totalRequests": 100,
+          "avgWaitTime": 33474.05,
+          "maxWaitTime": 127825,
+          "minWaitTime": 0,
+          "stdDev": 35563.26,
+          "p50": 21963,
+          "p95": 113501,
+          "p99": 127825,
+          "throughput": 0.75,
+          "totalTime": 133436,
+          "categoryStats": {
+            "short": {
+              "count": 33,
+              "avgWaitTime": 3081.242424242424,
+              "minWaitTime": 0,
+              "maxWaitTime": 6248,
+              "stdDev": 1818.4659577220411
+            },
+            "medium": {
+              "count": 44,
+              "avgWaitTime": 26666.909090909092,
+              "minWaitTime": 6334,
+              "maxWaitTime": 48963,
+              "stdDev": 12491.944564990637
+            },
+            "long": {
+              "count": 23,
+              "avgWaitTime": 90103.47826086957,
+              "minWaitTime": 50127,
+              "maxWaitTime": 127825,
+              "stdDev": 23465.325559738263
+            }
+          }
+        },
+        "priority": {
+          "scheduler": "Priority",
+          "totalRequests": 100,
+          "avgWaitTime": 33839.52,
+          "maxWaitTime": 128063,
+          "minWaitTime": 0,
+          "stdDev": 35454.49,
+          "p50": 22201,
+          "p95": 113739,
+          "p99": 128063,
+          "throughput": 0.75,
+          "totalTime": 133674,
+          "categoryStats": {
+            "short": {
+              "count": 33,
+              "avgWaitTime": 3921.2727272727275,
+              "minWaitTime": 0,
+              "maxWaitTime": 7072,
+              "stdDev": 1879.540490264962
+            },
+            "medium": {
+              "count": 44,
+              "avgWaitTime": 26743.090909090908,
+              "minWaitTime": 218,
+              "maxWaitTime": 49201,
+              "stdDev": 12792.958169857719
+            },
+            "long": {
+              "count": 23,
+              "avgWaitTime": 90341.47826086957,
+              "minWaitTime": 50365,
+              "maxWaitTime": 128063,
+              "stdDev": 23465.325559738263
+            }
+          }
+        },
+        "mlfq": {
+          "scheduler": "MLFQ",
+          "totalRequests": 100,
+          "avgWaitTime": 33474.05,
+          "maxWaitTime": 127825,
+          "minWaitTime": 0,
+          "stdDev": 35563.26,
+          "p50": 21963,
+          "p95": 113501,
+          "p99": 127825,
+          "throughput": 0.75,
+          "totalTime": 133436,
+          "categoryStats": {
+            "short": {
+              "count": 33,
+              "avgWaitTime": 3081.242424242424,
+              "minWaitTime": 0,
+              "maxWaitTime": 6248,
+              "stdDev": 1818.4659577220411
+            },
+            "medium": {
+              "count": 44,
+              "avgWaitTime": 26666.909090909092,
+              "minWaitTime": 6334,
+              "maxWaitTime": 48963,
+              "stdDev": 12491.944564990637
+            },
+            "long": {
+              "count": 23,
+              "avgWaitTime": 90103.47826086957,
+              "minWaitTime": 50127,
+              "maxWaitTime": 127825,
+              "stdDev": 23465.325559738263
+            }
+          }
+        },
+        "wfq": {
+          "scheduler": "WFQ",
+          "totalRequests": 100,
+          "avgWaitTime": 56242.37,
+          "maxWaitTime": 127825,
+          "minWaitTime": 0,
+          "stdDev": 39054.66,
+          "p50": 66050,
+          "p95": 116062,
+          "p99": 127825,
+          "throughput": 0.75,
+          "totalTime": 133436,
+          "categoryStats": {
+            "short": {
+              "count": 33,
+              "avgWaitTime": 47796,
+              "minWaitTime": 0,
+              "maxWaitTime": 100751,
+              "stdDev": 38428.35040207945
+            },
+            "medium": {
+              "count": 44,
+              "avgWaitTime": 54621.27272727273,
+              "minWaitTime": 1481,
+              "maxWaitTime": 110411,
+              "stdDev": 38120.031849448394
+            },
+            "long": {
+              "count": 23,
+              "avgWaitTime": 71462.30434782608,
+              "minWaitTime": 12109,
+              "maxWaitTime": 127825,
+              "stdDev": 39000.67158563343
+            }
+          }
+        },
+        "rateLimiter": {
+          "scheduler": "RateLimiter",
+          "totalRequests": 100,
+          "avgWaitTime": 33474.05,
+          "maxWaitTime": 127825,
+          "minWaitTime": 0,
+          "stdDev": 35563.26,
+          "p50": 21963,
+          "p95": 113501,
+          "p99": 127825,
+          "throughput": 0.75,
+          "totalTime": 133436,
+          "categoryStats": {
+            "short": {
+              "count": 33,
+              "avgWaitTime": 3081.242424242424,
+              "minWaitTime": 0,
+              "maxWaitTime": 6248,
+              "stdDev": 1818.4659577220411
+            },
+            "medium": {
+              "count": 44,
+              "avgWaitTime": 26666.909090909092,
+              "minWaitTime": 6334,
+              "maxWaitTime": 48963,
+              "stdDev": 12491.944564990637
+            },
+            "long": {
+              "count": 23,
+              "avgWaitTime": 90103.47826086957,
+              "minWaitTime": 50127,
+              "maxWaitTime": 127825,
+              "stdDev": 23465.325559738263
+            }
+          },
+          "denied": 0,
+          "allowRate": "100.00%"
+        }
+      }
+    },
+    "largeScale": {
+      "config": {
+        "type": "large-scale",
+        "numRequests": 1000,
+        "distribution": {
+          "short": 330,
+          "medium": 440,
+          "long": 230
+        }
+      },
+      "stats": {
+        "fcfs": {
+          "scheduler": "FCFS",
+          "totalRequests": 1000,
+          "avgWaitTime": 338164.08,
+          "maxWaitTime": 1318805,
+          "minWaitTime": 0,
+          "stdDev": 357996.76,
+          "p50": 222692,
+          "p95": 1145087,
+          "p99": 1283360,
+          "throughput": 0.75,
+          "totalTime": 1329335,
+          "categoryStats": {
+            "short": {
+              "count": 330,
+              "avgWaitTime": 28482.948484848486,
+              "minWaitTime": 0,
+              "maxWaitTime": 56064,
+              "stdDev": 16167.531554311192
+            },
+            "medium": {
+              "count": 440,
+              "avgWaitTime": 273594.43863636366,
+              "minWaitTime": 56203,
+              "maxWaitTime": 493485,
+              "stdDev": 126502.40059261938
+            },
+            "long": {
+              "count": 230,
+              "avgWaitTime": 906013.7086956522,
+              "minWaitTime": 494477,
+              "maxWaitTime": 1318805,
+              "stdDev": 240775.45300548754
+            }
+          }
+        },
+        "priority": {
+          "scheduler": "Priority",
+          "totalRequests": 1000,
+          "avgWaitTime": 338398.93,
+          "maxWaitTime": 1319043,
+          "minWaitTime": 0,
+          "stdDev": 357999.72,
+          "p50": 222930,
+          "p95": 1145325,
+          "p99": 1283598,
+          "throughput": 0.75,
+          "totalTime": 1329573,
+          "categoryStats": {
+            "short": {
+              "count": 330,
+              "avgWaitTime": 28711.4,
+              "minWaitTime": 0,
+              "maxWaitTime": 56302,
+              "stdDev": 16182.717258729708
+            },
+            "medium": {
+              "count": 440,
+              "avgWaitTime": 273832.43863636366,
+              "minWaitTime": 56441,
+              "maxWaitTime": 493723,
+              "stdDev": 126502.40059261938
+            },
+            "long": {
+              "count": 230,
+              "avgWaitTime": 906251.7086956522,
+              "minWaitTime": 494715,
+              "maxWaitTime": 1319043,
+              "stdDev": 240775.45300548754
+            }
+          }
+        },
+        "mlfq": {
+          "scheduler": "MLFQ",
+          "totalRequests": 1000,
+          "avgWaitTime": 338164.08,
+          "maxWaitTime": 1318805,
+          "minWaitTime": 0,
+          "stdDev": 357996.76,
+          "p50": 222692,
+          "p95": 1145087,
+          "p99": 1283360,
+          "throughput": 0.75,
+          "totalTime": 1329335,
+          "categoryStats": {
+            "short": {
+              "count": 330,
+              "avgWaitTime": 28482.948484848486,
+              "minWaitTime": 0,
+              "maxWaitTime": 56064,
+              "stdDev": 16167.531554311192
+            },
+            "medium": {
+              "count": 440,
+              "avgWaitTime": 273594.43863636366,
+              "minWaitTime": 56203,
+              "maxWaitTime": 493485,
+              "stdDev": 126502.40059261938
+            },
+            "long": {
+              "count": 230,
+              "avgWaitTime": 906013.7086956522,
+              "minWaitTime": 494477,
+              "maxWaitTime": 1318805,
+              "stdDev": 240775.45300548754
+            }
+          }
+        },
+        "wfq": {
+          "scheduler": "WFQ",
+          "totalRequests": 1000,
+          "avgWaitTime": 574171.76,
+          "maxWaitTime": 1318805,
+          "minWaitTime": 0,
+          "stdDev": 380976.43,
+          "p50": 650242,
+          "p95": 1142190,
+          "p99": 1283008,
+          "throughput": 0.75,
+          "totalTime": 1329335,
+          "categoryStats": {
+            "short": {
+              "count": 330,
+              "avgWaitTime": 497152.0515151515,
+              "minWaitTime": 0,
+              "maxWaitTime": 1005765,
+              "stdDev": 370330.2618229497
+            },
+            "medium": {
+              "count": 440,
+              "avgWaitTime": 557858.5068181818,
+              "minWaitTime": 12384,
+              "maxWaitTime": 1111257,
+              "stdDev": 371058.4995959605
+            },
+            "long": {
+              "count": 230,
+              "avgWaitTime": 715886.2608695652,
+              "minWaitTime": 120045,
+              "maxWaitTime": 1318805,
+              "stdDev": 378113.8105074161
+            }
+          }
+        },
+        "rateLimiter": {
+          "scheduler": "RateLimiter",
+          "totalRequests": 200,
+          "avgWaitTime": 17462.58,
+          "maxWaitTime": 34540,
+          "minWaitTime": 0,
+          "stdDev": 9927.15,
+          "p50": 17709,
+          "p95": 33079,
+          "p99": 34273,
+          "throughput": 5.52,
+          "totalTime": 36238,
+          "categoryStats": {
+            "short": {
+              "count": 200,
+              "avgWaitTime": 17462.575,
+              "minWaitTime": 0,
+              "maxWaitTime": 34540,
+              "stdDev": 9927.150201846716
+            }
+          },
+          "denied": 800,
+          "allowRate": "20.00%"
+        }
+      }
+    },
+    "tTest": {
+      "fcfs": {
+        "scheduler": "FCFS",
+        "baseline": {
+          "count": 100,
+          "avgWaitTime": 33474.05,
+          "stdDev": 35563.26
+        },
+        "largeScale": {
+          "count": 1000,
+          "avgWaitTime": 338164.08,
+          "stdDev": 357996.76
+        },
+        "tTest": {
+          "tValue": -25.6769,
+          "pValue": 0.001,
+          "significant": true,
+          "degreesOfFreedom": 1098,
+          "mean1": 33474.05,
+          "mean2": 338164.08,
+          "diff": -304690.03,
+          "diffPercent": -90.1
+        }
+      },
+      "priority": {
+        "scheduler": "Priority",
+        "baseline": {
+          "count": 100,
+          "avgWaitTime": 33839.52,
+          "stdDev": 35454.49
+        },
+        "largeScale": {
+          "count": 1000,
+          "avgWaitTime": 338398.93,
+          "stdDev": 357999.72
+        },
+        "tTest": {
+          "tValue": -25.6728,
+          "pValue": 0.001,
+          "significant": true,
+          "degreesOfFreedom": 1097.99,
+          "mean1": 33839.52,
+          "mean2": 338398.93,
+          "diff": -304559.41,
+          "diffPercent": -90
+        }
+      },
+      "mlfq": {
+        "scheduler": "MLFQ",
+        "baseline": {
+          "count": 100,
+          "avgWaitTime": 33474.05,
+          "stdDev": 35563.26
+        },
+        "largeScale": {
+          "count": 1000,
+          "avgWaitTime": 338164.08,
+          "stdDev": 357996.76
+        },
+        "tTest": {
+          "tValue": -25.6769,
+          "pValue": 0.001,
+          "significant": true,
+          "degreesOfFreedom": 1098,
+          "mean1": 33474.05,
+          "mean2": 338164.08,
+          "diff": -304690.03,
+          "diffPercent": -90.1
+        }
+      },
+      "wfq": {
+        "scheduler": "WFQ",
+        "baseline": {
+          "count": 100,
+          "avgWaitTime": 56242.37,
+          "stdDev": 39054.66
+        },
+        "largeScale": {
+          "count": 1000,
+          "avgWaitTime": 574171.76,
+          "stdDev": 380976.43
+        },
+        "tTest": {
+          "tValue": -40.8954,
+          "pValue": 0.001,
+          "significant": true,
+          "degreesOfFreedom": 1097.67,
+          "mean1": 56242.37,
+          "mean2": 574171.76,
+          "diff": -517929.39,
+          "diffPercent": -90.2
+        }
+      }
+    },
+    "summary": {
+      "workload": {
+        "SHORT": {
+          "percentage": 0.33,
+          "minTime": 50,
+          "maxTime": 300,
+          "name": "short"
+        },
+        "MEDIUM": {
+          "percentage": 0.44,
+          "minTime": 500,
+          "maxTime": 1500,
+          "name": "medium"
+        },
+        "LONG": {
+          "percentage": 0.23,
+          "minTime": 2000,
+          "maxTime": 5000,
+          "name": "long"
+        }
+      },
+      "conclusions": [
+        "FCFS: 대규모에서 평균 대기 시간 감소 (-90.1%, 통계적으로 유의함)",
+        "Priority: 대규모에서 평균 대기 시간 감소 (-90.0%, 통계적으로 유의함)",
+        "MLFQ: 대규모에서 평균 대기 시간 감소 (-90.1%, 통계적으로 유의함)",
+        "WFQ: 대규모에서 평균 대기 시간 감소 (-90.2%, 통계적으로 유의함)",
+        "MLFQ는 짧은 요청에서 0.0% 개선 효과"
+      ]
+    }
+  }
+}

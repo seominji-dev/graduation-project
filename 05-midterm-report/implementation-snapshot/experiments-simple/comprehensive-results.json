@@ -1,0 +1,138 @@
+{
+  "timestamp": "2026-02-10T11:37:38.133Z",
+  "experiments": {
+    "basic": {
+      "config": {
+        "type": "basic",
+        "numRequests": 100
+      },
+      "fcfs": {
+        "scheduler": "FCFS",
+        "totalRequests": 100,
+        "avgWaitTime": "5759.75",
+        "maxWaitTime": "11565.00",
+        "minWaitTime": "0.00",
+        "throughput": "8.17",
+        "totalTime": "12242.00",
+        "categoryWaitTimes": {}
+      },
+      "priority": {
+        "scheduler": "Priority",
+        "totalRequests": 100,
+        "avgWaitTime": "5764.63",
+        "maxWaitTime": "11572.00",
+        "minWaitTime": "0.00",
+        "throughput": "8.16",
+        "totalTime": "12249.00",
+        "categoryWaitTimes": {}
+      },
+      "mlfq": {
+        "scheduler": "MLFQ",
+        "totalRequests": 100,
+        "avgWaitTime": "5759.75",
+        "maxWaitTime": "11565.00",
+        "minWaitTime": "0.00",
+        "throughput": "8.17",
+        "totalTime": "12242.00",
+        "categoryWaitTimes": {}
+      },
+      "wfq": {
+        "scheduler": "WFQ",
+        "totalRequests": 100,
+        "avgWaitTime": "5688.17",
+        "maxWaitTime": "11565.00",
+        "minWaitTime": "0.00",
+        "throughput": "8.17",
+        "totalTime": "12242.00",
+        "categoryWaitTimes": {},
+        "fairnessIndex": "0.3159"
+      }
+    },
+    "mixedWorkload": {
+      "config": {
+        "type": "mixed-workload",
+        "numRequests": 100,
+        "distribution": {
+          "short": 33,
+          "medium": 44,
+          "long": 23
+        }
+      },
+      "fcfs": {
+        "scheduler": "FCFS",
+        "totalRequests": 100,
+        "avgWaitTime": "63107.27",
+        "maxWaitTime": "128860.00",
+        "minWaitTime": "0.00",
+        "throughput": "0.76",
+        "totalTime": "132157.00",
+        "categoryWaitTimes": {
+          "short": {
+            "count": 33,
+            "avgWaitTime": 65635.84848484848,
+            "avgProcessingTime": 171.24242424242425
+          },
+          "medium": {
+            "count": 44,
+            "avgWaitTime": 58231.045454545456,
+            "avgProcessingTime": 1045.1136363636363
+          },
+          "long": {
+            "count": 23,
+            "avgWaitTime": 68807.73913043478,
+            "avgProcessingTime": 3500.913043478261
+          }
+        }
+      },
+      "mlfq": {
+        "scheduler": "MLFQ",
+        "totalRequests": 100,
+        "avgWaitTime": "63107.27",
+        "maxWaitTime": "128860.00",
+        "minWaitTime": "0.00",
+        "throughput": "0.76",
+        "totalTime": "132157.00",
+        "categoryWaitTimes": {
+          "short": {
+            "count": 33,
+            "avgWaitTime": 65635.84848484848,
+            "avgProcessingTime": 171.24242424242425
+          },
+          "medium": {
+            "count": 44,
+            "avgWaitTime": 58231.045454545456,
+            "avgProcessingTime": 1045.1136363636363
+          },
+          "long": {
+            "count": 23,
+            "avgWaitTime": 68807.73913043478,
+            "avgProcessingTime": 3500.913043478261
+          }
+        }
+      }
+    },
+    "loadTest": {
+      "config": {
+        "type": "load-test",
+        "numRequests": 100
+      },
+      "results": {
+        "light": {
+          "fcfsAvgWaitTime": "12634.94",
+          "mlfqAvgWaitTime": "12634.94",
+          "improvement": "0.00"
+        },
+        "medium": {
+          "fcfsAvgWaitTime": "12891.28",
+          "mlfqAvgWaitTime": "12891.28",
+          "improvement": "0.00"
+        },
+        "heavy": {
+          "fcfsAvgWaitTime": "13020.40",
+          "mlfqAvgWaitTime": "13020.40",
+          "improvement": "0.00"
+        }
+      }
+    }
+  }
+}

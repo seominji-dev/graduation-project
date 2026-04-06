@@ -1,0 +1,47 @@
+{
+  "seed": 12345,
+  "requestCount": 500,
+  "timestamp": "2026-03-05T01:51:52.890Z",
+  "simulationType": "preemptive",
+  "timeSliceMs": 500,
+  "schedulers": {
+    "fcfs": {
+      "scheduler": "FCFS",
+      "totalRequests": 500,
+      "avgWaitTime": 639248.99,
+      "categoryStats": {
+        "short": {
+          "count": 184,
+          "avgWaitTime": 633753.22
+        },
+        "medium": {
+          "count": 224,
+          "avgWaitTime": 626419.65
+        },
+        "long": {
+          "count": 92,
+          "avgWaitTime": 681477.17
+        }
+      }
+    },
+    "mlfq": {
+      "scheduler": "MLFQ",
+      "totalRequests": 500,
+      "avgWaitTime": 639927.63,
+      "categoryStats": {
+        "short": {
+          "count": 184,
+          "avgWaitTime": 172926.36
+        },
+        "medium": {
+          "count": 224,
+          "avgWaitTime": 771606.88
+        },
+        "long": {
+          "count": 92,
+          "avgWaitTime": 1253319.83
+        }
+      }
+    }
+  }
+}
