@@ -6,7 +6,7 @@
     "processingTimeMax": 100,
     "arrivalInterval": 5
   },
-  "timestamp": "2026-02-10T11:37:35.331Z",
+  "timestamp": "2026-04-06T10:59:00.923Z",
   "results": {
     "fcfs": {
       "scheduler": "FCFS",
@@ -74,22 +74,22 @@
     "wfq": {
       "scheduler": "WFQ",
       "totalRequests": 100,
-      "avgWaitTime": "2819.32",
-      "maxWaitTime": "5536.00",
+      "avgWaitTime": "2476.32",
+      "maxWaitTime": "4952.00",
       "minWaitTime": "0.00",
       "avgProcessingTime": "55.59",
-      "throughput": "16.84",
+      "throughput": "17.99",
       "priorityWaitTimes": {
-        "1": 2584.969696969697,
-        "2": 3077.7727272727275,
-        "3": 2385.733333333333,
-        "4": 3177.5
+        "1": 2267.7272727272725,
+        "2": 2656.6136363636365,
+        "3": 2182,
+        "4": 2897
       },
       "tenantWaitTimes": {
-        "enterprise": 849.32,
-        "premium": 2103.04,
-        "standard": 3431.2,
-        "free": 4893.72
+        "enterprise": 429.48,
+        "premium": 1816.8,
+        "standard": 3116.28,
+        "free": 4542.72
       },
       "fairnessIndex": "0.3159",
       "tenantDetails": {
@@ -120,12 +120,12 @@
           }
         },
         "fairnessIndex": 0.31590796635329044,
-        "globalVirtualTime": 198
+        "globalVirtualTime": 1
       }
     }
   },
   "summary": {
-    "bestAvgWaitTime": "FCFS",
+    "bestAvgWaitTime": "WFQ",
     "bestThroughput": "FCFS"
   }
 }
