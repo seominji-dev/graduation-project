@@ -236,13 +236,13 @@ function runMLFQExperiment(requests) {
 		// 이번 슬라이스에서 처리할 시간 계산
 		const timeSlice = Math.min(TIME_SLICE, currentReq.remainingTime);
 
+		// 선점 체크는 usedTime 갱신 전에 수행 (이중 계산 방지)
+		const preemption = scheduler.checkPreemption(timeSlice);
+
 		// 시간 진행
 		currentTime += timeSlice;
 		currentReq.remainingTime -= timeSlice;
 		currentReq.usedTime += timeSlice;
-
-		// 선점 체크
-		const preemption = scheduler.checkPreemption(timeSlice);
 
 		if (currentReq.remainingTime <= 0) {
 			// 요청 완료

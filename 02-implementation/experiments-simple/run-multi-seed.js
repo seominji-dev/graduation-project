@@ -118,8 +118,10 @@ function simulateFCFS(requests) {
   while (!scheduler.isEmpty()) {
     const req = scheduler.dequeue();
     currentTime = Math.max(currentTime, req.arrivalTime);
-    const waitTime = currentTime - req.arrivalTime;
-    results.push({ ...req, waitTime, completedAt: currentTime + req.processingTime });
+    const completedAt = currentTime + req.processingTime;
+    // 응답시간 = 완료시각 - 도착시각 (turnaround time, MLFQ와 동일 기준)
+    const waitTime = completedAt - req.arrivalTime;
+    results.push({ ...req, waitTime, completedAt });
     currentTime += req.processingTime;
   }
 
@@ -145,6 +147,8 @@ function simulateMLFQPreemptive(requests) {
     if (!scheduler.getCurrentRequest()) {
       const nextReq = scheduler.dequeue();
       if (nextReq) {
+        currentTime = Math.max(currentTime, nextReq.arrivalTime);
+        nextReq.firstStartedAt = nextReq.firstStartedAt || currentTime;
         scheduler.startProcessing(nextReq);
       } else {
         break;
@@ -154,15 +158,16 @@ function simulateMLFQPreemptive(requests) {
     const currentReq = scheduler.getCurrentRequest();
     const timeSlice = Math.min(TIME_SLICE_MS, currentReq.remainingTime);
 
+    // 선점 체크는 usedTime 갱신 전에 수행 (이중 계산 방지)
+    const preemption = scheduler.checkPreemption(timeSlice);
+
     currentTime += timeSlice;
     currentReq.remainingTime -= timeSlice;
     currentReq.usedTime += timeSlice;
     scheduler.currentRequestUsedTime = currentReq.usedTime;
 
-    const preemption = scheduler.checkPreemption(timeSlice);
-
     if (currentReq.remainingTime <= 0) {
-      // 요청 완료
+      // 요청 완료: 응답시간 = 완료시각 - 도착시각 (turnaround time)
       const completed = scheduler.completeCurrentRequest();
       completed.completedAt = currentTime;
       completed.waitTime = currentTime - completed.arrivalTime;

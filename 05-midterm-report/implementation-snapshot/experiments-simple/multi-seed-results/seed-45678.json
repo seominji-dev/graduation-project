@@ -1,45 +1,45 @@
 {
   "seed": 45678,
   "requestCount": 500,
-  "timestamp": "2026-04-06T11:00:28.827Z",
+  "timestamp": "2026-04-06T12:00:49.169Z",
   "simulationType": "preemptive",
   "timeSliceMs": 500,
   "schedulers": {
     "fcfs": {
       "scheduler": "FCFS",
       "totalRequests": 500,
-      "avgWaitTime": 618879.81,
+      "avgWaitTime": 621497.55,
       "categoryStats": {
         "short": {
           "count": 213,
-          "avgWaitTime": 597926.32
+          "avgWaitTime": 598387.94
         },
         "medium": {
           "count": 193,
-          "avgWaitTime": 647141.23
+          "avgWaitTime": 649679.44
         },
         "long": {
           "count": 94,
-          "avgWaitTime": 608333.45
+          "avgWaitTime": 616000.15
         }
       }
     },
     "mlfq": {
       "scheduler": "MLFQ",
       "totalRequests": 500,
-      "avgWaitTime": 572806.25,
+      "avgWaitTime": 565758.49,
       "categoryStats": {
         "short": {
           "count": 213,
-          "avgWaitTime": 171218.13
+          "avgWaitTime": 164664.61
         },
         "medium": {
           "count": 193,
-          "avgWaitTime": 706576.92
+          "avgWaitTime": 698873.77
         },
         "long": {
           "count": 94,
-          "avgWaitTime": 1208131.02
+          "avgWaitTime": 1201308.98
         }
       }
     }
