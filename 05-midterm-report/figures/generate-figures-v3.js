@@ -621,7 +621,7 @@ function createFig5(pptx) {
   });
 
   // 차트 3: MLFQ 선점형 효과 (짧은 요청)
-  slide.addText('(c) MLFQ 선점형 효과 — 짧은 요청 대기시간 (5회 반복)', {
+  slide.addText('(c) MLFQ 선점형 효과 — 짧은 요청 응답시간 (5회 반복)', {
     x: 0.3, y: 3.8, w: 9.0, h: 0.3,
     fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -629,12 +629,12 @@ function createFig5(pptx) {
   slide.addChart(pptx.charts.BAR, [
     {
       name: 'FCFS',
-      labels: ['짧은 요청 평균 대기시간'],
+      labels: ['짧은 요청 평균 응답시간'],
       values: [635]
     },
     {
       name: 'MLFQ (선점형)',
-      labels: ['짧은 요청 평균 대기시간'],
+      labels: ['짧은 요청 평균 응답시간'],
       values: [170]
     }
   ], {
@@ -650,7 +650,7 @@ function createFig5(pptx) {
     showLegend: true,
     legendPos: 'b',
     legendFontSize: 8,
-    valAxisTitle: 'ms',
+    valAxisTitle: '초',
     valAxisTitleFontSize: 8
   });
 
@@ -943,7 +943,7 @@ function htmlFig5() {
 
   // Chart (c): MLFQ preemption effect
   html += '<div style="flex:1;">';
-  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(c) MLFQ 선점형 효과 - 짧은 요청 대기시간 (5회 반복)</div>';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(c) MLFQ 선점형 효과 - 짧은 요청 응답시간 (5회 반복)</div>';
   const cData = [
     { label: 'FCFS', value: 635 },
     { label: 'MLFQ (선점형)', value: 170 },
@@ -954,7 +954,7 @@ function htmlFig5() {
     const d = cData[i];
     const barH = Math.round((d.value / cMax) * 160);
     html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;">`;
-    html += `<div style="font-size:11px; color:${s.color}; font-weight:bold; margin-bottom:3px;">${d.value}ms</div>`;
+    html += `<div style="font-size:11px; color:${s.color}; font-weight:bold; margin-bottom:3px;">약 ${d.value}초</div>`;
     html += `<div style="width:65%; height:${barH}px; background:${s.color}; border-radius:4px 4px 0 0;"></div>`;
     html += `</div>`;
   });

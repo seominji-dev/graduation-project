@@ -1004,7 +1004,7 @@ async function generateMidtermReport() {
               ]}),
               new TableRow({ children: [
                 cell('도착 패턴', { width: 2000 }),
-                cell('순차 도착 (고정 5ms 간격)', { width: 3500 }),
+                cell('순차 도착 (평균 약 5ms 간격)', { width: 3500 }),
                 cell('버스트 도착 (20건 동시 \u00D7 25회, 2초 간격)', { width: 3500 })
               ]}),
               new TableRow({ children: [
@@ -1109,6 +1109,11 @@ async function generateMidtermReport() {
             '조건을 바꿔 여러 번 반복하였다. 추가 실험은 기본 실험보다 요청 수가 많고, 요청당 처리 시간도 최대 10초' +
             '(기본 실험 최대 100ms의 100배)로 크게 늘어났으며, 버스트 도착 구조이므로 전체 대기시간 자체는 크게 길어졌다.'
           ),
+          textParagraph(
+            '추가 실험에서는 선점형 MLFQ의 효과를 명확히 보여주기 위해, 지표를 응답시간(요청 도착부터 처리 완료까지의 ' +
+            '시간)으로 측정하였다. 선점형에서는 요청이 중단과 재개를 반복하므로, 사용자가 체감하는 전체 소요시간인 ' +
+            '응답시간이 더 적절한 지표이다.'
+          ),
 
           // 표 8: MLFQ 선점형 vs FCFS
           tableCaption('표 8. MLFQ 선점형 vs FCFS 비교 (짧은 요청 기준)'),
@@ -1121,7 +1126,7 @@ async function generateMidtermReport() {
                 cell('MLFQ (선점형)', { bold: true, shading: COLOR_HEADER_BG, width: 2750, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('짧은 요청 평균 대기시간', { width: 3500 }),
+                cell('짧은 요청 평균 응답시간', { width: 3500 }),
                 cell('약 635초', { width: 2750, align: AlignmentType.CENTER }),
                 cell('약 170초', { width: 2750, align: AlignmentType.CENTER })
               ]}),
@@ -1137,12 +1142,12 @@ async function generateMidtermReport() {
           emptyLine(),
 
           textParagraph(
-            '선점형 MLFQ에서 짧은 요청의 대기시간이 FCFS 대비 약 73% 줄어든 것을 확인하였다. 여러 번 반복해도 ' +
+            '선점형 MLFQ에서 짧은 요청의 응답시간이 FCFS 대비 약 73% 줄어든 것을 확인하였다. 여러 번 반복해도 ' +
             '비슷한 결과가 나와, 한 번만의 결과가 아니라는 것을 확인하였다.'
           ),
           textParagraph(
-            '반면, 긴 요청의 대기시간은 MLFQ에서 더 늘어났는데, 이는 짧은 요청을 먼저 처리하기 위해 긴 요청이 ' +
-            '하위 큐로 밀려나기 때문이다. 이처럼 MLFQ는 짧은 요청의 응답 시간을 크게 개선하지만, 긴 요청에는 불리한 ' +
+            '반면, 긴 요청의 응답시간은 MLFQ에서 더 늘어났는데, 이는 짧은 요청을 먼저 처리하기 위해 긴 요청이 ' +
+            '하위 큐로 밀려나기 때문이다. 이처럼 MLFQ는 짧은 요청의 응답시간을 크게 개선하지만, 긴 요청에는 불리한 ' +
             '면이 있다. 다만 Rule 5의 부스팅이 주기적으로 작동하여, 긴 요청이 영원히 처리되지 않는 상황은 방지된다.'
           ),
 
