@@ -26,7 +26,7 @@ const VALID_SCHEDULER_TYPES = ['FCFS', 'PRIORITY', 'MLFQ', 'WFQ'];
 function createScheduler(type) {
   const normalizedType = type.toUpperCase();
 
-  // 유효하지 않은 스케줄러 타입 검증 (FR-1.2.2)
+  // 유효하지 않은 스케줄러 타입 검증
   if (!VALID_SCHEDULER_TYPES.includes(normalizedType)) {
     console.warn(
       `알 수 없는 스케줄러 타입: "${type}". ` +

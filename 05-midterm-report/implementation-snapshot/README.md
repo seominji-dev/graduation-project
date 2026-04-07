@@ -50,7 +50,6 @@ tests-simple/                  단위 테스트
   mlfq-preemptive-behavior.test.js  MLFQ 선점형 기능 테스트
   queue.test.js                큐 테스트
   storage.test.js              저장소 테스트
-  validation.test.js           입력 검증 테스트
   api-integration.test.js      API 통합 테스트
 
 experiments-simple/            실험 코드 및 결과

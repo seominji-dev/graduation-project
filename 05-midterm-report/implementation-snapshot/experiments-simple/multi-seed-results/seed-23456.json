@@ -1,7 +1,7 @@
 {
   "seed": 23456,
   "requestCount": 500,
-  "timestamp": "2026-04-06T23:55:41.179Z",
+  "timestamp": "2026-04-07T00:38:41.518Z",
   "simulationType": "preemptive",
   "timeSliceMs": 500,
   "schedulers": {

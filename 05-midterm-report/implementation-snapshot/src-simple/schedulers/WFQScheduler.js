@@ -32,7 +32,7 @@ class WFQScheduler extends BaseScheduler {
   }
 
   /**
-   * 가중치 유효성 검증 (FR-1.3.1)
+   * 가중치 유효성 검증
    * @param {number} weight - 검증할 가중치 값
    * @returns {boolean} 유효 여부
    */

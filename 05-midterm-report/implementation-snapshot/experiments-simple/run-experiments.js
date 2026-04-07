@@ -214,10 +214,12 @@ function runMLFQExperiment(requests) {
 	}
 
 	// 처리 시뮬레이션 (선점형)
+	let lastBoostTime = 0;
 	while (!scheduler.isEmpty()) {
-		// 30개마다 boost
-		if (processCount > 0 && processCount % 30 === 0) {
+		// 5초마다 boost (기아 방지)
+		if (currentTime - lastBoostTime >= 5000) {
 			scheduler.boost();
+			lastBoostTime = currentTime;
 		}
 
 		// 현재 처리 중인 요청이 없으면 다음 요청 선택
