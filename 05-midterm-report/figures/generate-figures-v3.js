@@ -682,41 +682,320 @@ function createFig5(pptx) {
   });
 }
 
-// ─── PNG 생성 (Playwright) ───
+// ─── PNG 생성 (Playwright) ── HTML로 실제 다이어그램 렌더링 ───
+
+// 공통 HTML 래퍼
+function wrapHtml(body) {
+  return `<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1280px; height:720px; background:#FFFFFF; font-family:'Malgun Gothic','맑은 고딕',sans-serif; overflow:hidden; }
+  .title { font-size:20px; font-weight:bold; color:#1E293B; padding:16px 40px 8px; }
+</style></head><body>${body}</body></html>`;
+}
+
+function htmlFig1() {
+  const layers = [
+    { name: '클라이언트 계층', color: '#2563EB', subs: ['REST Client', '대시보드'] },
+    { name: 'API 계층 (Express.js)', color: '#059669', subs: ['요청 접수', '스케줄러 전환', '통계 조회'] },
+    { name: '스케줄러 계층', color: '#D97706', subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
+    { name: '저장소 계층', color: '#64748B', subs: ['메모리 큐', 'JSON 로그', 'Ollama'] },
+  ];
+  let html = '<div class="title">그림 1. 시스템 아키텍처</div>';
+  html += '<div style="padding:16px 80px 0; display:flex; flex-direction:column; height:640px; justify-content:center; gap:0;">';
+  layers.forEach((layer, idx) => {
+    html += `<div style="border:2px solid ${layer.color}; border-radius:10px; padding:14px 20px 16px; background:${layer.color}08;">`;
+    html += `<div style="font-size:14px; font-weight:bold; color:${layer.color}; margin-bottom:10px;">${layer.name}</div>`;
+    html += '<div style="display:flex; gap:20px; justify-content:center;">';
+    layer.subs.forEach(sub => {
+      html += `<div style="border:1.5px solid ${layer.color}; border-radius:6px; padding:10px 28px; background:#fff; font-size:12px; font-weight:bold; color:${layer.color};">${sub}</div>`;
+    });
+    html += '</div></div>';
+    if (idx < 3) {
+      html += '<div style="display:flex; justify-content:center; align-items:center; gap:36px; padding:6px 0;">';
+      html += `<span style="font-size:10px; color:${layer.color};">요청</span>`;
+      html += `<span style="font-size:18px; color:${layer.color};">&#9660;</span>`;
+      html += `<span style="font-size:18px; color:${layers[idx+1].color};">&#9650;</span>`;
+      html += `<span style="font-size:10px; color:${layers[idx+1].color};">응답</span>`;
+      html += '</div>';
+    }
+  });
+  html += '</div>';
+  return wrapHtml(html);
+}
+
+function htmlFig2() {
+  let html = '<div class="title">그림 2. 모듈 구조도</div>';
+  html += '<div style="display:flex; flex-direction:column; align-items:center; padding:8px 40px 0;">';
+  // server.js
+  html += '<div style="background:#2563EB; color:#fff; padding:12px 48px; border-radius:8px; font-size:13px; text-align:center;">server.js<br><span style="font-size:11px;">(진입점)</span></div>';
+  // connector lines
+  html += '<div style="width:2px; height:20px; background:#CBD5E1;"></div>';
+  html += '<div style="width:680px; height:2px; background:#CBD5E1;"></div>';
+  // 4 modules row
+  html += '<div style="display:flex; gap:24px; margin-top:0;">';
+  const modules = [
+    { name: 'api/\nroutes.js', color: '#059669' },
+    { name: 'schedulers/\n(4개 알고리즘)', color: '#D97706' },
+    { name: 'queue/\nMemoryQueue.js', color: '#64748B' },
+    { name: 'storage/\nJSONStore.js', color: '#64748B' },
+  ];
+  modules.forEach(mod => {
+    html += '<div style="display:flex; flex-direction:column; align-items:center;">';
+    html += `<div style="width:2px; height:20px; background:#CBD5E1;"></div>`;
+    html += `<div style="border:1.5px solid ${mod.color}; border-radius:8px; padding:12px 16px; background:${mod.color}0A; font-size:11px; color:${mod.color}; text-align:center; white-space:pre-line; width:150px;">${mod.name}</div>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  // BaseScheduler + interface label
+  html += '<div style="display:flex; gap:20px; align-items:center; margin-top:16px;">';
+  html += '<div style="border:1px dashed #CBD5E1; border-radius:4px; padding:6px 12px; background:#F1F5F9; font-size:10px; color:#64748B; font-style:italic;">공통 인터페이스</div>';
+  html += '<div style="border:1px solid #CBD5E1; border-radius:4px; padding:8px 24px; background:#F1F5F9; font-size:11px; color:#64748B;">BaseScheduler (enqueue / dequeue)</div>';
+  html += '<div style="border:1px solid #2563EB; border-radius:4px; padding:8px 16px; background:#2563EB0A; font-size:11px; color:#2563EB; text-align:center;">llm/<br>OllamaClient.js</div>';
+  html += '</div>';
+  // inheritance arrows + 4 schedulers
+  html += '<div style="display:flex; flex-direction:column; align-items:center; margin-top:4px;">';
+  html += '<div style="font-size:9px; color:#D97706; font-style:italic;">상속</div>';
+  html += '<div style="display:flex; gap:20px; margin-top:4px;">';
+  ['FCFS', 'Priority', 'MLFQ', 'WFQ'].forEach(s => {
+    html += `<div style="border:1px solid #D97706; border-radius:4px; padding:8px 24px; background:#D977060A; font-size:12px; font-weight:bold; color:#D97706;">${s}</div>`;
+  });
+  html += '</div></div></div>';
+  return wrapHtml(html);
+}
+
+function htmlFig3() {
+  const topSteps = [
+    { label: '1. 요청 전송', detail: 'POST /api/requests', status: 'PENDING', color: '#2563EB' },
+    { label: '2. 입력 검증', detail: 'API 계층', status: 'PENDING', color: '#059669' },
+    { label: '3. 큐 등록', detail: 'enqueue()', status: 'QUEUED', color: '#D97706' },
+    { label: '4. 스케줄링', detail: 'dequeue()', status: 'PROCESSING', color: '#D97706' },
+    { label: '5. LLM 호출', detail: 'Ollama API', status: 'PROCESSING', color: '#2563EB' },
+  ];
+  let html = '<div class="title">그림 3. 데이터 흐름도</div>';
+  // top row
+  html += '<div style="display:flex; align-items:center; padding:8px 20px; gap:0;">';
+  topSteps.forEach((step, i) => {
+    html += `<div style="border:1.5px solid ${step.color}; border-radius:8px; padding:10px 8px; background:${step.color}0A; width:180px; text-align:center; flex-shrink:0;">`;
+    html += `<div style="font-size:11px; font-weight:bold; color:${step.color};">${step.label}</div>`;
+    html += `<div style="font-size:10px; color:#64748B; margin:4px 0;">${step.detail}</div>`;
+    html += `<div style="display:inline-block; background:${step.color}26; border-radius:4px; padding:2px 10px; font-size:9px; font-weight:bold; color:${step.color}; margin-top:4px;">${step.status}</div>`;
+    html += '</div>';
+    if (i < 4) {
+      html += '<div style="font-size:20px; color:#CBD5E1; padding:0 2px;">&#9654;</div>';
+    }
+  });
+  html += '</div>';
+  // down arrow from step 5
+  html += '<div style="display:flex; justify-content:flex-end; padding-right:90px;">';
+  html += '<div style="font-size:20px; color:#CBD5E1;">&#9660;</div>';
+  html += '</div>';
+  // bottom row
+  html += '<div style="display:flex; gap:24px; padding:8px 20px;">';
+  // lifecycle summary box
+  html += '<div style="border:1px dashed #CBD5E1; border-radius:8px; padding:14px 18px; background:#F1F5F9; flex:1;">';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">요청 수명 주기 (Request Lifecycle)</div>';
+  html += '<div style="font-size:11px;">';
+  html += '<span style="font-weight:bold; color:#2563EB;">PENDING</span>';
+  html += '<span style="color:#64748B;">  &rarr;  </span>';
+  html += '<span style="font-weight:bold; color:#D97706;">QUEUED</span>';
+  html += '<span style="color:#64748B;">  &rarr;  </span>';
+  html += '<span style="font-weight:bold; color:#D97706;">PROCESSING</span>';
+  html += '<span style="color:#64748B;">  &rarr;  </span>';
+  html += '<span style="font-weight:bold; color:#059669;">COMPLETED</span>';
+  html += '</div>';
+  html += '<div style="font-size:10px; color:#64748B; font-style:italic; margin-top:6px;">각 단계에서 상태가 JSON 로그에 기록됨</div>';
+  html += '</div>';
+  // step 6 box
+  html += '<div style="border:1.5px solid #059669; border-radius:8px; padding:14px 24px; background:#0596690A; width:320px; text-align:center;">';
+  html += '<div style="font-size:13px; font-weight:bold; color:#059669;">6. 응답 반환 + 이력 저장</div>';
+  html += '<div style="font-size:10px; color:#64748B; margin:6px 0;">JSON 로그 기록 / 클라이언트 응답</div>';
+  html += '<div style="display:inline-block; background:#05966926; border-radius:4px; padding:2px 14px; font-size:9px; font-weight:bold; color:#059669;">COMPLETED</div>';
+  html += '</div>';
+  html += '</div>';
+  // return arrow
+  html += '<div style="display:flex; align-items:center; padding:8px 20px; gap:8px;">';
+  html += '<div style="flex:1;"></div>';
+  html += '<div style="font-size:16px; color:#D97706;">&#9664;</div>';
+  html += '<div style="font-size:10px; color:#64748B; font-style:italic;">반복 (다음 요청 처리)</div>';
+  html += '</div>';
+  return wrapHtml(html);
+}
+
+function htmlFig4() {
+  let html = '<div class="title">그림 4. 스케줄링 알고리즘 비교</div>';
+  html += '<div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:0; padding:4px 28px; height:660px;">';
+
+  // FCFS (top-left)
+  html += '<div style="padding:16px 20px; border-right:1px solid #CBD5E1; border-bottom:1px solid #CBD5E1; display:flex; flex-direction:column; justify-content:center;">';
+  html += '<div style="font-size:15px; font-weight:bold; color:#2563EB;">FCFS (선착순)</div>';
+  html += '<div style="font-size:11px; color:#64748B; font-style:italic; margin-bottom:16px;">먼저 온 순서대로</div>';
+  html += '<div style="display:flex; align-items:center; gap:0;">';
+  ['R1','R2','R3','R4','R5'].forEach(r => {
+    html += `<div style="border:1.5px solid #2563EB; background:#2563EB1A; padding:16px 20px; font-size:13px; color:#2563EB; text-align:center; font-weight:bold;">${r}</div>`;
+  });
+  html += '<div style="font-size:20px; color:#2563EB; margin-left:12px;">&#9654;</div>';
+  html += '<div style="font-size:12px; color:#64748B; margin-left:6px;">처리</div>';
+  html += '</div>';
+  html += '<div style="font-size:10px; color:#64748B; margin-top:12px;">도착 순서 그대로 처리 (대기열)</div>';
+  html += '</div>';
+
+  // Priority (top-right)
+  html += '<div style="padding:16px 20px; border-bottom:1px solid #CBD5E1; display:flex; flex-direction:column; justify-content:center;">';
+  html += '<div style="font-size:15px; font-weight:bold; color:#D97706;">Priority (우선순위)</div>';
+  html += '<div style="font-size:11px; color:#64748B; font-style:italic; margin-bottom:16px;">급한 것 먼저</div>';
+  html += '<div style="display:flex; gap:10px;">';
+  [{ n:'URG', c:'#DC2626' }, { n:'HIGH', c:'#EA580C' }, { n:'NORM', c:'#CA8A04' }, { n:'LOW', c:'#65A30D' }].forEach(r => {
+    html += `<div style="border:1.5px solid ${r.c}; background:${r.c}1A; padding:16px 22px; font-size:12px; font-weight:bold; color:${r.c};">${r.n}</div>`;
+  });
+  html += '</div>';
+  html += '<div style="font-size:10px; color:#64748B; margin-top:12px;">우선순위가 높은 요청부터 처리</div>';
+  html += '</div>';
+
+  // MLFQ (bottom-left)
+  html += '<div style="padding:16px 20px; border-right:1px solid #CBD5E1; display:flex; flex-direction:column; justify-content:center;">';
+  html += '<div style="font-size:15px; font-weight:bold; color:#2563EB;">MLFQ (다단계 피드백 큐)</div>';
+  html += '<div style="font-size:11px; color:#64748B; font-style:italic; margin-bottom:10px;">짧은 요청 우선 + 자동 조정</div>';
+  html += '<div style="display:flex; gap:16px;">';
+  html += '<div style="flex:1;">';
+  [{ n:'Q0 (1초)', c:'#2563EB' }, { n:'Q1 (3초)', c:'#3B82F6' }, { n:'Q2 (8초)', c:'#60A5FA' }, { n:'Q3 (무제한)', c:'#93C5FD' }].forEach(q => {
+    html += `<div style="border:1px solid ${q.c}; background:${q.c}14; padding:8px 14px; margin-bottom:6px; font-size:12px; color:${q.c};">${q.n}</div>`;
+  });
+  html += '</div>';
+  html += '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">';
+  html += '<div style="font-size:22px; color:#CBD5E1;">&#9660;</div>';
+  html += '<div style="font-size:10px; color:#64748B; text-align:center;">시간 초과 시<br>강등</div>';
+  html += '<div style="font-size:22px; color:#2563EB80;">&#9650;</div>';
+  html += '<div style="font-size:10px; font-weight:bold; color:#2563EB;">Boost</div>';
+  html += '</div></div></div>';
+
+  // WFQ (bottom-right)
+  html += '<div style="padding:16px 20px; display:flex; flex-direction:column; justify-content:center;">';
+  html += '<div style="font-size:15px; font-weight:bold; color:#059669;">WFQ (가중치 공정 큐잉)</div>';
+  html += '<div style="font-size:11px; color:#64748B; font-style:italic; margin-bottom:10px;">가중치만큼 공정하게</div>';
+  [{ n:'Enterprise (w=100)', w:'92%' }, { n:'Premium (w=50)', w:'68%' }, { n:'Standard (w=10)', w:'42%' }, { n:'Free (w=1)', w:'22%' }].forEach((t, i) => {
+    const alpha = ['14','19','1E','23'][i];
+    html += `<div style="border:1px solid #059669; background:#059669${alpha}; padding:8px 14px; margin-bottom:6px; width:${t.w}; font-size:11px; color:#059669;">${t.n}</div>`;
+  });
+  html += '<div style="font-size:11px; color:#64748B; font-style:italic; margin-top:10px; text-align:center;">가중치에 비례하여 자원 배분</div>';
+  html += '</div>';
+
+  html += '</div>';
+  return wrapHtml(html);
+}
+
+function htmlFig5() {
+  // Helper: build a bar chart as HTML using absolute positioning for reliable bar heights
+  function barChart(data, maxVal, barColor, chartHeight) {
+    const h = chartHeight || 200;
+    let out = `<div style="position:relative; height:${h}px; display:flex; align-items:flex-end; gap:16px; padding:0 8px; border-bottom:2px solid #E2E8F0;">`;
+    data.forEach(d => {
+      const barH = Math.round((d.value / maxVal) * h);
+      out += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;">`;
+      out += `<div style="font-size:10px; color:${barColor}; font-weight:bold; margin-bottom:3px;">${d.value.toLocaleString()}</div>`;
+      out += `<div style="width:70%; height:${barH}px; background:${barColor}; border-radius:4px 4px 0 0;"></div>`;
+      out += `</div>`;
+    });
+    out += '</div>';
+    // labels
+    out += '<div style="display:flex; gap:16px; padding:4px 8px;">';
+    data.forEach(d => { out += `<div style="flex:1; text-align:center; font-size:10px; color:#1E293B; white-space:pre-line;">${d.label}</div>`; });
+    out += '</div>';
+    return out;
+  }
+
+  let html = '<div class="title">그림 5. 중간 실험 결과</div>';
+  html += '<div style="display:flex; flex-wrap:wrap; padding:0 24px; gap:20px;">';
+
+  // Chart (a): average wait time per algorithm
+  html += '<div style="flex:1; min-width:440px;">';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(a) 알고리즘별 평균 대기시간 (100건 실험)</div>';
+  const barDataA = [
+    { label: 'FCFS', value: 2572 },
+    { label: 'Priority', value: 2677 },
+    { label: 'MLFQ', value: 2572 },
+    { label: 'WFQ', value: 2476 },
+  ];
+  // Chart container with reference line overlay
+  html += '<div style="position:relative;">';
+  // average reference line at 2574/3200
+  const refPct = (2574 / 3200) * 100;
+  html += `<div style="position:absolute; left:0; right:0; bottom:${refPct}%; border-top:2px dashed #DC2626; z-index:2; pointer-events:none;"></div>`;
+  html += `<div style="position:absolute; right:4px; bottom:${refPct + 1}%; font-size:9px; color:#DC2626; font-weight:bold; z-index:2;">avg: 2,574ms</div>`;
+  html += barChart(barDataA, 3200, '#2563EB', 200);
+  html += '</div></div>';
+
+  // Chart (b): WFQ tier wait times
+  html += '<div style="flex:1; min-width:360px;">';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(b) WFQ 등급별 대기시간</div>';
+  const barDataB = [
+    { label: 'Enterprise\n(w=100)', value: 429 },
+    { label: 'Premium\n(w=50)', value: 1817 },
+    { label: 'Standard\n(w=10)', value: 3116 },
+    { label: 'Free\n(w=1)', value: 4543 },
+  ];
+  html += barChart(barDataB, 5000, '#059669', 200);
+  html += '</div>';
+
+  // Row 2
+  html += '<div style="display:flex; gap:20px; width:100%;">';
+
+  // Chart (c): MLFQ preemption effect
+  html += '<div style="flex:1;">';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(c) MLFQ 선점형 효과 - 짧은 요청 대기시간 (5회 반복)</div>';
+  const cData = [
+    { label: 'FCFS', value: 635 },
+    { label: 'MLFQ (선점형)', value: 170 },
+  ];
+  html += '<div style="position:relative; height:160px; display:flex; align-items:flex-end; gap:32px; padding:0 40px; border-bottom:2px solid #E2E8F0;">';
+  const cMax = 700;
+  [{ color:'#B0BEC5' }, { color:'#2563EB' }].forEach((s, i) => {
+    const d = cData[i];
+    const barH = Math.round((d.value / cMax) * 160);
+    html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;">`;
+    html += `<div style="font-size:11px; color:${s.color}; font-weight:bold; margin-bottom:3px;">${d.value}ms</div>`;
+    html += `<div style="width:65%; height:${barH}px; background:${s.color}; border-radius:4px 4px 0 0;"></div>`;
+    html += `</div>`;
+  });
+  html += '</div>';
+  html += '<div style="display:flex; gap:32px; padding:4px 40px;">';
+  html += '<div style="flex:1; text-align:center; font-size:10px; color:#1E293B;">FCFS</div>';
+  html += '<div style="flex:1; text-align:center; font-size:10px; color:#1E293B;">MLFQ (선점형)</div>';
+  html += '</div>';
+  html += '<div style="text-align:center; font-size:14px; font-weight:bold; color:#DC2626; margin-top:6px;">약 73% 감소</div>';
+  html += '</div>';
+
+  // Key results summary box
+  html += '<div style="flex:1; border:1px solid #CBD5E1; border-radius:8px; padding:16px 20px; background:#F1F5F9;">';
+  html += '<div style="font-size:14px; font-weight:bold; color:#1E293B; margin-bottom:12px;">핵심 결과 요약</div>';
+  html += '<div style="font-size:12px; line-height:2.0;">';
+  html += '<span style="font-weight:bold; color:#D97706;">Priority:</span> <span style="color:#1E293B;">URGENT 약 42ms (거의 즉시)</span><br>';
+  html += '<span style="font-weight:bold; color:#059669;">WFQ:</span> <span style="color:#1E293B;">Enterprise vs Free 약 10배 차이</span><br>';
+  html += '<span style="color:#059669; font-style:italic; font-size:10px; padding-left:48px;">JFI = 0.32</span><br>';
+  html += '<span style="font-weight:bold; color:#2563EB;">MLFQ:</span> <span style="color:#1E293B;">짧은 요청 약 73% 개선</span>';
+  html += '</div></div>';
+
+  html += '</div>'; // row 2 end
+  html += '</div>';
+  return wrapHtml(html);
+}
 
 async function generatePNGs() {
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
 
   const figures = [
-    { name: 'fig-1-system-architecture', title: '시스템 아키텍처' },
-    { name: 'fig-2-module-structure', title: '모듈 구조도' },
-    { name: 'fig-3-data-flow', title: '데이터 흐름도' },
-    { name: 'fig-4-scheduling-comparison', title: '스케줄링 알고리즘 비교' },
-    { name: 'fig-5-experiment-results', title: '실험 결과' },
+    { name: 'fig-1-system-architecture', html: htmlFig1() },
+    { name: 'fig-2-module-structure', html: htmlFig2() },
+    { name: 'fig-3-data-flow', html: htmlFig3() },
+    { name: 'fig-4-scheduling-comparison', html: htmlFig4() },
+    { name: 'fig-5-experiment-results', html: htmlFig5() },
   ];
 
   for (const fig of figures) {
-    const pptxPath = path.join(OUTPUT_DIR, `${fig.name}.pptx`);
-    if (!fs.existsSync(pptxPath)) continue;
-
-    // PPTX가 존재하면 간단한 플레이스홀더 PNG 생성
     const page = await context.newPage();
-    await page.setContent(`
-      <html>
-      <body style="margin:0;display:flex;align-items:center;justify-content:center;
-        width:1280px;height:720px;background:#f8fafc;font-family:'Malgun Gothic',sans-serif;">
-        <div style="text-align:center;color:#64748b;">
-          <div style="font-size:24px;font-weight:bold;color:#1e293b;margin-bottom:12px;">
-            ${fig.title}
-          </div>
-          <div style="font-size:14px;">
-            편집 가능한 원본: ${fig.name}.pptx
-          </div>
-        </div>
-      </body>
-      </html>
-    `);
+    await page.setContent(fig.html, { waitUntil: 'networkidle' });
     await page.screenshot({
       path: path.join(OUTPUT_DIR, `${fig.name}.png`),
       type: 'png'
@@ -768,11 +1047,10 @@ async function main() {
   console.log(`  통합 PPTX: midterm-figures.pptx (${figures.length}장)`);
 
   // PNG 스크린샷 생성
-  console.log('\nPNG 플레이스홀더 생성 중...');
+  console.log('\nPNG 다이어그램 생성 중...');
   await generatePNGs();
 
   console.log('\n완료! 5개 PPTX + 5개 PNG 생성됨.');
-  console.log('참고: PNG는 플레이스홀더입니다. 최종 PNG는 PowerPoint에서 PPTX를 열고 내보내기하세요.');
 }
 
 main().catch(err => {
