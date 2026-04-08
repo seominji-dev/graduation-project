@@ -597,7 +597,7 @@ function createFig5(pptx) {
   });
 
   // 차트 2: WFQ 등급별 대기시간
-  slide.addText('(b) WFQ 등급별 대기시간', {
+  slide.addText('(b) WFQ 등급별 대기시간 (ms)', {
     x: 5.3, y: 0.8, w: 4.5, h: 0.3,
     fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -928,7 +928,7 @@ function htmlFig5() {
 
   // Chart (b): WFQ tier wait times
   html += '<div style="flex:1; min-width:360px;">';
-  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(b) WFQ 등급별 대기시간</div>';
+  html += '<div style="font-size:12px; font-weight:bold; color:#1E293B; margin-bottom:8px;">(b) WFQ 등급별 대기시간 (ms)</div>';
   const barDataB = [
     { label: 'Enterprise\n(w=100)', value: 429 },
     { label: 'Premium\n(w=50)', value: 1817 },

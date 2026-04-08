@@ -120,8 +120,8 @@ function simulateFCFS(requests) {
     currentTime = Math.max(currentTime, req.arrivalTime);
     const completedAt = currentTime + req.processingTime;
     // 응답시간 = 완료시각 - 도착시각 (turnaround time, MLFQ와 동일 기준)
-    const waitTime = completedAt - req.arrivalTime;
-    results.push({ ...req, waitTime, completedAt });
+    const responseTime = completedAt - req.arrivalTime;
+    results.push({ ...req, responseTime, completedAt });
     currentTime += req.processingTime;
   }
 
@@ -170,7 +170,7 @@ function simulateMLFQPreemptive(requests) {
       // 요청 완료: 응답시간 = 완료시각 - 도착시각 (turnaround time)
       const completed = scheduler.completeCurrentRequest();
       completed.completedAt = currentTime;
-      completed.waitTime = currentTime - completed.arrivalTime;
+      completed.responseTime = currentTime - completed.arrivalTime;
       results.push(completed);
       completedCount++;
     } else if (preemption && preemption.shouldPreempt) {
@@ -192,18 +192,18 @@ function simulateMLFQPreemptive(requests) {
 // ============================================
 
 function analyzeResults(results, schedulerName) {
-  const waitTimes = results.map(r => r.waitTime);
-  const avgWaitTime = waitTimes.reduce((a, b) => a + b, 0) / waitTimes.length;
+  const responseTimes = results.map(r => r.responseTime);
+  const avgResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
 
   const categoryStats = {};
   for (const cat of ['short', 'medium', 'long']) {
     const catResults = results.filter(r => r.category === cat);
     if (catResults.length > 0) {
-      const catWaitTimes = catResults.map(r => r.waitTime);
-      const catAvg = catWaitTimes.reduce((a, b) => a + b, 0) / catWaitTimes.length;
+      const catResponseTimes = catResults.map(r => r.responseTime);
+      const catAvg = catResponseTimes.reduce((a, b) => a + b, 0) / catResponseTimes.length;
       categoryStats[cat] = {
         count: catResults.length,
-        avgWaitTime: parseFloat(catAvg.toFixed(2)),
+        avgResponseTime: parseFloat(catAvg.toFixed(2)),
       };
     }
   }
@@ -211,7 +211,7 @@ function analyzeResults(results, schedulerName) {
   return {
     scheduler: schedulerName,
     totalRequests: results.length,
-    avgWaitTime: parseFloat(avgWaitTime.toFixed(2)),
+    avgResponseTime: parseFloat(avgResponseTime.toFixed(2)),
     categoryStats,
   };
 }
@@ -253,15 +253,15 @@ function runMultiSeedExperiments() {
     const fcfsStats = analyzeResults(fcfsResults, 'FCFS');
     const mlfqStats = analyzeResults(mlfqResults, 'MLFQ');
 
-    seedResults.fcfs.push(fcfsStats.avgWaitTime);
-    seedResults.mlfq.push(mlfqStats.avgWaitTime);
+    seedResults.fcfs.push(fcfsStats.avgResponseTime);
+    seedResults.mlfq.push(mlfqStats.avgResponseTime);
 
     for (const cat of ['short', 'medium', 'long']) {
       if (fcfsStats.categoryStats[cat]) {
-        categoryResults.fcfs[cat].push(fcfsStats.categoryStats[cat].avgWaitTime);
+        categoryResults.fcfs[cat].push(fcfsStats.categoryStats[cat].avgResponseTime);
       }
       if (mlfqStats.categoryStats[cat]) {
-        categoryResults.mlfq[cat].push(mlfqStats.categoryStats[cat].avgWaitTime);
+        categoryResults.mlfq[cat].push(mlfqStats.categoryStats[cat].avgResponseTime);
       }
     }
 
@@ -279,12 +279,12 @@ function runMultiSeedExperiments() {
     fs.writeFileSync(seedFile, JSON.stringify(seedData, null, 2));
 
     // Short 개선율
-    const fcfsShort = fcfsStats.categoryStats.short?.avgWaitTime || 0;
-    const mlfqShort = mlfqStats.categoryStats.short?.avgWaitTime || 0;
+    const fcfsShort = fcfsStats.categoryStats.short?.avgResponseTime || 0;
+    const mlfqShort = mlfqStats.categoryStats.short?.avgResponseTime || 0;
     const shortImprove = fcfsShort > 0 ? ((fcfsShort - mlfqShort) / fcfsShort * 100).toFixed(1) : '0';
 
     console.log(
-      `  FCFS: ${fcfsStats.avgWaitTime}ms | MLFQ: ${mlfqStats.avgWaitTime}ms | ` +
+      `  FCFS: ${fcfsStats.avgResponseTime}ms | MLFQ: ${mlfqStats.avgResponseTime}ms | ` +
       `Short 개선: ${shortImprove}%`
     );
   }
@@ -318,12 +318,12 @@ function runMultiSeedExperiments() {
     },
     fcfsOverall: descriptiveStats(seedResults.fcfs),
     mlfqOverall: descriptiveStats(seedResults.mlfq),
-    fcfsShortWait: descriptiveStats(categoryResults.fcfs.short),
-    mlfqShortWait: descriptiveStats(categoryResults.mlfq.short),
-    fcfsMediumWait: descriptiveStats(categoryResults.fcfs.medium),
-    mlfqMediumWait: descriptiveStats(categoryResults.mlfq.medium),
-    fcfsLongWait: descriptiveStats(categoryResults.fcfs.long),
-    mlfqLongWait: descriptiveStats(categoryResults.mlfq.long),
+    fcfsShortResponse: descriptiveStats(categoryResults.fcfs.short),
+    mlfqShortResponse: descriptiveStats(categoryResults.mlfq.short),
+    fcfsMediumResponse: descriptiveStats(categoryResults.fcfs.medium),
+    mlfqMediumResponse: descriptiveStats(categoryResults.mlfq.medium),
+    fcfsLongResponse: descriptiveStats(categoryResults.fcfs.long),
+    mlfqLongResponse: descriptiveStats(categoryResults.mlfq.long),
     shortImprovement: descriptiveStats(improvements),
   };
 

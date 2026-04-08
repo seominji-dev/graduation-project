@@ -29,7 +29,7 @@
     },
     "categoryDistribution": "40% short, 40% medium, 20% long",
     "simulationType": "preemptive (MLFQ) vs non-preemptive (FCFS)",
-    "timestamp": "2026-04-06T12:00:49.171Z"
+    "timestamp": "2026-04-08T02:04:09.765Z"
   },
   "fcfsOverall": {
     "mean": 641535.39,
@@ -43,37 +43,37 @@
     "max": 639161.21,
     "count": 5
   },
-  "fcfsShortWait": {
+  "fcfsShortResponse": {
     "mean": 634759.46,
     "min": 598387.94,
     "max": 666729.92,
     "count": 5
   },
-  "mlfqShortWait": {
+  "mlfqShortResponse": {
     "mean": 169974.01,
     "min": 164212.61,
     "max": 179071.29,
     "count": 5
   },
-  "fcfsMediumWait": {
+  "fcfsMediumResponse": {
     "mean": 645078.19,
     "min": 619664.37,
     "max": 674847.43,
     "count": 5
   },
-  "mlfqMediumWait": {
+  "mlfqMediumResponse": {
     "mean": 729167.59,
     "min": 698873.77,
     "max": 765354.34,
     "count": 5
   },
-  "fcfsLongWait": {
+  "fcfsLongResponse": {
     "mean": 650228.46,
     "min": 616000.15,
     "max": 688911.57,
     "count": 5
   },
-  "mlfqLongWait": {
+  "mlfqLongResponse": {
     "mean": 1226080.57,
     "min": 1198933.13,
     "max": 1254740.9,
