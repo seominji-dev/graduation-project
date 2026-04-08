@@ -7,7 +7,8 @@ const path = require('path');
 const {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
   Header, Footer, AlignmentType, LevelFormat, HeadingLevel,
-  BorderStyle, WidthType, ShadingType, VerticalAlign, PageNumber, PageBreak
+  BorderStyle, WidthType, ShadingType, VerticalAlign, PageNumber, PageBreak,
+  ImageRun
 } = require('docx');
 
 // ============================================================
@@ -186,6 +187,32 @@ function figureCaption(text) {
   return textParagraph(text, {
     alignment: AlignmentType.CENTER,
     runOptions: { italics: true, color: COLOR_GRAY }
+  });
+}
+
+/** 그림 이미지 삽입 (PNG 파일, 너비 15cm 기준) */
+function figureImage(pngFileName) {
+  const figDir = path.resolve(__dirname, '..', 'figures');
+  const filePath = path.join(figDir, pngFileName);
+  if (!fs.existsSync(filePath)) {
+    console.warn(`그림 파일 없음: ${filePath}`);
+    return figureCaption(`[그림 파일 없음: ${pngFileName}]`);
+  }
+  const imgData = fs.readFileSync(filePath);
+  // 15cm ≈ 5.91in, 96 DPI 기준 → 567px 너비
+  // 16:9 비율 → 319px 높이
+  const widthPx = 567;
+  const heightPx = 319;
+  return new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 100, after: 100 },
+    children: [
+      new ImageRun({
+        data: imgData,
+        transformation: { width: widthPx, height: heightPx },
+        type: 'png'
+      })
+    ]
   });
 }
 
@@ -588,7 +615,8 @@ async function generateMidtermReport() {
           heading2('3.2 시스템 아키텍처'),
           textParagraph('시스템은 4개의 계층으로 구성하였다 (그림 1).'),
           emptyLine(),
-          figureCaption('[그림 1] 시스템 아키텍처 (별첨: figures/fig-1-system-architecture.pptx)'),
+          figureImage('fig-1-system-architecture.png'),
+          figureCaption('[그림 1] 시스템 아키텍처'),
           emptyLine(),
           multiRunParagraph([
             { text: '클라이언트 계층: ', bold: true },
@@ -611,7 +639,8 @@ async function generateMidtermReport() {
               'Ollama [8]를 통해 로컬에서 수행한다.' }
           ]),
           emptyLine(),
-          figureCaption('[그림 2] 모듈 구조도 (별첨: figures/fig-2-module-structure.pptx)'),
+          figureImage('fig-2-module-structure.png'),
+          figureCaption('[그림 2] 모듈 구조도'),
           emptyLine(),
 
           // 3.3 설계 방침
@@ -708,7 +737,8 @@ async function generateMidtermReport() {
           heading2('3.4 데이터 처리 흐름'),
           textParagraph('사용자가 요청을 보내면 다음 순서로 처리된다 (그림 3).'),
           emptyLine(),
-          figureCaption('[그림 3] 데이터 흐름도 (별첨: figures/fig-3-data-flow.pptx)'),
+          figureImage('fig-3-data-flow.png'),
+          figureCaption('[그림 3] 데이터 흐름도'),
           emptyLine(),
           numberedItem('사용자가 REST API(POST /api/requests)로 요청을 보낸다.'),
           numberedItem('API 계층에서 입력을 확인한 뒤, 요청 객체를 만들어 스케줄러에 전달한다.'),
@@ -909,7 +939,8 @@ async function generateMidtermReport() {
             '처리되지 못하는 것을 방지한다. 네 가지 알고리즘의 동작 방식을 그림 4에 정리하였다.'
           ),
           emptyLine(),
-          figureCaption('[그림 4] 스케줄링 알고리즘 비교 (별첨: figures/fig-4-scheduling-comparison.pptx)'),
+          figureImage('fig-4-scheduling-comparison.png'),
+          figureCaption('[그림 4] 스케줄링 알고리즘 비교'),
           emptyLine(),
 
           // WFQ 가상 완료 시각 계산
@@ -1055,7 +1086,7 @@ async function generateMidtermReport() {
                 cell('Priority', { width: 1500, align: AlignmentType.CENTER }),
                 cell('2,677ms', { width: 2000, align: AlignmentType.CENTER }),
                 cell('17.1', { width: 2000, align: AlignmentType.CENTER }),
-                cell('URGENT: 약 42ms, LOW: 약 4,579ms', { width: 3500 })
+                cell('URGENT: 약 40ms, LOW: 약 4,600ms', { width: 3500 })
               ]}),
               new TableRow({ children: [
                 cell('MLFQ', { width: 1500, align: AlignmentType.CENTER }),
@@ -1067,7 +1098,7 @@ async function generateMidtermReport() {
                 cell('WFQ', { width: 1500, align: AlignmentType.CENTER }),
                 cell('2,476ms', { width: 2000, align: AlignmentType.CENTER }),
                 cell('18.0', { width: 2000, align: AlignmentType.CENTER }),
-                cell('Enterprise: 429ms, Free: 4,543ms', { width: 3500 })
+                cell('Enterprise: 약 430ms, Free: 약 4,540ms', { width: 3500 })
               ]})
             ]
           }),
@@ -1076,15 +1107,15 @@ async function generateMidtermReport() {
           multiRunParagraph([
             { text: 'Priority Scheduling: ', bold: true },
             { text: '우선순위에 따른 대기시간 차이가 뚜렷하게 나타났다. URGENT 요청은 전체의 10%에 불과하고 가장 먼저 ' +
-              '처리되므로 평균 약 42ms로 거의 즉시 처리된 반면, LOW 요청은 약 4,579ms로 FCFS 평균(2,572ms)보다 크게 ' +
+              '처리되므로 평균 약 40ms로 거의 즉시 처리된 반면, LOW 요청은 약 4,600ms로 FCFS 평균(2,572ms)보다 크게 ' +
               '늘어났다. 전체 평균 대기시간(2,677ms)이 FCFS(2,572ms)보다 약간 높은 것은, 높은 우선순위 요청을 먼저 ' +
               '처리한 만큼 낮은 우선순위 요청의 대기시간이 길어지기 때문이다. 처리량(17.1 req/s)도 FCFS(18.0 req/s)보다 ' +
               '약간 낮은데, 나중에 도착한 높은 우선순위 요청을 먼저 처리하면서 중간에 짧은 유휴 시간이 발생하기 때문이다.' }
           ]),
           multiRunParagraph([
             { text: 'WFQ: ', bold: true },
-            { text: 'Enterprise 등급 사용자(가중치 100)의 평균 대기시간은 429ms인 반면, ' +
-              'Free 등급(가중치 1)은 4,543ms로 약 10배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 ' +
+            { text: 'Enterprise 등급 사용자(가중치 100)의 평균 대기시간은 약 430ms인 반면, ' +
+              'Free 등급(가중치 1)은 약 4,500ms로 약 10배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 ' +
               '제공되는 것을 확인하였다.' }
           ]),
           textParagraph(
@@ -1138,7 +1169,8 @@ async function generateMidtermReport() {
             ]
           }),
           emptyLine(),
-          figureCaption('[그림 5] 실험 결과 차트 (별첨: figures/fig-5-experiment-results.pptx)'),
+          figureImage('fig-5-experiment-results.png'),
+          figureCaption('[그림 5] 실험 결과 차트'),
           emptyLine(),
 
           textParagraph(
