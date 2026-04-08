@@ -29,7 +29,7 @@
     },
     "categoryDistribution": "40% short, 40% medium, 20% long",
     "simulationType": "preemptive (MLFQ) vs non-preemptive (FCFS)",
-    "timestamp": "2026-04-08T02:17:59.756Z"
+    "timestamp": "2026-04-08T04:24:28.100Z"
   },
   "fcfsOverall": {
     "mean": 641535.39,
