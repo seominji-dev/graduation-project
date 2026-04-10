@@ -1,6 +1,7 @@
 /**
  * 중간보고서 v5 DOCX 생성 스크립트
  * midterm-v5.md 내용을 기반으로 05-midterm-report/final/midterm-report.docx 생성
+ * 그림: midterm-figures-for-publish.pptx에서 추출한 PNG 사용
  */
 const fs = require('fs');
 const path = require('path');
@@ -190,7 +191,7 @@ function figureCaption(text) {
   });
 }
 
-/** 그림 이미지 삽입 (PNG 파일, 너비 15cm 기준) */
+/** 그림 이미지 삽입 (PNG 파일, 비율 유지하며 최대 너비 15cm) */
 function figureImage(pngFileName) {
   const figDir = path.resolve(__dirname, '..', 'figures');
   const filePath = path.join(figDir, pngFileName);
@@ -199,10 +200,20 @@ function figureImage(pngFileName) {
     return figureCaption(`[그림 파일 없음: ${pngFileName}]`);
   }
   const imgData = fs.readFileSync(filePath);
-  // 15cm ≈ 5.91in, 96 DPI 기준 → 567px 너비
-  // 16:9 비율 → 319px 높이
-  const widthPx = 567;
-  const heightPx = 319;
+
+  // PNG 헤더에서 실제 크기 읽기 (offset 16: width 4B BE, offset 20: height 4B BE)
+  let imgW = 960, imgH = 540; // fallback
+  if (imgData.length > 24 && imgData.toString('ascii', 1, 4) === 'PNG') {
+    imgW = imgData.readUInt32BE(16);
+    imgH = imgData.readUInt32BE(20);
+  }
+
+  // 최대 너비 567px (≈15cm @96DPI), 비율 유지
+  const maxW = 567;
+  const scale = Math.min(maxW / imgW, 1);
+  const widthPx = Math.round(imgW * scale);
+  const heightPx = Math.round(imgH * scale);
+
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: 100, after: 100 },
@@ -418,14 +429,15 @@ async function generateMidtermReport() {
           heading2('1.1 연구 배경'),
           textParagraph(
             '최근 ChatGPT, Claude, Gemini 등 대규모 언어 모델(Large Language Model, LLM) API 서비스가 ' +
-            '다양한 분야에서 활용되고 있다. 이에 따라 기업이나 연구실에서도 하나의 LLM API 계정을 여러 구성원이 ' +
-            '공유하거나, 자체 LLM 서버를 구축하여 여러 사용자에게 서비스하는 사례가 늘어나고 있다.'
+            '다양한 분야에서 활용되고 있다. 이에 따라 기업이나 연구실에서도 하나의 조직 계정으로 여러 구성원이 ' +
+            'LLM API를 사용하거나, 자체 LLM 서버를 구축하여 여러 사용자에게 서비스하는 사례가 늘어나고 있다.'
           ),
           textParagraph(
-            '이러한 다중 사용자 환경에서는 요청을 어떻게 관리할지가 문제가 된다. OpenAI는 조직 단위로 분당 요청 수와 ' +
-            '토큰 수에 한도를 두고 있고 [1], Anthropic도 사용 등급별로 호출 한도를 적용하고 있다 [2]. 그러나 이는 ' +
-            '계정 단위의 관리이므로, 같은 계정을 공유하는 사용자들 사이에서 누가 얼마나 사용할지를 조율하는 것은 ' +
-            '별개의 문제이다.'
+            '이러한 다중 사용자 환경에서는 요청을 어떻게 관리할지가 문제가 된다. OpenAI는 조직(Organization) 단위로 ' +
+            '분당 요청 수와 토큰 수에 한도를 두고 있고 [1], Anthropic도 사용 등급별로 호출 한도를 적용하고 있다 [2]. ' +
+            '이러한 한도는 조직이나 계정 단위로 적용되므로, 같은 조직에 속한 구성원들이 한정된 호출 한도를 어떻게 나누어 ' +
+            '쓸지는 별도로 관리해야 하는 문제이다. 자체 LLM 서버를 운영하는 경우에도, 동시에 처리할 수 있는 요청 수가 ' +
+            '제한되어 같은 문제가 발생한다.'
           ),
           textParagraph(
             '별도의 관리 기능이 없다 보니, 요청은 도착한 순서대로 처리되거나 호출 빈도 제한 수준에서 관리되는 것이 ' +
@@ -436,7 +448,7 @@ async function generateMidtermReport() {
           // 1.2 연구 목적
           heading2('1.2 연구 목적'),
           textParagraph(
-            '3학년 운영체제 수업에서 프로세스 스케줄링 알고리즘을 배우면서, "이 알고리즘들을 LLM API 요청 관리에 ' +
+            '운영체제 수업에서 프로세스 스케줄링 알고리즘을 배우면서, "이 알고리즘들을 LLM API 요청 관리에 ' +
             '적용하면 어떨까?"라는 궁금증에서 이 프로젝트를 시작하게 되었다. 스케줄링 이론을 LLM API 환경에 적용해보고, ' +
             '알고리즘별 성능과 공정성을 비교해보는 것이 본 프로젝트의 목적이다.'
           ),
@@ -476,7 +488,7 @@ async function generateMidtermReport() {
           heading2('2.1 스케줄링 알고리즘'),
           textParagraph(
             '프로세스 스케줄링은 운영체제에서 CPU 자원을 여러 프로세스에 나누어 주기 위한 방법이다. ' +
-            '어떤 순서로 처리할지에 따라 다양한 알고리즘이 연구되어 왔다 [3][4].'
+            '어떤 순서로 처리할지에 따라 다양한 알고리즘이 연구되어 왔다 [3].'
           ),
           multiRunParagraph([
             { text: 'FCFS(First-Come, First-Served)', bold: true },
@@ -493,17 +505,17 @@ async function generateMidtermReport() {
           multiRunParagraph([
             { text: 'MLFQ(Multi-Level Feedback Queue)', bold: true },
             { text: '는 여러 개의 대기열을 두고, 작업의 특성에 따라 우선순위를 자동으로 조정하는 알고리즘이다. ' +
-              '새 작업은 가장 높은 우선순위 큐에 들어가고, 주어진 시간 안에 끝나지 않으면 한 단계 낮은 큐로 내려간다. ' +
-              '여기서 타임 퀀텀(Time Quantum)이란 "한 번에 쓸 수 있는 최대 시간"으로, 이 시간을 넘기면 차례가 다음 ' +
-              '사람에게 넘어가는 것이다. 이렇게 하면 짧은 작업은 빠르게 처리되고, 긴 작업은 천천히 처리되는 효과가 ' +
-              '있다. 현대 운영체제에서 가장 널리 쓰이는 스케줄링 방식 중 하나이다 [4].' }
+              '새 작업은 가장 높은 우선순위 큐에 들어가고, 타임 퀀텀(Time Quantum)이라 불리는 시간 할당량 안에 ' +
+              '끝나지 않으면 한 단계 낮은 큐로 내려간다. 타임 퀀텀이란 "한 번에 쓸 수 있는 최대 시간"으로, 이 시간을 ' +
+              '넘기면 차례가 다음 사람에게 넘어가는 것이다. 이렇게 하면 짧은 작업은 빠르게 처리되고, 긴 작업은 천천히 ' +
+              '처리되는 효과가 있다. 현대 운영체제에서 가장 널리 쓰이는 스케줄링 방식 중 하나이다 [3].' }
           ]),
           multiRunParagraph([
             { text: 'WFQ(Weighted Fair Queuing)', bold: true },
-            { text: '는 네트워크 분야에서 사용되는 공정한 자원 배분 알고리즘이다 [5]. 각 사용자(흐름)에 가중치를 ' +
+            { text: '는 네트워크 분야에서 사용되는 공정한 자원 배분 알고리즘이다. 각 사용자(흐름)에 가중치를 ' +
               '부여하고, 가중치가 클수록 더 많은 자원을 받도록 설계되어 있다. 각 요청에 대해 가상 완료 ' +
               '시각(Virtual Finish Time)이라는 값을 계산하여, 이 값이 가장 작은 요청을 먼저 처리한다. ' +
-              '가중치가 큰 사용자의 요청은 이 값이 작아져서 더 자주 선택된다. WFQ의 구체적인 계산 방식은 4.3절에서 설명한다.' }
+              '가중치가 큰 사용자의 요청은 이 값이 작아져서 더 자주 선택된다.' }
           ]),
 
           // 2.2 LLM 서빙 시스템
@@ -514,13 +526,13 @@ async function generateMidtermReport() {
           ),
           multiRunParagraph([
             { text: 'vLLM', bold: true },
-            { text: '은 UC Berkeley에서 개발한 LLM 서빙 도구로, PagedAttention이라는 메모리 관리 기법으로 높은 처리 성능을 보여준다 [6]. ' +
-              '다만 공식 문서를 조사한 결과, 요청 스케줄링은 ' +
+            { text: '은 UC Berkeley에서 개발한 LLM 서빙 도구로, PagedAttention이라는 메모리 관리 기법으로 높은 ' +
+              '처리 성능을 보여준다 [4]. 다만 공식 문서를 조사한 결과, 요청 스케줄링은 ' +
               '선착순 방식에 가까우며, 사용자 간 공정성을 보장하는 별도의 기능은 확인하지 못하였다.' }
           ]),
           multiRunParagraph([
             { text: 'Hugging Face TGI(Text Generation Inference)', bold: true },
-            { text: '는 다양한 LLM을 쉽게 배포할 수 있도록 도와주는 오픈소스 도구이다 [7]. 여러 요청을 한꺼번에 ' +
+            { text: '는 다양한 LLM을 쉽게 배포할 수 있도록 도와주는 오픈소스 도구이다 [5]. 여러 요청을 한꺼번에 ' +
               '묶어서 처리하는 배치 처리(Continuous Batching) 기능을 지원하지만, 다중 사용자 환경에서의 요청 우선순위 ' +
               '관리나 공정성 보장 기능은 공식 문서에서 찾아볼 수 없었다.' }
           ]),
@@ -534,7 +546,7 @@ async function generateMidtermReport() {
           heading2('2.3 공정성 측정'),
           textParagraph(
             '여러 사용자가 자원을 공유하는 시스템에서, 자원이 얼마나 고르게 나뉘었는지를 측정하는 지표로 ' +
-            'Jain\'s Fairness Index(JFI)가 있다 [5]. JFI는 자원이 얼마나 공정하게 배분되었는지를 0에서 1 사이 ' +
+            'Jain\'s Fairness Index(JFI)가 있다 [6]. JFI는 자원이 얼마나 공정하게 배분되었는지를 0에서 1 사이 ' +
             '점수 하나로 나타내는 지표이다. 1에 가까울수록 공평하게 나뉜 것이고, 특정 사용자만 자원을 많이 받으면 ' +
             '0에 가까워진다.'
           ),
@@ -578,22 +590,22 @@ async function generateMidtermReport() {
                 cell('설명', { bold: true, shading: COLOR_HEADER_BG, width: 4000, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('프로세스 (Process)', { width: 2500 }),
+                cell('프로세스', { width: 2500 }),
                 cell('LLM API 요청', { width: 2500 }),
                 cell('스케줄링의 기본 단위', { width: 4000 })
               ]}),
               new TableRow({ children: [
-                cell('CPU 시간 (CPU Time)', { width: 2500 }),
+                cell('CPU 시간', { width: 2500 }),
                 cell('LLM 추론 시간', { width: 2500 }),
                 cell('할당되는 자원', { width: 4000 })
               ]}),
               new TableRow({ children: [
-                cell('준비 큐 (Ready Queue)', { width: 2500 }),
+                cell('준비 큐', { width: 2500 }),
                 cell('요청 대기열', { width: 2500 }),
                 cell('처리를 기다리는 작업의 저장소', { width: 4000 })
               ]}),
               new TableRow({ children: [
-                cell('우선순위 (Priority)', { width: 2500 }),
+                cell('우선순위', { width: 2500 }),
                 cell('요청 우선순위', { width: 2500 }),
                 cell('개별 요청의 긴급도 (Priority Scheduling에서 사용)', { width: 4000 })
               ]}),
@@ -603,7 +615,7 @@ async function generateMidtermReport() {
                 cell('사용자별 서비스 수준 (WFQ에서 사용)', { width: 4000 })
               ]}),
               new TableRow({ children: [
-                cell('시간 할당량 (Time Quantum)', { width: 2500 }),
+                cell('시간 할당량', { width: 2500 }),
                 cell('큐별 처리 시간 한도', { width: 2500 }),
                 cell('MLFQ에서 큐 이동 기준', { width: 4000 })
               ]})
@@ -615,7 +627,7 @@ async function generateMidtermReport() {
           heading2('3.2 시스템 아키텍처'),
           textParagraph('시스템은 4개의 계층으로 구성하였다 (그림 1).'),
           emptyLine(),
-          figureImage('fig-1-system-architecture.png'),
+          figureImage('publish-fig-1-architecture.png'),
           figureCaption('[그림 1] 시스템 아키텍처'),
           emptyLine(),
           multiRunParagraph([
@@ -624,7 +636,7 @@ async function generateMidtermReport() {
           ]),
           multiRunParagraph([
             { text: 'API 계층: ', bold: true },
-            { text: 'Express.js [9] 기반의 HTTP 서버로, 요청 접수, 스케줄러 전환, 통계 조회 등의 기능을 제공한다. ' +
+            { text: 'Express.js [8] 기반의 HTTP 서버로, 요청 접수, 스케줄러 전환, 통계 조회 등의 기능을 제공한다. ' +
               '사용자의 요청을 받아서 요청 우선순위와 사용자 등급 정보를 포함한 요청 객체를 생성하고, 이를 스케줄러에 전달하는 역할을 한다.' }
           ]),
           multiRunParagraph([
@@ -635,13 +647,9 @@ async function generateMidtermReport() {
           ]),
           multiRunParagraph([
             { text: '저장소 계층: ', bold: true },
-            { text: '메모리 배열로 요청 대기열을 관리하고, JSON 파일로 처리 이력을 기록한다. LLM 호출은 ' +
-              'Ollama [8]를 통해 로컬에서 수행한다.' }
+            { text: '메모리 큐(외부 데이터베이스 없이 프로그램 메모리의 배열로 관리하는 대기열)로 요청을 관리하고, ' +
+              'JSON 파일로 처리 이력을 기록한다. LLM 호출은 Ollama [7]를 통해 로컬에서 수행한다.' }
           ]),
-          emptyLine(),
-          figureImage('fig-2-module-structure.png'),
-          figureCaption('[그림 2] 모듈 구조도'),
-          emptyLine(),
 
           // 3.3 설계 방침
           heading2('3.3 설계 방침'),
@@ -650,18 +658,22 @@ async function generateMidtermReport() {
           ),
           textParagraph(
             '첫째, LLM 추론은 한번 시작되면 중간에 멈추기 어렵기 때문에, 실제 서버에서는 비선점형 방식을 사용한다. ' +
-            '스케줄러는 대기열에서 다음 요청을 선택하는 시점에만 알고리즘을 적용하고, 이미 처리 중인 요청은 완료될 때까지 기다린다.'
+            '하나의 요청이 LLM 처리를 마치면, 스케줄러가 대기열에서 다음에 처리할 요청을 골라주고, 선택된 요청은 ' +
+            '완료될 때까지 중단 없이 처리된다.'
           ),
           textParagraph(
             '다만 MLFQ의 경우, 비선점형으로 운영하면 짧은 요청을 우선 처리하는 핵심 효과가 나타나지 않는다는 것을 ' +
             '기본 실험에서 확인하였다 (5.2절 참조). 비선점형에서는 요청이 중단 없이 끝까지 처리되므로, 큐 간 이동이 ' +
-            '의미가 없기 때문이다. 이에 따라 MLFQ의 이론적 효과를 검증하기 위해, 시뮬레이션 환경에서 선점형 모드를 ' +
-            '추가 구현하였다. 시뮬레이션에서는 500ms 간격의 타임 슬라이스로 요청 상태를 확인하고, 시간 할당량을 초과한 ' +
-            '요청은 처리를 중단하여 하위 큐로 이동시킨 뒤, 상위 큐의 다음 요청을 먼저 처리하는 방식이다. 이 선점형 ' +
-            '실험의 결과는 5.3절에서 다룬다.'
+            '의미가 없기 때문이다. 한편, 실제 LLM 환경에서는 중단된 추론을 이어갈 수 없어 처음부터 다시 처리해야 ' +
+            '하므로, OS와 같은 선점도 실용적이지 않다. 이 결과가 MLFQ 알고리즘 자체의 한계인지, 아니면 LLM이 선점을 ' +
+            '지원하지 않는다는 환경 제약 때문인지 확인하기 위해, 선점형 모드를 추가 구현하였다. 본 프로젝트의 실험은 ' +
+            '모두 실제 LLM을 호출하지 않고 처리 시간만 계산하는 시뮬레이션 방식인데(5.1절 참조), 이 방식에서는 OS의 ' +
+            '프로세스처럼 요청의 중단과 재개가 가능하므로 선점형 동작을 구현할 수 있다. 최소 큐 할당량(Q0, 1,000ms)의 ' +
+            '절반인 500ms 간격의 타임 슬라이스로 요청 상태를 확인하고, 시간 할당량을 초과한 요청은 처리를 중단하여 ' +
+            '하위 큐로 이동시킨 뒤, 상위 큐의 다음 요청을 먼저 처리하는 방식이다. 이 선점형 실험의 결과는 5.3절에서 다룬다.'
           ),
 
-          // 등급 체계 설명 (v5에서 추가된 표 2)
+          // 등급 체계 설명 (표 2)
           textParagraph(
             '둘째, 시스템에서 사용하는 등급 체계는 두 가지이며, 각각 다른 스케줄러에서 사용된다 (표 2).'
           ),
@@ -703,49 +715,43 @@ async function generateMidtermReport() {
             '가능하다. FCFS와 MLFQ는 이러한 등급과 무관하게 동작한다.'
           ),
           textParagraph(
-            '별도로, 호출 빈도 제한(Rate Limiting)은 스케줄링 알고리즘이 아니라 요청 진입을 관리하는 전처리 단계이다. ' +
-            '등급 구분 없이 모든 요청에 동일한 토큰 버킷(일정 시간마다 요청 권한이 생기고, 권한이 없으면 요청이 ' +
-            '거부되는 방식)을 적용한다.'
+            '셋째, 각 알고리즘의 핵심 원리는 유지하면서 스케줄링 기준은 LLM 환경에 맞게 조정하였다.'
           ),
-          multiRunParagraph([
-            { text: '셋째, 각 알고리즘의 핵심 원리는 유지하면서 스케줄링 기준은 LLM 환경에 맞게 조정하였다.', bold: true }
-          ]),
           bulletItemBold(
             'Priority Scheduling: ',
             '요청 우선순위(URGENT, HIGH, NORMAL, LOW)에 따라 긴급한 요청을 먼저 처리한다. 제안서에서는 사용자 등급을 ' +
             '우선순위로 사용하도록 계획하였으나, 요청별 긴급도를 기준으로 변경하여 우선순위 스케줄링의 본래 목적을 더 ' +
-            '명확히 보여줄 수 있도록 하였다. 오래 기다린 요청의 우선순위를 높여주는 에이징(Aging) 기법도 구현하였다. ' +
-            '에이징은 5초마다 적용되는데, 기본 실험에서는 요청당 처리 시간이 10~100ms로 짧아 전체 처리가 약 5.5초 안에 ' +
-            '끝났다. 이 때문에 에이징이 적용될 수 있는 시점에는 이미 대부분의 요청이 처리된 후여서, 실질적인 에이징 ' +
-            '효과는 관측되지 않았다.'
+            '명확히 보여줄 수 있도록 하였다. 오래 기다린 요청의 우선순위를 높여주는 에이징(Aging) 기법도 구현하였다(5초 주기).'
           ),
           bulletItemBold(
             'MLFQ: ',
             '4단계 큐(Q0~Q3)를 두고, 큐별로 다른 시간 할당량을 적용한다. 새 요청은 Q0에 들어가고, 시간 할당량을 ' +
             '초과하면 하위 큐로 내려간다. 제안서에서는 사용자의 최근 평균 추론 시간을 기준으로 큐를 재배정하는 비선점형 ' +
-            '방식을 계획하였으나, 구현 과정에서 OSTEP 교과서 [4]의 표준 MLFQ 규칙을 따르는 것이 알고리즘의 특성을 더 ' +
-            '명확하게 비교할 수 있다고 판단하여 변경하였다.'
+            '방식을 계획하였으나, 구현 과정에서 OSTEP [3]의 표준 MLFQ 규칙을 따르는 것이 알고리즘의 특성을 더 ' +
+            '명확하게 비교할 수 있다고 판단하여 변경하였다. 하위 큐에 오래 머무는 요청의 기아를 방지하기 위해, ' +
+            '5초마다 모든 요청을 최상위 큐로 올려주도록 하였다(에이징과 같은 주기).'
           ),
           bulletItemBold(
             'WFQ: ',
-            '사용자 등급(Enterprise, Premium, Standard, Free)에 따라 가중치(100, 50, 10, 1)를 부여하고, 가중치에 비례한 ' +
-            '가상 완료 시각을 계산하여 서비스를 차등 제공한다.'
+            '사용자 등급(Enterprise, Premium, Standard, Free)에 따라 가중치(100, 50, 10, 1)를 부여하고, 가중치를 ' +
+            '반영한 가상 완료 시각을 계산하여 서비스를 차등 제공한다. WFQ에서는 가중치의 절대값이 아닌 상대적 비율이 ' +
+            '스케줄링을 결정하며, 가중치는 설정으로 변경할 수 있다.'
           ),
-          emptyLine(),
 
           // 3.4 데이터 처리 흐름
           heading2('3.4 데이터 처리 흐름'),
-          textParagraph('사용자가 요청을 보내면 다음 순서로 처리된다 (그림 3).'),
+          textParagraph('사용자가 요청을 보내면 다음 순서로 처리된다 (그림 2).'),
           emptyLine(),
-          figureImage('fig-3-data-flow.png'),
-          figureCaption('[그림 3] 데이터 흐름도'),
+          figureImage('publish-fig-2-dataflow.png'),
+          figureCaption('[그림 2] 데이터 흐름도'),
           emptyLine(),
           numberedItem('사용자가 REST API(POST /api/requests)로 요청을 보낸다.'),
-          numberedItem('API 계층에서 입력을 확인한 뒤, 요청 객체를 만들어 스케줄러에 전달한다.'),
-          numberedItem('스케줄러는 선택된 알고리즘에 따라 대기열에서 다음 요청을 결정한다.'),
+          numberedItem('API 계층에서 입력을 확인하고, 요청 객체를 생성한다.'),
+          numberedItem('생성된 요청을 스케줄러의 대기열에 등록한다(enqueue).'),
+          numberedItem('처리 요청이 들어오면, 스케줄러는 선택된 알고리즘에 따라 대기열에서 다음에 처리할 요청을 꺼낸다(dequeue).'),
           numberedItem('선택된 요청을 Ollama를 통해 LLM에 전달하고, 응답을 기다린다.'),
-          numberedItem('LLM 응답이 돌아오면 결과를 사용자에게 전달하고, 처리 이력을 JSON 파일에 기록한다.'),
-          numberedItem('스케줄러는 다음 요청을 꺼내 같은 과정을 반복한다.'),
+          numberedItem('LLM 응답이 돌아오면 결과를 클라이언트에 반환하고, 처리 이력을 JSON 파일에 기록한다.'),
+          textParagraph('대기열에 요청이 남아 있으면 4번부터 반복한다.'),
 
           // ====================================================
           // 4. 구현 현황
@@ -766,12 +772,12 @@ async function generateMidtermReport() {
               ]}),
               new TableRow({ children: [
                 cell('런타임', { width: 2000 }),
-                cell('Node.js 22 LTS [10]', { width: 3000 }),
+                cell('Node.js 22 LTS [9]', { width: 3000 }),
                 cell('JavaScript 실행 환경', { width: 4000 })
               ]}),
               new TableRow({ children: [
                 cell('프레임워크', { width: 2000 }),
-                cell('Express.js 4.18 [9]', { width: 3000 }),
+                cell('Express.js 4.18 [8]', { width: 3000 }),
                 cell('REST API 서버', { width: 4000 })
               ]}),
               new TableRow({ children: [
@@ -781,18 +787,18 @@ async function generateMidtermReport() {
               ]}),
               new TableRow({ children: [
                 cell('LLM', { width: 2000 }),
-                cell('Ollama (로컬) [8]', { width: 3000 }),
+                cell('Ollama (로컬) [7]', { width: 3000 }),
                 cell('로컬에서 REST API로 LLM을 호출할 수 있는 도구', { width: 4000 })
               ]}),
               new TableRow({ children: [
                 cell('저장소', { width: 2000 }),
-                cell('메모리 배열 + JSON 파일', { width: 3000 }),
+                cell('메모리 큐 + JSON 파일', { width: 3000 }),
                 cell('외부 데이터베이스 없이 구현', { width: 4000 })
               ]}),
               new TableRow({ children: [
                 cell('의존성', { width: 2000 }),
                 cell('1개 (express)', { width: 3000 }),
-                cell('최소 의존성 원칙, UUID는 Node.js 내장 모듈 사용', { width: 4000 })
+                cell('외부 라이브러리는 Express.js만 사용', { width: 4000 })
               ]})
             ]
           }),
@@ -804,25 +810,67 @@ async function generateMidtermReport() {
 
           // 4.2 코드 구조
           heading2('4.2 코드 구조'),
-          textParagraph('의사코드 1. 코드 디렉터리 구조', { runOptions: { bold: true, italics: true } }),
-          ...codeBlock([
-            'src-simple/                    (주요 파일만 표시)',
-            '\u251C\u2500\u2500 api/',
-            '\u2502   \u2514\u2500\u2500 routes.js          # REST API \uC5D4\uB4DC\uD3EC\uC778\uD2B8 \uC815\uC758',
-            '\u251C\u2500\u2500 schedulers/',
-            '\u2502   \u251C\u2500\u2500 BaseScheduler.js   # \uAE30\uBCF8 \uC2A4\uCF00\uC904\uB7EC (\uACF5\uD1B5 \uC778\uD130\uD398\uC774\uC2A4)',
-            '\u2502   \u251C\u2500\u2500 FCFSScheduler.js   # \uC120\uCC29\uC21C \uC2A4\uCF00\uC904\uB7EC',
-            '\u2502   \u251C\u2500\u2500 PriorityScheduler.js  # \uC6B0\uC120\uC21C\uC704 \uC2A4\uCF00\uC904\uB7EC (\uC5D0\uC774\uC9D5 \uD3EC\uD568)',
-            '\u2502   \u251C\u2500\u2500 MLFQScheduler.js   # \uB2E4\uB2E8\uACC4 \uD53C\uB4DC\uBC31 \uD050 \uC2A4\uCF00\uC904\uB7EC',
-            '\u2502   \u2514\u2500\u2500 WFQScheduler.js    # \uAC00\uC911\uCE58 \uACF5\uC815 \uD050\uC789 \uC2A4\uCF00\uC904\uB7EC',
-            '\u251C\u2500\u2500 queue/',
-            '\u2502   \u2514\u2500\u2500 MemoryQueue.js     # \uBA54\uBAA8\uB9AC \uBC30\uC5F4 \uAE30\uBC18 \uD050',
-            '\u251C\u2500\u2500 storage/',
-            '\u2502   \u2514\u2500\u2500 JSONStore.js       # JSON \uD30C\uC77C \uC800\uC7A5\uC18C',
-            '\u251C\u2500\u2500 llm/',
-            '\u2502   \u2514\u2500\u2500 OllamaClient.js   # Ollama API \uC5F0\uACB0',
-            '\u2514\u2500\u2500 server.js              # Express \uC11C\uBC84 \uC9C4\uC785\uC810'
-          ]),
+          tableCaption('표 4. 소스 코드 구조 (src-simple/, 주요 파일만 표시)'),
+          new Table({
+            columnWidths: [2000, 3200, 3800],
+            rows: [
+              new TableRow({ children: [
+                cell('디렉토리', { bold: true, shading: COLOR_HEADER_BG, width: 2000, align: AlignmentType.CENTER }),
+                cell('파일', { bold: true, shading: COLOR_HEADER_BG, width: 3200, align: AlignmentType.CENTER }),
+                cell('설명', { bold: true, shading: COLOR_HEADER_BG, width: 3800, align: AlignmentType.CENTER })
+              ]}),
+              new TableRow({ children: [
+                cell('api/', { width: 2000 }),
+                cell('routes.js', { width: 3200 }),
+                cell('REST API 엔드포인트 정의', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('schedulers/', { width: 2000 }),
+                cell('BaseScheduler.js', { width: 3200 }),
+                cell('기본 스케줄러 (공통 인터페이스)', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('', { width: 2000 }),
+                cell('FCFSScheduler.js', { width: 3200 }),
+                cell('FCFS 스케줄러', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('', { width: 2000 }),
+                cell('PriorityScheduler.js', { width: 3200 }),
+                cell('Priority 스케줄러 (에이징 포함)', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('', { width: 2000 }),
+                cell('MLFQScheduler.js', { width: 3200 }),
+                cell('MLFQ 스케줄러', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('', { width: 2000 }),
+                cell('WFQScheduler.js', { width: 3200 }),
+                cell('WFQ 스케줄러', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('queue/', { width: 2000 }),
+                cell('MemoryQueue.js', { width: 3200 }),
+                cell('메모리 큐', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('storage/', { width: 2000 }),
+                cell('JSONStore.js', { width: 3200 }),
+                cell('JSON 파일 저장소', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('llm/', { width: 2000 }),
+                cell('OllamaClient.js', { width: 3200 }),
+                cell('Ollama API 연결', { width: 3800 })
+              ]}),
+              new TableRow({ children: [
+                cell('(루트)', { width: 2000 }),
+                cell('server.js', { width: 3200 }),
+                cell('Express 서버 진입점', { width: 3800 })
+              ]})
+            ]
+          }),
           emptyLine(),
           textParagraph(
             '모든 스케줄러는 BaseScheduler를 상속받아 enqueue()와 dequeue() 메서드를 구현한다. enqueue(request)는 ' +
@@ -842,34 +890,32 @@ async function generateMidtermReport() {
             'MLFQ의 핵심은 짧은 요청을 빠르게 처리하고, 긴 요청은 낮은 우선순위로 내리는 것이다. ' +
             '아래는 선점 처리의 의사코드이다.'
           ),
-          textParagraph('의사코드 2. MLFQ 선점 처리 흐름', { runOptions: { bold: true, italics: true } }),
           ...codeBlock([
-            '함수 processNextRequest():',
-            '    request = 가장 높은 비어있지 않은 큐에서 꺼냄',
-            '    처리 시작(request)',
+            'function processNextRequest():',
+            '    request = dequeue from highest non-empty queue',
+            '    start processing(request)',
             '',
-            '    매 500ms마다:',
-            '        경과시간 = 현재시각 - 시작시각 + 이전 사용시간',
-            '        할당량 = TIME_QUANTUM[request의 큐 레벨]',
+            '    every 500ms:',
+            '        quantum = TIME_QUANTUM[request.queueLevel]',
             '',
-            '        만약 경과시간 >= 할당량 이고 할당량이 무한이 아니면:',
-            '            request의 큐 레벨을 한 단계 낮춤  // 하위 큐로 이동',
-            '            request의 사용시간 = 0            // 새 큐에서 시간 초기화',
-            '            해당 큐에 다시 넣음',
-            '            processNextRequest()  // 다음 요청 처리',
-            '        아니면:',
-            '            계속 처리'
+            '        if request.totalUsed >= quantum and quantum != INFINITE:',
+            '            request.queueLevel += 1     // \uD558\uC704 \uD050\uB85C \uC774\uB3D9',
+            '            request.totalUsed = 0        // \uC0C8 \uD050\uC5D0\uC11C \uC2DC\uAC04 \uCD08\uAE30\uD654',
+            '            enqueue(request)',
+            '            processNextRequest()          // \uB2E4\uC74C \uC694\uCCAD \uCC98\uB9AC',
+            '        else:',
+            '            continue processing'
           ]),
           emptyLine(),
           textParagraph(
             '위 의사코드에서 보듯이, 선점이 발생하면 해당 요청의 사용 시간은 0으로 리셋된다. 큐별로 독립된 시간 ' +
             '할당량이 적용되어, Q0에서 1,000ms를 쓴 요청이 Q1로 내려가면 Q1의 3,000ms를 새로 받는 방식이다.'
           ),
-          textParagraph('MLFQ는 OSTEP 교과서 [4]에서 정리한 5가지 규칙을 따른다.'),
+          textParagraph('MLFQ는 OSTEP [3]에서 정리한 5가지 규칙을 따른다.'),
           emptyLine(),
 
-          // 표 4: MLFQ 규칙
-          tableCaption('표 4. MLFQ 규칙'),
+          // 표 5: MLFQ 규칙
+          tableCaption('표 5. MLFQ 규칙'),
           new Table({
             columnWidths: [1500, 7500],
             rows: [
@@ -901,8 +947,8 @@ async function generateMidtermReport() {
           }),
           emptyLine(),
 
-          // 표 5: MLFQ 큐별 시간 할당량
-          tableCaption('표 5. MLFQ 큐별 시간 할당량'),
+          // 표 6: MLFQ 큐별 시간 할당량
+          tableCaption('표 6. MLFQ 큐별 시간 할당량'),
           new Table({
             columnWidths: [2000, 3500, 3500],
             rows: [
@@ -935,13 +981,9 @@ async function generateMidtermReport() {
           }),
           emptyLine(),
           textParagraph(
-            'Rule 5의 부스팅(Boosting)은 5초마다 모든 요청을 최상위 큐(Q0)로 올려주는 것으로, 하위 큐에 오래 머물러 있는 요청이 영원히 ' +
-            '처리되지 못하는 것을 방지한다. 네 가지 알고리즘의 동작 방식을 그림 4에 정리하였다.'
+            'Rule 5의 부스팅(Boosting)은 5초마다 모든 요청을 최상위 큐(Q0)로 올려주는 것으로, 하위 큐에 오래 머물러 ' +
+            '있는 요청이 영원히 처리되지 못하는 것을 방지한다.'
           ),
-          emptyLine(),
-          figureImage('fig-4-scheduling-comparison.png'),
-          figureCaption('[그림 4] 스케줄링 알고리즘 비교'),
-          emptyLine(),
 
           // WFQ 가상 완료 시각 계산
           heading3('WFQ 가상 완료 시각 계산'),
@@ -988,8 +1030,8 @@ async function generateMidtermReport() {
             'LLM 상태에 따른 변동 없이, 알고리즘 자체의 스케줄링 특성만 비교할 수 있다.'
           ),
 
-          // 표 6: 실험 설정 비교
-          tableCaption('표 6. 실험 설정 비교'),
+          // 표 7: 실험 설정 비교
+          tableCaption('표 7. 실험 설정 비교'),
           new Table({
             columnWidths: [2000, 3500, 3500],
             rows: [
@@ -1063,10 +1105,10 @@ async function generateMidtermReport() {
 
           // 5.2 기본 실험 결과
           heading2('5.2 기본 실험 결과 (100건)'),
-          textParagraph('네 가지 알고리즘을 같은 100건 요청에 대해 실행한 결과는 표 7과 같다.'),
+          textParagraph('네 가지 알고리즘을 같은 100건 요청에 대해 실행한 결과는 표 8과 같다.'),
 
-          // 표 7: 알고리즘별 성능 비교
-          tableCaption('표 7. 알고리즘별 성능 비교 (100건)'),
+          // 표 8: 알고리즘별 성능 비교
+          tableCaption('표 8. 알고리즘별 성능 비교 (100건)'),
           new Table({
             columnWidths: [1500, 2000, 2000, 3500],
             rows: [
@@ -1086,7 +1128,7 @@ async function generateMidtermReport() {
                 cell('Priority', { width: 1500, align: AlignmentType.CENTER }),
                 cell('2,677ms', { width: 2000, align: AlignmentType.CENTER }),
                 cell('17.1', { width: 2000, align: AlignmentType.CENTER }),
-                cell('URGENT: 약 40ms, LOW: 약 4,600ms', { width: 3500 })
+                cell('URGENT: 약 42ms, LOW: 약 4,600ms', { width: 3500 })
               ]}),
               new TableRow({ children: [
                 cell('MLFQ', { width: 1500, align: AlignmentType.CENTER }),
@@ -1107,20 +1149,28 @@ async function generateMidtermReport() {
           multiRunParagraph([
             { text: 'Priority Scheduling: ', bold: true },
             { text: '우선순위에 따른 대기시간 차이가 뚜렷하게 나타났다. URGENT 요청은 전체의 10%에 불과하고 가장 먼저 ' +
-              '처리되므로 평균 약 40ms로 거의 즉시 처리된 반면, LOW 요청은 약 4,600ms로 FCFS 평균(2,572ms)보다 크게 ' +
+              '처리되므로 평균 약 42ms로 거의 즉시 처리된 반면, LOW 요청은 약 4,600ms로 FCFS 평균(2,572ms)보다 크게 ' +
               '늘어났다. 전체 평균 대기시간(2,677ms)이 FCFS(2,572ms)보다 약간 높은 것은, 높은 우선순위 요청을 먼저 ' +
               '처리한 만큼 낮은 우선순위 요청의 대기시간이 길어지기 때문이다. 처리량(17.1 req/s)도 FCFS(18.0 req/s)보다 ' +
-              '약간 낮은데, 나중에 도착한 높은 우선순위 요청을 먼저 처리하면서 중간에 짧은 유휴 시간이 발생하기 때문이다.' }
+              '약간 낮게 나타났는데, 이는 시뮬레이션에서 모든 요청을 미리 대기열에 넣은 뒤 우선순위 순으로 꺼내는 방식 ' +
+              '때문이다. 높은 우선순위이지만 도착 시각이 늦은 요청이 먼저 선택되면, 해당 요청의 도착을 기다리는 짧은 ' +
+              '유휴 구간이 발생한다. 실제 시스템에서는 도착한 요청만 선택 대상이 되므로 이 차이는 나타나지 않을 것으로 보인다.' }
           ]),
+          textParagraph(
+            '한편 에이징은 5초마다 적용되는데, 기본 실험에서는 요청당 처리 시간이 10~100ms로 짧아 전체 처리가 약 ' +
+            '5.5초 안에 끝났다. 이 때문에 에이징이 적용될 수 있는 시점에는 이미 대부분의 요청이 처리된 후여서, ' +
+            '에이징 효과는 관측되지 않았다. 에이징의 효과를 확인하려면 처리 시간이 더 긴 요청으로 실험을 설계해야 ' +
+            '하며, 이는 향후 실서버 실험에서 다룰 계획이다 (6절 참조).'
+          ),
           multiRunParagraph([
             { text: 'WFQ: ', bold: true },
             { text: 'Enterprise 등급 사용자(가중치 100)의 평균 대기시간은 약 430ms인 반면, ' +
-              'Free 등급(가중치 1)은 약 4,500ms로 약 10배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 ' +
+              'Free 등급(가중치 1)은 약 4,540ms로 약 10배 차이가 나타났다. 가중치에 비례하여 서비스가 차등 ' +
               '제공되는 것을 확인하였다.' }
           ]),
           textParagraph(
             '2.3절에서 소개한 JFI로 공정성을 측정한 결과, WFQ의 시스템 수준 JFI는 0.32로 나타났다. ' +
-            '이 값이 낮은 이유는, 이번 실험에서 4명의 사용자에게 각 25건씩 균등하게 요청을 배정했기 때문이다. ' +
+            '이 값이 낮은 이유는, 이번 실험에서 4명의 사용자에게 각 25건씩 균등하게 요청을 배정하였기 때문이다. ' +
             '가중치가 다른 사용자에게 같은 양의 요청을 배정하면, JFI 계산에서 불균형이 나타날 수밖에 없다. ' +
             '같은 등급 내에서는 대기시간 편차가 작아 등급 내 배분은 고르게 이루어졌다.'
           ),
@@ -1137,50 +1187,66 @@ async function generateMidtermReport() {
           textParagraph(
             '5.2절에서 비선점형 MLFQ가 FCFS와 동일한 결과를 보임에 따라, MLFQ의 이론적 효과를 검증하기 위해 ' +
             '5.1절에서 설명한 시뮬레이션 환경에서 선점형 실험을 추가로 수행하였다. 같은 결과가 나오는지 확인하기 위해 ' +
-            '조건을 바꿔 여러 번 반복하였다. 추가 실험은 기본 실험보다 요청 수가 많고, 요청당 처리 시간도 최대 10초' +
-            '(기본 실험 최대 100ms의 100배)로 크게 늘어났으며, 버스트 도착 구조이므로 전체 대기시간 자체는 크게 길어졌다.'
+            '조건을 바꿔 여러 번 반복하였다. 추가 실험은 기본 실험에 비해 요청 수가 5배 많고, 요청당 처리 시간이 최대 ' +
+            '10초(기본 실험 최대 100ms의 100배)로 크게 늘어났으며, 20건이 동시에 도착하는 버스트 구조여서 대기열이 ' +
+            '빠르게 쌓이기 때문에 전체 대기시간은 크게 길어졌다.'
           ),
           textParagraph(
             '추가 실험에서는 선점형 MLFQ의 효과를 명확히 보여주기 위해, 지표를 응답시간(요청 도착부터 처리 완료까지의 ' +
             '시간)으로 측정하였다. 선점형에서는 요청이 중단과 재개를 반복하므로, 사용자가 체감하는 전체 소요시간인 ' +
-            '응답시간이 더 적절한 지표이다.'
+            '응답시간이 더 적절한 지표이다. 추가 실험은 규모와 처리 시간이 크므로 결과를 초 단위로 표기한다(5.2절은 밀리초).'
           ),
 
-          // 표 8: MLFQ 선점형 vs FCFS
-          tableCaption('표 8. MLFQ 선점형 vs FCFS 비교 (짧은 요청 기준)'),
+          // 표 9: MLFQ 선점형 vs FCFS (요청 유형별)
+          tableCaption('표 9. MLFQ 선점형 vs FCFS 비교 (요청 유형별)'),
           new Table({
-            columnWidths: [3500, 2750, 2750],
+            columnWidths: [1500, 2500, 2000, 2000, 1000],
             rows: [
               new TableRow({ children: [
-                cell('항목', { bold: true, shading: COLOR_HEADER_BG, width: 3500, align: AlignmentType.CENTER }),
-                cell('FCFS', { bold: true, shading: COLOR_HEADER_BG, width: 2750, align: AlignmentType.CENTER }),
-                cell('MLFQ (선점형)', { bold: true, shading: COLOR_HEADER_BG, width: 2750, align: AlignmentType.CENTER })
+                cell('요청 유형', { bold: true, shading: COLOR_HEADER_BG, width: 1500, align: AlignmentType.CENTER }),
+                cell('처리 시간 범위', { bold: true, shading: COLOR_HEADER_BG, width: 2500, align: AlignmentType.CENTER }),
+                cell('FCFS', { bold: true, shading: COLOR_HEADER_BG, width: 2000, align: AlignmentType.CENTER }),
+                cell('MLFQ (선점형)', { bold: true, shading: COLOR_HEADER_BG, width: 2000, align: AlignmentType.CENTER }),
+                cell('변화', { bold: true, shading: COLOR_HEADER_BG, width: 1000, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('짧은 요청 평균 응답시간', { width: 3500 }),
-                cell('약 635초', { width: 2750, align: AlignmentType.CENTER }),
-                cell('약 170초', { width: 2750, align: AlignmentType.CENTER })
+                cell('Short', { width: 1500, align: AlignmentType.CENTER }),
+                cell('100~800ms', { width: 2500, align: AlignmentType.CENTER }),
+                cell('약 635초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('약 170초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('73% 감소', { width: 1000, align: AlignmentType.CENTER })
               ]}),
               new TableRow({ children: [
-                cell('짧은 요청 개선율', { width: 3500 }),
-                cell('-', { width: 2750, align: AlignmentType.CENTER }),
-                cell('약 73% 감소', { width: 2750, align: AlignmentType.CENTER })
+                cell('Medium', { width: 1500, align: AlignmentType.CENTER }),
+                cell('1.2~4초', { width: 2500, align: AlignmentType.CENTER }),
+                cell('약 645초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('약 729초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('13% 증가', { width: 1000, align: AlignmentType.CENTER })
+              ]}),
+              new TableRow({ children: [
+                cell('Long', { width: 1500, align: AlignmentType.CENTER }),
+                cell('5~10초', { width: 2500, align: AlignmentType.CENTER }),
+                cell('약 650초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('약 1,226초', { width: 2000, align: AlignmentType.CENTER }),
+                cell('89% 증가', { width: 1000, align: AlignmentType.CENTER })
               ]})
             ]
           }),
           emptyLine(),
-          figureImage('fig-5-experiment-results.png'),
-          figureCaption('[그림 5] 실험 결과 차트'),
-          emptyLine(),
-
           textParagraph(
-            '선점형 MLFQ에서 짧은 요청의 응답시간이 FCFS 대비 약 73% 줄어든 것을 확인하였다. 여러 번 반복해도 ' +
+            '요청 유형은 처리 시간에 따라 분류하였다. Short는 Q0 시간 할당량(1,000ms) 이내에 완료되는 요청, ' +
+            'Medium은 Q1(3,000ms)이 필요한 요청, Long은 Q2(8,000ms) 이상이 필요한 요청이다. 분포는 Short 40%, ' +
+            'Medium 40%, Long 20%이다.'
+          ),
+          textParagraph(
+            '선점형 MLFQ에서 Short 유형 요청의 응답시간이 FCFS 대비 약 73% 줄어든 것을 확인하였다. 여러 번 반복해도 ' +
             '비슷한 결과가 나와, 한 번만의 결과가 아니라는 것을 확인하였다.'
           ),
           textParagraph(
-            '반면, 긴 요청의 응답시간은 MLFQ에서 더 늘어났는데, 이는 짧은 요청을 먼저 처리하기 위해 긴 요청이 ' +
-            '하위 큐로 밀려나기 때문이다. 이처럼 MLFQ는 짧은 요청의 응답시간을 크게 개선하지만, 긴 요청에는 불리한 ' +
-            '면이 있다. 다만 Rule 5의 부스팅이 주기적으로 작동하여, 긴 요청이 영원히 처리되지 않는 상황은 방지된다.'
+            '반면, Long 유형 요청의 응답시간은 MLFQ에서 더 늘어났는데, 이는 Short 유형 요청을 먼저 처리하기 위해 ' +
+            'Long 유형 요청이 하위 큐로 밀려나기 때문이다. 이처럼 MLFQ는 Short 유형 요청의 응답시간을 크게 개선하지만, ' +
+            'Long 유형 요청에는 불리한 면이 있다. 다만 Rule 5의 부스팅이 주기적으로 작동하여, Long 유형 요청이 영원히 ' +
+            '처리되지 않는 상황은 방지된다.'
           ),
 
           // ====================================================
@@ -1193,8 +1259,8 @@ async function generateMidtermReport() {
             '추가로 수행할 계획이다.'
           ),
 
-          // 표 9: 남은 일정
-          tableCaption('표 9. 남은 일정'),
+          // 표 10: 남은 일정
+          tableCaption('표 10. 남은 일정'),
           new Table({
             columnWidths: [2500, 4000, 2500],
             rows: [
@@ -1224,19 +1290,22 @@ async function generateMidtermReport() {
           textParagraph('구체적으로는 다음을 계획하고 있다.'),
           numberedItemBold(
             '실서버 실험: ',
-            '현재까지의 실험은 처리 시간을 미리 지정한 시뮬레이션으로 수행하였다. Ollama를 활용하여 실제 LLM을 호출하는 ' +
-            '환경에서도 실험을 수행하고, 시뮬레이션 결과와 비교한다. 실서버에서는 추론 중단이 불가능하므로, 비선점형 ' +
-            '스케줄러의 성능 차이를 중점적으로 분석한다.'
+            '현재까지의 실험은 처리 시간을 미리 지정한 시뮬레이션으로 수행하였다. Ollama를 활용하여 실제 LLM을 ' +
+            '호출하는 환경에서 FCFS, Priority, WFQ 세 알고리즘의 성능을 비교한다. 실서버에서는 추론 중단이 불가능하므로 ' +
+            '비선점형으로만 운영되며, 비선점형 MLFQ는 5.2절에서 확인한 대로 FCFS와 동일한 결과가 예상되므로 실서버 ' +
+            '비교 대상에서 제외한다. 또한 실제 LLM 추론은 수 초 이상 소요되므로, 기본 실험에서 관측하지 못한 Priority ' +
+            'Scheduling의 에이징 효과도 함께 검증한다.'
           ),
           numberedItemBold(
-            '실험 규모 확대: ',
-            '1,000건 이상의 요청으로 실험을 확대하고, 버스트 트래픽 등 다양한 시나리오를 추가한다. 알고리즘 간 차이가 ' +
-            '일관되게 나타나는지도 확인한다.'
+            '선점형 MLFQ 시뮬레이션 확대: ',
+            '5.3절의 선점형 MLFQ 실험을 1,000건 이상의 요청으로 확대하고, 버스트 트래픽 등 다양한 시나리오를 추가한다. ' +
+            '선점형 환경에서 요청 유형별 응답시간 차이가 일관되게 나타나는지 확인한다.'
           ),
           numberedItemBold(
             '공정성 분석: ',
-            'WFQ의 이중 JFI(시스템 수준, 등급 내 수준)를 활용한 공정성 분석을 더 자세히 진행하고, 알고리즘 간 공정성과 ' +
-            '성능의 장단점을 비교한다.'
+            '현재 JFI는 WFQ에서만 측정하였으나, 네 가지 알고리즘 모두에 대해 사용자별 대기시간 기준으로 JFI를 ' +
+            '계산하여 비교한다. 또한 WFQ의 이중 JFI(시스템 수준, 등급 내 수준)를 활용한 공정성 분석을 더 자세히 ' +
+            '진행하고, 알고리즘 간 공정성과 성능의 장단점을 비교한다.'
           ),
           numberedItemBold(
             '데모 시스템 구성: ',
@@ -1250,37 +1319,32 @@ async function generateMidtermReport() {
           heading1('참고문헌'),
           emptyLine(),
           textParagraph(
-            '[1] OpenAI, "Rate limits," OpenAI API Documentation. Available: https://platform.openai.com/docs/guides/rate-limits'
+            '[1] OpenAI, "Rate limits," OpenAI API Documentation. [온라인] Available: https://platform.openai.com/docs/guides/rate-limits (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[2] Anthropic, "Rate limits," Anthropic API Documentation. Available: https://docs.anthropic.com/en/api/rate-limits'
+            '[2] Anthropic, "Rate limits," Anthropic API Documentation. [온라인] Available: https://docs.anthropic.com/en/api/rate-limits (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[3] A. Silberschatz, P. B. Galvin, and G. Gagne, "Operating System Concepts," 10th ed., Wiley, 2018. ' +
-            'Available: https://www.os-book.com/'
+            '[3] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, "Operating Systems: Three Easy Pieces," v1.10, ' +
+            'Arpaci-Dusseau Books, 2023. [온라인] Available: https://pages.cs.wisc.edu/~remzi/OSTEP/'
           ),
           textParagraph(
-            '[4] R. H. Arpaci-Dusseau and A. C. Arpaci-Dusseau, "Operating Systems: Three Easy Pieces," v1.10, ' +
-            'Arpaci-Dusseau Books, 2023. Available: https://pages.cs.wisc.edu/~remzi/OSTEP/'
+            '[4] vLLM Project, "vLLM: Easy, Fast, and Cheap LLM Serving." [온라인] Available: https://docs.vllm.ai/ (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[5] J. F. Kurose and K. W. Ross, "Computer Networking: A Top-Down Approach," 9th ed., Pearson, 2025. ' +
-            'Available: https://gaia.cs.umass.edu/kurose_ross/'
+            '[5] Hugging Face, "Text Generation Inference (TGI)." [온라인] Available: https://huggingface.co/docs/text-generation-inference/ (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[6] vLLM Project, "vLLM: Easy, Fast, and Cheap LLM Serving." Available: https://docs.vllm.ai/'
+            '[6] Wikipedia, "Fairness measure \u2014 Jain\'s fairness index." [온라인] Available: https://en.wikipedia.org/wiki/Fairness_measure (접속: 2026-04-09)'
           ),
           textParagraph(
-            '[7] Hugging Face, "Text Generation Inference (TGI)." Available: https://huggingface.co/docs/text-generation-inference/'
+            '[7] Ollama, "Ollama Documentation." [온라인] Available: https://ollama.com/ (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[8] Ollama, "Ollama Documentation." Available: https://ollama.com/'
+            '[8] Express.js, "Express - Node.js Web Application Framework." [온라인] Available: https://expressjs.com/ (접속: 2026-03-14)'
           ),
           textParagraph(
-            '[9] Express.js, "Express - Node.js Web Application Framework." Available: https://expressjs.com/'
-          ),
-          textParagraph(
-            '[10] Node.js Foundation, "Node.js Documentation." Available: https://nodejs.org/docs/latest-v22.x/api/'
+            '[9] Node.js Foundation, "Node.js Documentation." [온라인] Available: https://nodejs.org/docs/latest-v22.x/api/ (접속: 2026-03-14)'
           )
         ]
       }
