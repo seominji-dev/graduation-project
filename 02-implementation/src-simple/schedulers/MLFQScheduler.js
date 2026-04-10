@@ -27,6 +27,7 @@ const NUM_QUEUES = 4;
 const BOOST_INTERVAL_MS = 5000; // 기아 방지용 부스팅 주기 (5초)
 const TIME_SLICE_MS = 500; // 타임 슬라이스: 선점 체크 주기
 
+// Classification: None (queue level based on execution time)
 class MLFQScheduler extends BaseScheduler {
 	constructor() {
 		super("MLFQ");

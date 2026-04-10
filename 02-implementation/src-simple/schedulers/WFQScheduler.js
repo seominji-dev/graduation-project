@@ -14,15 +14,9 @@
  * - Free: 1
  */
 const BaseScheduler = require('./BaseScheduler');
+const { DEFAULT_WEIGHTS } = require('../utils/validation');
 
-// 기본 테넌트 가중치
-const DEFAULT_WEIGHTS = {
-  enterprise: 100,
-  premium: 50,
-  standard: 10,
-  free: 1
-};
-
+// Classification: Subscription Tier (Enterprise/Premium/Standard/Free) -> weight
 class WFQScheduler extends BaseScheduler {
   constructor() {
     super('WFQ');

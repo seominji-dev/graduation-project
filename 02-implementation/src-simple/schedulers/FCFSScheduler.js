@@ -6,6 +6,7 @@
  */
 const BaseScheduler = require('./BaseScheduler');
 
+// Classification: None (pure FIFO - arrival order)
 class FCFSScheduler extends BaseScheduler {
   constructor() {
     super('FCFS');

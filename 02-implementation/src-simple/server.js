@@ -11,10 +11,12 @@ const { MemoryQueue } = require('./queue/MemoryQueue');
 const JSONStore = require('./storage/JSONStore');
 const OllamaClient = require('./llm/OllamaClient');
 const createRoutes = require('./api/routes');
+const RateLimiter = require('./utils/rateLimiter');
 
 // 환경 변수
 const PORT = process.env.PORT || 3000;
 const SCHEDULER_TYPE = process.env.SCHEDULER_TYPE || 'FCFS';
+const RATE_LIMIT_ENABLED = process.env.RATE_LIMIT_ENABLED === 'true';
 
 // 지원하는 스케줄러 타입 목록
 const VALID_SCHEDULER_TYPES = ['FCFS', 'PRIORITY', 'MLFQ', 'WFQ'];
@@ -81,6 +83,32 @@ function createServer() {
 
   // JSON Store 초기화
   jsonStore.initialize();
+
+  // Rate limiter middleware (optional, enabled via RATE_LIMIT_ENABLED=true env var)
+  if (RATE_LIMIT_ENABLED) {
+    const rateLimiter = new RateLimiter();
+    app.use('/api/requests', (req, res, next) => {
+      if (req.method !== 'POST') {
+        return next();
+      }
+      const tenantId = req.body && req.body.tenantId;
+      const tier = (req.body && req.body.tier) || 'standard';
+      if (!tenantId) {
+        return next();
+      }
+      const result = rateLimiter.isAllowed(tenantId, tier);
+      if (!result.allowed) {
+        return res.status(429).json({
+          error: 'Rate limit exceeded',
+          message: `Too many requests. Limit resets in ${result.resetIn} seconds.`,
+          remaining: 0,
+          resetIn: result.resetIn
+        });
+      }
+      res.setHeader('X-RateLimit-Remaining', result.remaining);
+      next();
+    });
+  }
 
   // API 라우트 등록
   const routes = createRoutes({

@@ -19,6 +19,7 @@ const PRIORITY = {
 const AGING_INTERVAL_MS = 5000;  // 5초마다 aging 적용
 const AGING_INCREMENT = 1;       // aging 시 증가할 우선순위
 
+// Classification: Request Priority (URGENT/HIGH/NORMAL/LOW)
 class PriorityScheduler extends BaseScheduler {
   constructor() {
     super('Priority');
