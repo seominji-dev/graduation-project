@@ -193,28 +193,7 @@ JFI = (x₁ + x₂ + ... + xₙ)² / (n × (x₁² + x₂² + ... + xₙ²))
 
 #### MLFQ 선점 처리
 
-MLFQ의 핵심은 짧은 요청을 빠르게 처리하고, 긴 요청은 낮은 우선순위로 내리는 것이다. 아래는 선점 처리의 의사코드이다.
-
-```
-function processNextRequest():
-    request = dequeue from highest non-empty queue
-    start processing(request)
-
-    every 500ms:
-        quantum = TIME_QUANTUM[request.queueLevel]
-
-        if request.totalUsed >= quantum and quantum != INFINITE:
-            request.queueLevel += 1                 // 하위 큐로 이동
-            request.totalUsed = 0                   // 새 큐에서 시간 초기화
-            enqueue(request)
-            processNextRequest()                    // 다음 요청 처리
-        else:
-            continue processing
-```
-
-위 의사코드에서 보듯이, 선점이 발생하면 해당 요청의 사용 시간은 0으로 리셋된다. 큐별로 독립된 시간 할당량이 적용되어, Q0에서 1,000ms를 쓴 요청이 Q1로 내려가면 Q1의 3,000ms를 새로 받는 방식이다.
-
-MLFQ는 OSTEP [3]에서 정리한 5가지 규칙을 따른다.
+MLFQ의 핵심은 짧은 요청을 빠르게 처리하고, 긴 요청은 낮은 우선순위로 내리는 것이다. 500ms 간격으로 요청 상태를 확인하여, 시간 할당량을 초과한 요청은 하위 큐로 이동시키고 상위 큐의 다음 요청을 먼저 처리한다. 선점 시 사용 시간은 0으로 리셋되어, 새 큐의 할당량을 다시 받는다. MLFQ는 OSTEP [3]의 5가지 규칙(표 5)에 따르며, 큐별 시간 할당량은 표 6과 같다.
 
 **표 5. MLFQ 규칙**
 
