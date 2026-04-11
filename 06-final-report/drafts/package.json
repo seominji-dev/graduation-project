@@ -1,0 +1,11 @@
+{
+  "name": "final-report-generator",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "generate": "node generate-final.js"
+  },
+  "dependencies": {
+    "docx": "^9.6.0"
+  }
+}
