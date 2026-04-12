@@ -1,14 +1,33 @@
 /**
- * Extended Experiment Script
+ * Extended Experiment Script (used by the final report)
  *
  * Runs a larger-scale comparison (500 requests) across all 4 schedulers
  * and includes a Rate Limiter acceptance/rejection test.
  *
+ * Produces extended-results.json, which is the data source for the
+ * final report's Section 5.2, 5.4, 5.5 and Tables 10, 11, 15.
+ *
  * Metrics collected:
  *  - Average wait time, max wait time, throughput per scheduler
  *  - Per-tenant average wait time per scheduler
- *  - Jain's Fairness Index for ALL 4 schedulers
+ *  - Jain's Fairness Index for ALL 4 schedulers (two formulas — see below)
  *  - Rate Limiter: accepted vs rejected counts for Free tier
+ *
+ * JFI formula in use:
+ *  - FCFS / Priority / MLFQ : wait-time based (calculateJFI in this file)
+ *    xi = 1 / (avgWaitTime + 1) → higher xi for shorter wait
+ *  - WFQ                     : throughput/weight based
+ *    xi = processedCount / weight  (inside WFQScheduler.calculateFairnessIndex)
+ *
+ * WFQ's wfqStats.fairnessIndex is overridden with the WFQScheduler internal
+ * value because it better represents "throughput proportional to weight"
+ * fairness. The two numbers are NOT directly comparable.
+ *
+ * Simulation time vs wall time:
+ *  - The simulation runs in a tight loop, so Date.now() does not advance.
+ *  - Priority aging and MLFQ boosting are therefore re-implemented here
+ *    using simulation time (currentTime, processCount) with thresholds
+ *    that match the real scheduler's defaults (5000ms for both).
  */
 
 'use strict';
@@ -195,7 +214,10 @@ function runPriority(requests) {
   }
 
   while (!scheduler.isEmpty()) {
-    // Apply aging: boost priority for long-waiting requests (mirrors run-experiments.js)
+    // Simulation-time aging: boost priority for long-waiting requests.
+    // PriorityScheduler.applyAging() uses Date.now() + setInterval, which
+    // does not progress in this tight loop, so we mirror the same 5000ms
+    // threshold with the simulation clock here.
     for (const qReq of scheduler.queue) {
       const waitTime = currentTime - qReq.createdAt;
       if (waitTime > 5000 && qReq.effectivePriority < PRIORITY.URGENT) {
@@ -234,6 +256,10 @@ function runMLFQ(requests) {
   }
 
   while (!scheduler.isEmpty()) {
+    // Simulation-time boost trigger: every 30 completed requests.
+    // MLFQScheduler.boost() is scheduled by setInterval(5000ms) in the
+    // real class; the loop-based approximation here fires at a similar
+    // logical frequency given the workload size.
     if (processCount > 0 && processCount % 30 === 0) {
       scheduler.boost();
     }

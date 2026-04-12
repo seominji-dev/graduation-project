@@ -1,5 +1,9 @@
 /**
- * 스케줄러 성능 비교 실험
+ * 스케줄러 성능 비교 실험 (초기 버전, 100건)
+ *
+ * [주의] 이 스크립트는 run-extended.js (500건)로 대체되었으며,
+ * 최종보고서에서는 run-extended.js의 결과를 사용한다.
+ * 이 파일은 초기 탐색용으로만 보관하고 있다.
  *
  * 4개 스케줄러(FCFS, Priority, MLFQ, WFQ)의 성능을 비교 측정
  *
@@ -8,6 +12,12 @@
  * 2. 평균 처리 시간 (Average Processing Time)
  * 3. 처리량 (Throughput)
  * 4. 공정성 지수 (Jain's Fairness Index) - WFQ만 해당
+ *
+ * 시뮬레이션 시간 vs 실시간:
+ *   본 스크립트는 tight-loop 시뮬레이션이므로 Date.now()로는 시간이 흐르지 않는다.
+ *   따라서 Priority 스케줄러의 aging과 MLFQ boost는 실제 스케줄러 클래스의
+ *   setInterval 기반 로직 대신, 시뮬레이션 시간(currentTime)을 기준으로
+ *   실험 코드 내에서 별도로 재구현한다. 임계값(5000ms)은 실제 구현과 동일하다.
  */
 
 const {
@@ -156,7 +166,9 @@ function runPriorityExperiment(requests) {
 
 	// 처리 시뮬레이션
 	while (!scheduler.isEmpty()) {
-		// aging 시뮬레이션 (실제 PriorityScheduler의 AGING_INTERVAL_MS = 5000ms와 동��)
+		// 시뮬레이션 시간 기반 aging (실제 PriorityScheduler는 실시간 setInterval
+		// 기반이지만, 본 스크립트는 tight-loop이라 실시간이 흐르지 않는다.
+		// 임계값 5000ms와 증가량 +1은 실제 구현과 동일하다.)
 		for (const qReq of scheduler.queue) {
 			const waitTime = currentTime - qReq.createdAt;
 			if (waitTime > 5000 && qReq.effectivePriority < PRIORITY.URGENT) {
