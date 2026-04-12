@@ -1,6 +1,6 @@
 /**
  * Final Report DOCX Generator
- * Reads final-report-v8.md and generates 06-final-report/final/final-report.docx
+ * Reads final-report-v9.md and generates 06-final-report/final/final-report.docx
  * Uses markdown-to-DOCX conversion approach for scalability
  */
 
@@ -580,7 +580,7 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v8.md');
+  const mdPath = path.resolve(__dirname, 'final-report-v9.md');
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
