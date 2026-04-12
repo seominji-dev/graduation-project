@@ -3,18 +3,7 @@
  * Generates 9 figures as individual PPTX files + PNG screenshots
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-9 (PPTX + PNG each)
- *
- * Figure numbering matches body references in final-report.md:
- *   그림 1 (2.1 관련연구): fig-1-algo-concepts       (createFig8)
- *   그림 2 (3.2 아키텍처): fig-2-system-architecture (createFig1)
- *   그림 3 (3.5 데이터흐름): fig-3-data-flow        (createFig2)
- *   그림 4 (4.2 모듈구조): fig-4-module-structure   (createFig10ModuleStructure)
- *   그림 5 (5.1 실험환경): fig-5-experiment-setup   (createFig9)
- *   그림 6 (5.2 대기시간): fig-6-avg-wait-time      (createFig3)
- *   그림 7 (5.3 MLFQ):    fig-7-mlfq-vs-fcfs       (createFig4)
- *   그림 8 (5.4 Ollama):  fig-8-ollama-tier        (createFig5)
- *   그림 9 (5.5 JFI):     fig-9-jfi-comparison     (createFig6)
+ * Output: fig-1 ~ fig-8 (PPTX + PNG each)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -51,7 +40,7 @@ const SMALL_SIZE = 9;
 
 function createFig1(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 2. 시스템 아키텍처 (System Architecture)', {
+  slide.addText('그림 1. 시스템 아키텍처 (System Architecture)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -156,7 +145,7 @@ function createFig1(pptx) {
 
 function createFig2(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 3. 데이터 흐름도 (Data Flow)', {
+  slide.addText('그림 2. 데이터 흐름도 (Data Flow)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -297,7 +286,7 @@ function createFig2(pptx) {
 
 function createFig3(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 6. 알고리즘별 평균 대기시간 비교 (ms)', {
+  slide.addText('그림 3. 알고리즘별 평균 대기시간 비교 (ms)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -344,7 +333,7 @@ function createFig3(pptx) {
 
 function createFig4(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간', {
+  slide.addText('그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -398,7 +387,7 @@ function createFig4(pptx) {
 
 function createFig5(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 8. 실서버 구독 등급별 평균 대기시간 (ms)', {
+  slide.addText('그림 5. 실서버 구독 등급별 평균 대기시간 (ms)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -451,7 +440,7 @@ function createFig5(pptx) {
 
 function createFig6(pptx) {
   const slide = pptx.addSlide();
-  slide.addText("그림 9. 알고리즘별 Jain's Fairness Index (JFI) 비교", {
+  slide.addText("그림 6. 알고리즘별 Jain's Fairness Index (JFI) 비교", {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -582,7 +571,7 @@ function createFig7(pptx) {
 
 function createFig8(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 1. 스케줄링 알고리즘 개념 비교', {
+  slide.addText('그림 8. 스케줄링 알고리즘 개념 비교', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -734,7 +723,7 @@ function createFig8(pptx) {
 
 function createFig9(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 5. 실험 환경 구성도', {
+  slide.addText('그림 9. 실험 환경 구성도', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -892,7 +881,7 @@ function htmlFig1() {
     { name: '스케줄러 계층 (Scheduler)',           color: '#D97706', subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
     { name: '저장소/LLM 계층 (Storage/LLM)',      color: '#64748B', subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
   ];
-  let html = '<div class="title">그림 2. 시스템 아키텍처 (System Architecture)</div>';
+  let html = '<div class="title">그림 1. 시스템 아키텍처 (System Architecture)</div>';
   html += '<div style="padding:0 56px; display:flex; flex-direction:column; height:640px; justify-content:center; gap:0;">';
   layers.forEach((layer, idx) => {
     html += `<div style="border:2px solid ${layer.color}; border-radius:10px; padding:10px 18px 12px; background:${layer.color}0D; flex-shrink:0;">`;
@@ -927,7 +916,7 @@ function htmlFig2() {
     { label: '6. LLM 처리',                    detail: 'Ollama API',          color: '#2563EB' },
     { label: '7. 결과 반환<br>+ JSON 기록',    detail: 'COMPLETED',          color: '#059669' },
   ];
-  let html = '<div class="title">그림 3. 데이터 흐름도 (Data Flow)</div>';
+  let html = '<div class="title">그림 2. 데이터 흐름도 (Data Flow)</div>';
   // Row 1: steps 1-4
   html += '<div style="display:flex; align-items:center; padding:4px 20px; gap:0;">';
   steps.slice(0, 4).forEach((step, i) => {
@@ -989,7 +978,7 @@ function htmlFig3() {
   const maxVal = 13000;
   const chartH = 480;
 
-  let html = '<div class="title">그림 6. 알고리즘별 평균 대기시간 비교 (ms)</div>';
+  let html = '<div class="title">그림 3. 알고리즘별 평균 대기시간 비교 (ms)</div>';
   html += '<div class="subtitle">기본 실험 500건 | 4개 테넌트 | 순차 도착 | 출처: extended-results.json</div>';
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 80px; height:${chartH}px; border-bottom:2px solid #E2E8F0; position:relative;">`;
   // reference line at avg
@@ -1020,7 +1009,7 @@ function htmlFig4() {
   const maxVal = 1400;
   const chartH = 420;
 
-  let html = '<div class="title">그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간</div>';
+  let html = '<div class="title">그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간</div>';
   html += '<div class="subtitle">5회 반복 (다중 시드) | 버스트 패턴 | 단위: 초(s)</div>';
 
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 60px; height:${chartH}px; border-bottom:2px solid #E2E8F0;">`;
@@ -1075,7 +1064,7 @@ function htmlFig5() {
     { name: 'WFQ',      vals: wfqVals,      color: '#059669' },
   ];
 
-  let html = '<div class="title">그림 8. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
+  let html = '<div class="title">그림 5. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
   html += '<div class="subtitle">Ollama 실서버 실험 20건 | 단위: ms</div>';
   html += `<div style="display:flex; align-items:flex-end; gap:36px; padding:0 40px; height:${chartH}px; border-bottom:2px solid #E2E8F0;">`;
   tiers.forEach((tier, ti) => {
@@ -1115,7 +1104,7 @@ function htmlFig6() {
   const maxVal = 1.1;
   const chartH = 450;
 
-  let html = '<div class="title">그림 9. 알고리즘별 Jain\'s Fairness Index (JFI) 비교</div>';
+  let html = '<div class="title">그림 6. 알고리즘별 Jain\'s Fairness Index (JFI) 비교</div>';
   html += '<div class="subtitle">JFI = 1.0이 완전 공정, 낮을수록 불공평</div>';
   html += `<div style="display:flex; align-items:flex-end; gap:64px; padding:0 100px; height:${chartH}px; border-bottom:2px solid #E2E8F0; position:relative;">`;
   // reference line at 1.0
@@ -1178,7 +1167,7 @@ function htmlFig7() {
 
 // HTML for Fig8: Algorithm concept diagram
 function htmlFig8() {
-  let html = '<div class="title">그림 1. 스케줄링 알고리즘 개념 비교</div>';
+  let html = '<div class="title">그림 8. 스케줄링 알고리즘 개념 비교</div>';
   html += '<div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:8px; padding:0 20px; height:640px;">';
 
   // FCFS
@@ -1241,7 +1230,7 @@ function htmlFig8() {
 
 // HTML for Fig9: Experiment setup diagram
 function htmlFig9() {
-  let html = '<div class="title">그림 5. 실험 환경 구성도</div>';
+  let html = '<div class="title">그림 9. 실험 환경 구성도</div>';
   html += '<div style="padding:4px 30px; display:flex; flex-direction:column; gap:8px; height:650px;">';
 
   // Generator box
@@ -1293,7 +1282,7 @@ function htmlFig9() {
 function htmlFig10ModuleStructure() {
   const html = `
     <h2 style="text-align:center; color:#1E293B; font-size:18px; margin-bottom:20px;">
-      그림 4. 모듈 구조도 (Module Structure)
+      그림 3. 모듈 구조도 (Module Structure)
     </h2>
     <div style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:10px;">
       <!-- server.js -->
@@ -1346,7 +1335,7 @@ function htmlFig10ModuleStructure() {
 function htmlFig10ModuleStructure() {
   const html = `
     <h2 style="text-align:center; color:#1E293B; font-size:18px; margin-bottom:20px;">
-      그림 4. 모듈 구조도 (Module Structure)
+      그림 3. 모듈 구조도 (Module Structure)
     </h2>
     <div style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:10px;">
       <!-- server.js -->
@@ -1402,15 +1391,15 @@ async function generatePNGs() {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
 
   const figures = [
-    { name: 'fig-1-algo-concepts',       html: htmlFig8() },
-    { name: 'fig-2-system-architecture', html: htmlFig1() },
-    { name: 'fig-3-data-flow',           html: htmlFig2() },
-    { name: 'fig-4-module-structure',    html: htmlFig10ModuleStructure() },
-    { name: 'fig-5-experiment-setup',    html: htmlFig9() },
-    { name: 'fig-6-avg-wait-time',       html: htmlFig3() },
-    { name: 'fig-7-mlfq-vs-fcfs',        html: htmlFig4() },
-    { name: 'fig-8-ollama-tier',         html: htmlFig5() },
-    { name: 'fig-9-jfi-comparison',      html: htmlFig6() },
+    { name: 'fig-1-system-architecture', html: htmlFig1() },
+    { name: 'fig-2-data-flow',           html: htmlFig2() },
+    { name: 'fig-3-avg-wait-time',       html: htmlFig3() },
+    { name: 'fig-4-mlfq-vs-fcfs',        html: htmlFig4() },
+    { name: 'fig-5-ollama-tier',         html: htmlFig5() },
+    { name: 'fig-6-jfi-comparison',      html: htmlFig6() },
+    { name: 'fig-7-algo-concepts',       html: htmlFig8() },
+    { name: 'fig-8-experiment-setup',    html: htmlFig9() },
+    { name: 'fig-9-module-structure',    html: htmlFig10ModuleStructure() },
   ];
 
   for (const fig of figures) {
@@ -1431,7 +1420,7 @@ async function generatePNGs() {
 
 function createFig10ModuleStructure(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 4. 모듈 구조도 (Module Structure)', {
+  slide.addText('그림 3. 모듈 구조도 (Module Structure)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.5,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
   });
@@ -1531,15 +1520,15 @@ async function main() {
   console.log('최종보고서 그림 생성 시작...\n');
 
   const figures = [
-    { name: 'fig-1-algo-concepts',       fn: createFig8 },
-    { name: 'fig-2-system-architecture', fn: createFig1 },
-    { name: 'fig-3-data-flow',           fn: createFig2 },
-    { name: 'fig-4-module-structure',    fn: createFig10ModuleStructure },
-    { name: 'fig-5-experiment-setup',    fn: createFig9 },
-    { name: 'fig-6-avg-wait-time',       fn: createFig3 },
-    { name: 'fig-7-mlfq-vs-fcfs',        fn: createFig4 },
-    { name: 'fig-8-ollama-tier',         fn: createFig5 },
-    { name: 'fig-9-jfi-comparison',      fn: createFig6 },
+    { name: 'fig-1-system-architecture', fn: createFig1 },
+    { name: 'fig-2-data-flow',           fn: createFig2 },
+    { name: 'fig-3-avg-wait-time',       fn: createFig3 },
+    { name: 'fig-4-mlfq-vs-fcfs',        fn: createFig4 },
+    { name: 'fig-5-ollama-tier',         fn: createFig5 },
+    { name: 'fig-6-jfi-comparison',      fn: createFig6 },
+    { name: 'fig-7-algo-concepts',       fn: createFig8 },
+    { name: 'fig-8-experiment-setup',    fn: createFig9 },
+    { name: 'fig-9-module-structure',    fn: createFig10ModuleStructure },
   ];
 
   // Generate individual PPTX files

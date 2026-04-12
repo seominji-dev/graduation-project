@@ -1,6 +1,6 @@
 /**
  * Final Report DOCX Generator
- * Reads final-report-v6.md and generates 06-final-report/final/final-report.docx
+ * Reads final-report-v8.md and generates 06-final-report/final/final-report.docx
  * Uses markdown-to-DOCX conversion approach for scalability
  */
 
@@ -34,17 +34,17 @@ const cellBorders = {
   right: tableBorder
 };
 
-// Figure number to actual filename mapping
+// Figure number to actual filename mapping (filenames now aligned with body 그림 N)
 const FIGURE_MAP = {
-  1: 'fig-7-algo-concepts.png',
-  2: 'fig-1-system-architecture.png',
-  3: 'fig-2-data-flow.png',
-  4: 'fig-9-module-structure.png',
-  5: 'fig-8-experiment-setup.png',
-  6: 'fig-3-avg-wait-time.png',
-  7: 'fig-4-mlfq-vs-fcfs.png',
-  8: 'fig-5-ollama-tier.png',
-  9: 'fig-6-jfi-comparison.png',
+  1: 'fig-1-algo-concepts.png',
+  2: 'fig-2-system-architecture.png',
+  3: 'fig-3-data-flow.png',
+  4: 'fig-4-module-structure.png',
+  5: 'fig-5-experiment-setup.png',
+  6: 'fig-6-avg-wait-time.png',
+  7: 'fig-7-mlfq-vs-fcfs.png',
+  8: 'fig-8-ollama-tier.png',
+  9: 'fig-9-jfi-comparison.png',
 };
 
 // Figures directory path
@@ -580,7 +580,7 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v7.md');
+  const mdPath = path.resolve(__dirname, 'final-report-v8.md');
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
