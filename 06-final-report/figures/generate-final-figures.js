@@ -1278,6 +1278,112 @@ function htmlFig9() {
   return wrapHtml(html);
 }
 
+// ─── HTML Fig 10: 모듈 구조도 ───
+function htmlFig10ModuleStructure() {
+  const html = `
+    <h2 style="text-align:center; color:#1E293B; font-size:18px; margin-bottom:20px;">
+      그림 3. 모듈 구조도 (Module Structure)
+    </h2>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:10px;">
+      <!-- server.js -->
+      <div style="background:#EFF6FF; border:2px solid #2563EB; border-radius:8px; padding:10px 30px; font-weight:bold; color:#2563EB; font-size:14px; text-align:center;">
+        server.js (진입점)
+      </div>
+      <div style="color:#CBD5E1; font-size:20px;">▼</div>
+      <!-- Modules row -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <div style="background:#ECFDF5; border:2px solid #059669; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#059669; font-size:12px;">api/</div>
+          <div style="color:#059669; font-size:10px; margin-top:4px;">라우터</div>
+        </div>
+        <div style="background:#FFF7ED; border:2px solid #D97706; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#D97706; font-size:12px;">schedulers/</div>
+          <div style="color:#D97706; font-size:10px; margin-top:4px;">FCFS, Priority,<br>MLFQ, WFQ</div>
+        </div>
+        <div style="background:#F1F5F9; border:2px solid #64748B; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#64748B; font-size:12px;">queue/</div>
+          <div style="color:#64748B; font-size:10px; margin-top:4px;">메모리 큐</div>
+        </div>
+        <div style="background:#F1F5F9; border:2px solid #64748B; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#64748B; font-size:12px;">storage/</div>
+          <div style="color:#64748B; font-size:10px; margin-top:4px;">JSON 저장</div>
+        </div>
+        <div style="background:#FEF2F2; border:2px solid #DC2626; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#DC2626; font-size:12px;">llm/</div>
+          <div style="color:#DC2626; font-size:10px; margin-top:4px;">Ollama 연동</div>
+        </div>
+      </div>
+      <!-- rate-limiter -->
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <div style="background:#FEF2F2; border:2px solid #DC2626; border-radius:8px; padding:10px 20px; text-align:center;">
+          <div style="font-weight:bold; color:#DC2626; font-size:12px;">rate-limiter/</div>
+          <div style="color:#DC2626; font-size:10px; margin-top:4px;">요청 제한</div>
+        </div>
+      </div>
+      <!-- tests -->
+      <div style="border:2px dashed #CBD5E1; border-radius:8px; padding:8px 30px; text-align:center; color:#64748B; font-size:11px;">
+        tests-simple/ (Jest 단위 테스트)
+      </div>
+      <div style="color:#888; font-size:10px; margin-top:4px;">
+        ※ 외부 라이브러리 의존성: Express.js 1개
+      </div>
+    </div>`;
+  return wrapHtml(html);
+}
+
+// ─── HTML Fig 10: 모듈 구조도 ───
+function htmlFig10ModuleStructure() {
+  const html = `
+    <h2 style="text-align:center; color:#1E293B; font-size:18px; margin-bottom:20px;">
+      그림 3. 모듈 구조도 (Module Structure)
+    </h2>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:18px; padding:10px;">
+      <!-- server.js -->
+      <div style="background:#EFF6FF; border:2px solid #2563EB; border-radius:8px; padding:10px 30px; font-weight:bold; color:#2563EB; font-size:14px; text-align:center;">
+        server.js (진입점)
+      </div>
+      <div style="color:#CBD5E1; font-size:20px;">▼</div>
+      <!-- Modules row -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <div style="background:#ECFDF5; border:2px solid #059669; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#059669; font-size:12px;">api/</div>
+          <div style="color:#059669; font-size:10px; margin-top:4px;">라우터</div>
+        </div>
+        <div style="background:#FFF7ED; border:2px solid #D97706; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#D97706; font-size:12px;">schedulers/</div>
+          <div style="color:#D97706; font-size:10px; margin-top:4px;">FCFS, Priority,<br>MLFQ, WFQ</div>
+        </div>
+        <div style="background:#F1F5F9; border:2px solid #64748B; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#64748B; font-size:12px;">queue/</div>
+          <div style="color:#64748B; font-size:10px; margin-top:4px;">메모리 큐</div>
+        </div>
+        <div style="background:#F1F5F9; border:2px solid #64748B; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#64748B; font-size:12px;">storage/</div>
+          <div style="color:#64748B; font-size:10px; margin-top:4px;">JSON 저장</div>
+        </div>
+        <div style="background:#FEF2F2; border:2px solid #DC2626; border-radius:8px; padding:10px 14px; text-align:center; min-width:120px;">
+          <div style="font-weight:bold; color:#DC2626; font-size:12px;">llm/</div>
+          <div style="color:#DC2626; font-size:10px; margin-top:4px;">Ollama 연동</div>
+        </div>
+      </div>
+      <!-- rate-limiter -->
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <div style="background:#FEF2F2; border:2px solid #DC2626; border-radius:8px; padding:10px 20px; text-align:center;">
+          <div style="font-weight:bold; color:#DC2626; font-size:12px;">rate-limiter/</div>
+          <div style="color:#DC2626; font-size:10px; margin-top:4px;">요청 제한</div>
+        </div>
+      </div>
+      <!-- tests -->
+      <div style="border:2px dashed #CBD5E1; border-radius:8px; padding:8px 30px; text-align:center; color:#64748B; font-size:11px;">
+        tests-simple/ (Jest 단위 테스트)
+      </div>
+      <div style="color:#888; font-size:10px; margin-top:4px;">
+        ※ 외부 라이브러리 의존성: Express.js 1개
+      </div>
+    </div>`;
+  return wrapHtml(html);
+}
+
 // ─── PNG generation via Playwright ───
 
 async function generatePNGs() {
@@ -1293,6 +1399,7 @@ async function generatePNGs() {
     { name: 'fig-6-jfi-comparison',      html: htmlFig6() },
     { name: 'fig-7-algo-concepts',       html: htmlFig8() },
     { name: 'fig-8-experiment-setup',    html: htmlFig9() },
+    { name: 'fig-9-module-structure',    html: htmlFig10ModuleStructure() },
   ];
 
   for (const fig of figures) {
@@ -1309,6 +1416,104 @@ async function generatePNGs() {
   await browser.close();
 }
 
+// ─── Fig 10: 모듈 구조도 (Module Structure) ───
+
+function createFig10ModuleStructure(pptx) {
+  const slide = pptx.addSlide();
+  slide.addText('그림 3. 모듈 구조도 (Module Structure)', {
+    x: 0.3, y: 0.1, w: 9.4, h: 0.5,
+    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.black
+  });
+
+  // server.js (top center)
+  const serverX = 3.8, serverY = 0.75, boxW = 2.4, boxH = 0.55;
+  slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+    x: serverX, y: serverY, w: boxW, h: boxH,
+    fill: { color: COLORS.primary, transparency: 85 },
+    line: { color: COLORS.primary, width: 2 }, rectRadius: 0.08
+  });
+  slide.addText('server.js\n(진입점)', {
+    x: serverX, y: serverY, w: boxW, h: boxH,
+    fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.primary,
+    align: 'center', valign: 'middle'
+  });
+
+  // Module boxes
+  const modules = [
+    { name: 'api/\n(라우터)', color: COLORS.accent, x: 0.3, y: 2.0 },
+    { name: 'schedulers/\n(FCFS, Priority,\nMLFQ, WFQ)', color: COLORS.warning, x: 2.2, y: 2.0 },
+    { name: 'queue/\n(메모리 큐)', color: COLORS.secondary, x: 4.1, y: 2.0 },
+    { name: 'storage/\n(JSON 저장)', color: COLORS.secondary, x: 6.0, y: 2.0 },
+    { name: 'llm/\n(Ollama 연동)', color: COLORS.danger, x: 7.9, y: 2.0 },
+  ];
+
+  const modW = 1.7, modH = 0.9;
+  modules.forEach(m => {
+    slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+      x: m.x, y: m.y, w: modW, h: modH,
+      fill: { color: m.color, transparency: 88 },
+      line: { color: m.color, width: 1.5 }, rectRadius: 0.08
+    });
+    slide.addText(m.name, {
+      x: m.x, y: m.y, w: modW, h: modH,
+      fontSize: SMALL_SIZE, fontFace: FONT, bold: true, color: m.color,
+      align: 'center', valign: 'middle'
+    });
+  });
+
+  // Arrows from server.js down to each module
+  modules.forEach(m => {
+    const cx = m.x + modW / 2;
+    slide.addShape(pptx.shapes.LINE, {
+      x: serverX + boxW / 2, y: serverY + boxH,
+      w: cx - (serverX + boxW / 2), h: m.y - serverY - boxH,
+      line: { color: COLORS.border, width: 1.5, dashType: 'solid' }
+    });
+  });
+
+  // Dependency arrow: schedulers → queue
+  slide.addText('사용 →', {
+    x: 3.55, y: 3.0, w: 0.7, h: 0.25,
+    fontSize: 7, fontFace: FONT, color: COLORS.border, align: 'center'
+  });
+
+  // Dependency arrow: api → schedulers
+  slide.addText('호출 →', {
+    x: 1.65, y: 3.0, w: 0.7, h: 0.25,
+    fontSize: 7, fontFace: FONT, color: COLORS.border, align: 'center'
+  });
+
+  // rate-limiter box (below api)
+  slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+    x: 0.3, y: 3.5, w: modW, h: 0.65,
+    fill: { color: COLORS.danger, transparency: 88 },
+    line: { color: COLORS.danger, width: 1.5 }, rectRadius: 0.08
+  });
+  slide.addText('rate-limiter/\n(요청 제한)', {
+    x: 0.3, y: 3.5, w: modW, h: 0.65,
+    fontSize: SMALL_SIZE, fontFace: FONT, bold: true, color: COLORS.danger,
+    align: 'center', valign: 'middle'
+  });
+
+  // tests box (below all)
+  slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+    x: 2.8, y: 4.3, w: 4.4, h: 0.5,
+    fill: { color: COLORS.light },
+    line: { color: COLORS.border, width: 1, dashType: 'dash' }, rectRadius: 0.08
+  });
+  slide.addText('tests-simple/ (Jest 단위 테스트)', {
+    x: 2.8, y: 4.3, w: 4.4, h: 0.5,
+    fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.secondary,
+    align: 'center', valign: 'middle'
+  });
+
+  // Legend
+  slide.addText('※ 화살표: 의존 관계 (호출 방향)', {
+    x: 0.3, y: 5.0, w: 4.0, h: 0.3,
+    fontSize: 8, fontFace: FONT, color: COLORS.secondary
+  });
+}
+
 // ─── Main ───
 
 async function main() {
@@ -1323,6 +1528,7 @@ async function main() {
     { name: 'fig-6-jfi-comparison',      fn: createFig6 },
     { name: 'fig-7-algo-concepts',       fn: createFig8 },
     { name: 'fig-8-experiment-setup',    fn: createFig9 },
+    { name: 'fig-9-module-structure',    fn: createFig10ModuleStructure },
   ];
 
   // Generate individual PPTX files
