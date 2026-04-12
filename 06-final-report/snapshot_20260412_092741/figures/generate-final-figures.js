@@ -3,7 +3,7 @@
  * Generates 9 figures as individual PPTX files + PNG screenshots
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-8 (PPTX + PNG each)
+ * Output: fig-1 ~ fig-9 (PPTX + PNG each)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -1291,8 +1291,9 @@ async function generatePNGs() {
     { name: 'fig-4-mlfq-vs-fcfs',        html: htmlFig4() },
     { name: 'fig-5-ollama-tier',         html: htmlFig5() },
     { name: 'fig-6-jfi-comparison',      html: htmlFig6() },
-    { name: 'fig-7-algo-concepts',       html: htmlFig8() },
-    { name: 'fig-8-experiment-setup',    html: htmlFig9() },
+    { name: 'fig-7-algo-table',          html: htmlFig7() },
+    { name: 'fig-8-algo-concepts',       html: htmlFig8() },
+    { name: 'fig-9-experiment-setup',    html: htmlFig9() },
   ];
 
   for (const fig of figures) {
@@ -1321,8 +1322,9 @@ async function main() {
     { name: 'fig-4-mlfq-vs-fcfs',        fn: createFig4 },
     { name: 'fig-5-ollama-tier',         fn: createFig5 },
     { name: 'fig-6-jfi-comparison',      fn: createFig6 },
-    { name: 'fig-7-algo-concepts',       fn: createFig8 },
-    { name: 'fig-8-experiment-setup',    fn: createFig9 },
+    { name: 'fig-7-algo-table',          fn: createFig7 },
+    { name: 'fig-8-algo-concepts',       fn: createFig8 },
+    { name: 'fig-9-experiment-setup',    fn: createFig9 },
   ];
 
   // Generate individual PPTX files

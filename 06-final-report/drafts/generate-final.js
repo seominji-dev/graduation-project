@@ -1,6 +1,6 @@
 /**
  * Final Report DOCX Generator
- * Reads final-report-v3.md and generates 06-final-report/final/final-report.docx
+ * Reads final-report-v4.md and generates 06-final-report/final/final-report.docx
  * Uses markdown-to-DOCX conversion approach for scalability
  */
 
@@ -42,9 +42,8 @@ const FIGURE_MAP = {
   4: 'fig-4-mlfq-vs-fcfs.png',
   5: 'fig-5-ollama-tier.png',
   6: 'fig-6-jfi-comparison.png',
-  7: 'fig-7-algo-table.png',
-  8: 'fig-8-algo-concepts.png',
-  9: 'fig-9-experiment-setup.png',
+  7: 'fig-7-algo-concepts.png',
+  8: 'fig-8-experiment-setup.png',
 };
 
 // Figures directory path
@@ -580,7 +579,7 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v3.md');
+  const mdPath = path.resolve(__dirname, 'final-report-v4.md');
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
