@@ -580,7 +580,7 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v6.md');
+  const mdPath = path.resolve(__dirname, 'final-report-v7.md');
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
