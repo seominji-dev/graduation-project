@@ -188,7 +188,7 @@ function figureCaption(text) {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 120, line: 360 },
-    children: [new TextRun({ text, font: FONT, size: 20, italics: true, color: COLOR_GRAY })]
+    children: [new TextRun({ text, font: FONT, size: 22, italics: true, color: COLOR_GRAY })]
   });
 }
 
@@ -519,10 +519,6 @@ function buildCoverPage(meta) {
         new TableRow({ children: [
           cell('지도교수', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
           cell(meta.advisor || '이장호 교수님', { width: 4800 })
-        ]}),
-        new TableRow({ children: [
-          cell('제출일', { bold: true, shading: COLOR_HEADER_BG, width: 2400, align: AlignmentType.CENTER }),
-          cell(meta.date || '2026년 5월 24일', { width: 4800 })
         ]})
       ]
     }),
@@ -667,7 +663,7 @@ async function generateFinalReport() {
       {
         properties: {
           page: {
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1728 } // left 3cm
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } // match midterm 2.54cm all sides
           }
         },
         children: coverChildren
@@ -679,7 +675,7 @@ async function generateFinalReport() {
       {
         properties: {
           page: {
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1728 },
+            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
             pageNumbers: { start: 1 }
           }
         },
