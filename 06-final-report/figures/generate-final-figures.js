@@ -43,7 +43,8 @@ const BODY_SIZE  = 10;   // AC-18: 9-10pt for body/label
 const SMALL_SIZE = 9;    // AC-18: 9pt for small labels
 
 // ─── Fig 1: 시스템 아키텍처 (System Architecture) ───
-// Data preserved: 5 layers - Client/API/Rate Limiter/Scheduler/Storage/LLM
+// Data preserved: 4 layers - Client/API(+Rate Limiter)/Scheduler/Storage+LLM
+// Rate Limiter is embedded inside API layer as an accent sub-box (matches body 3.2)
 // AC-04: rectRadius 0, AC-07: no transparency, AC-08: white fill + black outline,
 // AC-11: black/dark-gray lines, AC-13: no unicode arrows, AC-19: black text
 
@@ -56,51 +57,50 @@ function createFig1(pptx) {
     align: 'center'
   });
 
+  // 4 layers (Rate Limiter is a sub-component of API layer, visually accented)
   const layers = [
-    { name: '클라이언트 계층 (Client)',           y: 0.7,  subs: ['REST Client', '대시보드 (Dashboard)'] },
-    { name: 'API 계층 (Express.js)',              y: 1.6,  subs: ['요청 접수', '스케줄러 전환', '통계 조회'] },
-    { name: '요청 제한 계층 (Rate Limiter)',       y: 2.5,  subs: ['구독 등급 확인', '토큰 버킷 제어', '429 응답'] },
-    { name: '스케줄러 계층 (Scheduler)',           y: 3.4,  subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
-    { name: '저장소/LLM 계층 (Storage/LLM)',      y: 4.3,  subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
+    { name: '클라이언트 계층 (Client)',                y: 0.75,  subs: ['REST Client', '대시보드 (Dashboard)'] },
+    { name: 'API 계층 (Express.js + Rate Limiter)',   y: 1.95,  subs: ['요청 접수', '스케줄러 전환', '통계 조회', 'Rate Limiter (구독 등급·429 응답)'] },
+    { name: '스케줄러 계층 (Scheduler)',               y: 3.15,  subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
+    { name: '저장소/LLM 계층 (Storage/LLM)',          y: 4.35,  subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
   ];
 
-  const layerH = 0.75;
-  // AC-08: Rate Limiter uses ACCENT for single highlight (optional, Section 7.2)
-  const layerLineColor = [COLORS.BLACK, COLORS.BLACK, COLORS.ACCENT, COLORS.BLACK, COLORS.BLACK];
+  const layerH = 0.80;
 
   layers.forEach((layer, idx) => {
-    const lc = layerLineColor[idx];
     // AC-04: RECTANGLE (no radius), AC-07: no transparency, AC-08: white fill
     slide.addShape(pptx.shapes.RECTANGLE, {
       x: 0.5, y: layer.y, w: 9.0, h: layerH,
       fill: { color: COLORS.WHITE },
-      line: { color: lc, width: 0.75 }
+      line: { color: COLORS.BLACK, width: 0.75 }
     });
     // AC-19: black text, AC-17: no italic
     slide.addText(layer.name, {
-      x: 0.7, y: layer.y + 0.05, w: 2.8, h: 0.3,
+      x: 0.7, y: layer.y + 0.06, w: 2.8, h: 0.3,
       fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK
     });
 
     // Sub-component boxes: light-gray fill + black outline (AC-08)
     const subCount = layer.subs.length;
-    const subW = subCount === 4 ? 1.65 : (subCount === 3 ? 2.1 : 2.8);
-    const totalSubW = subCount * subW + (subCount - 1) * 0.15;
-    const startX = 3.2 + (6.0 - totalSubW) / 2;
+    const subW = subCount === 4 ? 1.55 : (subCount === 3 ? 2.0 : 2.6);
+    const totalSubW = subCount * subW + (subCount - 1) * 0.12;
+    const startX = 3.25 + (6.0 - totalSubW) / 2;
 
     layer.subs.forEach((sub, i) => {
-      const sx = startX + i * (subW + 0.15);
+      const sx = startX + i * (subW + 0.12);
+      const isRateLimiter = sub.includes('Rate Limiter');
       // AC-04: RECTANGLE, AC-07: no transparency, AC-08: very-light fill
+      // Rate Limiter accent: ACCENT border + slightly thicker stroke
       slide.addShape(pptx.shapes.RECTANGLE, {
-        x: sx, y: layer.y + 0.25, w: subW, h: 0.38,
+        x: sx, y: layer.y + 0.28, w: subW, h: 0.42,
         fill: { color: COLORS.VERY_LIGHT },
-        line: { color: COLORS.BLACK, width: 0.5 }
+        line: { color: isRateLimiter ? COLORS.ACCENT : COLORS.BLACK, width: isRateLimiter ? 1.0 : 0.5 }
       });
-      // AC-19: black text
+      // AC-19: black text (no emotional color)
       slide.addText(sub, {
-        x: sx, y: layer.y + 0.25, w: subW, h: 0.38,
-        fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.BLACK,
-        align: 'center', valign: 'middle', bold: false
+        x: sx, y: layer.y + 0.28, w: subW, h: 0.42,
+        fontSize: isRateLimiter ? 8 : SMALL_SIZE, fontFace: FONT, color: COLORS.BLACK,
+        align: 'center', valign: 'middle', bold: isRateLimiter
       });
     });
   });
@@ -359,7 +359,7 @@ function createFig3(pptx) {
 
 function createFig4(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간', {
+  slide.addText('그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -1038,25 +1038,28 @@ function wrapHtml(body, height) {
 }
 
 // HTML for Fig2 (fig-2-system-architecture)
+// 4 layers - Rate Limiter is embedded in API layer as accent sub-box (matches body 3.2)
 function htmlFig1() {
   const layers = [
-    { name: '클라이언트 계층 (Client)',           subs: ['REST Client', '대시보드 (Dashboard)'] },
-    { name: 'API 계층 (Express.js)',              subs: ['요청 접수', '스케줄러 전환', '통계 조회'] },
-    { name: '요청 제한 계층 (Rate Limiter)',       subs: ['구독 등급 확인', '토큰 버킷 제어', '429 응답'] },
-    { name: '스케줄러 계층 (Scheduler)',           subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
-    { name: '저장소/LLM 계층 (Storage/LLM)',      subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
+    { name: '클라이언트 계층 (Client)',                subs: ['REST Client', '대시보드 (Dashboard)'] },
+    { name: 'API 계층 (Express.js + Rate Limiter)',   subs: ['요청 접수', '스케줄러 전환', '통계 조회', 'Rate Limiter (구독 등급·429 응답)'] },
+    { name: '스케줄러 계층 (Scheduler)',               subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
+    { name: '저장소/LLM 계층 (Storage/LLM)',          subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
   ];
   let html = '<div class="fig-title">그림 2. 시스템 아키텍처 (System Architecture)</div>';
   html += '<div style="padding:0 48px; display:flex; flex-direction:column; gap:0;">';
   layers.forEach((layer, idx) => {
     // AC-05: border-radius:0, AC-09: no rgba, AC-08: white fill + black stroke
-    const borderColor = idx === 2 ? '#1F3A5F' : '#000000'; // Rate Limiter uses accent
-    html += `<div style="border:1.5px solid ${borderColor}; padding:8px 16px 10px; background:#FFFFFF; flex-shrink:0;">`;
+    html += `<div style="border:1.5px solid #000000; padding:8px 16px 10px; background:#FFFFFF; flex-shrink:0;">`;
     html += `<div style="font-size:12px; font-weight:bold; color:#000000; margin-bottom:7px;">${layer.name}</div>`;
-    html += '<div style="display:flex; gap:12px; justify-content:center;">';
+    html += '<div style="display:flex; gap:10px; justify-content:center;">';
     layer.subs.forEach(sub => {
       // AC-05: no border-radius, AC-09: no rgba, AC-08: very-light fill
-      html += `<div style="border:1px solid #000000; padding:6px 18px; background:#F5F5F5; font-size:10px; color:#000000;">${sub}</div>`;
+      // Rate Limiter gets accent border + bold text to mark it as a special sub-component
+      const isRL = sub.includes('Rate Limiter');
+      const border = isRL ? '1.5px solid #1F3A5F' : '1px solid #000000';
+      const weight = isRL ? 'bold' : 'normal';
+      html += `<div style="border:${border}; padding:6px 14px; background:#F5F5F5; font-size:10px; color:#000000; font-weight:${weight};">${sub}</div>`;
     });
     html += '</div></div>';
     if (idx < layers.length - 1) {
@@ -1202,7 +1205,7 @@ function htmlFig4() {
   const maxVal = 1400;
   const chartH = 420;
 
-  let html = '<div class="fig-title">그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 대기시간</div>';
+  let html = '<div class="fig-title">그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간</div>';
   html += '<div class="fig-subtitle">5회 반복 (다중 시드) | 버스트 패턴 | 단위: 초(s)</div>';
 
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 60px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
