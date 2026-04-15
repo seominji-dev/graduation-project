@@ -683,6 +683,7 @@ async function generateFinalReport() {
           default: new Header({
             children: [new Paragraph({
               alignment: AlignmentType.RIGHT,
+              indent: { firstLine: 160 },
               children: [new TextRun({
                 text: '홍익대학교 컴퓨터공학과 졸업프로젝트',
                 font: FONT, size: 16, color: COLOR_LIGHT_GRAY
@@ -694,6 +695,7 @@ async function generateFinalReport() {
           default: new Footer({
             children: [new Paragraph({
               alignment: AlignmentType.CENTER,
+              indent: { firstLine: 180 },
               children: [
                 new TextRun({ text: '- ', font: FONT, size: 18, color: COLOR_LIGHT_GRAY }),
                 new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 18, color: COLOR_LIGHT_GRAY }),
