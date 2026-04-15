@@ -12,9 +12,9 @@ const path = require('path');
 
 const OUTPUT_FILE = path.join(__dirname, 'presentation.pptx');
 
-// ── Color palette (Hongik University brand: navy #003478 primary, red #C41230 accent) ──
+// ── Color palette (matches final-report figures) ──────────────────────────────
 const C = {
-  primary:   '003478',   // Hongik navy
+  primary:   '2563EB',   // blue
   secondary: '64748B',   // gray
   accent:    '059669',   // green
   warning:   'D97706',   // orange/amber
@@ -22,8 +22,8 @@ const C = {
   white:     'FFFFFF',
   black:     '1E293B',
   border:    'CBD5E1',
-  danger:    'C41230',   // Hongik red
-  lightBlue: 'EAF1FB',   // very light navy tint
+  danger:    'DC2626',   // red
+  lightBlue: 'EFF6FF',   // very light blue
   lightGray: 'F8FAFC',
 };
 
@@ -123,26 +123,8 @@ function createSlide1(pptx) {
     });
   });
 
-  // Speaker note (dual-channel: presentation script + AI post-processing prompt)
-  slide.addNotes(`안녕하세요. 저는 홍익대학교 컴퓨터공학과 4학년 서민지입니다. 오늘은 저의 졸업 프로젝트인 "스케줄링 알고리즘을 활용한 다중 사용자 LLM API 요청 관리 시스템"을 발표드리겠습니다. 발표는 약 12분, 실시간 데모가 약 3분으로 구성되어 있습니다.
-
-(발표 시간: 약 30초)
-
----AI-PROMPT---
-[글로벌 디자인 가이드 — 전체 발표에 적용]
-- 테마 컬러: 홍익대 남색 #003478 (primary), 홍익대 빨강 #C41230 (강조/danger)
-- 서브 컬러: 녹색 #059669 (positive), 주황 #D97706 (warning), 회색 #64748B (secondary)
-- 폰트: 맑은 고딕 또는 나눔고딕 (제목 26pt, 본문 14~16pt, 캡션 11pt)
-- 배경: 본문 슬라이드는 화이트 기반, 상단 남색 헤더 바(높이 0.9인치)
-- 모든 박스는 rectRadius 0.08~0.1 (라운드 코너), 테두리 1~1.5pt
-- 아이콘/화살표는 유니코드(→, ↓, ✓, ↑, ↓) 또는 PowerPoint 기본 도형 사용
-
-[이 슬라이드 개선 지시]
-- 표지는 상단 3.5인치 남색 배경 + 하단 정보 박스(연한 남색 배경)
-- 제목 폰트 크기 28pt, 영문 부제 15pt italic
-- 발표자/소속/지도교수/발표일 4행 정보 테이블 유지
-- 추가 고려: 좌측 하단에 작은 홍익대 로고 플레이스홀더 (PowerPoint에서 수동 삽입 가능)
----END-PROMPT---`);
+  // Speaker note
+  slide.addNotes('안녕하세요. 저는 홍익대학교 컴퓨터공학과 4학년 서민지입니다. 저의 졸업 프로젝트인 "스케줄링 알고리즘을 활용한 다중 사용자 LLM API 요청 관리 시스템"을 발표하겠습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -197,18 +179,7 @@ function createSlide2(pptx, totalSlides) {
     }
   });
 
-  slide.addNotes(`오늘 발표는 크게 다섯 부분으로 구성됩니다. 먼저 연구 배경과 목적을 소개하고, 시스템 설계와 4가지 스케줄링 알고리즘 구현을 설명드립니다. 이어서 500건 규모의 시뮬레이션과 Ollama 실서버 실험 결과를 보여드리고, 마지막으로 결론과 한계를 정리하겠습니다. 실시간 데모는 결론 직전에 배치했습니다.
-
-(발표 시간: 약 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 5단계 번호 원(circle)의 색상을 일관되게 홍익 남색(#003478)으로 통일
-- 각 항목의 제목(title)은 19pt bold, 부제(desc)는 13pt regular
-- 항목 간 구분선을 연한 회색(#CBD5E1)으로 유지
-- 번호 원에 부드러운 그림자(subtle shadow) 추가 고려
-- 5번 항목은 결론이므로 빨강(#C41230) 강조 또는 테두리 처리 고려
----END-PROMPT---`);
+  slide.addNotes('오늘 발표는 크게 다섯 부분으로 구성되어 있습니다. 연구 배경과 목적을 시작으로, 시스템 설계, 구현 내용, 실험 결과, 그리고 결론 순서로 진행하겠습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -304,18 +275,7 @@ function createSlide3(pptx, totalSlides) {
     });
   });
 
-  slide.addNotes(`ChatGPT와 같은 LLM API는 다중 사용자 동시 접속이 폭발적으로 늘어나고 있습니다. 그러나 요청 처리 순서 기준이 없어 구독 등급이 반영되지 않고, 특정 사용자 독점으로 대기 지연이 생기기 쉽습니다. 이 문제를 운영체제에서 오래 검증된 스케줄링 알고리즘으로 해결할 수 있는지 확인하고자 했습니다. 세 가지 연구 질문으로 정리했는데요, RQ1은 구현 가능성, RQ2는 성능 비교, RQ3은 공정성 측정입니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 좌측 "문제 상황" 박스와 우측 "제안 접근법" 박스를 대조적으로 배치 유지
-- 가운데 화살표(→)를 남색 굵은 화살표로 강조 (폭 2pt 이상)
-- RQ 배지 3개의 색상을 차별화: RQ1 남색(#003478), RQ2 녹색(#059669), RQ3 빨강(#C41230)
-- 하단 RQ 섹션 제목 "연구 질문" 위에 얇은 구분선(horizontal rule) 추가
-- 우측 제안 접근법 박스의 "4가지 알고리즘" 문구는 굵게 처리하여 핵심 강조
----END-PROMPT---`);
+  slide.addNotes('LLM API 서비스는 현재 다중 사용자 환경에서 요청 관리 문제가 심각합니다. OS에서 오래전부터 검증된 스케줄링 알고리즘을 이 문제에 적용해보고자 했습니다. 세 가지 핵심 연구 질문을 중심으로 연구를 진행했습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -327,12 +287,13 @@ function createSlide4(pptx, totalSlides) {
   addFooter(slide);
   addSlideNumber(slide, 4, totalSlides);
 
-  // Four architecture layers (Rate Limiter is preprocessing step inside API layer)
+  // Five architecture layers
   const layers = [
-    { label: '클라이언트 계층',      sub: 'REST Client  ·  대시보드',                       color: C.primary,   y: 1.15 },
-    { label: 'API 계층',            sub: 'Express.js  ·  Rate Limiter(전처리)  ·  요청 접수', color: C.accent,    y: 2.22 },
-    { label: '스케줄러 계층',        sub: 'FCFS  ·  Priority  ·  MLFQ  ·  WFQ',            color: C.warning,   y: 3.29 },
-    { label: '저장소 / LLM 계층',   sub: '메모리 큐  ·  JSON 파일 로그  ·  Ollama',          color: C.secondary, y: 4.36 },
+    { label: '클라이언트 계층',      sub: 'REST Client  ·  대시보드',         color: C.primary,   y: 1.05 },
+    { label: 'API 계층',            sub: 'Express.js  ·  요청 접수  ·  통계', color: C.accent,    y: 1.87 },
+    { label: '요청 제한 계층',       sub: 'Rate Limiter  ·  토큰 버킷 알고리즘', color: C.danger,    y: 2.69 },
+    { label: '스케줄러 계층',        sub: 'FCFS  ·  Priority  ·  MLFQ  ·  WFQ', color: C.warning,   y: 3.51 },
+    { label: '저장소 / LLM 계층',   sub: '메모리 큐  ·  JSON 로그  ·  Ollama', color: C.secondary, y: 4.33 },
   ];
 
   layers.forEach((layer, i) => {
@@ -374,7 +335,7 @@ function createSlide4(pptx, totalSlides) {
     x: 7.95, y: 1.12, w: 1.7, h: 0.3,
     fontSize: 12, fontFace: FONT, bold: true, color: C.primary,
   });
-  const tech = ['Node.js 22', 'Express.js', 'JavaScript', '메모리 큐 + JSON 로그', 'Ollama (LLM)'];
+  const tech = ['Node.js', 'Express.js', 'JavaScript', 'SQLite (로그)', 'Ollama (LLM)'];
   tech.forEach((t, i) => {
     slide.addText('• ' + t, {
       x: 7.95, y: 1.45 + i * 0.66, w: 1.7, h: 0.55,
@@ -382,19 +343,7 @@ function createSlide4(pptx, totalSlides) {
     });
   });
 
-  slide.addNotes(`시스템은 4개 계층으로 구성됩니다. 클라이언트가 REST 요청을 보내면 API 계층이 받고, 이 계층 안에서 Rate Limiter가 전처리 단계로 등급별 한도를 확인합니다. 한도 초과면 HTTP 429로 거부되고, 통과하면 스케줄러 계층의 대기열에 들어갑니다. 스케줄러가 알고리즘에 따라 처리 순서를 결정하면 최종적으로 Ollama LLM이 응답을 생성합니다. 환경변수 하나로 4개 스케줄러를 실시간 전환할 수 있습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 4계층 구조를 수직 스택으로 표현 (클라이언트 → API → 스케줄러 → 저장소/LLM)
-- 각 계층 박스는 서로 다른 색상: 클라이언트 남색, API 녹색, 스케줄러 주황, 저장소 회색
-- 계층 간 화살표(↓)는 중앙에 14pt 이상 크기로 명확히
-- 우측 "기술 스택" 박스는 세로 컬럼 형태 유지, 불릿 리스트
-- 중요: Rate Limiter가 "별도 계층"이 아니라 "API 계층 내 전처리"임을 부제(sub)에 명시
-- 전체 구조가 한 눈에 파악되도록 여백 균형 유지
----END-PROMPT---`);
+  slide.addNotes('시스템은 5개 계층으로 구성됩니다. 클라이언트 요청이 API 계층에 도달하면, Rate Limiter가 구독 등급에 따라 요청 진입 여부를 결정하고, 스케줄러가 처리 순서를 결정하며, 최종적으로 LLM이 처리합니다. Node.js와 Express.js로 구현했습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -485,20 +434,7 @@ function createSlide5(pptx, totalSlides) {
     });
   });
 
-  slide.addNotes(`네 가지 스케줄링 알고리즘을 LLM API에 맞게 구현했습니다. FCFS는 도착 순서대로 처리하는 가장 단순한 방식입니다. Priority는 URGENT, HIGH, NORMAL, LOW 네 단계로 긴급도에 따라 처리합니다. MLFQ는 여러 큐를 두고 짧은 요청을 상위 큐에 배치해 우선 처리합니다. WFQ는 네트워크 QoS에서 사용하는 방식으로, 가중치가 큰 사용자가 더 자주 선택되도록 합니다. 우리 프로젝트에서는 Enterprise 100, Free 1의 가중치를 적용했습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 2x2 격자 배치 유지, 각 알고리즘 박스 동일 크기(4.5x2.5 inch)
-- 상단 색상 바(color bar) + 하단 설명 영역의 2단 구성 유지
-- 4개 박스 색상: FCFS 남색, Priority 녹색, MLFQ 주황, WFQ 빨강
-- 각 박스 상단에 영문 약자(FCFS/Priority/MLFQ/WFQ) 20pt bold white
-- 그 아래 풀 네임(First-Come, First-Served 등) 12pt
-- "핵심:" 라벨은 14pt 회색, 이어지는 키워드는 13pt
-- 아이콘 추가 고려: FCFS 시계, Priority 별, MLFQ 계단, WFQ 저울 (PowerPoint 아이콘 라이브러리)
----END-PROMPT---`);
+  slide.addNotes('네 가지 스케줄링 알고리즘을 구현했습니다. FCFS는 가장 단순하며 도착 순서를 보장합니다. Priority는 요청 긴급도에 따라 처리 순서를 결정합니다. MLFQ는 짧은 요청이 빠르게 처리되도록 설계되었습니다. WFQ는 구독 등급에 따라 처리 비중을 차등 적용합니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -590,10 +526,10 @@ function createSlide6(pptx, totalSlides) {
   });
 
   const tiers = [
-    { label: 'Enterprise', weight: '가중치 100', limit: '분당 100건', color: '7C3AED' },
-    { label: 'Premium',    weight: '가중치 50',  limit: '분당 50건',  color: C.primary },
-    { label: 'Standard',   weight: '가중치 10',  limit: '분당 10건',  color: C.accent },
-    { label: 'Free',       weight: '가중치 1',   limit: '분당 5건',   color: C.secondary },
+    { label: 'Enterprise', weight: '가중치 8', limit: '분당 120건', color: '7C3AED' },
+    { label: 'Premium',    weight: '가중치 4', limit: '분당 60건',  color: C.primary },
+    { label: 'Standard',   weight: '가중치 2', limit: '분당 30건',  color: C.accent },
+    { label: 'Free',       weight: '가중치 1', limit: '분당 10건',  color: C.secondary },
   ];
   tiers.forEach((t, i) => {
     const y = 2.12 + i * 0.95;
@@ -615,17 +551,7 @@ function createSlide6(pptx, totalSlides) {
     });
   });
 
-  slide.addNotes(`등급 체계는 두 가지 축으로 구성됩니다. 왼쪽은 요청 자체의 긴급도를 나타내는 우선순위로, Priority Scheduler에서 사용합니다. 오른쪽은 사용자의 구독 등급으로, WFQ 가중치와 Rate Limiter에서 활용합니다. Enterprise는 Free보다 100배 높은 처리 가중치를 가지며, 분당 요청 한도도 100건 대 5건으로 20배 차이가 납니다. 이 설계가 실제 실험에서 약 12배의 대기시간 차이로 나타납니다.
-
-(발표 시간: 약 1분)
-
----AI-PROMPT---
-[디자인 개선 지시]
-- 좌/우 2열 배치 유지. 요청 우선순위(URGENT/HIGH/NORMAL/LOW)와 구독 등급(Enterprise/Premium/Standard/Free)이 서로 다른 개념임을 명확히 구분
-- Enterprise 박스는 보라색(#7C3AED) 유지, 강조를 위해 약간의 그림자 효과 추가
-- 가중치와 분당 허용 건수 숫자를 굵게(bold) 표시하여 시각적 대비 강화
-- 우측 박스 하단에 "가중치 100:50:10:1 → WFQ에서 Enterprise 우선 처리" 라는 한 줄 요약 추가 고려
----END-PROMPT---`);
+  slide.addNotes('등급 체계는 두 가지 축으로 구성됩니다. 왼쪽은 요청 자체의 긴급도를 나타내는 우선순위로, Priority Scheduler에서 사용합니다. 오른쪽은 사용자의 구독 등급으로, WFQ와 Rate Limiter에서 활용합니다. Enterprise는 Free보다 8배 높은 처리 가중치를 가집니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -716,19 +642,7 @@ function createSlide7(pptx, totalSlides) {
     fontSize: 11, fontFace: FONT, color: C.secondary, italic: true,
   });
 
-  slide.addNotes(`첫 번째 실험 결과입니다. 500건을 동일 조건에서 4개 알고리즘으로 돌린 결과, WFQ가 약 11,846ms로 가장 짧은 평균 대기시간을 보였습니다. 주목할 부분은 MLFQ 비선점형이 FCFS와 정확히 같은 12,203ms라는 점입니다. 이는 모든 요청이 최상위 큐 Q0의 시간 할당량 1,000ms 안에 끝나 강등이 일어나지 않았고, 비선점형이라 큐에서 꺼내는 순서가 도착 순서와 같아졌기 때문입니다. MLFQ의 이론적 효과는 다음 실험에서 선점형으로 별도 검증했습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 좌측 세로 막대 차트의 Y축 범위 11,000~13,000ms (차이를 시각적으로 강조)
-- 4개 막대 색상 차별화: FCFS 남색, Priority 녹색, MLFQ 주황, WFQ 빨강
-- WFQ 막대 상단에 "최단" 또는 별표(★) 표시 강조 고려
-- 우측 "핵심 발견" 박스의 3개 카드: 아이콘(!/✓/→)을 더 큰 크기(20pt) 또는 적절한 SVG로 교체 고려
-- 차트 하단 캡션 "* 시뮬레이션 500건, 10~100ms 균등 분포" 11pt italic 유지
-- 막대 데이터 레이블(값 표시)은 상단 외부에 배치
----END-PROMPT---`);
+  slide.addNotes('500건의 시뮬레이션 실험 결과입니다. WFQ가 약 11,846ms로 가장 짧은 평균 대기시간을 보였습니다. 흥미로운 점은 MLFQ 비선점형이 FCFS와 동일한 결과를 보였다는 것입니다. 이는 한번 실행을 시작하면 중단되지 않기 때문에 큐 구조가 실질적인 차이를 만들지 못했기 때문입니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -830,19 +744,7 @@ function createSlide8(pptx, totalSlides) {
     });
   });
 
-  slide.addNotes(`MLFQ의 이론적 효과를 확인하기 위해 선점형을 추가 구현했습니다. 요청 500건, 처리 시간 최대 10초, 버스트 도착 구조로 5개 시드를 반복했습니다. 결과는 극적이었습니다. 짧은 요청은 상위 큐 Q0 안에서 끝나 대기시간이 약 73% 감소한 반면, 긴 요청은 계속 하위 큐로 밀려나 약 89% 증가했고 중간 요청도 약 13% 증가했습니다. 이는 MLFQ가 짧은 요청 중심 서비스에 매우 효과적이지만 긴 요청이 많은 환경에서는 주의가 필요함을 보여줍니다. 다만 LLM 추론은 도중 중단이 불가능하므로 실서버에서는 선점형을 적용할 수 없다는 실용적 한계도 확인했습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 좌측 클러스터 막대 차트: FCFS(남색) vs MLFQ 선점형(주황) 대조
-- X축 카테고리: Short / Medium / Long (요청 처리 시간별)
-- Y축 단위 "초" 명시, 막대 상단 데이터 레이블 표시
-- 우측 상단 "짧은 요청 대기시간 약 73% 감소" 강조 박스를 가장 크게 강조 (빨강 22pt bold)
-- 우측 하단 "트레이드오프" 박스에 3행: Short ↓73% 녹색, Medium ↑13% 주황, Long ↑89% 빨강
-- 추가 고려: 범례를 하단 중앙에 배치, "FCFS" "MLFQ 선점형" 라벨 명확히
----END-PROMPT---`);
+  slide.addNotes('선점형 MLFQ를 별도로 시뮬레이션한 결과입니다. 짧은 요청의 대기시간이 약 73% 감소했습니다. 그러나 긴 요청은 계속 낮은 큐로 밀려나 오히려 약 89% 증가했습니다. 이는 MLFQ의 특성으로, 짧은 요청 위주의 서비스에서는 매우 효과적이지만 긴 요청이 많은 환경에서는 주의가 필요합니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -858,7 +760,7 @@ function createSlide9(pptx, totalSlides) {
     {
       name: '평균 대기시간 (ms)',
       labels: ['Enterprise', 'Premium', 'Standard', 'Free'],
-      values: [1862, 8384, 15109, 22029],
+      values: [2046, 8301, 15247, 21790],
     },
   ];
 
@@ -897,7 +799,7 @@ function createSlide9(pptx, totalSlides) {
     fontSize: 16, fontFace: FONT, bold: true, color: C.primary,
   });
 
-  slide.addText('Enterprise\n약 1,862ms', {
+  slide.addText('Enterprise\n약 2,046ms', {
     x: 7.05, y: 1.65, w: 2.5, h: 0.8,
     fontSize: 14, fontFace: FONT, color: '7C3AED', bold: true,
     lineSpacingMultiple: 1.3,
@@ -906,7 +808,7 @@ function createSlide9(pptx, totalSlides) {
     x: 7.05, y: 2.5, w: 2.5, h: 0.3,
     fontSize: 13, fontFace: FONT, color: C.secondary, align: 'center',
   });
-  slide.addText('Free\n약 22,029ms', {
+  slide.addText('Free\n약 21,790ms', {
     x: 7.05, y: 2.85, w: 2.5, h: 0.8,
     fontSize: 14, fontFace: FONT, color: C.secondary, bold: true,
     lineSpacingMultiple: 1.3,
@@ -918,7 +820,7 @@ function createSlide9(pptx, totalSlides) {
     line: { color: C.border, width: 1 },
   });
 
-  slide.addText('약 12배 차이', {
+  slide.addText('약 10배 차이', {
     x: 7.05, y: 3.85, w: 2.5, h: 0.55,
     fontSize: 20, fontFace: FONT, bold: true, color: C.danger,
     align: 'center',
@@ -929,26 +831,7 @@ function createSlide9(pptx, totalSlides) {
     align: 'center', lineSpacingMultiple: 1.3,
   });
 
-  slide.addNotes(`WFQ 실험을 구독 등급별로 분해해보니 확연한 차이가 나타났습니다. Enterprise는 약 1,862ms, Premium 8,384ms, Standard 15,109ms, Free는 약 22,029ms였습니다. Enterprise가 Free 대비 약 12배 짧은 대기시간을 보였고, 이는 가중치 100:50:10:1에 대응되는 결과입니다. 가중치 비율이 100:1이지만 실제 차이가 12배에 그친 것은 요청이 순차적으로 큐에 도착하는 실험 설계의 영향입니다. 앞 슬라이드에서 FCFS 계열이 모두 공정했던 것과 대조적으로, WFQ는 의도적으로 차등 서비스를 제공함을 수치로 확인할 수 있습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 세로 막대 4개 (Enterprise/Premium/Standard/Free), 색상 그라데이션
-  - Enterprise: 보라(#7C3AED) 가장 짧은 막대
-  - Premium: 남색(#003478)
-  - Standard: 녹색(#059669)
-  - Free: 회색(#64748B) 가장 긴 막대
-- Y축 범위 0~25000ms, 막대 상단에 값 표시 (1862, 8384, 15109, 22029)
-- 우측 "핵심 결과" 박스:
-  - 상단 "Enterprise 약 1,862ms" 보라색 14pt bold
-  - 중앙 "vs" 구분자
-  - 하단 "Free 약 22,029ms" 회색 14pt bold
-  - 그 아래 "약 12배 차이" 20pt 빨강 bold (큰 강조)
-  - 최하단 "가중치 비율(100:50:10:1)에 비례한 차등 서비스 확인" 13pt
-- 수치 정확성이 핵심이므로 데이터 레이블 반드시 표시
----END-PROMPT---`);
+  slide.addNotes('WFQ 실험에서 구독 등급별 확연한 차이가 나타났습니다. Enterprise는 약 2,046ms, Free는 약 21,790ms로 약 10배 차이를 보였습니다. 가중치 비율(8:4:2:1)에 비례하여 서비스 품질이 차등 적용된 것을 확인할 수 있습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1032,22 +915,7 @@ function createSlide10(pptx, totalSlides) {
     lineSpacingMultiple: 1.4,
   });
 
-  slide.addNotes(`시뮬레이션 결과가 실제 LLM 환경에서도 재현되는지 확인하기 위해 Ollama 로컬 서버로 검증했습니다. llama3.2 모델, 등급별 5건씩 총 20건을 동시에 큐에 투입한 뒤 FCFS, Priority, WFQ 세 알고리즘을 비교했습니다. 세 알고리즘 모두 평균 처리 시간이 약 116~119ms로 거의 동일했습니다. 이는 스케줄러가 "누구를 먼저 처리할지"만 결정할 뿐 LLM 추론 속도는 바꾸지 않는다는 점을 보여줍니다. 등급별로는 시뮬레이션과 동일한 패턴이 나타났고, FCFS는 도착 순서, Priority는 우선순위, WFQ는 가중치에 따라 처리되었습니다. 이 실험에서 선점형 MLFQ가 실서버에서 적용 불가능하다는 사실도 함께 확인되었습니다.
-
-(발표 시간: 약 1분 30초)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 좌/우 2열 비교 구조 유지: 왼쪽 "시뮬레이션", 오른쪽 "실서버 (Ollama)"
-- 각 박스 상단 제목 색상: 시뮬레이션 남색(#003478), 실서버 녹색(#059669)
-- 5개 불릿 항목 14pt, 줄간격 1.2배
-- 박스 내 테두리 2pt로 시각적 구분 강화
-- 하단 "핵심 발견" 배너 (연한 노란 배경 #FEF9C3):
-  - "스케줄러는 처리 순서만 결정하며, 실제 LLM 추론 속도에는 영향을 주지 않습니다"
-  - "선점형 구현은 실제 LLM에서 제약이 있습니다"
-  - 13pt, 줄간격 1.4배로 읽기 편하게
-- 추가 고려: 박스 상단에 작은 아이콘 (시뮬레이션=그래프, 실서버=서버)
----END-PROMPT---`);
+  slide.addNotes('시뮬레이션을 넘어 실제 Ollama LLM 서버로 검증했습니다. 실서버에서도 스케줄링 순서가 올바르게 동작했으며, 실제 LLM 추론 시간은 약 116ms였습니다. 중요한 발견은 실제 LLM 추론은 중단할 수 없어 선점형 알고리즘 적용에 한계가 있다는 점입니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1134,25 +1002,7 @@ function createSlide11(pptx, totalSlides) {
     lineSpacingMultiple: 1.3,
   });
 
-  slide.addNotes(`세 가지 연구 질문 모두에 답할 수 있었습니다. RQ1은 구현 가능성이었는데, FCFS, Priority, MLFQ, WFQ 네 알고리즘을 모두 구현하고 실서버에서까지 검증을 마쳤습니다. RQ2 성능에서는 WFQ가 평균 대기시간이 가장 짧았고, MLFQ 선점형이 짧은 요청에 특히 유리함을 확인했습니다. RQ3 공정성에서는 FCFS 계열의 JFI가 1.000으로 균등 배분을 달성했고, WFQ는 0.316이지만 이는 가중치 기반 의도적 차등의 결과로 Enterprise가 Free 대비 약 12배 빨리 처리되었습니다. 한계로는 시뮬레이션 기반이라는 점과 선점형의 실서버 적용 불가를 꼽을 수 있고, 향후에는 분산 환경 적용과 토큰 기반 비용 모델을 연구할 계획입니다.
-
-(발표 시간: 약 1분)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 상단에 RQ1/RQ2/RQ3 답변 카드 3개를 수직 스택으로 배치
-- 각 카드:
-  - 좌측 RQ 배지(정사각형, 0.85x0.85 inch) 색상 차별화
-    - RQ1 남색(#003478): 구현 가능
-    - RQ2 녹색(#059669): 성능 우수
-    - RQ3 빨강(#C41230): 의도적 차등
-  - 배지 우측에 질문(15pt bold) + 답변(14pt 본문)
-  - 카드 배경 연한 남색(#EAF1FB), 테두리는 해당 RQ 색상으로 1.5pt
-- 하단 "한계 및 향후 과제" 박스(연한 주황 배경 #FFF7ED):
-  - "한계 및 향후 과제" 제목 14pt bold 주황(#D97706)
-  - 내용 13pt, 불릿 2행 레이아웃
-- RQ 카드 간 여백 균일하게 유지 (세로 간격 약 0.13 inch)
----END-PROMPT---`);
+  slide.addNotes('세 가지 연구 질문 모두에 답할 수 있었습니다. RQ1: 4개 알고리즘 모두 구현하여 실서버 검증까지 완료했습니다. RQ2: WFQ가 가장 짧은 대기시간을, MLFQ 선점형이 짧은 요청에 유리함을 확인했습니다. RQ3: FCFS계열은 공정하고 WFQ는 의도적으로 차등 서비스를 제공함을 확인했습니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1268,25 +1118,7 @@ function createSlide12(pptx, totalSlides) {
     }
   );
 
-  slide.addNotes(`이제 실시간 데모를 시연하겠습니다. 두 가지 시나리오를 준비했습니다. 시나리오 1은 FCFS와 WFQ의 처리 순서 차이를 직접 비교합니다. 동일한 4개 등급 요청을 FCFS로 처리하면 도착 순서대로 나가지만, WFQ로 전환하면 Enterprise가 가장 먼저 처리됨을 확인할 수 있습니다. 시나리오 2는 Rate Limiter가 Free 등급의 분당 5건 한도를 초과한 6번째 요청을 HTTP 429로 거부하는 모습을 보여드립니다. 데모는 약 3분간 진행되며, 터미널과 브라우저 대시보드를 번갈아 보여드리겠습니다.
-
-(발표 시간: 약 30초 + 데모 약 3분)
-
----AI-PROMPT---
-[이 슬라이드 개선 지시]
-- 상단에 서버 URL 배너 (남색 배경, 모노스페이스 폰트 Courier New 22pt white)
-  "http://localhost:3000"
-- 하단 좌/우 2열 박스:
-  - 좌측 "시나리오 1: FCFS vs WFQ 비교 (2분 30초)" 남색 테마
-    - 5단계 (① FCFS 서버 시작 → ② 4개 등급 요청 → ③ 순서 확인 → ④ WFQ 전환 → ⑤ Enterprise 우선 확인)
-  - 우측 "시나리오 2: Rate Limiter 시연 (1분)" 주황 테마
-    - 4단계 (① 활성화 → ② Free 6건 전송 → ③ 429 확인 → ④ Enterprise 정상 처리)
-- 최하단 검은 배경 명령어 박스 (11pt Courier New, 녹색 #86EFAC):
-  - SCHEDULER_TYPE=WFQ node src-simple/server.js
-  - curl -X POST ... 명령어 예시
-- 박스 둥근 모서리, 색상 대비 선명하게
-- 데모 중 터미널 전환 시점을 시각적으로 암시하는 아이콘(▶) 추가 고려
----END-PROMPT---`);
+  slide.addNotes('두 가지 시나리오로 데모를 진행합니다. 첫 번째는 FCFS와 WFQ의 처리 순서 차이를 직접 보여드립니다. 두 번째는 Rate Limiter가 Free 등급에 대해 요청을 제한하는 모습을 보여드립니다. 화면에 표시된 명령어로 요청을 전송합니다.');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
