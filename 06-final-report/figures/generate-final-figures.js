@@ -687,20 +687,21 @@ function createFig8(pptx) {
       });
 
     } else if (cell.algo === 'MLFQ') {
-      // 3 queues, grayscale shading Q0(dark) -> Q2(light), same as AC-20
+      // 4 queues (Q0-Q3), grayscale shading Q0(dark) -> Q3(light), same as AC-20
       const qs = [
         { name: 'Q0 (1초 할당)', fill: COLORS.DARK_GRAY,  tw: 3.8, tc: COLORS.WHITE },
         { name: 'Q1 (3초 할당)', fill: COLORS.MID_GRAY,   tw: 3.2, tc: COLORS.WHITE },
-        { name: 'Q2 (무제한)',   fill: COLORS.LIGHT_GRAY, tw: 2.6, tc: COLORS.BLACK },
+        { name: 'Q2 (8초 할당)', fill: '999999',           tw: 2.6, tc: COLORS.BLACK },
+        { name: 'Q3 (무제한)',   fill: COLORS.LIGHT_GRAY,  tw: 2.0, tc: COLORS.BLACK },
       ];
       qs.forEach((q, i) => {
         slide.addShape(pptx.shapes.RECTANGLE, {
-          x: cell.x + 0.15, y: diagY + 0.3 + i * 0.42, w: q.tw, h: 0.35,
+          x: cell.x + 0.15, y: diagY + 0.3 + i * 0.33, w: q.tw, h: 0.28,
           fill: { color: q.fill },
           line: { color: COLORS.BLACK, width: 0.5 }
         });
         slide.addText(q.name, {
-          x: cell.x + 0.25, y: diagY + 0.3 + i * 0.42, w: q.tw - 0.1, h: 0.35,
+          x: cell.x + 0.25, y: diagY + 0.3 + i * 0.33, w: q.tw - 0.1, h: 0.28,
           fontSize: 8, fontFace: FONT, color: q.tc, valign: 'middle'
         });
       });
@@ -1416,11 +1417,12 @@ function htmlFig8() {
   html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">짧은 요청 우선 + 시간 초과 시 강등</div>';
   html += '<div style="display:flex; gap:12px; margin-top:8px;">';
   html += '<div style="flex:1;">';
-  // AC-20: Q0 dark -> Q2 light grayscale
+  // AC-20: Q0 dark -> Q3 light grayscale (4 queues matching 본문 표 3)
   [
     { n:'Q0 (1초 할당)', fill:'#333333', tc:'#FFFFFF', w:'100%' },
-    { n:'Q1 (3초 할당)', fill:'#666666', tc:'#FFFFFF', w:'80%' },
-    { n:'Q2 (무제한)',   fill:'#CCCCCC', tc:'#000000', w:'60%' },
+    { n:'Q1 (3초 할당)', fill:'#666666', tc:'#FFFFFF', w:'85%' },
+    { n:'Q2 (8초 할당)', fill:'#999999', tc:'#000000', w:'70%' },
+    { n:'Q3 (무제한)',   fill:'#CCCCCC', tc:'#000000', w:'55%' },
   ].forEach(q => {
     html += `<div style="border:1px solid #000000; background:${q.fill}; padding:6px 10px; margin-bottom:5px; font-size:10px; color:${q.tc}; width:${q.w};">${q.n}</div>`;
   });
