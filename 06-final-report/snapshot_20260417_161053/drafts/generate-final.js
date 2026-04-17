@@ -63,7 +63,7 @@ function parseInlineRuns(text, baseOpts = {}) {
       runs.push(new TextRun({
         text: part.slice(2, -2),
         font: FONT,
-        size: 20,
+        size: 22,
         color: COLOR_BLACK,
         bold: true,
         ...baseOpts
@@ -72,19 +72,19 @@ function parseInlineRuns(text, baseOpts = {}) {
       runs.push(new TextRun({
         text: part,
         font: FONT,
-        size: 20,
+        size: 22,
         color: COLOR_BLACK,
         ...baseOpts
       }));
     }
   }
-  return runs.length > 0 ? runs : [new TextRun({ text: '', font: FONT, size: 20 })];
+  return runs.length > 0 ? runs : [new TextRun({ text: '', font: FONT, size: 22 })];
 }
 
 /** Plain text paragraph with optional options */
 function textParagraph(text, options = {}) {
   return new Paragraph({
-    spacing: { after: 120, line: 240 },
+    spacing: { after: 120, line: 360 },
     ...options,
     children: parseInlineRuns(text, options.runOptions || {})
   });
@@ -96,7 +96,7 @@ function cell(content, opts = {}) {
     ? [new Paragraph({
         spacing: { before: 40, after: 40 },
         alignment: opts.align || AlignmentType.LEFT,
-        children: parseInlineRuns(content, { bold: opts.bold || false, size: 18 })
+        children: parseInlineRuns(content, { bold: opts.bold || false, size: 20 })
       })]
     : content;
   return new TableCell({
@@ -118,7 +118,8 @@ function emptyLine() {
 /** Heading 1 (14pt bold) */
 function heading1(text) {
   return new Paragraph({
-    spacing: { before: 300, after: 150, line: 240 },
+    heading: HeadingLevel.HEADING_1,
+    spacing: { before: 360, after: 200 },
     children: [new TextRun({ text, font: FONT, size: 28, bold: true, color: COLOR_BLACK })]
   });
 }
@@ -126,7 +127,8 @@ function heading1(text) {
 /** Heading 2 (12pt bold) */
 function heading2(text) {
   return new Paragraph({
-    spacing: { before: 220, after: 130, line: 240 },
+    heading: HeadingLevel.HEADING_2,
+    spacing: { before: 240, after: 160 },
     children: [new TextRun({ text, font: FONT, size: 24, bold: true, color: COLOR_DARK })]
   });
 }
@@ -134,7 +136,8 @@ function heading2(text) {
 /** Heading 3 (11pt bold) */
 function heading3(text) {
   return new Paragraph({
-    spacing: { before: 180, after: 100, line: 240 },
+    heading: HeadingLevel.HEADING_3,
+    spacing: { before: 200, after: 120 },
     children: [new TextRun({ text, font: FONT, size: 22, bold: true, color: COLOR_DARK })]
   });
 }
@@ -142,8 +145,8 @@ function heading3(text) {
 /** Heading 4 */
 function heading4(text) {
   return new Paragraph({
-    spacing: { before: 140, after: 80, line: 240 },
-    children: [new TextRun({ text, font: FONT, size: 20, bold: true, color: COLOR_DARK })]
+    spacing: { before: 160, after: 100 },
+    children: [new TextRun({ text, font: FONT, size: 22, bold: true, color: COLOR_DARK })]
   });
 }
 
@@ -154,7 +157,7 @@ function bulletItem(runs) {
     : runs;
   return new Paragraph({
     numbering: { reference: 'bullet-list', level: 0 },
-    spacing: { after: 80, line: 240 },
+    spacing: { after: 80, line: 340 },
     children
   });
 }
@@ -166,7 +169,7 @@ function numberedItem(runs) {
     : runs;
   return new Paragraph({
     numbering: { reference: 'num-list', level: 0 },
-    spacing: { after: 80, line: 240 },
+    spacing: { after: 80, line: 340 },
     children
   });
 }
@@ -184,8 +187,8 @@ function codeParagraph(line) {
 function figureCaption(text) {
   return new Paragraph({
     alignment: AlignmentType.CENTER,
-    spacing: { after: 120, line: 240 },
-    children: [new TextRun({ text, font: FONT, size: 18, italics: true, color: COLOR_GRAY })]
+    spacing: { after: 120, line: 360 },
+    children: [new TextRun({ text, font: FONT, size: 22, italics: true, color: COLOR_GRAY })]
   });
 }
 
@@ -226,15 +229,15 @@ function figureImage(figNum) {
 /** Table caption */
 function tableCaption(text) {
   return new Paragraph({
-    spacing: { after: 80, line: 240 },
-    children: [new TextRun({ text, font: FONT, size: 20, bold: true, color: COLOR_BLACK })]
+    spacing: { after: 80, line: 360 },
+    children: [new TextRun({ text, font: FONT, size: 22, bold: true, color: COLOR_BLACK })]
   });
 }
 
 /** Reference paragraph with hanging indent */
 function referenceParagraph(text) {
   return new Paragraph({
-    spacing: { after: 100, line: 240 },
+    spacing: { after: 100, line: 360 },
     indent: { left: 480, hanging: 480 },
     children: parseInlineRuns(text)
   });
@@ -447,9 +450,9 @@ function parseMarkdownBody(mdText) {
     // Formula line (contains ^ pattern for math-like text)
     if (trimmed.includes('^2') || trimmed.startsWith('JFI') || trimmed.startsWith('VFT')) {
       elements.push(new Paragraph({
-        spacing: { after: 120, line: 240 },
+        spacing: { after: 120, line: 360 },
         indent: { left: 360 },
-        children: [new TextRun({ text: trimmed, font: FONT, size: 20, italics: true, color: COLOR_DARK })]
+        children: [new TextRun({ text: trimmed, font: FONT, size: 22, italics: true, color: COLOR_DARK })]
       }));
       i++;
       continue;
@@ -523,7 +526,7 @@ function buildCoverPage(meta) {
     new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 80 },
-      children: [new TextRun({ text: '2026년 5월', font: FONT, size: 20, color: COLOR_GRAY })]
+      children: [new TextRun({ text: '2026년 5월', font: FONT, size: 22, color: COLOR_GRAY })]
     }),
     emptyLine(),
     new Paragraph({
@@ -596,7 +599,7 @@ async function generateFinalReport() {
     styles: {
       default: {
         document: {
-          run: { font: FONT, size: 20, color: COLOR_BLACK }
+          run: { font: FONT, size: 22, color: COLOR_BLACK }
         }
       },
       paragraphStyles: [
@@ -607,7 +610,7 @@ async function generateFinalReport() {
           next: 'Normal',
           quickFormat: true,
           run: { size: 28, bold: true, color: COLOR_BLACK, font: FONT },
-          paragraph: { spacing: { before: 300, after: 150, line: 240 }, outlineLevel: 0 }
+          paragraph: { spacing: { before: 360, after: 200 }, outlineLevel: 0 }
         },
         {
           id: 'Heading2',
@@ -616,7 +619,7 @@ async function generateFinalReport() {
           next: 'Normal',
           quickFormat: true,
           run: { size: 24, bold: true, color: COLOR_DARK, font: FONT },
-          paragraph: { spacing: { before: 220, after: 130, line: 240 }, outlineLevel: 1 }
+          paragraph: { spacing: { before: 240, after: 160 }, outlineLevel: 1 }
         },
         {
           id: 'Heading3',
@@ -625,7 +628,7 @@ async function generateFinalReport() {
           next: 'Normal',
           quickFormat: true,
           run: { size: 22, bold: true, color: COLOR_DARK, font: FONT },
-          paragraph: { spacing: { before: 180, after: 100, line: 240 }, outlineLevel: 2 }
+          paragraph: { spacing: { before: 200, after: 120 }, outlineLevel: 2 }
         }
       ]
     },
