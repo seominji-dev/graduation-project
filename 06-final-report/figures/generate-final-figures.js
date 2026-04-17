@@ -600,7 +600,7 @@ function createFig8(pptx) {
   const cellH = 2.45;
   const cells = [
     { algo: 'FCFS',     x: 0.25, y: 0.55, desc: ['도착 순서대로 처리', '선착순 단순 대기열'] },
-    { algo: 'Priority', x: 5.20, y: 0.55, desc: ['우선순위 높은 요청 선처리', '(URG > HIGH > NORM > LOW)'] },
+    { algo: 'Priority', x: 5.20, y: 0.55, desc: ['우선순위 높은 요청 선처리', '(URGENT > HIGH > NORMAL > LOW)'] },
     { algo: 'MLFQ',     x: 0.25, y: 3.10, desc: ['짧은 요청은 상위 큐 유지', '긴 요청은 하위 큐로 강등'] },
     { algo: 'WFQ',      x: 5.20, y: 3.10, desc: ['가중치 비율로 시간 할당', 'Enterprise가 Free보다 100배 우선'] },
   ];
@@ -664,10 +664,10 @@ function createFig8(pptx) {
     } else if (cell.algo === 'Priority') {
       // 4 priority levels as identical gray boxes with border weight difference
       const plevels = [
-        { label: 'URG',  lw: 1.5 },
-        { label: 'HIGH', lw: 1.0 },
-        { label: 'NORM', lw: 0.75 },
-        { label: 'LOW',  lw: 0.5 },
+        { label: 'URGENT', lw: 1.5 },
+        { label: 'HIGH',   lw: 1.0 },
+        { label: 'NORMAL', lw: 0.75 },
+        { label: 'LOW',    lw: 0.5 },
       ];
       plevels.forEach((p, i) => {
         slide.addShape(pptx.shapes.RECTANGLE, {
@@ -1406,7 +1406,7 @@ function htmlFig8() {
   html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">우선순위 높은 요청 선처리</div>';
   html += '<div style="display:flex; gap:8px; margin-top:8px;">';
   // AC-20: grayscale with border-weight distinction (same as PPTX version)
-  [{ n:'URG', lw:'2px' }, { n:'HIGH', lw:'1.5px' }, { n:'NORM', lw:'1px' }, { n:'LOW', lw:'0.5px' }].forEach(r => {
+  [{ n:'URGENT', lw:'2px' }, { n:'HIGH', lw:'1.5px' }, { n:'NORMAL', lw:'1px' }, { n:'LOW', lw:'0.5px' }].forEach(r => {
     html += `<div style="border:${r.lw} solid #000000; background:#F5F5F5; padding:10px 14px; font-size:11px; font-weight:bold; color:#000000;">${r.n}</div>`;
   });
   html += '</div></div>';
