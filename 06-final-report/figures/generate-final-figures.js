@@ -162,7 +162,7 @@ function createFig2(pptx) {
   // Steps data preserved verbatim
   const steps = [
     { label: '1. 요청 전송',            detail: 'POST /api/requests' },
-    { label: '2. 입력 검증',            detail: 'API 계층 처리' },
+    { label: '2. 요청 객체 생성',       detail: 'API 계층 처리' },
     { label: '3. Rate Limiter\n(구독 등급 확인)', detail: '429 or PASS' },
     { label: '4. 큐 등록',              detail: 'enqueue()' },
     { label: '5. 스케줄링',             detail: 'dequeue()' },
@@ -364,7 +364,7 @@ function createFig4(pptx) {
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
   });
-  slide.addText('5회 반복 (다중 시드) | 버스트 패턴 | 단위: 초(s)', {
+  slide.addText('5시드 평균 | 버스트 패턴 | 단위: 초(s)', {
     x: 0.3, y: 0.52, w: 9.4, h: 0.25,
     fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
   });
@@ -1087,7 +1087,7 @@ function htmlFig1() {
 function htmlFig2() {
   const steps = [
     { label: '1. 요청 전송',                       detail: 'POST /api/requests' },
-    { label: '2. 입력 검증',                        detail: 'API 계층 처리' },
+    { label: '2. 요청 객체 생성',                   detail: 'API 계층 처리' },
     { label: '3. Rate Limiter<br>(구독 등급 확인)', detail: '429 or PASS' },
     { label: '4. 큐 등록',                          detail: 'enqueue()' },
     { label: '5. 스케줄링',                         detail: 'dequeue()' },
@@ -1207,7 +1207,7 @@ function htmlFig4() {
   const chartH = 420;
 
   let html = '<div class="fig-title">그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간</div>';
-  html += '<div class="fig-subtitle">5회 반복 (다중 시드) | 버스트 패턴 | 단위: 초(s)</div>';
+  html += '<div class="fig-subtitle">5시드 평균 | 버스트 패턴 | 단위: 초(s)</div>';
 
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 60px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
   // AC-21: horizontal gridlines
@@ -1556,7 +1556,7 @@ function htmlFig10ModuleStructure() {
         tests-simple/ (Jest 단위 테스트)
       </div>
       <div style="color:#333333; font-size:9px; margin-top:2px;">
-        ※ 외부 라이브러리 의존성: Express.js 1개
+        ※ 생산 의존성: Express.js 1개
       </div>
     </div>`;
   return wrapHtml(html);
