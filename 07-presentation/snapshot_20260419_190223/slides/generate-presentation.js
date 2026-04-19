@@ -1071,7 +1071,7 @@ function createSlide11(pptx, totalSlides) {
     {
       rq: 'RQ2',
       question: '성능 비교',
-      answer: '비선점형 환경에서 알고리즘 간 처리량은 유사\nWFQ 평균 대기시간 최소, MLFQ 선점형은 짧은 요청 약 73% 감소',
+      answer: 'WFQ 평균 대기시간 최소\nMLFQ 선점형은 짧은 요청에 유리 (약 73% 감소)',
       icon: '◎',
       color: C.primary,
     },
@@ -1128,13 +1128,13 @@ function createSlide11(pptx, totalSlides) {
     x: 0.5, y: 5.36, w: 2.2, h: 0.3,
     fontSize: 14, fontFace: FONT, bold: true, color: C.warning,
   });
-  slide.addText('• 시뮬레이션 기반 실험 (실제 부하와 차이 가능)   • 선점형은 실제 LLM에서 적용 불가\n• 향후: 토큰 기반 비용 모델, 실시간 모니터링 대시보드, 대규모 실험', {
+  slide.addText('• 시뮬레이션 기반 실험 (실제 부하와 차이 가능)   • 선점형은 실제 LLM에서 적용 불가\n• 향후: 분산 환경 적용, 토큰 수 기반 선점형 설계, 실 트래픽 검증', {
     x: 0.5, y: 5.68, w: W - 0.8, h: 0.5,
     fontSize: 13, fontFace: FONT, color: C.black,
     lineSpacingMultiple: 1.3,
   });
 
-  slide.addNotes(`세 가지 연구 질문 모두에 답할 수 있었습니다. RQ1은 구현 가능성이었는데, FCFS, Priority, MLFQ, WFQ 네 알고리즘을 모두 구현하고 실서버에서까지 검증을 마쳤습니다. RQ2 성능에서는 비선점형 환경에서 알고리즘 간 처리량이 유사한 가운데 WFQ가 평균 대기시간이 가장 짧았고, MLFQ 선점형이 짧은 요청에 특히 유리함을 확인했습니다. RQ3 공정성에서는 FCFS 계열의 JFI가 1.000으로 균등 배분을 달성했고, WFQ는 0.316이지만 이는 가중치 기반 의도적 차등의 결과로 Enterprise가 Free 대비 약 12배 빨리 처리되었습니다. 한계로는 시뮬레이션 기반이라는 점과 선점형의 실서버 적용 불가를 꼽을 수 있고, 향후 과제로는 토큰 기반 비용 모델, 실시간 모니터링 대시보드, 대규모 실험을 남깁니다.
+  slide.addNotes(`세 가지 연구 질문 모두에 답할 수 있었습니다. RQ1은 구현 가능성이었는데, FCFS, Priority, MLFQ, WFQ 네 알고리즘을 모두 구현하고 실서버에서까지 검증을 마쳤습니다. RQ2 성능에서는 WFQ가 평균 대기시간이 가장 짧았고, MLFQ 선점형이 짧은 요청에 특히 유리함을 확인했습니다. RQ3 공정성에서는 FCFS 계열의 JFI가 1.000으로 균등 배분을 달성했고, WFQ는 0.316이지만 이는 가중치 기반 의도적 차등의 결과로 Enterprise가 Free 대비 약 12배 빨리 처리되었습니다. 한계로는 시뮬레이션 기반이라는 점과 선점형의 실서버 적용 불가를 꼽을 수 있고, 향후에는 분산 환경 적용과 토큰 기반 비용 모델을 연구할 계획입니다.
 
 (발표 시간: 약 1분)
 
@@ -1195,7 +1195,7 @@ function createSlide12(pptx, totalSlides) {
     fill: { color: C.primary },
     line: { color: C.primary },
   });
-  slide.addText('시나리오 1: FCFS vs WFQ 비교 (2분 30초)', {
+  slide.addText('시나리오 1: FCFS vs WFQ 비교 (2분)', {
     x: 0.45, y: 2.08, w: 4.2, h: 0.44,
     fontSize: 13, fontFace: FONT, bold: true, color: C.white,
   });
