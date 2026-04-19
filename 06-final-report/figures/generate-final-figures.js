@@ -318,7 +318,7 @@ function createFig3(pptx) {
   });
 
   // AC-21: subtitle in dark_gray, no italic (AC-17)
-  slide.addText('기본 실험 500건 | 4개 테넌트 | 순차 도착', {
+  slide.addText('기본 실험 500건 | 4명 (등급별 1명) | 순차 도착', {
     x: 0.3, y: 0.52, w: 9.4, h: 0.25,
     fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
   });
@@ -771,7 +771,7 @@ function createFig9(pptx) {
 
   // Data preserved verbatim
   const experiments = [
-    { title: '기본 실험',       detail: '500건, 4테넌트\n순차 도착',    x: 0.25,  engine: '시뮬레이션' },
+    { title: '기본 실험',       detail: '500건, 4명 (등급별 1명)\n순차 도착',    x: 0.25,  engine: '시뮬레이션' },
     { title: 'MLFQ 선점형 실험', detail: '500건 × 5시드\n버스트 패턴', x: 3.40,  engine: '시뮬레이션' },
     { title: '실서버 실험',     detail: '20건\nOllama llama3.2',        x: 6.55,  engine: 'Ollama LLM' },
   ];
@@ -1191,7 +1191,7 @@ function htmlFig3() {
   const chartH = 460;
 
   let html = '<div class="fig-title">그림 6. 알고리즘별 평균 대기시간 비교 (ms)</div>';
-  html += '<div class="fig-subtitle">기본 실험 500건 | 4개 테넌트 | 순차 도착</div>';
+  html += '<div class="fig-subtitle">기본 실험 500건 | 4명 (등급별 1명) | 순차 도착</div>';
   // AC-21: horizontal only gridlines (drawn as CSS divs)
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 80px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
   // AC-21: horizontal gridlines only, light-gray
@@ -1491,7 +1491,7 @@ function htmlFig9() {
   // Down arrows + 3 experiment boxes
   html += '<div style="display:flex; gap:14px;">';
   const exps = [
-    { title: '기본 실험',       detail: '500건, 4테넌트\n순차 도착',    engine: '시뮬레이션' },
+    { title: '기본 실험',       detail: '500건, 4명 (등급별 1명)\n순차 도착',    engine: '시뮬레이션' },
     { title: 'MLFQ 선점형 실험', detail: '500건 × 5시드\n버스트 패턴', engine: '시뮬레이션' },
     { title: '실서버 실험',     detail: '20건\nOllama llama3.2',        engine: 'Ollama LLM' },
   ];

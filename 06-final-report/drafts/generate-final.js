@@ -1,6 +1,6 @@
 /**
  * Final Report DOCX Generator
- * Reads final-report-v35.md and generates 06-final-report/final/final-report.docx
+ * Reads final-report-v36.md and generates 06-final-report/final/final-report.docx
  * Uses markdown-to-DOCX conversion approach for scalability
  */
 
@@ -573,7 +573,7 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v35.md');
+  const mdPath = path.resolve(__dirname, 'final-report-v36.md');
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
@@ -660,6 +660,7 @@ async function generateFinalReport() {
       {
         properties: {
           page: {
+            size: { width: 11906, height: 16838 }, // A4 (explicit per docx-formatting baseline)
             margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } // match midterm 2.54cm all sides
           }
         },
@@ -672,6 +673,7 @@ async function generateFinalReport() {
       {
         properties: {
           page: {
+            size: { width: 11906, height: 16838 }, // A4 (explicit per docx-formatting baseline)
             margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
             pageNumbers: { start: 1 }
           }
