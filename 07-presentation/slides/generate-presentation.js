@@ -979,7 +979,7 @@ function createSlide10(pptx, totalSlides) {
       color: C.accent,
       x: 5.35,
       items: [
-        '처리시간: 약 116ms (실제 추론)',
+        '처리시간: 약 208ms (실제 추론)',
         '스케줄러: 처리 순서 결정',
         '결과: 실제 LLM 응답 생성',
         '선점형: 불가 (추론 중단 불가)',
