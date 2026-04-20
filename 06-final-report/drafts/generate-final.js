@@ -1,6 +1,9 @@
 /**
  * Final Report DOCX Generator
- * Reads final-report-v38.md and generates 06-final-report/final/final-report.docx
+ * Reads the latest final-report-vN.md in this directory and generates
+ * 06-final-report/final/final-report.docx
+ *
+ * Version is auto-detected. Override with --md=<path> or env REPORT_MD=<path>.
  * Uses markdown-to-DOCX conversion approach for scalability
  */
 
@@ -573,7 +576,22 @@ function extractBody(mdText) {
 // ============================================================
 
 async function generateFinalReport() {
-  const mdPath = path.resolve(__dirname, 'final-report-v38.md');
+  // Resolve markdown source: --md=<path> → env REPORT_MD → latest final-report-v*.md
+  function resolveMdPath() {
+    const cliArg = process.argv.find(a => a.startsWith('--md='));
+    if (cliArg) return path.resolve(__dirname, cliArg.slice('--md='.length));
+    if (process.env.REPORT_MD) return path.resolve(__dirname, process.env.REPORT_MD);
+    const candidates = fs.readdirSync(__dirname)
+      .filter(f => /^final-report-v(\d+)\.md$/.test(f))
+      .map(f => ({ f, n: parseInt(f.match(/v(\d+)\.md$/)[1], 10) }))
+      .sort((a, b) => b.n - a.n);
+    if (candidates.length === 0) {
+      throw new Error('No final-report-v*.md found in ' + __dirname);
+    }
+    return path.resolve(__dirname, candidates[0].f);
+  }
+  const mdPath = resolveMdPath();
+  console.log('Using markdown source:', path.basename(mdPath));
   const outDir = path.resolve(__dirname, '..', 'final');
   const outPath = path.join(outDir, 'final-report.docx');
 
