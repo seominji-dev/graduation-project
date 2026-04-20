@@ -1,23 +1,23 @@
 {
   "config": {
-    "model": "llama3.2",
+    "model": "gemma4:e4b",
     "totalRequests": 20,
     "tenantsPerTier": 1,
     "requestsPerTenant": 5,
     "maxTokens": 20,
-    "timestamp": "2026-04-10T07:46:07.861Z",
+    "timestamp": "2026-04-20T01:25:08.533Z",
     "ollamaUrl": "http://localhost:11434/api/generate"
   },
   "results": {
     "fcfs": {
-      "avgWaitTime": 1119.95,
-      "avgProcessingTime": 118.8,
-      "totalTime": 2378,
+      "avgWaitTime": 1998.4,
+      "avgProcessingTime": 208.7,
+      "totalTime": 4178,
       "tenantWaitTimes": {
-        "enterprise": 232.4,
-        "premium": 809.6,
-        "standard": 1413.6,
-        "free": 2024.2
+        "enterprise": 431.6,
+        "premium": 1479.6,
+        "standard": 2521.6,
+        "free": 3560.8
       },
       "requests": [
         {
@@ -28,9 +28,9 @@
           "priorityLabel": "URGENT",
           "prompt": "What is 2+2? Reply in one word.",
           "waitTimeMs": 0,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 114283291,
-          "generatedTokens": 3
+          "processingTimeMs": 223,
+          "ollamaDurationNs": 220645709,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-2",
@@ -39,9 +39,9 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 116,
-          "processingTimeMs": 119,
-          "ollamaDurationNs": 118312583,
+          "waitTimeMs": 224,
+          "processingTimeMs": 211,
+          "ollamaDurationNs": 208762291,
           "generatedTokens": 2
         },
         {
@@ -51,10 +51,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 235,
-          "processingTimeMs": 113,
-          "ollamaDurationNs": 111799916,
-          "generatedTokens": 3
+          "waitTimeMs": 435,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 207209375,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-4",
@@ -63,10 +63,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 348,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 112673250,
-          "generatedTokens": 3
+          "waitTimeMs": 644,
+          "processingTimeMs": 211,
+          "ollamaDurationNs": 208578459,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-5",
@@ -75,9 +75,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 463,
-          "processingTimeMs": 105,
-          "ollamaDurationNs": 102709916,
+          "waitTimeMs": 855,
+          "processingTimeMs": 208,
+          "ollamaDurationNs": 207481792,
           "generatedTokens": 2
         },
         {
@@ -87,10 +87,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 568,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 111988959,
-          "generatedTokens": 3
+          "waitTimeMs": 1064,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 207974750,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-2",
@@ -99,9 +99,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 682,
-          "processingTimeMs": 120,
-          "ollamaDurationNs": 118056666,
+          "waitTimeMs": 1273,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 204850958,
           "generatedTokens": 2
         },
         {
@@ -111,10 +111,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 802,
-          "processingTimeMs": 133,
-          "ollamaDurationNs": 119273250,
-          "generatedTokens": 3
+          "waitTimeMs": 1480,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 204255083,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-4",
@@ -123,10 +123,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 935,
-          "processingTimeMs": 126,
-          "ollamaDurationNs": 124954292,
-          "generatedTokens": 3
+          "waitTimeMs": 1687,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 205367583,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-5",
@@ -135,9 +135,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1061,
-          "processingTimeMs": 103,
-          "ollamaDurationNs": 101478625,
+          "waitTimeMs": 1894,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 208469125,
           "generatedTokens": 2
         },
         {
@@ -147,10 +147,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1164,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 113418416,
-          "generatedTokens": 3
+          "waitTimeMs": 2103,
+          "processingTimeMs": 212,
+          "ollamaDurationNs": 209978208,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-2",
@@ -159,9 +159,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1279,
-          "processingTimeMs": 142,
-          "ollamaDurationNs": 141011750,
+          "waitTimeMs": 2315,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 204195833,
           "generatedTokens": 2
         },
         {
@@ -171,10 +171,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 1421,
-          "processingTimeMs": 123,
-          "ollamaDurationNs": 121828416,
-          "generatedTokens": 3
+          "waitTimeMs": 2521,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 207386833,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-4",
@@ -183,10 +183,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 1545,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 111750333,
-          "generatedTokens": 3
+          "waitTimeMs": 2730,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 206738416,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-5",
@@ -195,9 +195,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1659,
-          "processingTimeMs": 118,
-          "ollamaDurationNs": 116806584,
+          "waitTimeMs": 2939,
+          "processingTimeMs": 210,
+          "ollamaDurationNs": 208312333,
           "generatedTokens": 2
         },
         {
@@ -207,10 +207,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1777,
-          "processingTimeMs": 134,
-          "ollamaDurationNs": 131865250,
-          "generatedTokens": 3
+          "waitTimeMs": 3149,
+          "processingTimeMs": 208,
+          "ollamaDurationNs": 206168584,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-2",
@@ -219,9 +219,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1911,
-          "processingTimeMs": 107,
-          "ollamaDurationNs": 105689458,
+          "waitTimeMs": 3357,
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202828792,
           "generatedTokens": 2
         },
         {
@@ -231,10 +231,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 2018,
-          "processingTimeMs": 133,
-          "ollamaDurationNs": 132144208,
-          "generatedTokens": 3
+          "waitTimeMs": 3561,
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202707334,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-4",
@@ -243,10 +243,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 2151,
-          "processingTimeMs": 113,
-          "ollamaDurationNs": 111987833,
-          "generatedTokens": 3
+          "waitTimeMs": 3765,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 203779250,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-5",
@@ -255,22 +255,22 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 2264,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 112318709,
+          "waitTimeMs": 3972,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 204305292,
           "generatedTokens": 2
         }
       ]
     },
     "priority": {
-      "avgWaitTime": 1112.1,
-      "avgProcessingTime": 116.15,
-      "totalTime": 2327,
+      "avgWaitTime": 1977,
+      "avgProcessingTime": 207.65,
+      "totalTime": 4154,
       "tenantWaitTimes": {
-        "enterprise": 379.4,
-        "premium": 755.2,
-        "standard": 1426.8,
-        "free": 1887
+        "enterprise": 663.8,
+        "premium": 1332.6,
+        "standard": 2541,
+        "free": 3370.6
       },
       "requests": [
         {
@@ -281,9 +281,9 @@
           "priorityLabel": "URGENT",
           "prompt": "What is 2+2? Reply in one word.",
           "waitTimeMs": 0,
-          "processingTimeMs": 120,
-          "ollamaDurationNs": 117466334,
-          "generatedTokens": 3
+          "processingTimeMs": 210,
+          "ollamaDurationNs": 208106333,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-3",
@@ -292,10 +292,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 120,
-          "processingTimeMs": 121,
-          "ollamaDurationNs": 119258708,
-          "generatedTokens": 3
+          "waitTimeMs": 210,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203205584,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-4",
@@ -304,10 +304,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 241,
-          "processingTimeMs": 125,
-          "ollamaDurationNs": 123902334,
-          "generatedTokens": 3
+          "waitTimeMs": 415,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 204286417,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-2",
@@ -316,9 +316,9 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 366,
-          "processingTimeMs": 104,
-          "ollamaDurationNs": 102876041,
+          "waitTimeMs": 622,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 204903000,
           "generatedTokens": 2
         },
         {
@@ -328,10 +328,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 470,
-          "processingTimeMs": 111,
-          "ollamaDurationNs": 109989417,
-          "generatedTokens": 3
+          "waitTimeMs": 829,
+          "processingTimeMs": 216,
+          "ollamaDurationNs": 214149792,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-1",
@@ -340,10 +340,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 581,
-          "processingTimeMs": 123,
-          "ollamaDurationNs": 122154167,
-          "generatedTokens": 3
+          "waitTimeMs": 1045,
+          "processingTimeMs": 203,
+          "ollamaDurationNs": 201575833,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-3",
@@ -352,10 +352,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 705,
-          "processingTimeMs": 119,
-          "ollamaDurationNs": 118169875,
-          "generatedTokens": 3
+          "waitTimeMs": 1248,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 202506917,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-4",
@@ -364,10 +364,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 824,
-          "processingTimeMs": 117,
-          "ollamaDurationNs": 115358417,
-          "generatedTokens": 3
+          "waitTimeMs": 1454,
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202407250,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-5",
@@ -376,9 +376,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 941,
-          "processingTimeMs": 125,
-          "ollamaDurationNs": 115984958,
+          "waitTimeMs": 1658,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 204599875,
           "generatedTokens": 2
         },
         {
@@ -388,9 +388,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1066,
-          "processingTimeMs": 117,
-          "ollamaDurationNs": 115291958,
+          "waitTimeMs": 1864,
+          "processingTimeMs": 227,
+          "ollamaDurationNs": 225643417,
           "generatedTokens": 2
         },
         {
@@ -400,9 +400,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1183,
-          "processingTimeMs": 113,
-          "ollamaDurationNs": 111664917,
+          "waitTimeMs": 2091,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 205027042,
           "generatedTokens": 2
         },
         {
@@ -412,10 +412,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1296,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 112737959,
-          "generatedTokens": 3
+          "waitTimeMs": 2298,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 205332333,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-3",
@@ -424,10 +424,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 1410,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 111353125,
-          "generatedTokens": 3
+          "waitTimeMs": 2505,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 205685125,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-2",
@@ -436,9 +436,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1526,
-          "processingTimeMs": 107,
-          "ollamaDurationNs": 106049792,
+          "waitTimeMs": 2711,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 205067250,
           "generatedTokens": 2
         },
         {
@@ -448,9 +448,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1633,
-          "processingTimeMs": 116,
-          "ollamaDurationNs": 114565000,
+          "waitTimeMs": 2917,
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202132250,
           "generatedTokens": 2
         },
         {
@@ -460,9 +460,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1749,
-          "processingTimeMs": 106,
-          "ollamaDurationNs": 103890708,
+          "waitTimeMs": 3121,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 205211042,
           "generatedTokens": 2
         },
         {
@@ -472,9 +472,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1855,
-          "processingTimeMs": 118,
-          "ollamaDurationNs": 116792875,
+          "waitTimeMs": 3327,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 204588791,
           "generatedTokens": 2
         },
         {
@@ -484,10 +484,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1973,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 112800250,
-          "generatedTokens": 3
+          "waitTimeMs": 3533,
+          "processingTimeMs": 210,
+          "ollamaDurationNs": 208869959,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-3",
@@ -496,10 +496,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 2088,
-          "processingTimeMs": 126,
-          "ollamaDurationNs": 124885208,
-          "generatedTokens": 3
+          "waitTimeMs": 3743,
+          "processingTimeMs": 206,
+          "ollamaDurationNs": 204413750,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-4",
@@ -508,22 +508,22 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 2215,
-          "processingTimeMs": 112,
-          "ollamaDurationNs": 110952667,
-          "generatedTokens": 3
+          "waitTimeMs": 3949,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203117125,
+          "generatedTokens": 2
         }
       ]
     },
     "wfq": {
-      "avgWaitTime": 1109.6,
-      "avgProcessingTime": 116,
-      "totalTime": 2323,
+      "avgWaitTime": 1976.3,
+      "avgProcessingTime": 208.15,
+      "totalTime": 4167,
       "tenantWaitTimes": {
-        "enterprise": 240.8,
-        "premium": 820.8,
-        "standard": 1391.8,
-        "free": 1985
+        "enterprise": 409.6,
+        "premium": 1457.8,
+        "standard": 2496.2,
+        "free": 3541.6
       },
       "requests": [
         {
@@ -534,9 +534,9 @@
           "priorityLabel": "URGENT",
           "prompt": "What is 2+2? Reply in one word.",
           "waitTimeMs": 0,
-          "processingTimeMs": 125,
-          "ollamaDurationNs": 121452708,
-          "generatedTokens": 3
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202653875,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-2",
@@ -545,9 +545,9 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 125,
-          "processingTimeMs": 113,
-          "ollamaDurationNs": 103736542,
+          "waitTimeMs": 204,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203590333,
           "generatedTokens": 2
         },
         {
@@ -557,10 +557,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 238,
-          "processingTimeMs": 122,
-          "ollamaDurationNs": 120797958,
-          "generatedTokens": 3
+          "waitTimeMs": 409,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203646583,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-4",
@@ -569,10 +569,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 360,
-          "processingTimeMs": 121,
-          "ollamaDurationNs": 119448083,
-          "generatedTokens": 3
+          "waitTimeMs": 614,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 205217583,
+          "generatedTokens": 2
         },
         {
           "id": "enterprise-req-5",
@@ -581,9 +581,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 481,
-          "processingTimeMs": 109,
-          "ollamaDurationNs": 106438958,
+          "waitTimeMs": 821,
+          "processingTimeMs": 218,
+          "ollamaDurationNs": 216793708,
           "generatedTokens": 2
         },
         {
@@ -593,10 +593,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 590,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 113115083,
-          "generatedTokens": 3
+          "waitTimeMs": 1039,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 205431916,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-2",
@@ -605,9 +605,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 705,
-          "processingTimeMs": 116,
-          "ollamaDurationNs": 114747958,
+          "waitTimeMs": 1246,
+          "processingTimeMs": 213,
+          "ollamaDurationNs": 211896792,
           "generatedTokens": 2
         },
         {
@@ -617,10 +617,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 821,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 114296917,
-          "generatedTokens": 3
+          "waitTimeMs": 1460,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 208401125,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-4",
@@ -629,10 +629,10 @@
           "priority": 4,
           "priorityLabel": "URGENT",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 936,
-          "processingTimeMs": 115,
-          "ollamaDurationNs": 114027833,
-          "generatedTokens": 3
+          "waitTimeMs": 1670,
+          "processingTimeMs": 204,
+          "ollamaDurationNs": 202960125,
+          "generatedTokens": 2
         },
         {
           "id": "premium-req-5",
@@ -641,9 +641,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1052,
-          "processingTimeMs": 108,
-          "ollamaDurationNs": 106286208,
+          "waitTimeMs": 1874,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 202845916,
           "generatedTokens": 2
         },
         {
@@ -653,10 +653,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1161,
-          "processingTimeMs": 116,
-          "ollamaDurationNs": 115289416,
-          "generatedTokens": 3
+          "waitTimeMs": 2079,
+          "processingTimeMs": 210,
+          "ollamaDurationNs": 208135708,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-2",
@@ -665,9 +665,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1277,
-          "processingTimeMs": 110,
-          "ollamaDurationNs": 109301625,
+          "waitTimeMs": 2289,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203915042,
           "generatedTokens": 2
         },
         {
@@ -677,10 +677,10 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 1387,
-          "processingTimeMs": 122,
-          "ollamaDurationNs": 112820500,
-          "generatedTokens": 3
+          "waitTimeMs": 2494,
+          "processingTimeMs": 208,
+          "ollamaDurationNs": 206908083,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-4",
@@ -689,10 +689,10 @@
           "priority": 3,
           "priorityLabel": "HIGH",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 1509,
-          "processingTimeMs": 116,
-          "ollamaDurationNs": 114748834,
-          "generatedTokens": 3
+          "waitTimeMs": 2702,
+          "processingTimeMs": 214,
+          "ollamaDurationNs": 212939125,
+          "generatedTokens": 2
         },
         {
           "id": "standard-req-5",
@@ -701,9 +701,9 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 1625,
-          "processingTimeMs": 132,
-          "ollamaDurationNs": 131094083,
+          "waitTimeMs": 2917,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 204017833,
           "generatedTokens": 2
         },
         {
@@ -713,10 +713,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is 2+2? Reply in one word.",
-          "waitTimeMs": 1757,
-          "processingTimeMs": 117,
-          "ollamaDurationNs": 115730250,
-          "generatedTokens": 3
+          "waitTimeMs": 3122,
+          "processingTimeMs": 211,
+          "ollamaDurationNs": 208623625,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-2",
@@ -725,9 +725,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name one primary color. One word only.",
-          "waitTimeMs": 1875,
-          "processingTimeMs": 108,
-          "ollamaDurationNs": 107430250,
+          "waitTimeMs": 3333,
+          "processingTimeMs": 207,
+          "ollamaDurationNs": 204518917,
           "generatedTokens": 2
         },
         {
@@ -737,10 +737,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "Say hello in one word.",
-          "waitTimeMs": 1983,
-          "processingTimeMs": 114,
-          "ollamaDurationNs": 111726709,
-          "generatedTokens": 3
+          "waitTimeMs": 3541,
+          "processingTimeMs": 209,
+          "ollamaDurationNs": 208266958,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-4",
@@ -749,10 +749,10 @@
           "priority": 1,
           "priorityLabel": "LOW",
           "prompt": "What is the capital of France? One word.",
-          "waitTimeMs": 2097,
-          "processingTimeMs": 116,
-          "ollamaDurationNs": 113560541,
-          "generatedTokens": 3
+          "waitTimeMs": 3750,
+          "processingTimeMs": 212,
+          "ollamaDurationNs": 210468750,
+          "generatedTokens": 2
         },
         {
           "id": "free-req-5",
@@ -761,9 +761,9 @@
           "priority": 2,
           "priorityLabel": "NORMAL",
           "prompt": "Name a fruit. One word only.",
-          "waitTimeMs": 2213,
-          "processingTimeMs": 110,
-          "ollamaDurationNs": 108252541,
+          "waitTimeMs": 3962,
+          "processingTimeMs": 205,
+          "ollamaDurationNs": 203908750,
           "generatedTokens": 2
         }
       ]

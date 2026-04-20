@@ -4,12 +4,12 @@
  *
  * 사용법:
  * 1. Ollama 설치: https://ollama.ai
- * 2. 모델 다운로드: ollama pull llama2
+ * 2. 모델 다운로드: ollama pull gemma4:e4b
  * 3. 서버 실행: ollama serve
  */
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-const DEFAULT_MODEL = process.env.OLLAMA_MODEL || 'llama2';
+const DEFAULT_MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
 
 class OllamaClient {
   constructor(baseUrl = OLLAMA_BASE_URL, model = DEFAULT_MODEL) {

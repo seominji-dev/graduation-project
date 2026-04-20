@@ -14,7 +14,7 @@
 - 터미널 3개 준비 (서버용 / 요청 전송용 / Ollama 서버용)
 - 브라우저 준비 (Chrome 권장)
 - **Ollama 설치 확인** (시나리오 1-7, 시나리오 3에서 사용): `ollama --version`
-- **LLM 모델 다운로드 확인**: `ollama list` — 기본 모델은 `llama2`, 없으면 `ollama pull llama2` (다른 모델 사용 시 서버 실행 시점에 `OLLAMA_MODEL=<모델명>` 환경변수 설정)
+- **LLM 모델 다운로드 확인**: `ollama list` — 기본 모델은 `gemma4:e4b`, 없으면 `ollama pull gemma4:e4b` (다른 모델 사용 시 서버 실행 시점에 `OLLAMA_MODEL=<모델명>` 환경변수 설정)
 
 ### 시스템 동작 방식 (숙지 필수)
 
@@ -36,7 +36,7 @@ curl -X POST http://localhost:3000/api/scheduler/process
 - [ ] `node_modules` 설치 완료: `cd 02-implementation && npm install`
 - [ ] 포트 3000 미사용 확인: `lsof -i :3000` (사용 중이면 프로세스 종료)
 - [ ] 포트 11434 Ollama 서버 기동 확인: `curl http://localhost:11434/api/tags` (200 OK 응답 확인)
-- [ ] LLM 모델 warmup 1회: `ollama run llama2 "hi"` 실행 후 `/bye`로 종료 (GPU/CPU 로드 — 다른 모델 사용 시 해당 모델명으로 교체)
+- [ ] LLM 모델 warmup 1회: `ollama run gemma4:e4b "hi"` 실행 후 `/bye`로 종료 (GPU/CPU 로드 — 다른 모델 사용 시 해당 모델명으로 교체)
 - [ ] 브라우저 시크릿 모드 준비 (캐시 문제 방지)
 - [ ] 터미널 폰트 크기 확대 (청중이 볼 수 있도록 18pt 이상)
 - [ ] 백업 녹화본 준비 (시나리오 3 Ollama 응답 지연 대비)
@@ -71,7 +71,7 @@ curl -X POST http://localhost:3000/api/scheduler/process
 - [ ] 시나리오 3 (예비) 1회 실행, 2~3분 이내 완료 확인
 - [ ] 노트북 외부 디스플레이 연결 테스트 (집 TV 또는 외부 모니터)
 - [ ] 터미널 폰트·색상 프로젝터 투사 가정하여 확대 적용
-- [ ] Ollama 모델(llama2) 설치 여부 확인 (`ollama list`)
+- [ ] Ollama 모델(gemma4:e4b) 설치 여부 확인 (`ollama list`)
 - [ ] 백업 녹화본 최종 버전 녹화 + USB 저장
 
 ### 발표 당일 아침
@@ -554,10 +554,10 @@ curl http://localhost:11434/api/tags
 ### LLM 모델 미다운로드
 
 ```bash
-ollama pull llama2
+ollama pull gemma4:e4b
 ```
 
-기본 모델은 `llama2`이다. 다른 모델을 사용하려면 서버 실행 시 `OLLAMA_MODEL=<모델명>` 환경변수를 설정한 뒤 해당 모델을 `ollama pull`로 받는다. 다운로드가 길어질 수 있으므로 **발표 전날까지 반드시 완료**해둔다.
+기본 모델은 `gemma4:e4b`이다. 다른 모델을 사용하려면 서버 실행 시 `OLLAMA_MODEL=<모델명>` 환경변수를 설정한 뒤 해당 모델을 `ollama pull`로 받는다. 다운로드가 길어질 수 있으므로 **발표 전날까지 반드시 완료**해둔다.
 
 ### Ollama 응답 지연
 
@@ -642,7 +642,7 @@ Ctrl+C
 - [ ] 임시 데이터 정리: `src-simple/storage/` 하위 JSON 파일 백업 후 초기화
 - [ ] 소스코드 최종 zip으로 백업
 - [ ] 발표 중 받은 질문·피드백을 `tasks/lessons.md` 또는 별도 메모에 기록
-- [ ] Ollama 모델 유지 여부 판단 (용량 확보가 필요하면 `ollama rm llama2` 또는 사용한 모델명으로 교체)
+- [ ] Ollama 모델 유지 여부 판단 (용량 확보가 필요하면 `ollama rm gemma4:e4b` 또는 사용한 모델명으로 교체)
 
 ---
 

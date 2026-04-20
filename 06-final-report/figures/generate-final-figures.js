@@ -405,7 +405,7 @@ function createFig4(pptx) {
 }
 
 // ─── Fig 5: 실서버 구독 등급별 평균 대기시간 (Grouped Bar Chart) ───
-// Data preserved: FCFS=[232,810,1414,2024], Priority=[379,755,1427,1887], WFQ=[241,821,1392,1985]
+// Data (gemma4:e4b): FCFS=[432,1480,2522,3561], Priority=[664,1333,2541,3371], WFQ=[410,1458,2496,3542]
 // AC-20: 3 grayscale shades: FCFS=BLACK, Priority=MID_GRAY, WFQ=LIGHT_GRAY
 
 function createFig5(pptx) {
@@ -425,17 +425,17 @@ function createFig5(pptx) {
     {
       name: 'FCFS',
       labels: ['Enterprise', 'Premium', 'Standard', 'Free'],
-      values: [232, 810, 1414, 2024]
+      values: [432, 1480, 2522, 3561]
     },
     {
       name: 'Priority',
       labels: ['Enterprise', 'Premium', 'Standard', 'Free'],
-      values: [379, 755, 1427, 1887]
+      values: [664, 1333, 2541, 3371]
     },
     {
       name: 'WFQ',
       labels: ['Enterprise', 'Premium', 'Standard', 'Free'],
-      values: [241, 821, 1392, 1985]
+      values: [410, 1458, 2496, 3542]
     }
   ], {
     x: 0.5, y: 0.85, w: 9.0, h: 4.2,
@@ -900,7 +900,7 @@ function createFig9(pptx) {
 }
 
 // ─── Fig 10: 모듈 구조도 (Module Structure) ───
-// Data preserved: server.js + api/ schedulers/ queue/ storage/ llm/ rate-limiter/ tests-simple/
+// Data preserved: server.js + api/ schedulers/ queue/ storage/ llm/ utils/rateLimiter.js + tests-simple/
 // AC-25: grid alignment, AC-04: no radius, AC-07: no transparency
 
 function createFig10ModuleStructure(pptx) {
@@ -1014,13 +1014,13 @@ function createFig10ModuleStructure(pptx) {
     fontSize: 7, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
   });
 
-  // rate-limiter box (AC-25: grid-aligned, same modW)
+  // utils/ box - Rate Limiter (AC-25: grid-aligned, same modW)
   slide.addShape(pptx.shapes.RECTANGLE, {
     x: 0.25, y: 3.20, w: modW, h: 0.60,
     fill: { color: COLORS.VERY_LIGHT },
     line: { color: COLORS.BLACK, width: 0.75 }
   });
-  slide.addText('rate-limiter/\n(요청 제한)', {
+  slide.addText('utils/\nrateLimiter.js (요청 제한)', {
     x: 0.25, y: 3.20, w: modW, h: 0.60,
     fontSize: SMALL_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center', valign: 'middle'
@@ -1281,10 +1281,10 @@ function htmlFig4() {
 // HTML for Fig8 (fig-8-ollama-tier)
 function htmlFig5() {
   const tiers = ['Enterprise', 'Premium', 'Standard', 'Free'];
-  const fcfsVals     = [232, 810, 1414, 2024];
-  const priorityVals = [379, 755, 1427, 1887];
-  const wfqVals      = [241, 821, 1392, 1985];
-  const maxVal = 2200;
+  const fcfsVals     = [432, 1480, 2522, 3561];
+  const priorityVals = [664, 1333, 2541, 3371];
+  const wfqVals      = [410, 1458, 2496, 3542];
+  const maxVal = 3800;
   const chartH = 390;
   // AC-20: 3-shade grayscale
   const schedulers = [
@@ -1581,11 +1581,11 @@ function htmlFig10ModuleStructure() {
           <div style="color:#333333; font-size:9px; margin-top:3px;">Ollama 연동</div>
         </div>
       </div>
-      <!-- rate-limiter (AC-25: same width as modules) -->
+      <!-- utils/rateLimiter.js (AC-25: same width as modules) -->
       <div style="display:flex; gap:10px; justify-content:center;">
         <div style="border:1.5px solid #000000; padding:9px 12px; text-align:center; width:140px; background:#F5F5F5;">
-          <div style="font-weight:bold; color:#000000; font-size:11px;">rate-limiter/</div>
-          <div style="color:#333333; font-size:9px; margin-top:3px;">요청 제한</div>
+          <div style="font-weight:bold; color:#000000; font-size:11px;">utils/</div>
+          <div style="color:#333333; font-size:9px; margin-top:3px;">rateLimiter.js (요청 제한)</div>
         </div>
       </div>
       <!-- tests: dashed (AC-12: dashed for reference/test-only scope) -->

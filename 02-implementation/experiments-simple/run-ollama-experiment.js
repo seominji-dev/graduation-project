@@ -8,7 +8,8 @@
  * All schedulers run non-preemptively — the difference is only in request ORDER.
  *
  * Usage: node run-ollama-experiment.js
- * Prerequisite: Ollama running at http://localhost:11434 with llama3.2 model available
+ *        OLLAMA_MODEL=<model-tag> node run-ollama-experiment.js  (override default model)
+ * Prerequisite: Ollama running at http://localhost:11434 with the target model pulled
  */
 
 const path = require('path');
@@ -23,7 +24,7 @@ const { WFQScheduler } = require('../src-simple/schedulers/WFQScheduler');
 // ============================================
 
 const OLLAMA_URL = 'http://localhost:11434/api/generate';
-const MODEL = 'llama3.2';
+const MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
 const MAX_TOKENS = 20;
 const OUTPUT_PATH = path.join(__dirname, 'ollama-results.json');
 
