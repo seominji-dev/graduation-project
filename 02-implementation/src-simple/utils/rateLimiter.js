@@ -1,6 +1,11 @@
 /**
- * Rate Limiter - Sliding window counter per tenant
+ * Rate Limiter - Token bucket (implemented as a 1-minute sliding window counter)
  * Limits requests based on subscription tier.
+ *
+ * Conceptually a token bucket: each tier has N tokens refilled over a 1-minute
+ * window, one token consumed per request. The implementation stores per-tenant
+ * timestamps and keeps only those within the current window, which is the
+ * simplest faithful realisation of the same behaviour for a per-minute quota.
  *
  * This is a preprocessing step (not a scheduling algorithm).
  * It controls whether a request is allowed to enter the scheduler queue.
