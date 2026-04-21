@@ -61,6 +61,7 @@ function checkRequiredFiles() {
         'presentation/presentation.pptx',
         'demo/demo-scenario.md',
         'demo/script.md',
+        'demo/study-plan.md',
         'minji/README.md',
         'README.md',
         'submission-checklist.md',
@@ -277,6 +278,49 @@ function checkSectionA() {
             regex: /(http:\/\/localhost:\d{4})(?!\d)/,
         },
     ]);
+
+    // 환경 변수명 존재 확인 (SCHEDULER_TYPE, OLLAMA_MODEL, RATE_LIMIT_ENABLED)
+    // demo-scenario.md에 3개 env var이 모두 등장해야 리허설 시 시나리오 명령이 실행된다.
+    const envVars = ['SCHEDULER_TYPE', 'OLLAMA_MODEL', 'RATE_LIMIT_ENABLED'];
+    const envScenario = readSafe('07-presentation/demo/demo-scenario.md');
+    if (envScenario) {
+        const missingEnv = envVars.filter((v) => !envScenario.content.includes(v));
+        if (missingEnv.length === 0) {
+            pass(`SectionA env vars: ${envVars.join(', ')} present in demo-scenario.md`);
+        } else {
+            fail(`SectionA env vars missing in demo-scenario.md: ${missingEnv.join(', ')}`);
+        }
+    } else {
+        fail('SectionA env vars: demo-scenario.md not readable');
+    }
+
+    // 분당 한도 표기 (Enterprise "분당 100건", Free "분당 5건")
+    // 슬라이드 6 등급 카드에 반드시 존재해야 한다.
+    const tierSource = readSafe('07-presentation/slides/generate-presentation.js');
+    if (tierSource) {
+        const hasEnterprise = /분당\s*100건/.test(tierSource.content);
+        const hasFree = /분당\s*5건/.test(tierSource.content);
+        if (hasEnterprise && hasFree) {
+            pass('SectionA tier limits: Enterprise "분당 100건" + Free "분당 5건" present in generate-presentation.js');
+        } else {
+            const miss = [];
+            if (!hasEnterprise) miss.push('Enterprise 분당 100건');
+            if (!hasFree) miss.push('Free 분당 5건');
+            fail(`SectionA tier limits missing in generate-presentation.js: ${miss.join(', ')}`);
+        }
+    } else {
+        fail('SectionA tier limits: generate-presentation.js not readable');
+    }
+
+    // 가중치 비율 100:50:10:1 (Enterprise:Premium:Standard:Free) in demo-scenario.md 시나리오 2
+    if (envScenario) {
+        const hasWeight = /100\s*:\s*50\s*:\s*10\s*:\s*1/.test(envScenario.content);
+        if (hasWeight) {
+            pass('SectionA tier weights "100:50:10:1" present in demo-scenario.md');
+        } else {
+            fail('SectionA tier weights "100:50:10:1" not found in demo-scenario.md');
+        }
+    }
 }
 
 /* ===== 5. minji 파일 수 ===== */
@@ -323,6 +367,28 @@ function checkSourceCodeStructure() {
     }
 }
 
+/* ===== 7. 실험 재현 파일 ===== */
+
+function checkExperimentsStructure() {
+    const expDir = path.join(SUBMISSION_DIR, 'final-report/experiments');
+    if (!fs.existsSync(expDir)) {
+        fail('experiments/ directory missing');
+        return;
+    }
+    // 자립 폴더 원칙: 실험 재현에 필요한 스크립트와 결과 JSON이 모두 존재해야 한다.
+    const expected = ['run-experiments.js', 'experiment-results.json', 'compute-stats.js'];
+    const missing = [];
+    for (const fname of expected) {
+        const full = path.join(expDir, fname);
+        if (!fs.existsSync(full)) missing.push(fname);
+    }
+    if (missing.length === 0) {
+        pass(`experiments/ has reproducibility files (${expected.join(', ')})`);
+    } else {
+        fail(`experiments/ missing files: ${missing.join(', ')}`);
+    }
+}
+
 /* ===== 메인 ===== */
 
 function main() {
@@ -336,6 +402,7 @@ function main() {
     checkSectionA();
     checkMinjiCount();
     checkSourceCodeStructure();
+    checkExperimentsStructure();
 
     console.log('');
     for (const r of results) {

@@ -67,6 +67,11 @@ const FILE_TASKS = [
         label: '발표 스크립트 v2 (서민지 입말)',
         optional: true,
     },
+    {
+        src: '07-presentation/demo/study-plan.md',
+        dest: 'demo/study-plan.md',
+        label: '발표 학습 계획서',
+    },
 ];
 
 // 디렉토리 복사 대상
@@ -77,6 +82,13 @@ const DIR_TASKS = [
         label: '소스코드',
         // 제외 항목: 개발 산출물, 환경 비밀, 대용량 아티팩트
         exclude: ['node_modules', 'coverage', 'coverage-simple', '.env', 'data'],
+    },
+    {
+        src: '02-implementation/experiments-simple',
+        dest: 'final-report/experiments',
+        label: '실험 스크립트 및 결과',
+        // 제외: 개발 메타 전용
+        exclude: ['.moai', '.claude'],
     },
     {
         src: '07-presentation/minji',
