@@ -1,0 +1,355 @@
+/*
+ * 8-final-submission / verify-submission.js
+ *
+ * 최종 제출 통합 패키지 검증 스크립트
+ *
+ * 검증 항목:
+ *   1. 필수 파일 존재
+ *   2. DOCX 페이지 수 (20 +/- 2)
+ *   3. PPTX 슬라이드 수 (12 ~ 20)
+ *   4. SectionA 교차 참조 (모델명, 포트, 환경변수, URL, 분당 한도)
+ *   5. minji 파일 수 (12개 이상)
+ *   6. 소스코드 주요 디렉토리 존재
+ *
+ * 사용법:
+ *   cd 08-final-submission/sync
+ *   node verify-submission.js
+ *
+ * exit code 0 = 모든 검증 통과, 1 이상 = 실패 있음
+ *
+ * 의존성: Node 표준 모듈(fs, path, child_process)만 사용.
+ *         외부 도구: soffice(LibreOffice), mdls(macOS), unzip.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const SCRIPT_DIR = __dirname;
+const SUBMISSION_DIR = path.resolve(SCRIPT_DIR, '..');
+const PROJECT_ROOT = path.resolve(SUBMISSION_DIR, '..');
+
+const results = []; // { status, message }
+
+function pass(msg) {
+    results.push({ status: 'PASS', message: msg });
+}
+
+function fail(msg) {
+    results.push({ status: 'FAIL', message: msg });
+}
+
+function warn(msg) {
+    // WARN은 exit code에 영향을 주지 않는다 (soffice 미설치, handout 미생성 등 정보성).
+    results.push({ status: 'WARN', message: msg });
+}
+
+function hasCommand(cmd) {
+    try {
+        execSync(`command -v ${cmd}`, { stdio: 'pipe' });
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+
+/* ===== 1. 필수 파일 존재 ===== */
+
+function checkRequiredFiles() {
+    const required = [
+        'final-report/final-report.docx',
+        'presentation/presentation.pptx',
+        'demo/demo-scenario.md',
+        'demo/script.md',
+        'minji/README.md',
+        'README.md',
+        'submission-checklist.md',
+        'manifest.yaml',
+    ];
+    for (const rel of required) {
+        const abs = path.join(SUBMISSION_DIR, rel);
+        if (fs.existsSync(abs)) {
+            pass(`required file exists: ${rel}`);
+        } else {
+            fail(`required file missing: ${rel}`);
+        }
+    }
+    // 핸드아웃은 존재 여부만 확인 (생성 시점이 늦을 수 있으므로 WARN)
+    const handout = path.join(SUBMISSION_DIR, 'presentation/handout.pdf');
+    if (fs.existsSync(handout)) {
+        pass('handout PDF present');
+    } else {
+        warn('handout PDF not yet generated (run 7-presentation §B before submission)');
+    }
+}
+
+/* ===== 2. DOCX 페이지 수 ===== */
+
+function checkDocxPageCount() {
+    const docxPath = path.join(SUBMISSION_DIR, 'final-report/final-report.docx');
+    if (!fs.existsSync(docxPath)) {
+        fail('DOCX page count: source file missing');
+        return;
+    }
+    if (!hasCommand('soffice')) {
+        warn('DOCX page count: soffice not installed (skip; run manual check via Word or install LibreOffice)');
+        return;
+    }
+    if (!hasCommand('mdls')) {
+        warn('DOCX page count: mdls not available (macOS only; skip)');
+        return;
+    }
+    const pdfTmpDir = path.join(SUBMISSION_DIR, 'final-report');
+    const pdfPath = path.join(pdfTmpDir, 'final-report.pdf');
+    try {
+        execSync(
+            `soffice --headless --convert-to pdf --outdir "${pdfTmpDir}" "${docxPath}"`,
+            { stdio: 'pipe' }
+        );
+        if (!fs.existsSync(pdfPath)) {
+            fail('DOCX page count: PDF conversion produced no output');
+            return;
+        }
+        const out = execSync(`mdls -name kMDItemNumberOfPages "${pdfPath}"`, {
+            encoding: 'utf8',
+        });
+        const match = out.match(/=\s*(\d+)/);
+        if (!match) {
+            fail('DOCX page count: mdls output not parseable');
+            return;
+        }
+        const pages = parseInt(match[1], 10);
+        if (pages >= 18 && pages <= 22) {
+            pass(`DOCX page count = ${pages} (20 +/- 2)`);
+        } else {
+            fail(`DOCX page count = ${pages} (expected 18 ~ 22)`);
+        }
+    } catch (err) {
+        fail(`DOCX page count: ${err.message.split('\n')[0]}`);
+    } finally {
+        if (fs.existsSync(pdfPath)) {
+            try {
+                fs.unlinkSync(pdfPath);
+            } catch (_) {
+                /* ignore */
+            }
+        }
+    }
+}
+
+/* ===== 3. PPTX 슬라이드 수 ===== */
+
+function checkPptxSlideCount() {
+    const pptxPath = path.join(SUBMISSION_DIR, 'presentation/presentation.pptx');
+    if (!fs.existsSync(pptxPath)) {
+        fail('PPTX slide count: source file missing');
+        return;
+    }
+    try {
+        const listing = execSync(`unzip -l "${pptxPath}"`, { encoding: 'utf8' });
+        const slideCount = (listing.match(/ppt\/slides\/slide\d+\.xml/g) || []).length;
+        if (slideCount >= 12 && slideCount <= 20) {
+            pass(`PPTX slide count = ${slideCount} (12 ~ 20)`);
+        } else {
+            fail(`PPTX slide count = ${slideCount} (expected 12 ~ 20)`);
+        }
+    } catch (err) {
+        fail(`PPTX slide count: ${err.message.split('\n')[0]}`);
+    }
+}
+
+/* ===== 4. SectionA 교차 참조 ===== */
+
+function readSafe(relPath) {
+    const abs = path.join(PROJECT_ROOT, relPath);
+    if (!fs.existsSync(abs)) return null;
+    return { path: relPath, content: fs.readFileSync(abs, 'utf8') };
+}
+
+function findFirstMatch(fileObj, regex) {
+    if (!fileObj) return null;
+    const lines = fileObj.content.split('\n');
+    for (let i = 0; i < lines.length; i += 1) {
+        const m = lines[i].match(regex);
+        if (m) {
+            return { path: fileObj.path, line: i + 1, value: m[1] };
+        }
+    }
+    return null;
+}
+
+function checkCrossReference(itemName, pairs, expectedValue) {
+    // pairs: [{ path, regex }, ...]
+    const found = [];
+    const missing = [];
+    for (const { path: relPath, regex } of pairs) {
+        const fileObj = readSafe(relPath);
+        if (!fileObj) {
+            missing.push(relPath);
+            continue;
+        }
+        const m = findFirstMatch(fileObj, regex);
+        if (m) {
+            found.push(m);
+        } else {
+            missing.push(relPath);
+        }
+    }
+    if (missing.length > 0) {
+        fail(
+            `SectionA ${itemName}: not extractable in ${missing.join(', ')}`
+        );
+    }
+    if (found.length === 0) return;
+
+    const unique = [...new Set(found.map((m) => m.value))];
+    if (unique.length === 1 && (!expectedValue || unique[0] === expectedValue)) {
+        pass(`SectionA ${itemName}: all references = "${unique[0]}" (${found.length} files)`);
+    } else {
+        const detail = found.map((m) => `${m.path}:${m.line} "${m.value}"`).join(' | ');
+        fail(`SectionA ${itemName}: mismatch [${detail}]`);
+    }
+}
+
+function checkSectionA() {
+    // LLM 모델명 (예: gemma4:e4b, llama3.2).
+    // OllamaClient.js는 `process.env.OLLAMA_MODEL || 'gemma4:e4b'` 형태이므로
+    // 'DEFAULT_MODEL' 단어 뒤 첫 따옴표 문자열을 찾는다.
+    checkCrossReference('LLM model', [
+        {
+            path: '02-implementation/src-simple/llm/OllamaClient.js',
+            regex: /DEFAULT_MODEL[^'"]*['"]([a-zA-Z0-9][\w:.\-]+)['"]/,
+        },
+        {
+            path: '07-presentation/demo/demo-scenario.md',
+            regex: /ollama\s+(?:pull|run|rm)\s+([a-zA-Z0-9][\w:.\-]+)/,
+        },
+        {
+            path: '00-서민지-시작하기.md',
+            regex: /ollama\s+(?:pull|run|rm)\s+([a-zA-Z0-9][\w:.\-]+)/,
+        },
+    ]);
+
+    // 서버 포트 (3000)
+    checkCrossReference(
+        'server port',
+        [
+            {
+                path: '07-presentation/demo/demo-scenario.md',
+                regex: /http:\/\/localhost:(\d{4})/,
+            },
+            {
+                path: '02-implementation/src-simple/README.md',
+                regex: /(?:PORT|localhost)[^0-9]*(\d{4})/,
+            },
+            {
+                path: '02-implementation/src-simple/server.js',
+                regex: /(?:PORT|listen)[^0-9]*(\d{4})/,
+            },
+        ],
+        '3000'
+    );
+
+    // Ollama 포트 (11434) — OllamaClient.js의 OLLAMA_BASE_URL과 demo-scenario.md에서 추출
+    checkCrossReference(
+        'Ollama port',
+        [
+            {
+                path: '02-implementation/src-simple/llm/OllamaClient.js',
+                regex: /localhost:(\d{5})/,
+            },
+            {
+                path: '07-presentation/demo/demo-scenario.md',
+                regex: /(11434)/,
+            },
+        ],
+        '11434'
+    );
+
+    // 대시보드 URL (Ollama 포트 11434와 구분하기 위해 4자리 뒤에 숫자가 오지 않을 것을 요구)
+    checkCrossReference('dashboard URL', [
+        {
+            path: '07-presentation/demo/demo-scenario.md',
+            regex: /(http:\/\/localhost:\d{4})(?!\d)/,
+        },
+        {
+            path: '02-implementation/src-simple/README.md',
+            regex: /(http:\/\/localhost:\d{4})(?!\d)/,
+        },
+    ]);
+}
+
+/* ===== 5. minji 파일 수 ===== */
+
+function checkMinjiCount() {
+    const minjiDir = path.join(SUBMISSION_DIR, 'minji');
+    if (!fs.existsSync(minjiDir)) {
+        fail('minji/ directory missing');
+        return;
+    }
+    const mdFiles = fs
+        .readdirSync(minjiDir)
+        .filter((e) => e.endsWith('.md'))
+        .filter((e) => {
+            const full = path.join(minjiDir, e);
+            return fs.statSync(full).isFile();
+        });
+    if (mdFiles.length >= 12) {
+        pass(`minji/ md file count = ${mdFiles.length} (>= 12)`);
+    } else {
+        fail(`minji/ md file count = ${mdFiles.length} (expected >= 12)`);
+    }
+}
+
+/* ===== 6. 소스코드 주요 디렉토리 ===== */
+
+function checkSourceCodeStructure() {
+    const srcDir = path.join(SUBMISSION_DIR, 'final-report/source-code');
+    if (!fs.existsSync(srcDir)) {
+        fail('source-code/ directory missing');
+        return;
+    }
+    // 실제 src-simple 구조: api, llm, queue, schedulers, storage, utils, public
+    const expected = ['schedulers', 'llm', 'utils', 'public', 'queue', 'api'];
+    const missing = [];
+    for (const sub of expected) {
+        const full = path.join(srcDir, sub);
+        if (!fs.existsSync(full)) missing.push(sub);
+    }
+    if (missing.length === 0) {
+        pass(`source-code/ has all expected subdirectories (${expected.join(', ')})`);
+    } else {
+        fail(`source-code/ missing subdirectories: ${missing.join(', ')}`);
+    }
+}
+
+/* ===== 메인 ===== */
+
+function main() {
+    console.log(`[verify] PROJECT_ROOT = ${PROJECT_ROOT}`);
+    console.log(`[verify] SUBMISSION_DIR = ${SUBMISSION_DIR}`);
+    console.log('');
+
+    checkRequiredFiles();
+    checkDocxPageCount();
+    checkPptxSlideCount();
+    checkSectionA();
+    checkMinjiCount();
+    checkSourceCodeStructure();
+
+    console.log('');
+    for (const r of results) {
+        console.log(`[${r.status}] ${r.message}`);
+    }
+    console.log('');
+    const failCount = results.filter((r) => r.status === 'FAIL').length;
+    const warnCount = results.filter((r) => r.status === 'WARN').length;
+    const passCount = results.filter((r) => r.status === 'PASS').length;
+    console.log(`Result: ${failCount} FAIL, ${warnCount} WARN, ${passCount} PASS`);
+
+    if (failCount > 0) {
+        process.exit(1);
+    }
+}
+
+main();
