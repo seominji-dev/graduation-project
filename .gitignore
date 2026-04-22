@@ -211,3 +211,8 @@ dist-ssr/
 .vercel/
 .netlify/
 .firebase/
+
+# ===========================================
+# Portfolio migration plan (local-only, never publish)
+# ===========================================
+tasks/portfolio-migration.md
