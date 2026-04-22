@@ -199,6 +199,29 @@ function createSnapshotIfNeeded() {
     return path.relative(PROJECT_ROOT, snapDir);
 }
 
+/* ===== 스냅샷 초과 경고 ===== */
+
+function warnSnapshotOverflow() {
+    // 8번 스킬 §E: 최근 5개 유지. 자동 삭제는 하지 않고 경고만 출력한다.
+    // 제출 직전 스냅샷을 실수로 날리는 위험을 디스크 공간 낭비보다 더 중요하게 본다.
+    const entries = fs.readdirSync(SUBMISSION_DIR, { withFileTypes: true });
+    const snapshots = entries
+        .filter((e) => e.isDirectory() && e.name.startsWith('snapshot_'))
+        .map((e) => e.name)
+        .sort(); // 이름순 정렬 = 타임스탬프순
+    const LIMIT = 5;
+    if (snapshots.length <= LIMIT) return;
+    const excess = snapshots.length - LIMIT;
+    const oldest = snapshots.slice(0, excess);
+    console.warn(
+        `[sync] WARN: ${snapshots.length} snapshots present (limit ${LIMIT}). ` +
+        `Consider removing oldest manually: ${oldest.join(', ')}`
+    );
+    console.warn(
+        `[sync]       rm command: rm -rf ${oldest.map((n) => `08-final-submission/${n}`).join(' ')}`
+    );
+}
+
 /* ===== minji/README.md 경고 삽입 ===== */
 
 const MINJI_WARNING =
@@ -316,6 +339,9 @@ function main() {
     console.log(
         `[sync] manifest.yaml written (${manifestEntries.length} entries, sha256 computed)`
     );
+
+    // 스냅샷 초과 경고 (삭제는 하지 않음)
+    warnSnapshotOverflow();
 
     console.log('[sync] Done. Run verify-submission.js to validate.');
 }

@@ -389,6 +389,38 @@ function checkExperimentsStructure() {
     }
 }
 
+/* ===== 8. manifest.yaml 무결성 ===== */
+
+function checkManifestIntegrity() {
+    const manifestPath = path.join(SUBMISSION_DIR, 'manifest.yaml');
+    if (!fs.existsSync(manifestPath)) {
+        fail('manifest integrity: manifest.yaml missing');
+        return;
+    }
+    const content = fs.readFileSync(manifestPath, 'utf8');
+    const shaMatches = [...content.matchAll(/sha256:\s*"([^"]*)"/g)];
+    if (shaMatches.length === 0) {
+        fail('manifest integrity: no sha256 entries found');
+        return;
+    }
+    const invalid = [];
+    for (const match of shaMatches) {
+        const value = match[1];
+        // sha256은 정확히 64자 16진수여야 한다. 빈 값, 짧은 값, non-hex는 sync 실패 흔적.
+        if (!/^[0-9a-f]{64}$/i.test(value)) {
+            invalid.push(value.length === 0 ? '(empty)' : value.substring(0, 16) + '...');
+        }
+    }
+    if (invalid.length === 0) {
+        pass(`manifest integrity: ${shaMatches.length} sha256 entries all valid (64-hex)`);
+    } else {
+        fail(
+            `manifest integrity: ${invalid.length}/${shaMatches.length} invalid sha256 ` +
+            `[${invalid.slice(0, 3).join(', ')}${invalid.length > 3 ? ', ...' : ''}]`
+        );
+    }
+}
+
 /* ===== 메인 ===== */
 
 function main() {
@@ -403,6 +435,7 @@ function main() {
     checkMinjiCount();
     checkSourceCodeStructure();
     checkExperimentsStructure();
+    checkManifestIntegrity();
 
     console.log('');
     for (const r of results) {
