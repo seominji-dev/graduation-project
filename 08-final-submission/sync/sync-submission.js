@@ -75,19 +75,21 @@ const FILE_TASKS = [
 ];
 
 // 디렉토리 복사 대상
+// v2.0.0: source-code/와 experiments/는 08 최상위로 이동 (v1.x에서는 final-report/ 하위)
+// 변경 이유: 서민지 시연 자립성 — 소스코드가 "보고서 첨부물"이 아닌 "실행 가능 패키지"로 인식되도록
 const DIR_TASKS = [
     {
         src: '02-implementation/src-simple',
-        dest: 'final-report/source-code',
-        label: '소스코드',
-        // 제외 항목: 개발 산출물, 환경 비밀, 대용량 아티팩트
+        dest: 'source-code',
+        label: '소스코드 (실행 가능, package-lock 포함)',
+        // 제외: 개발 산출물, 환경 비밀, 대용량 아티팩트
+        // package-lock.json은 exclude에 없으므로 자동 포함됨 (재현성 필수)
         exclude: ['node_modules', 'coverage', 'coverage-simple', '.env', 'data'],
     },
     {
         src: '02-implementation/experiments-simple',
-        dest: 'final-report/experiments',
+        dest: 'experiments',
         label: '실험 스크립트 및 결과',
-        // 제외: 개발 메타 전용
         exclude: ['.moai', '.claude'],
     },
     {
@@ -96,6 +98,14 @@ const DIR_TASKS = [
         label: '서민지 전달 문서',
         exclude: [],
     },
+];
+
+// v2.0.0 legacy path cleanup
+// v1.x 구조에서 이관된 폴더는 새 구조에서 고아로 남으므로 명시적으로 삭제한다.
+// 스냅샷에는 이미 백업되어 있어 복구 가능하다.
+const LEGACY_DIRS_TO_CLEAR = [
+    'final-report/source-code',
+    'final-report/experiments',
 ];
 
 /* ===== 유틸리티 ===== */
@@ -199,6 +209,20 @@ function createSnapshotIfNeeded() {
     return path.relative(PROJECT_ROOT, snapDir);
 }
 
+/* ===== v2.0.0 legacy 경로 정리 ===== */
+
+function clearLegacyPaths() {
+    const cleared = [];
+    for (const rel of LEGACY_DIRS_TO_CLEAR) {
+        const abs = path.join(SUBMISSION_DIR, rel);
+        if (fs.existsSync(abs)) {
+            fs.rmSync(abs, { recursive: true, force: true });
+            cleared.push(rel);
+        }
+    }
+    return cleared;
+}
+
 /* ===== 스냅샷 초과 경고 ===== */
 
 function warnSnapshotOverflow() {
@@ -252,7 +276,7 @@ function writeManifest(entries, snapshotPath) {
     lines.push('# 8-final-submission / manifest.yaml');
     lines.push('# 자동 생성: node sync-submission.js 실행 시 갱신됨. 수동 편집 금지.');
     lines.push(`generated_at: "${new Date().toISOString()}"`);
-    lines.push('generator: "sync-submission.js v1.0.0"');
+    lines.push('generator: "sync-submission.js v2.0.0"');
     if (snapshotPath) {
         lines.push(`previous_snapshot: "${yamlEscape(snapshotPath)}"`);
     } else {
@@ -286,6 +310,12 @@ function main() {
         console.log(`[sync] Snapshot created: ${snapshotPath}`);
     } else {
         console.log('[sync] No prior content to snapshot');
+    }
+
+    // v2.0.0 — v1.x 구조의 고아 폴더 정리 (스냅샷 이후 실행하여 복구 가능하게 유지)
+    const clearedLegacy = clearLegacyPaths();
+    if (clearedLegacy.length > 0) {
+        console.log(`[sync] Cleared orphan dirs: ${clearedLegacy.join(', ')} (v1.x legacy, recoverable from snapshot)`);
     }
 
     const manifestEntries = [];

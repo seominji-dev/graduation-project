@@ -1,380 +1,373 @@
 # 8-final-submission / manifest.yaml
 # 자동 생성: node sync-submission.js 실행 시 갱신됨. 수동 편집 금지.
-generated_at: "2026-04-23T09:02:59.348Z"
-generator: "sync-submission.js v2.0.0"
-previous_snapshot: "08-final-submission/snapshot_20260423_180259"
+generated_at: "2026-04-21T07:50:38.625Z"
+generator: "sync-submission.js v1.0.0"
+previous_snapshot: "08-final-submission/snapshot_20260421_165038"
 verification_status: "pending"
 # verify-submission.js 실행 후 verification_status가 갱신될 수 있음
-file_count: 53
+file_count: 52
 
 files:
   - label: "최종보고서 DOCX"
     source: "06-final-report/final/final-report.docx"
     destination: "final-report/final-report.docx"
     size: 233641
-    mtime: "2026-04-23T09:02:59.314Z"
+    mtime: "2026-04-21T07:50:38.579Z"
     sha256: "c46287d941c5d7f17b36077df3e122fdcb74f45cb0c69a2a59ba38535093c0af"
 
   - label: "발표 슬라이드 PPTX"
     source: "07-presentation/slides/presentation.pptx"
     destination: "presentation/presentation.pptx"
     size: 391278
-    mtime: "2026-04-23T09:02:59.319Z"
+    mtime: "2026-04-21T07:50:38.582Z"
     sha256: "73a46cb3edaa8e09c6f72cc835d49b0805bd516c713e0d6dd15db5f5b71fa5ee"
 
   - label: "데모 시나리오"
     source: "07-presentation/demo/demo-scenario.md"
     destination: "demo/demo-scenario.md"
     size: 31383
-    mtime: "2026-04-23T09:02:59.321Z"
+    mtime: "2026-04-21T07:50:38.589Z"
     sha256: "068fdbd8f9a913d13e172371d8453ae53ebdc4f68ddb4bb1d2d85c7b45f01b57"
 
   - label: "발표 스크립트 원본"
     source: "07-presentation/demo/script.md"
     destination: "demo/script.md"
     size: 14799
-    mtime: "2026-04-23T09:02:59.321Z"
+    mtime: "2026-04-21T07:50:38.589Z"
     sha256: "76c5db1ecc0e83cdb8272c5b30d9c5d37183d3910a03fd6d14a8c94af2088ea5"
 
   - label: "발표 스크립트 v2 (서민지 입말)"
     source: "07-presentation/demo/script-v2.md"
     destination: "demo/script-v2.md"
     size: 22523
-    mtime: "2026-04-23T09:02:59.322Z"
+    mtime: "2026-04-21T07:50:38.591Z"
     sha256: "e84189ba772af8f3c78905f8c63031c43531c2549c4ebaf92f1bde07e0a65c46"
 
   - label: "발표 학습 계획서"
     source: "07-presentation/demo/study-plan.md"
     destination: "demo/study-plan.md"
     size: 10138
-    mtime: "2026-04-23T09:02:59.323Z"
+    mtime: "2026-04-21T07:50:38.595Z"
     sha256: "7964aff27f4c4d2ba475451a01ebcccacc2164a64e2ec97e1d53c29e8ddf646f"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/.env.example"
-    destination: "source-code/.env.example"
+    destination: "final-report/source-code/.env.example"
     size: 332
-    mtime: "2026-04-23T09:02:59.324Z"
+    mtime: "2026-04-21T07:50:38.598Z"
     sha256: "431479e0cf149035b35fd7ba30796d05f0202a890ef838768741fbef602a4703"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/README.md"
-    destination: "source-code/README.md"
+    destination: "final-report/source-code/README.md"
     size: 3772
-    mtime: "2026-04-23T09:02:59.324Z"
+    mtime: "2026-04-21T07:50:38.598Z"
     sha256: "d5719afb916405b40793cbc5beed668c6fe7eb3b7227f32d34ef76c180ac3188"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/api/routes.js"
-    destination: "source-code/api/routes.js"
+    destination: "final-report/source-code/api/routes.js"
     size: 5864
-    mtime: "2026-04-23T09:02:59.324Z"
+    mtime: "2026-04-21T07:50:38.599Z"
     sha256: "6b89b0604ec6ac91a46dbce298ab9791d58216768ec611b120661485c85ba015"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/index.js"
-    destination: "source-code/index.js"
+    destination: "final-report/source-code/index.js"
     size: 1124
-    mtime: "2026-04-23T09:02:59.325Z"
+    mtime: "2026-04-21T07:50:38.599Z"
     sha256: "b728c6fb1652fdcb0a85686fb57fbdf4cbecfb7dc9b3c37da07f7eb7b8d32b7b"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/llm/OllamaClient.js"
-    destination: "source-code/llm/OllamaClient.js"
+    destination: "final-report/source-code/llm/OllamaClient.js"
     size: 3399
-    mtime: "2026-04-23T09:02:59.325Z"
+    mtime: "2026-04-21T07:50:38.600Z"
     sha256: "4f2a036fc1006fc84371eb3091bfe5321cf76117bcd4f482e5020b76296b8d20"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
-    source: "02-implementation/src-simple/package-lock.json"
-    destination: "source-code/package-lock.json"
-    size: 29401
-    mtime: "2026-04-23T09:02:59.325Z"
-    sha256: "eadb42d7f7b7b4be5bbcff19efb4a34717f29dbdccf9211c4f4db2baccef0ca9"
-
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/package.json"
-    destination: "source-code/package.json"
+    destination: "final-report/source-code/package.json"
     size: 694
-    mtime: "2026-04-23T09:02:59.325Z"
+    mtime: "2026-04-21T07:50:38.600Z"
     sha256: "9b296f44dc8860054b4983782ee62c39f81272506037fb166eff1afadbc711b0"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/public/dashboard.html"
-    destination: "source-code/public/dashboard.html"
+    destination: "final-report/source-code/public/dashboard.html"
     size: 12773
-    mtime: "2026-04-23T09:02:59.327Z"
+    mtime: "2026-04-21T07:50:38.601Z"
     sha256: "b5c09d193a544089a8c5fc3e599d4a482fb85a903c1fdfd279e306a17cc24793"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/queue/MemoryQueue.js"
-    destination: "source-code/queue/MemoryQueue.js"
+    destination: "final-report/source-code/queue/MemoryQueue.js"
     size: 4005
-    mtime: "2026-04-23T09:02:59.327Z"
+    mtime: "2026-04-21T07:50:38.601Z"
     sha256: "af25337c4e2aeb6be9747a2e1f0abcb1b095ab09d7b18ff6a0c499fa8d79d9b2"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/BaseScheduler.js"
-    destination: "source-code/schedulers/BaseScheduler.js"
+    destination: "final-report/source-code/schedulers/BaseScheduler.js"
     size: 881
-    mtime: "2026-04-23T09:02:59.328Z"
+    mtime: "2026-04-21T07:50:38.602Z"
     sha256: "1dcd2487e932dcc65bb7f61752d2eb547e4f05ee5f77c107d6cd0893a92f133f"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/FCFSScheduler.js"
-    destination: "source-code/schedulers/FCFSScheduler.js"
+    destination: "final-report/source-code/schedulers/FCFSScheduler.js"
     size: 596
-    mtime: "2026-04-23T09:02:59.328Z"
+    mtime: "2026-04-21T07:50:38.602Z"
     sha256: "232dcd540ebb01e954031f91da169fb7b584da81ea03ca945f560beec73305fa"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/MLFQScheduler.js"
-    destination: "source-code/schedulers/MLFQScheduler.js"
+    destination: "final-report/source-code/schedulers/MLFQScheduler.js"
     size: 6549
-    mtime: "2026-04-23T09:02:59.328Z"
+    mtime: "2026-04-21T07:50:38.602Z"
     sha256: "ba43ba261359b31e1e4329e850d883470284e39b6fd99c453df9eec1ae50ae1c"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/PriorityScheduler.js"
-    destination: "source-code/schedulers/PriorityScheduler.js"
+    destination: "final-report/source-code/schedulers/PriorityScheduler.js"
     size: 2623
-    mtime: "2026-04-23T09:02:59.328Z"
+    mtime: "2026-04-21T07:50:38.602Z"
     sha256: "ce41e73684f85b00a771d26226bff143c85047c4bb7faac1522877d53eeff21f"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/WFQScheduler.js"
-    destination: "source-code/schedulers/WFQScheduler.js"
+    destination: "final-report/source-code/schedulers/WFQScheduler.js"
     size: 5381
-    mtime: "2026-04-23T09:02:59.329Z"
+    mtime: "2026-04-21T07:50:38.602Z"
     sha256: "c9b6cfb791369d5fefea9e111551767e247cf98a26ae404a3f3e4d9f9ca9db23"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/schedulers/index.js"
-    destination: "source-code/schedulers/index.js"
+    destination: "final-report/source-code/schedulers/index.js"
     size: 536
-    mtime: "2026-04-23T09:02:59.329Z"
+    mtime: "2026-04-21T07:50:38.603Z"
     sha256: "6332fa97121476be22843a1141665e86a862a81e8a06a66156cb391661d5acee"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/server.js"
-    destination: "source-code/server.js"
+    destination: "final-report/source-code/server.js"
     size: 5428
-    mtime: "2026-04-23T09:02:59.329Z"
+    mtime: "2026-04-21T07:50:38.603Z"
     sha256: "b3e4503c36a9488ff50f7bdddb3a1d5f02ad28d1a40128fd72832c5f18ed5588"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/storage/JSONStore.js"
-    destination: "source-code/storage/JSONStore.js"
+    destination: "final-report/source-code/storage/JSONStore.js"
     size: 6439
-    mtime: "2026-04-23T09:02:59.330Z"
+    mtime: "2026-04-21T07:50:38.603Z"
     sha256: "634a85337bc5c0a51d2e88345d82cbab11775011c0f939ff41e35fa6ecd93233"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/utils/rateLimiter.js"
-    destination: "source-code/utils/rateLimiter.js"
+    destination: "final-report/source-code/utils/rateLimiter.js"
     size: 2350
-    mtime: "2026-04-23T09:02:59.330Z"
+    mtime: "2026-04-21T07:50:38.604Z"
     sha256: "dec831ba4b07bfba52bb17982bd3c5a65e15e549db18d68ca9261b689e456309"
 
-  - label: "소스코드 (실행 가능, package-lock 포함)"
+  - label: "소스코드"
     source: "02-implementation/src-simple/utils/validation.js"
-    destination: "source-code/utils/validation.js"
+    destination: "final-report/source-code/utils/validation.js"
     size: 7853
-    mtime: "2026-04-23T09:02:59.331Z"
+    mtime: "2026-04-21T07:50:38.604Z"
     sha256: "37c3d69c4e5af3bf7e25936bb31394ed72db122137b180f494477b6040eeda74"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/compute-stats.js"
-    destination: "experiments/compute-stats.js"
+    destination: "final-report/experiments/compute-stats.js"
     size: 4958
-    mtime: "2026-04-23T09:02:59.333Z"
+    mtime: "2026-04-21T07:50:38.607Z"
     sha256: "c49d297f04071bd8ad21a580a4092c9342503f68fbacffa4a69d4d1f656f7b0d"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/experiment-results.json"
-    destination: "experiments/experiment-results.json"
+    destination: "final-report/experiments/experiment-results.json"
     size: 3201
-    mtime: "2026-04-23T09:02:59.333Z"
+    mtime: "2026-04-21T07:50:38.607Z"
     sha256: "33cbf5acece2c8f8de03fbd5f4c9539a3efbf90f3a37916d69ec93a23bfd06a4"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/extended-results.json"
-    destination: "experiments/extended-results.json"
+    destination: "final-report/experiments/extended-results.json"
     size: 1666
-    mtime: "2026-04-23T09:02:59.334Z"
+    mtime: "2026-04-21T07:50:38.608Z"
     sha256: "e3724a7bf1bab3dd81a48766cddd295a82d75e095b961f4f07dacbb24371a073"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/seed-12345.json"
-    destination: "experiments/multi-seed-results/seed-12345.json"
+    destination: "final-report/experiments/multi-seed-results/seed-12345.json"
     size: 1007
-    mtime: "2026-04-23T09:02:59.334Z"
+    mtime: "2026-04-21T07:50:38.608Z"
     sha256: "bfbef975605fc2fd965f9c7bf1c9e8787f240376475074d74ba75758231dccf2"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/seed-23456.json"
-    destination: "experiments/multi-seed-results/seed-23456.json"
+    destination: "final-report/experiments/multi-seed-results/seed-23456.json"
     size: 1008
-    mtime: "2026-04-23T09:02:59.334Z"
+    mtime: "2026-04-21T07:50:38.609Z"
     sha256: "79cd7f8a60ab286fd368ef2bb2f34ee53c85b57680df1373237dd0ae484d4120"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/seed-34567.json"
-    destination: "experiments/multi-seed-results/seed-34567.json"
+    destination: "final-report/experiments/multi-seed-results/seed-34567.json"
     size: 1006
-    mtime: "2026-04-23T09:02:59.335Z"
+    mtime: "2026-04-21T07:50:38.609Z"
     sha256: "f0e44f861a73d2223c74722a1363f9d0c3275dc87535faedb2e0db176dbb484b"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/seed-45678.json"
-    destination: "experiments/multi-seed-results/seed-45678.json"
+    destination: "final-report/experiments/multi-seed-results/seed-45678.json"
     size: 1008
-    mtime: "2026-04-23T09:02:59.335Z"
+    mtime: "2026-04-21T07:50:38.609Z"
     sha256: "dce9e0684540d90e9bb71b17b35d5546d42f41f1a6a8b504c8d0f79199b32e5f"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/seed-56789.json"
-    destination: "experiments/multi-seed-results/seed-56789.json"
+    destination: "final-report/experiments/multi-seed-results/seed-56789.json"
     size: 1007
-    mtime: "2026-04-23T09:02:59.335Z"
+    mtime: "2026-04-21T07:50:38.609Z"
     sha256: "7e0785049e363d5714bd5e2363e2d7d38df8dd41e96fb22add530b3128678cd0"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/multi-seed-results/summary.json"
-    destination: "experiments/multi-seed-results/summary.json"
+    destination: "final-report/experiments/multi-seed-results/summary.json"
     size: 1606
-    mtime: "2026-04-23T09:02:59.335Z"
+    mtime: "2026-04-21T07:50:38.610Z"
     sha256: "9145d21e76b860f9701979cef59e3dc1d4c0487d8d2f3c8822fe729bcddce48c"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/ollama-results-llama3.2.json"
-    destination: "experiments/ollama-results-llama3.2.json"
+    destination: "final-report/experiments/ollama-results-llama3.2.json"
     size: 23646
-    mtime: "2026-04-23T09:02:59.336Z"
+    mtime: "2026-04-21T07:50:38.610Z"
     sha256: "88ac0c774af44e9e99a46d86e76dff1ff00ffccd30e62d0200e417d8ee920434"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/ollama-results.json"
-    destination: "experiments/ollama-results.json"
+    destination: "final-report/experiments/ollama-results.json"
     size: 23665
-    mtime: "2026-04-23T09:02:59.337Z"
+    mtime: "2026-04-21T07:50:38.610Z"
     sha256: "1397abfd4fe5f6fd1808bd7a08c69755edfecf6925c70ad316383ad0441cb600"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/run-experiments.js"
-    destination: "experiments/run-experiments.js"
+    destination: "final-report/experiments/run-experiments.js"
     size: 14872
-    mtime: "2026-04-23T09:02:59.337Z"
+    mtime: "2026-04-21T07:50:38.611Z"
     sha256: "e2d176bbac4e623ebb5e77eb5ca6b0c9c15ab8fa042a04eef1fa8c105eec3f7d"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/run-extended.js"
-    destination: "experiments/run-extended.js"
+    destination: "final-report/experiments/run-extended.js"
     size: 17938
-    mtime: "2026-04-23T09:02:59.338Z"
+    mtime: "2026-04-21T07:50:38.612Z"
     sha256: "776ba6b5d0c94581a3feb033f0c0ad6ae8df1a27e6b61668723a1490193586f4"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/run-multi-seed.js"
-    destination: "experiments/run-multi-seed.js"
+    destination: "final-report/experiments/run-multi-seed.js"
     size: 11697
-    mtime: "2026-04-23T09:02:59.338Z"
+    mtime: "2026-04-21T07:50:38.617Z"
     sha256: "3e6c01beef91b9c02ccaddeb60e0290f4dbd426a5a7b9d658c314879de02ccf3"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/run-ollama-experiment.js"
-    destination: "experiments/run-ollama-experiment.js"
+    destination: "final-report/experiments/run-ollama-experiment.js"
     size: 10964
-    mtime: "2026-04-23T09:02:59.338Z"
+    mtime: "2026-04-21T07:50:38.617Z"
     sha256: "b01b1893277e104161289b3d5a373855c47cb0a3ba0bfd960ba12257316bd4e4"
 
   - label: "실험 스크립트 및 결과"
     source: "02-implementation/experiments-simple/stats-utils.js"
-    destination: "experiments/stats-utils.js"
+    destination: "final-report/experiments/stats-utils.js"
     size: 887
-    mtime: "2026-04-23T09:02:59.339Z"
+    mtime: "2026-04-21T07:50:38.618Z"
     sha256: "4a715317669c25e4fea1a4fe1d08ed7cabc1e4f7236a9ceb1809bc5ee4c45ad3"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/README.md"
     destination: "minji/README.md"
     size: 8265
-    mtime: "2026-04-23T09:02:59.344Z"
+    mtime: "2026-04-21T07:50:38.620Z"
     sha256: "c9c424887d9ef7ea401cd6e2ea72bb3e321dcf1bfc66815a4dbb40f9daa1e763"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/backup-demo-shooting-kit.md"
     destination: "minji/backup-demo-shooting-kit.md"
     size: 8454
-    mtime: "2026-04-23T09:02:59.344Z"
+    mtime: "2026-04-21T07:50:38.620Z"
     sha256: "fc9e8a0fa1b8ccf98b729112c410a7f1399020659d63cce59469e08c91b7ff7d"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/emergency-card.md"
     destination: "minji/emergency-card.md"
     size: 9771
-    mtime: "2026-04-23T09:02:59.344Z"
+    mtime: "2026-04-21T07:50:38.621Z"
     sha256: "f08918ddeb86d88616aff7269fe68052501fcb6c1adae95b15292d8dab3dd3d0"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/glossary.md"
     destination: "minji/glossary.md"
     size: 21016
-    mtime: "2026-04-23T09:02:59.345Z"
+    mtime: "2026-04-21T07:50:38.621Z"
     sha256: "80b3ba4b654d7ccf385dc5f2a3c41c3bea24f18817dc755918eca0e7ef82dd73"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/numbers-cheatsheet.md"
     destination: "minji/numbers-cheatsheet.md"
     size: 9444
-    mtime: "2026-04-23T09:02:59.345Z"
+    mtime: "2026-04-21T07:50:38.622Z"
     sha256: "3347fcd876ee8149c45084b1328be9569c0cf42f671aa60dc30127ee6e06ddff"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/projector-checklist.md"
     destination: "minji/projector-checklist.md"
     size: 8634
-    mtime: "2026-04-23T09:02:59.345Z"
+    mtime: "2026-04-21T07:50:38.622Z"
     sha256: "3a76c57cbd2b84ead79a19df94e7233a2c2fdc993675fc56ea00fb05747c37ee"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/qa-student-voice.md"
     destination: "minji/qa-student-voice.md"
     size: 23187
-    mtime: "2026-04-23T09:02:59.346Z"
+    mtime: "2026-04-21T07:50:38.622Z"
     sha256: "6814af54588c6fd9e78a141649647e17593fc08c36e59b717ea14ce56d26588b"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/rehearsal-playbook.md"
     destination: "minji/rehearsal-playbook.md"
     size: 11892
-    mtime: "2026-04-23T09:02:59.346Z"
+    mtime: "2026-04-21T07:50:38.623Z"
     sha256: "6606aeeed9f744a48f102d3933a757cc3c1f3abced990565a881d87ae96b7271"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/self-recording-evaluation-form.md"
     destination: "minji/self-recording-evaluation-form.md"
     size: 7582
-    mtime: "2026-04-23T09:02:59.347Z"
+    mtime: "2026-04-21T07:50:38.623Z"
     sha256: "075b437b2ac476a14ce5efd11dda04a59ab72eff83458d8f62376ec317eaae0b"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/slide-cards-12.md"
     destination: "minji/slide-cards-12.md"
     size: 13138
-    mtime: "2026-04-23T09:02:59.347Z"
+    mtime: "2026-04-21T07:50:38.623Z"
     sha256: "0ef80dffb985f10702c30ae268982c1ce03e53dcb086162a0dc504c92c43f465"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/supervisor-checklist.md"
     destination: "minji/supervisor-checklist.md"
     size: 9587
-    mtime: "2026-04-23T09:02:59.347Z"
+    mtime: "2026-04-21T07:50:38.624Z"
     sha256: "830babf6df41aba6b5bf0356a0bdde0439f5316e3274b208759e2cba325d421c"
 
   - label: "서민지 전달 문서"
     source: "07-presentation/minji/unexpected-questions.md"
     destination: "minji/unexpected-questions.md"
     size: 17888
-    mtime: "2026-04-23T09:02:59.348Z"
+    mtime: "2026-04-21T07:50:38.624Z"
     sha256: "5d680a8f90f1fa732d22853471cb467c9128a682c19725d50eddde2c29ede8c9"

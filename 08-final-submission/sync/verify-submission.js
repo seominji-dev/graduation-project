@@ -3,13 +3,17 @@
  *
  * 최종 제출 통합 패키지 검증 스크립트
  *
- * 검증 항목:
- *   1. 필수 파일 존재
- *   2. DOCX 페이지 수 (20 +/- 2)
- *   3. PPTX 슬라이드 수 (12 ~ 20)
- *   4. SectionA 교차 참조 (모델명, 포트, 환경변수, URL, 분당 한도)
- *   5. minji 파일 수 (12개 이상)
- *   6. 소스코드 주요 디렉토리 존재
+ * 검증 항목 (v2.0.0):
+ *   1. 필수 파일 존재 (README.md, QUICKSTART.md 포함)
+ *   2. 시연 자립성 파일 존재 (source-code/package-lock.json 등)
+ *   3. DOCX 페이지 수 (20 +/- 2)
+ *   4. PPTX 슬라이드 수 (12 ~ 20)
+ *   5. SectionA 교차 참조 (모델명, 포트, 환경변수, URL, 분당 한도)
+ *   6. minji 파일 수 (12개 이상)
+ *   7. 소스코드 주요 디렉토리 존재 (source-code/ 루트 기준)
+ *   8. 실험 재현 파일 존재 (experiments/ 루트 기준)
+ *   9. 원본 경로 미참조 검증 (demo-scenario.md에 02-implementation 경로 없음, WARN)
+ *  10. manifest.yaml 무결성
  *
  * 사용법:
  *   cd 08-final-submission/sync
@@ -64,6 +68,7 @@ function checkRequiredFiles() {
         'demo/study-plan.md',
         'minji/README.md',
         'README.md',
+        'QUICKSTART.md',
         'submission-checklist.md',
         'manifest.yaml',
     ];
@@ -81,6 +86,26 @@ function checkRequiredFiles() {
         pass('handout PDF present');
     } else {
         warn('handout PDF not yet generated (run 7-presentation §B before submission)');
+    }
+}
+
+/* ===== 1b. 시연 자립성 파일 존재 (v2.0.0) ===== */
+
+function checkStandaloneFiles() {
+    // 시연 자립성을 위해 source-code/ 루트에 npm install·.env 설정에 필요한 파일이 모두 있어야 한다.
+    const required = [
+        'source-code/package.json',
+        'source-code/package-lock.json',
+        'source-code/.env.example',
+        'source-code/README.md',
+    ];
+    for (const rel of required) {
+        const abs = path.join(SUBMISSION_DIR, rel);
+        if (fs.existsSync(abs)) {
+            pass(`standalone file exists: ${rel}`);
+        } else {
+            fail(`standalone file missing: ${rel}`);
+        }
     }
 }
 
@@ -348,13 +373,14 @@ function checkMinjiCount() {
 /* ===== 6. 소스코드 주요 디렉토리 ===== */
 
 function checkSourceCodeStructure() {
-    const srcDir = path.join(SUBMISSION_DIR, 'final-report/source-code');
+    // v2.0.0: source-code/는 08 최상위로 이동 (v1.x에서는 final-report/source-code/)
+    const srcDir = path.join(SUBMISSION_DIR, 'source-code');
     if (!fs.existsSync(srcDir)) {
-        fail('source-code/ directory missing');
+        fail('source-code/ directory missing (expected at submission root, v2.0.0)');
         return;
     }
     // 실제 src-simple 구조: api, llm, queue, schedulers, storage, utils, public
-    const expected = ['schedulers', 'llm', 'utils', 'public', 'queue', 'api'];
+    const expected = ['schedulers', 'llm', 'utils', 'public', 'queue', 'api', 'storage'];
     const missing = [];
     for (const sub of expected) {
         const full = path.join(srcDir, sub);
@@ -370,9 +396,10 @@ function checkSourceCodeStructure() {
 /* ===== 7. 실험 재현 파일 ===== */
 
 function checkExperimentsStructure() {
-    const expDir = path.join(SUBMISSION_DIR, 'final-report/experiments');
+    // v2.0.0: experiments/는 08 최상위로 이동 (v1.x에서는 final-report/experiments/)
+    const expDir = path.join(SUBMISSION_DIR, 'experiments');
     if (!fs.existsSync(expDir)) {
-        fail('experiments/ directory missing');
+        fail('experiments/ directory missing (expected at submission root, v2.0.0)');
         return;
     }
     // 자립 폴더 원칙: 실험 재현에 필요한 스크립트와 결과 JSON이 모두 존재해야 한다.
@@ -386,6 +413,42 @@ function checkExperimentsStructure() {
         pass(`experiments/ has reproducibility files (${expected.join(', ')})`);
     } else {
         fail(`experiments/ missing files: ${missing.join(', ')}`);
+    }
+}
+
+/* ===== 9. 원본 경로 미참조 검증 (v2.0.0) ===== */
+
+function checkNoLegacyPathReferences() {
+    // 08 자립성 원칙: demo/demo-scenario.md가 08 외부 경로(02-implementation/src-simple 등)를 참조하면
+    // 서민지가 시연 시 혼란을 겪는다. WARN 수준으로 알리고 7-presentation에서 치환 권고.
+    const scenario = path.join(SUBMISSION_DIR, 'demo/demo-scenario.md');
+    if (!fs.existsSync(scenario)) {
+        return; // 필수 파일 검사에서 이미 FAIL 처리됨
+    }
+    const content = fs.readFileSync(scenario, 'utf8');
+    // 검사 대상: 02-implementation/src-simple 또는 유사 원본 경로
+    const legacyPatterns = [
+        /02-implementation\/src-simple/,
+        /02-implementation\/experiments-simple/,
+    ];
+    const hits = [];
+    const lines = content.split('\n');
+    for (let i = 0; i < lines.length; i += 1) {
+        for (const re of legacyPatterns) {
+            const m = lines[i].match(re);
+            if (m) {
+                hits.push({ line: i + 1, match: m[0], preview: lines[i].trim().slice(0, 80) });
+                break;
+            }
+        }
+    }
+    if (hits.length === 0) {
+        pass('demo/demo-scenario.md: no legacy source path references (standalone-friendly)');
+    } else {
+        const sample = hits.slice(0, 3).map((h) => `L${h.line}: "${h.preview}"`).join(' | ');
+        warn(
+            `demo/demo-scenario.md references legacy paths (${hits.length} hits) — 7-presentation should replace with 08-relative or abstract path. Sample: ${sample}`
+        );
     }
 }
 
@@ -429,12 +492,14 @@ function main() {
     console.log('');
 
     checkRequiredFiles();
+    checkStandaloneFiles();
     checkDocxPageCount();
     checkPptxSlideCount();
     checkSectionA();
     checkMinjiCount();
     checkSourceCodeStructure();
     checkExperimentsStructure();
+    checkNoLegacyPathReferences();
     checkManifestIntegrity();
 
     console.log('');

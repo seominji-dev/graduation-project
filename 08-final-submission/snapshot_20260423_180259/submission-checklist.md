@@ -12,16 +12,13 @@ cd 08-final-submission/sync && node verify-submission.js
 
 위 명령의 exit code가 0이면 아래 항목은 전부 자동 통과한 것이다.
 
-- [ ] 필수 파일 존재: `README.md`, `QUICKSTART.md`, `final-report.docx`, `presentation.pptx`, `demo-scenario.md`, `script.md`, `study-plan.md`, `minji/README.md`, `submission-checklist.md`, `manifest.yaml`
-- [ ] 시연 자립성 파일: `source-code/package.json`, `source-code/package-lock.json`, `source-code/.env.example`, `source-code/README.md` 모두 존재
+- [ ] 필수 파일 존재: `final-report.docx`, `presentation.pptx`, `demo-scenario.md`, `script.md`, `study-plan.md`, `minji/README.md`, `manifest.yaml`
 - [ ] 핸드아웃 PDF: `presentation/handout.pdf` 존재 (미존재 시 WARN — 발표 D-3까지 PowerPoint에서 생성)
 - [ ] DOCX 페이지 수 18~22p
 - [ ] PPTX 슬라이드 수 12~20장
 - [ ] §A 교차 참조 일치 (LLM 모델명·서버 포트·Ollama 포트·대시보드 URL)
 - [ ] `minji/` md 파일 12개 이상
-- [ ] `source-code/` (08 최상위)에 schedulers·llm·utils·public·queue·api·storage 디렉토리 모두 존재
-- [ ] `experiments/` (08 최상위)에 run-experiments.js·experiment-results.json·compute-stats.js 모두 존재
-- [ ] `demo/demo-scenario.md`에 `02-implementation/src-simple` 원본 경로 미참조 (WARN 수준, 자립성 권장)
+- [ ] `source-code/`에 schedulers·llm·utils·public·queue·api 디렉토리 모두 존재
 
 ## 2. 수동 확인 (사람이 직접 열어봐야 하는 항목)
 
@@ -33,19 +30,12 @@ cd 08-final-submission/sync && node verify-submission.js
 - [ ] 참고문헌 URL이 클릭 가능한 상태로 유지되는지
 - [ ] 머리말·꼬리말(페이지 번호 `- N -`) 정상 렌더링
 
-### 2-2. 소스코드 (`source-code/`, 08 최상위)
+### 2-2. 소스코드 (`final-report/source-code/`)
 
-- [ ] `.env` 파일이 포함되지 않았는지 (비밀키·개인 정보 유출 방지) — `.env.example`만 있으면 OK
+- [ ] `.env` 파일이 포함되지 않았는지 (비밀키·개인 정보 유출 방지)
 - [ ] `node_modules/`, `coverage*/`, `data/db.sqlite` 등 대용량 아티팩트가 빠졌는지
-- [ ] `package-lock.json`이 포함되어 있는지 (재현성 필수)
 - [ ] `README.md`에 실행 방법(install → start)이 단순한 명령으로 기술되어 있는지
 - [ ] 주석이 학부생 수준으로 유지되는지 (지나친 설명·AI 생성 흔적 없음)
-
-### 2-2b. 실험 자료 (`experiments/`, 08 최상위)
-
-- [ ] `run-experiments.js`, `compute-stats.js` 스크립트 실행 가능 상태
-- [ ] `experiment-results.json`, `ollama-results.json` 등 결과 파일 포함
-- [ ] `multi-seed-results/` 하위 JSON 파일 다수 포함
 
 ### 2-3. 발표 슬라이드 (`presentation/presentation.pptx`)
 
@@ -76,21 +66,11 @@ cd 08-final-submission/sync && node verify-submission.js
 
 ## 3. 제출 수단 준비
 
-### 3-1. 클래스넷 업로드 (보고서 + 소스코드 + 실험)
+### 3-1. 클래스넷 업로드 (보고서)
 
-- [ ] `08-final-submission/` 전체를 압축. `snapshot_*/`, `sync/`, 개인 메모성 파일은 제외.
-
-```bash
-# 프로젝트 루트에서 실행 (예시)
-cd /path/to/졸업프로젝트
-zip -r 최종제출_홍익대_서민지_20201234.zip 08-final-submission \
-    -x "08-final-submission/snapshot_*/*" \
-    -x "08-final-submission/sync/*"
-```
-
+- [ ] `final-report/`를 압축 파일 하나로 묶기 (`final-report.zip` 권장)
 - [ ] 압축 파일명에 제출자 이름·학번 포함
 - [ ] 업로드 후 다운로드 받아 압축 해제 테스트 1회
-- [ ] 테스트: 해제된 폴더에서 `QUICKSTART.md` 순서대로 1회 시연 성공 확인
 - [ ] 제출일: 2026-05-24(일) 자정 이전
 
 ### 3-2. 현장 발표 지참물
