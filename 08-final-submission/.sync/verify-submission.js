@@ -16,7 +16,7 @@
  *  10. manifest.yaml 무결성
  *
  * 사용법:
- *   cd 08-final-submission/sync
+ *   cd 08-final-submission/.sync
  *   node verify-submission.js
  *
  * exit code 0 = 모든 검증 통과 (WARN 허용), 1 이상 = FAIL 있음

@@ -11,7 +11,7 @@
  * - 08-final-submission/minji/README.md 최상단에 자동 생성 경고를 삽입한다.
  *
  * 사용법:
- *   cd 08-final-submission/sync
+ *   cd 08-final-submission/.sync
  *   node sync-submission.js
  *
  * 의존성: Node 표준 모듈(fs, path, crypto)만 사용. 외부 패키지 없음.
@@ -22,9 +22,11 @@ const path = require('path');
 const crypto = require('crypto');
 
 // 경로 상수
-const SCRIPT_DIR = __dirname; // .../08-final-submission/sync
+const SCRIPT_DIR = __dirname; // .../08-final-submission/.sync (v2.1.0: hidden) 또는 sync (v2.0.0, pre-migration)
 const SUBMISSION_DIR = path.resolve(SCRIPT_DIR, '..'); // .../08-final-submission
 const PROJECT_ROOT = path.resolve(SUBMISSION_DIR, '..'); // 프로젝트 루트
+const ARCHIVE_DIR = path.join(SUBMISSION_DIR, '_archive'); // v2.1.0: 스냅샷 보관소
+const SNAPSHOTS_DIR = path.join(ARCHIVE_DIR, 'snapshots'); // v2.1.0: 개별 스냅샷 루트
 
 // 단일 파일 복사 대상 (source → destination)
 // destination은 SUBMISSION_DIR 기준 상대 경로
@@ -188,15 +190,20 @@ function fileStatEntry(absPath, srcRel, destRel, label) {
 /* ===== 스냅샷 ===== */
 
 function createSnapshotIfNeeded() {
-    // SUBMISSION_DIR 안에 sync/와 snapshot_*/ 외의 파일/폴더가 있으면 스냅샷 생성
+    // v2.1.0: SUBMISSION_DIR 안에 .sync/ · _archive/ · snapshot_*/ (legacy, pre-migration) · sync/ (legacy, pre-migration) 외의 파일/폴더가 있으면 스냅샷 생성
     const entries = fs.readdirSync(SUBMISSION_DIR, { withFileTypes: true });
     const meaningful = entries.filter(
-        (e) => e.name !== 'sync' && !e.name.startsWith('snapshot_')
+        (e) =>
+            e.name !== '.sync' &&
+            e.name !== '_archive' &&
+            e.name !== 'sync' && // legacy (pre-migration)
+            !e.name.startsWith('snapshot_') // legacy root-level snapshots (pre-migration)
     );
     if (meaningful.length === 0) return null;
 
-    const snapDir = path.join(SUBMISSION_DIR, `snapshot_${nowKST()}`);
-    ensureDir(snapDir);
+    // v2.1.0: 스냅샷은 _archive/snapshots/snapshot_<KST>/ 하위로 이동 (최상위 노이즈 제거, SPEC-SUBMISSION-CLEANUP-001)
+    const snapDir = path.join(SNAPSHOTS_DIR, `snapshot_${nowKST()}`);
+    ensureDir(snapDir); // recursive:true 덕분에 _archive/snapshots/ 부모까지 자동 생성
     for (const entry of meaningful) {
         const srcPath = path.join(SUBMISSION_DIR, entry.name);
         const destPath = path.join(snapDir, entry.name);
@@ -228,7 +235,9 @@ function clearLegacyPaths() {
 function warnSnapshotOverflow() {
     // 8번 스킬 §E: 최근 5개 유지. 자동 삭제는 하지 않고 경고만 출력한다.
     // 제출 직전 스냅샷을 실수로 날리는 위험을 디스크 공간 낭비보다 더 중요하게 본다.
-    const entries = fs.readdirSync(SUBMISSION_DIR, { withFileTypes: true });
+    // v2.1.0: 스냅샷은 _archive/snapshots/ 하위에 있다 (SPEC-SUBMISSION-CLEANUP-001).
+    if (!fs.existsSync(SNAPSHOTS_DIR)) return; // fresh clone일 수 있음
+    const entries = fs.readdirSync(SNAPSHOTS_DIR, { withFileTypes: true });
     const snapshots = entries
         .filter((e) => e.isDirectory() && e.name.startsWith('snapshot_'))
         .map((e) => e.name)
@@ -242,7 +251,7 @@ function warnSnapshotOverflow() {
         `Consider removing oldest manually: ${oldest.join(', ')}`
     );
     console.warn(
-        `[sync]       rm command: rm -rf ${oldest.map((n) => `08-final-submission/${n}`).join(' ')}`
+        `[sync]       rm command: rm -rf ${oldest.map((n) => `08-final-submission/_archive/snapshots/${n}`).join(' ')}`
     );
 }
 
@@ -276,7 +285,7 @@ function writeManifest(entries, snapshotPath) {
     lines.push('# 8-final-submission / manifest.yaml');
     lines.push('# 자동 생성: node sync-submission.js 실행 시 갱신됨. 수동 편집 금지.');
     lines.push(`generated_at: "${new Date().toISOString()}"`);
-    lines.push('generator: "sync-submission.js v2.0.0"');
+    lines.push('generator: "sync-submission.js v2.1.0"');
     if (snapshotPath) {
         lines.push(`previous_snapshot: "${yamlEscape(snapshotPath)}"`);
     } else {

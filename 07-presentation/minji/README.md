@@ -3,13 +3,13 @@
 이 파일의 모든 상대 경로(`../presentation/...`, `../final-report/...`, `../demo/...`, `../README.md`, `../QUICKSTART.md` 등)는
 `08-final-submission/minji/` 배포 공간 기준으로 작성되어 있다.
 
-이유: `08-final-submission/sync/sync-submission.js`가 경로 변환 없이 07 내용을 08로 그대로 복사한다.
+이유: `08-final-submission/.sync/sync-submission.js`가 경로 변환 없이 07 내용을 08로 그대로 복사한다.
 서민지가 실제로 읽는 파일은 `08-final-submission/minji/README.md`이므로 원본 경로도 08 기준으로 유지한다.
 
 주의사항:
 - 07 컨텍스트에서 이 README를 직접 열면 상대 링크가 깨져 보이는 것이 정상이다.
 - 링크 검증은 반드시 08 쪽에서 한다: `open 08-final-submission/minji/README.md`.
-- 이 파일을 편집한 뒤에는 반드시 `node 08-final-submission/sync/sync-submission.js`를 실행한다.
+- 이 파일을 편집한 뒤에는 반드시 `node 08-final-submission/.sync/sync-submission.js`를 실행한다.
 - HTML 주석이므로 마크다운 렌더링 시에는 노출되지 않는다(서민지 뷰에 영향 없음).
 -->
 
