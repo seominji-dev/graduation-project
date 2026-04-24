@@ -212,7 +212,5 @@ dist-ssr/
 .netlify/
 .firebase/
 
-# ===========================================
-# Portfolio migration plan (local-only, never publish)
-# ===========================================
+# User Custom Patterns (preserved by moai update)
 tasks/portfolio-migration.md
