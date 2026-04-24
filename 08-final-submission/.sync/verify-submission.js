@@ -3,7 +3,7 @@
  *
  * 최종 제출 통합 패키지 검증 스크립트
  *
- * 검증 항목 (v2.0.0):
+ * 검증 항목 (v2.2.0, strict 모드 기본):
  *   1. 필수 파일 존재 (README.md, QUICKSTART.md 포함)
  *   2. 시연 자립성 파일 존재 (source-code/package-lock.json 등)
  *   3. DOCX 페이지 수 (20 +/- 2)
@@ -12,14 +12,28 @@
  *   6. minji 파일 수 (12개 이상)
  *   7. 소스코드 주요 디렉토리 존재 (source-code/ 루트 기준)
  *   8. 실험 재현 파일 존재 (experiments/ 루트 기준)
- *   9. 원본 경로 미참조 검증 (demo-scenario.md에 02-implementation 경로 없음, WARN)
+ *   9. 원본 경로 미참조 검증 (demo-scenario.md에 02-implementation 경로 없음)
  *  10. manifest.yaml 무결성
  *
  * 사용법:
  *   cd 08-final-submission/.sync
- *   node verify-submission.js
+ *   node verify-submission.js             # 기본 strict 모드 (WARN = FAIL 승격)
+ *   node verify-submission.js --no-strict  # 레거시 모드 (WARN 허용, 개발 중 사용)
  *
- * exit code 0 = 모든 검증 통과 (WARN 허용), 1 이상 = FAIL 있음
+ * 모드별 판정:
+ *   strict (기본, SPEC-PIPELINE-FINAL-001):
+ *     - 0 FAIL + 0 WARN  → exit 0, verification_status: "passed"
+ *     - 0 FAIL + N WARN  → exit 1, verification_status: "failed" (WARN을 FAIL로 승격)
+ *     - M FAIL + N WARN  → exit 1, verification_status: "failed"
+ *     - 성공 시 "[verify] READY TO SUBMIT (strict mode)" 출력
+ *   --no-strict (개발 중 호환 모드):
+ *     - 0 FAIL + 0 WARN  → exit 0, verification_status: "passed"
+ *     - 0 FAIL + N WARN  → exit 0, verification_status: "passed_with_warnings"
+ *     - M FAIL + N WARN  → exit 1, verification_status: "failed"
+ *
+ * "완벽" 판정 정의 (pipeline-6-7-8.md §3.4):
+ *   기본 strict 실행이 exit 0 AND verification_status "passed" 일 때.
+ *   "passed_with_warnings"는 제출 가능 상태가 아니다.
  *
  * 실행 환경 요구사항:
  *   이 스크립트는 PROJECT_ROOT(졸업프로젝트/) 기준으로 원본 파일
@@ -28,8 +42,7 @@
  *   §A 교차 참조 검증이 전부 FAIL로 나온다. 개발자(서진석) 환경에서만 실행하고,
  *   서민지 전달 패키지에는 실행 결과 manifest.yaml(verification_status)만 포함한다.
  *
- * 성공 시 manifest.yaml의 verification_status 필드를 "pending"에서 "passed"
- * (WARN 있으면 "passed_with_warnings")로 갱신한다.
+ * SPEC: SPEC-PIPELINE-FINAL-001 (v1.0.0 기반, 2026-04-24)
  *
  * 의존성: Node 표준 모듈(fs, path, child_process)만 사용.
  *         외부 도구: soffice(LibreOffice), mdls(macOS), unzip.
@@ -54,7 +67,8 @@ function fail(msg) {
 }
 
 function warn(msg) {
-    // WARN은 exit code에 영향을 주지 않는다 (soffice 미설치, handout 미생성 등 정보성).
+    // WARN은 기본 strict 모드에서 FAIL로 승격된다 (main() 판정 로직 참조).
+    // --no-strict 모드에서만 exit code에 영향을 주지 않는 정보성 신호로 작동한다.
     results.push({ status: 'WARN', message: msg });
 }
 
@@ -541,9 +555,20 @@ function updateManifestStatus(status) {
 
 /* ===== 메인 ===== */
 
+function parseArgs() {
+    // strict 기본, --no-strict 플래그 감지 시 레거시 호환 모드
+    const argv = process.argv.slice(2);
+    return {
+        strictMode: !argv.includes('--no-strict'),
+    };
+}
+
 function main() {
+    const { strictMode } = parseArgs();
+
     console.log(`[verify] PROJECT_ROOT = ${PROJECT_ROOT}`);
     console.log(`[verify] SUBMISSION_DIR = ${SUBMISSION_DIR}`);
+    console.log(`[verify] Mode: ${strictMode ? 'strict (WARN = FAIL)' : '--no-strict (WARN allowed)'}`);
     console.log('');
 
     checkRequiredFiles();
@@ -567,18 +592,44 @@ function main() {
     const passCount = results.filter((r) => r.status === 'PASS').length;
     console.log(`Result: ${failCount} FAIL, ${warnCount} WARN, ${passCount} PASS`);
 
+    // 상태 판정 (SPEC-PIPELINE-FINAL-001 REQ-VERIFY-001..005)
+    let status;
+    let exitCode;
     if (failCount > 0) {
-        // FAIL이 있으면 manifest는 pending 유지 (사용자 수정 후 재검증 필요)
-        process.exit(1);
+        status = 'failed';
+        exitCode = 1;
+    } else if (strictMode && warnCount > 0) {
+        // strict 모드: WARN은 FAIL로 승격
+        status = 'failed';
+        exitCode = 1;
+    } else if (!strictMode && warnCount > 0) {
+        status = 'passed_with_warnings';
+        exitCode = 0;
+    } else {
+        status = 'passed';
+        exitCode = 0;
     }
 
-    // FAIL 없음 → manifest.yaml의 verification_status 갱신
-    const status = warnCount === 0 ? 'passed' : 'passed_with_warnings';
+    // manifest.yaml verification_status 갱신 (FAIL 시에도 'failed'로 기록하여 상태 추적)
     if (updateManifestStatus(status)) {
         console.log(`[verify] manifest.yaml verification_status updated to "${status}"`);
     } else {
         console.log('[verify] manifest.yaml not updated (missing or malformed)');
     }
+
+    // 최종 판정 메시지
+    if (status === 'passed') {
+        console.log('[verify] READY TO SUBMIT (strict mode)');
+    } else if (status === 'passed_with_warnings') {
+        console.log('[verify] Passed with warnings — NOT ready to submit. Run without --no-strict for final verdict.');
+    } else if (strictMode && warnCount > 0 && failCount === 0) {
+        console.log('[verify] Strict mode rejected WARN-level findings.');
+        console.log('[verify] Fix the WARN items above, or use --no-strict for legacy development behavior.');
+    } else {
+        console.log('[verify] Verification FAILED — see FAIL lines above for required fixes.');
+    }
+
+    process.exit(exitCode);
 }
 
 main();

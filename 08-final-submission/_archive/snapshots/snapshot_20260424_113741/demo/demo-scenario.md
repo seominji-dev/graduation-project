@@ -10,7 +10,7 @@
 ### 환경 요구사항
 
 - Node.js 설치 확인: `node --version` (v16 이상 권장)
-- 프로젝트 위치: `08-final-submission/source-code/` (08 자립 패키지 기준)
+- 프로젝트 위치: `졸업프로젝트/02-implementation/src-simple/`
 - 터미널 3개 준비 (서버용 / 요청 전송용 / Ollama 서버용)
 - 브라우저 준비 (Chrome 권장)
 - **Ollama 설치 확인** (시나리오 1-7, 시나리오 3에서 사용): `ollama --version`
@@ -33,7 +33,7 @@ curl -X POST http://localhost:3000/api/scheduler/process
 ### 발표 전 체크리스트
 
 - [ ] 노트북 충전 완료
-- [ ] `node_modules` 설치 완료: `cd 08-final-submission/source-code && npm install`
+- [ ] `node_modules` 설치 완료: `cd 02-implementation && npm install`
 - [ ] 포트 3000 미사용 확인: `lsof -i :3000` (사용 중이면 프로세스 종료)
 - [ ] 포트 11434 Ollama 서버 기동 확인: `curl http://localhost:11434/api/tags` (200 OK 응답 확인)
 - [ ] LLM 모델 warmup 1회: `ollama run gemma4:e4b "hi"` 실행 후 `/bye`로 종료 (GPU/CPU 로드 — 다른 모델 사용 시 해당 모델명으로 교체)
@@ -104,7 +104,7 @@ curl -X POST http://localhost:3000/api/scheduler/process
 
 - [ ] 터미널 3개 열기 (모두 작업 디렉토리로 이동):
   ```bash
-  cd 08-final-submission/source-code
+  cd 졸업프로젝트/02-implementation
   ```
 - [ ] 터미널 1: 서버용 (아직 실행하지 않음)
 - [ ] 터미널 2: curl 전송용 (미리 명령어 히스토리에 준비)
@@ -119,7 +119,7 @@ curl -X POST http://localhost:3000/api/scheduler/process
 
 - [ ] 터미널 1에서 FCFS 서버 1회 test fire:
   ```bash
-  SCHEDULER_TYPE=FCFS node server.js
+  SCHEDULER_TYPE=FCFS node src-simple/server.js
   ```
 - [ ] 터미널 2에서 health check:
   ```bash
@@ -224,8 +224,8 @@ FCFS는 도착 순서대로, WFQ는 Enterprise 등급을 먼저 처리함을 시
 터미널 1에서:
 
 ```bash
-cd 08-final-submission/source-code
-SCHEDULER_TYPE=FCFS node server.js
+cd 졸업프로젝트/02-implementation
+SCHEDULER_TYPE=FCFS node src-simple/server.js
 ```
 
 예상 출력 (ASCII 박스 형태로 출력됨):
@@ -297,7 +297,7 @@ curl -X POST http://localhost:3000/api/requests \
 터미널 1에서 Ctrl+C로 서버 중단 후:
 
 ```bash
-SCHEDULER_TYPE=WFQ node server.js
+SCHEDULER_TYPE=WFQ node src-simple/server.js
 ```
 
 ### 1-6. 동일 요청 재전송 및 처리
@@ -357,7 +357,7 @@ HTTP 상태 코드는 **201 Created**로 반환된다. `requestId`는 서버가 
 터미널 1에서 (Ctrl+C로 기존 서버 중단 후):
 
 ```bash
-RATE_LIMIT_ENABLED=true SCHEDULER_TYPE=WFQ node server.js
+RATE_LIMIT_ENABLED=true SCHEDULER_TYPE=WFQ node src-simple/server.js
 ```
 
 ### 2-2. Free 등급 요청 빠르게 전송
@@ -418,7 +418,7 @@ curl -s -o /dev/null -w "Enterprise 요청: %{http_code}\n" \
 Ollama 서버가 이미 기동 중이라면 별도 환경 변수 없이 자동 연결된다. 터미널 1에서 (기존 서버 Ctrl+C 후):
 
 ```bash
-SCHEDULER_TYPE=WFQ node server.js
+SCHEDULER_TYPE=WFQ node src-simple/server.js
 ```
 
 서버 기동 직후 터미널 2에서 health check로 Ollama 연결 상태를 확인한다:
@@ -467,7 +467,7 @@ done
 터미널 1에서 Ctrl+C 후:
 
 ```bash
-SCHEDULER_TYPE=FCFS node server.js
+SCHEDULER_TYPE=FCFS node src-simple/server.js
 ```
 
 3-2 명령을 다시 실행한 뒤 대시보드 **"다음 처리"** 버튼을 반복해서 누르면 "도착 순서대로 처리"되는 것을 볼 수 있다.
@@ -639,7 +639,7 @@ Ctrl+C
 
 ### 귀가 후
 
-- [ ] 임시 데이터 정리: `source-code/storage/` 하위 JSON 파일 백업 후 초기화
+- [ ] 임시 데이터 정리: `src-simple/storage/` 하위 JSON 파일 백업 후 초기화
 - [ ] 소스코드 최종 zip으로 백업
 - [ ] 발표 중 받은 질문·피드백을 `tasks/lessons.md` 또는 별도 메모에 기록
 - [ ] Ollama 모델 유지 여부 판단 (용량 확보가 필요하면 `ollama rm gemma4:e4b` 또는 사용한 모델명으로 교체)
