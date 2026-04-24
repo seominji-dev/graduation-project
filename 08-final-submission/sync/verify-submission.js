@@ -19,7 +19,17 @@
  *   cd 08-final-submission/sync
  *   node verify-submission.js
  *
- * exit code 0 = 모든 검증 통과, 1 이상 = 실패 있음
+ * exit code 0 = 모든 검증 통과 (WARN 허용), 1 이상 = FAIL 있음
+ *
+ * 실행 환경 요구사항:
+ *   이 스크립트는 PROJECT_ROOT(졸업프로젝트/) 기준으로 원본 파일
+ *   (02-implementation/, 06-final-report/, 07-presentation/)을 읽어 08 복사본과
+ *   교차 참조를 검증한다. 따라서 08 폴더만 단독으로 가진 환경(zip 해제 후 배포)에서는
+ *   §A 교차 참조 검증이 전부 FAIL로 나온다. 개발자(서진석) 환경에서만 실행하고,
+ *   서민지 전달 패키지에는 실행 결과 manifest.yaml(verification_status)만 포함한다.
+ *
+ * 성공 시 manifest.yaml의 verification_status 필드를 "pending"에서 "passed"
+ * (WARN 있으면 "passed_with_warnings")로 갱신한다.
  *
  * 의존성: Node 표준 모듈(fs, path, child_process)만 사용.
  *         외부 도구: soffice(LibreOffice), mdls(macOS), unzip.
@@ -418,18 +428,20 @@ function checkExperimentsStructure() {
 
 /* ===== 9. 원본 경로 미참조 검증 (v2.0.0) ===== */
 
-function checkNoLegacyPathReferences() {
-    // 08 자립성 원칙: demo/demo-scenario.md가 08 외부 경로(02-implementation/src-simple 등)를 참조하면
-    // 서민지가 시연 시 혼란을 겪는다. WARN 수준으로 알리고 7-presentation에서 치환 권고.
-    const scenario = path.join(SUBMISSION_DIR, 'demo/demo-scenario.md');
-    if (!fs.existsSync(scenario)) {
-        return; // 필수 파일 검사에서 이미 FAIL 처리됨
-    }
-    const content = fs.readFileSync(scenario, 'utf8');
-    // 검사 대상: 02-implementation/src-simple 또는 유사 원본 경로
+function scanLegacyPaths(relPath) {
+    // 단일 파일에서 v1.x 원본 경로 참조를 찾아 {line, preview} 배열로 반환한다.
+    // 원본 경로: 02-implementation/src-simple, 02-implementation/experiments-simple, 06-final-report/ (프로젝트 루트 상위 참조), 07-presentation/ (프로젝트 루트 상위 참조)
+    const abs = path.join(SUBMISSION_DIR, relPath);
+    if (!fs.existsSync(abs)) return null;
+    const content = fs.readFileSync(abs, 'utf8');
     const legacyPatterns = [
         /02-implementation\/src-simple/,
         /02-implementation\/experiments-simple/,
+        /\.\.\/\.\.\/06-final-report/,
+        /\.\.\/\.\.\/07-presentation/,
+        /\.\.\/\.\.\/00-서민지-시작하기/,
+        /\.\.\/handout\//,        // 07-presentation/handout 참조 (08에 없음)
+        /\.\.\/slides\//,         // 07-presentation/slides 참조 (08에는 presentation/)
     ];
     const hits = [];
     const lines = content.split('\n');
@@ -442,12 +454,30 @@ function checkNoLegacyPathReferences() {
             }
         }
     }
-    if (hits.length === 0) {
-        pass('demo/demo-scenario.md: no legacy source path references (standalone-friendly)');
-    } else {
+    return hits;
+}
+
+function checkNoLegacyPathReferences() {
+    // 08 자립성 원칙: 08 내부 파일이 08 외부 경로(02-implementation/..., ../../06-..., 등)를 참조하면
+    // 서민지가 zip만 가진 환경에서 링크·경로가 깨진다. WARN 수준으로 알린다.
+    const targets = [
+        'demo/demo-scenario.md',
+        'minji/README.md',
+    ];
+    const allHits = [];
+    for (const target of targets) {
+        const hits = scanLegacyPaths(target);
+        if (hits === null) continue;
+        if (hits.length === 0) {
+            pass(`${target}: no legacy source path references (standalone-friendly)`);
+        } else {
+            allHits.push({ file: target, hits });
+        }
+    }
+    for (const { file, hits } of allHits) {
         const sample = hits.slice(0, 3).map((h) => `L${h.line}: "${h.preview}"`).join(' | ');
         warn(
-            `demo/demo-scenario.md references legacy paths (${hits.length} hits) — 7-presentation should replace with 08-relative or abstract path. Sample: ${sample}`
+            `${file} references legacy paths (${hits.length} hits) — source skill should replace with 08-relative path. Sample: ${sample}`
         );
     }
 }
@@ -484,6 +514,31 @@ function checkManifestIntegrity() {
     }
 }
 
+/* ===== manifest.yaml verification_status 갱신 ===== */
+
+function updateManifestStatus(status) {
+    const manifestPath = path.join(SUBMISSION_DIR, 'manifest.yaml');
+    if (!fs.existsSync(manifestPath)) return false;
+    let content = fs.readFileSync(manifestPath, 'utf8');
+    const ts = new Date().toISOString();
+    // verification_status 라인 교체 (files 배열 내부의 필드와 충돌 방지를 위해 ^ 앵커 사용)
+    const statusRegex = /^verification_status:\s*"[^"]*"\s*$/m;
+    if (!statusRegex.test(content)) return false;
+    content = content.replace(statusRegex, `verification_status: "${status}"`);
+    // verified_at 필드 삽입 또는 교체 (verification_status 바로 다음 줄)
+    const verifiedAtRegex = /^verified_at:\s*"[^"]*"\s*$/m;
+    if (verifiedAtRegex.test(content)) {
+        content = content.replace(verifiedAtRegex, `verified_at: "${ts}"`);
+    } else {
+        content = content.replace(
+            `verification_status: "${status}"`,
+            `verification_status: "${status}"\nverified_at: "${ts}"`
+        );
+    }
+    fs.writeFileSync(manifestPath, content, 'utf8');
+    return true;
+}
+
 /* ===== 메인 ===== */
 
 function main() {
@@ -513,7 +568,16 @@ function main() {
     console.log(`Result: ${failCount} FAIL, ${warnCount} WARN, ${passCount} PASS`);
 
     if (failCount > 0) {
+        // FAIL이 있으면 manifest는 pending 유지 (사용자 수정 후 재검증 필요)
         process.exit(1);
+    }
+
+    // FAIL 없음 → manifest.yaml의 verification_status 갱신
+    const status = warnCount === 0 ? 'passed' : 'passed_with_warnings';
+    if (updateManifestStatus(status)) {
+        console.log(`[verify] manifest.yaml verification_status updated to "${status}"`);
+    } else {
+        console.log('[verify] manifest.yaml not updated (missing or malformed)');
     }
 }
 

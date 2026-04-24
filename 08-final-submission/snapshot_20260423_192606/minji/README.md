@@ -1,21 +1,10 @@
-<!--
-[편집자 주석 — 서민지에게는 보이지 않음]
-이 파일의 모든 상대 경로(`../presentation/...`, `../final-report/...`, `../demo/...`, `../README.md`, `../QUICKSTART.md` 등)는
-`08-final-submission/minji/` 배포 공간 기준으로 작성되어 있다.
+> [자동 생성되는 폴더] 이 디렉토리는 `node sync-submission.js` 실행 시 `07-presentation/minji/` 내용으로 자동 덮어씌워집니다. 편집은 반드시 `07-presentation/minji/`에서 하세요. 이 폴더의 수정 사항은 다음 동기화 시 사라집니다.
 
-이유: `08-final-submission/sync/sync-submission.js`가 경로 변환 없이 07 내용을 08로 그대로 복사한다.
-서민지가 실제로 읽는 파일은 `08-final-submission/minji/README.md`이므로 원본 경로도 08 기준으로 유지한다.
-
-주의사항:
-- 07 컨텍스트에서 이 README를 직접 열면 상대 링크가 깨져 보이는 것이 정상이다.
-- 링크 검증은 반드시 08 쪽에서 한다: `open 08-final-submission/minji/README.md`.
-- 이 파일을 편집한 뒤에는 반드시 `node 08-final-submission/sync/sync-submission.js`를 실행한다.
-- HTML 주석이므로 마크다운 렌더링 시에는 노출되지 않는다(서민지 뷰에 영향 없음).
--->
+---
 
 # 서민지 발표 준비 자료 — 사용 안내
 
-> 이 디렉토리(`minji/`)는 **서민지가 최종 발표를 준비하기 위한 전용 자료 패키지**다. 모든 자료는 2026-04-21 기준으로 최종보고서 v43과 일관되게 작성되었다.
+> 이 디렉토리(`07-presentation/minji/`)는 **서민지가 최종 발표를 준비하기 위한 전용 자료 패키지**다. 모든 자료는 2026-04-21 기준으로 최종보고서 v43과 일관되게 작성되었다.
 > **사용 순서**: 이 README를 먼저 읽고, 제시된 순서대로 다른 파일을 열어 본다.
 
 ---
@@ -43,7 +32,7 @@
 
 | 파일 | 목적 | 언제 쓰나 |
 |---|---|---|
-| `../presentation/handout.pdf` | **현장 제출용 인쇄물** PDF (생성 완료 시 존재, 없으면 PowerPoint `파일 > 인쇄 > PDF로 저장`으로 2-in-1 배치로 생성) | 3일 전 ~ 1일 전 |
+| `../handout/generate-handout-guide.md` | **현장 제출용 인쇄물** 생성 가이드 | 3일 전 ~ 1일 전 |
 | **`backup-demo-shooting-kit.md`** | **백업 녹화본** 촬영 콘티 | 1주 전 ~ 3일 전 |
 | **`self-recording-evaluation-form.md`** | 리허설 녹음 **자가 평가 폼** | 리허설마다 |
 
@@ -67,7 +56,7 @@
 ### 2단계 (이번 주)
 
 1. **`glossary.md` 훑어보기** (모르는 용어 표시)
-2. **보고서 1~3장 통독** (`../final-report/final-report.docx`)
+2. **보고서 1~3장 통독** (`06-final-report/final/final-report.docx`)
 3. **`slide-cards-12.md` Card 1~3 암기**
 
 ### 3단계 (발표 1주 전 = 5/19경)
@@ -85,7 +74,7 @@
 ### 5단계 (발표 1일 전 = 5/25경)
 
 1. **외부 모니터 연결 풀 리허설** (프로젝터 환경 시뮬레이션)
-2. **핸드아웃 인쇄** (`../presentation/handout.pdf` — Preview 또는 PowerPoint에서 인쇄)
+2. **핸드아웃 인쇄** (`../handout/generate-handout-guide.md`)
 3. **장비 지참 최종 확인**
 
 ### 6단계 (발표 당일)
@@ -103,26 +92,24 @@
 
 | 파일 | 위치 | 내용 |
 |---|---|---|
-| **패키지 진입점** | `../README.md` | 08-final-submission 전체 안내 (이 파일의 상위) |
-| **시연 가이드** | `../QUICKSTART.md` | 15분 시연 환경 구축 (Ollama + npm start) |
+| **시작 가이드** | `../../00-서민지-시작하기.md` | 전체 프로젝트 overview (상위 레벨) |
 | **발표 대본 원본** | `../demo/script.md` | 정식 원고 (수치 정확) |
 | **발표 대본 개정판** | `../demo/script-v2.md` | **서민지 입말 버전** (반드시 참조) |
 | **데모 시나리오** | `../demo/demo-scenario.md` | 실시간 데모 실행 순서 + Q&A 11문항 |
 | **학습 계획서 (원본)** | `../demo/study-plan.md` | 날짜별 공부 계획 (구버전) |
-| **최종보고서** | `../final-report/final-report.docx` | 발표의 근거 문서 |
-| **슬라이드** | `../presentation/presentation.pptx` | 실제 발표 화면 |
-| **핸드아웃** | `../presentation/handout.pdf` | 현장 제출용 인쇄 PDF |
+| **최종보고서** | `../../06-final-report/final/final-report.docx` | 발표의 근거 문서 |
+| **슬라이드** | `../slides/presentation.pptx` | 실제 발표 화면 |
 
 ### 알 필요 없는 파일 (개발자용)
 
-이 08 폴더에는 포함되지 않은 개발자 내부 기록 문서(TODO·REVIEW 등)가 프로젝트 저장소에 따로 있다. 서민지는 읽지 않아도 된다.
+`07-presentation/TODO.md`, `07-presentation/REVIEW-260419.md`는 개발자 내부 기록 문서다. 서민지는 읽지 않아도 된다.
 
 ---
 
 ## 📊 자료 간 관계도
 
 ```
-[../README.md] (08 패키지 진입점)
+[00-서민지-시작하기.md]
          │
          │  전체 일정 안내
          ▼
@@ -213,7 +200,7 @@
 
 - **최초 생성**: 2026-04-21
 - **버전**: 1.0
-- **정본 참조**: `../final-report/final-report.docx`, `../demo/script.md`
+- **정본 참조**: `06-final-report/drafts/final-report-v43.md`, `07-presentation/demo/script.md` (원본)
 - **크로스 체크 완료**: 2026-04-21
 
 ### 정정 이력
