@@ -68,7 +68,7 @@
 **필수 말해야 할 것** (1분):
 1. **4계층**: 클라이언트 → API(Rate Limiter 포함) → 스케줄러 → 저장소/LLM
 2. **Rate Limiter**: 스케줄러 전 단계, 등급별 한도 초과 시 HTTP 429
-3. **스케줄러 전환**: 환경변수 `SCHEDULER_TYPE` 하나로 4개 알고리즘 실시간 전환
+3. **스케줄러 전환**: 환경변수 `SCHEDULER_TYPE` 하나로 4개 알고리즘 즉시 전환
 4. **기술 스택**: Node.js 22, Express 4.18, ES2024, 외부 라이브러리 Express만
 
 **암기 단어**: 4계층 / Rate Limiter / 429 / SCHEDULER_TYPE / Express 하나만

@@ -135,6 +135,55 @@ function checkStandaloneFiles() {
 
 /* ===== 2. DOCX 페이지 수 ===== */
 
+function countPdfPagesSelfParse(pdfPath) {
+    // 외부 도구 없이 PDF 자체 바이너리를 읽어 페이지 수를 추출한다.
+    // PDF 페이지 트리의 root 객체에는 `/Type /Pages` + `/Count N` 필드가 있으며,
+    // 이 N이 총 페이지 수다. 중첩 페이지 트리가 있어도 root의 Count가 가장 크므로
+    // 모든 /Count 중 최대값을 택하는 전략이 안전하다.
+    // Fallback으로 `/Type /Page[^s]` (즉 /Pages가 아닌 /Page) 객체 수를 센다.
+    try {
+        const buf = fs.readFileSync(pdfPath);
+        const content = buf.toString('latin1');
+        const countMatches = [...content.matchAll(/\/Count\s+(\d+)/g)].map((m) => parseInt(m[1], 10));
+        if (countMatches.length > 0) {
+            return Math.max(...countMatches);
+        }
+        const pageMatches = content.match(/\/Type\s*\/Page(?![a-zA-Z])/g) || [];
+        return pageMatches.length;
+    } catch (_) {
+        return null;
+    }
+}
+
+function extractPageCount(pdfPath) {
+    // 우선순위: (1) qpdf (2) mdls (3) 자체 파싱
+    if (hasCommand('qpdf')) {
+        try {
+            const out = execSync(`qpdf --show-npages "${pdfPath}"`, { encoding: 'utf8' });
+            const n = parseInt(out.trim(), 10);
+            if (Number.isFinite(n) && n > 0) return n;
+        } catch (_) {
+            /* fall through */
+        }
+    }
+    if (hasCommand('mdls')) {
+        try {
+            const out = execSync(`mdls -name kMDItemNumberOfPages "${pdfPath}"`, {
+                encoding: 'utf8',
+            });
+            const match = out.match(/=\s*(\d+)/);
+            if (match) {
+                const n = parseInt(match[1], 10);
+                if (Number.isFinite(n) && n > 0) return n;
+            }
+            // mdls가 Spotlight 색인 전 (null) 반환 시 self-parse로 fallback
+        } catch (_) {
+            /* fall through */
+        }
+    }
+    return countPdfPagesSelfParse(pdfPath);
+}
+
 function checkDocxPageCount() {
     const docxPath = path.join(SUBMISSION_DIR, 'final-report/final-report.docx');
     if (!fs.existsSync(docxPath)) {
@@ -143,10 +192,6 @@ function checkDocxPageCount() {
     }
     if (!hasCommand('soffice')) {
         warn('DOCX page count: soffice not installed (skip; run manual check via Word or install LibreOffice)');
-        return;
-    }
-    if (!hasCommand('mdls')) {
-        warn('DOCX page count: mdls not available (macOS only; skip)');
         return;
     }
     const pdfTmpDir = path.join(SUBMISSION_DIR, 'final-report');
@@ -160,15 +205,11 @@ function checkDocxPageCount() {
             fail('DOCX page count: PDF conversion produced no output');
             return;
         }
-        const out = execSync(`mdls -name kMDItemNumberOfPages "${pdfPath}"`, {
-            encoding: 'utf8',
-        });
-        const match = out.match(/=\s*(\d+)/);
-        if (!match) {
-            fail('DOCX page count: mdls output not parseable');
+        const pages = extractPageCount(pdfPath);
+        if (!pages) {
+            fail('DOCX page count: could not determine page count (qpdf / mdls / self-parse 모두 실패)');
             return;
         }
-        const pages = parseInt(match[1], 10);
         if (pages >= 18 && pages <= 22) {
             pass(`DOCX page count = ${pages} (20 +/- 2)`);
         } else {
