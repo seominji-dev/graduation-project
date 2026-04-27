@@ -35,7 +35,7 @@
 
 - [ ] **노트북에 Ollama가 설치**되어 있고 `ollama --version`이 응답하는가
 - [ ] **gemma4:e4b 모델이 다운로드**되어 있는가 (`ollama list` 확인)
-- [ ] `08-final-submission/source-code/`에서 **`npm install` 완료** 상태인가
+- [ ] `02-implementation/src-simple/`에서 **`npm install` 완료** 상태인가
 - [ ] **서버 기동 (`npm start`)**이 에러 없이 되는가
 - [ ] **데모 시나리오 1**이 문서대로 실행되는가 (시연 확인)
 

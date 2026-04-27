@@ -62,7 +62,7 @@
 ### Q2-5. "실험을 재현하려면 어떻게 해야 하나요?"
 
 **답변**:
-> `08-final-submission/experiments/` 디렉토리에 실험 스크립트가 있습니다. `run-extended.js`가 기본 500건 실험, `run-multi-seed.js`가 MLFQ 선점형 5시드 실험, `run-ollama-experiment.js`가 실서버 20건 실험입니다. 같은 시드 값(예: 12345)을 쓰면 저희와 같은 요청 패턴이 재현됩니다.
+> `02-implementation/experiments-simple/` 디렉토리에 실험 스크립트가 있습니다. `run-extended.js`가 기본 500건 실험, `run-multi-seed.js`가 MLFQ 선점형 5시드 실험, `run-ollama-experiment.js`가 실서버 20건 실험입니다. 같은 시드 값(예: 12345)을 쓰면 저희와 같은 요청 패턴이 재현됩니다.
 
 ---
 

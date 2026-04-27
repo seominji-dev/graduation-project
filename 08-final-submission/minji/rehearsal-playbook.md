@@ -95,7 +95,7 @@
 
 **목표**: 프로젝트 코드 실측 준비
 
-- [ ] `02-implementation/src-simple/` 디렉토리에서 `npm install` 실행
+- [ ] `08-final-submission/source-code/` 디렉토리에서 `npm install` 실행
 - [ ] 서버 기동 테스트 (`npm start` → `http://localhost:3000` 접속 확인)
 - [ ] 데모 시나리오 1의 curl 명령어 4줄을 **손으로 입력해** 실행 테스트
 - [ ] 대시보드에서 요청이 쌓이고 처리되는 모습 관찰
