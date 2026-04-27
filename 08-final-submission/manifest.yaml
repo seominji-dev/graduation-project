@@ -3,8 +3,8 @@
 generated_at: "2026-04-24T12:45:02.336Z"
 generator: "sync-submission.js v2.1.0"
 previous_snapshot: "08-final-submission/_archive/snapshots/snapshot_20260424_214502"
-verification_status: "failed"
-verified_at: "2026-04-24T12:45:17.774Z"
+verification_status: "passed"
+verified_at: "2026-04-26T00:25:34.984Z"
 # verify-submission.js 실행 후 verification_status가 갱신될 수 있음
 file_count: 54
 
