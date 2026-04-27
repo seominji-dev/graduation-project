@@ -1,0 +1,74 @@
+{
+  "config": {
+    "numRequests": 500,
+    "numTenants": 4,
+    "processingTimeMin": 10,
+    "processingTimeMax": 100,
+    "arrivalIntervalMin": 1,
+    "arrivalIntervalMax": 10,
+    "seed": 42
+  },
+  "timestamp": "2026-04-10T07:41:46.945Z",
+  "basicExperiment": {
+    "fcfs": {
+      "avgWaitTime": 12202.94,
+      "maxWaitTime": 23962,
+      "throughput": 18.7231,
+      "tenantWaitTimes": {
+        "enterprise": 12132.57,
+        "premium": 12176.66,
+        "standard": 12226.85,
+        "free": 12275.66
+      },
+      "fairnessIndex": 1
+    },
+    "priority": {
+      "avgWaitTime": 12419.31,
+      "maxWaitTime": 24192,
+      "throughput": 18.5632,
+      "tenantWaitTimes": {
+        "enterprise": 12374.24,
+        "premium": 12609.38,
+        "standard": 12421.1,
+        "free": 12272.52
+      },
+      "fairnessIndex": 0.9999
+    },
+    "mlfq": {
+      "avgWaitTime": 12202.94,
+      "maxWaitTime": 23962,
+      "throughput": 18.7231,
+      "tenantWaitTimes": {
+        "enterprise": 12132.57,
+        "premium": 12176.66,
+        "standard": 12226.85,
+        "free": 12275.66
+      },
+      "fairnessIndex": 1
+    },
+    "wfq": {
+      "avgWaitTime": 11845.98,
+      "maxWaitTime": 23965,
+      "throughput": 18.7231,
+      "tenantWaitTimes": {
+        "enterprise": 1861.91,
+        "premium": 8383.93,
+        "standard": 15109.02,
+        "free": 22029.06
+      },
+      "fairnessIndex": 0.3159
+    }
+  },
+  "rateLimiterTest": {
+    "tier": "free",
+    "totalRequests": 20,
+    "accepted": 5,
+    "rejected": 15,
+    "limitPerMinute": 5
+  },
+  "summary": {
+    "bestFairness": "FCFS",
+    "bestAvgWaitTime": "WFQ",
+    "bestThroughput": "FCFS"
+  }
+}
