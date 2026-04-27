@@ -1,21 +1,20 @@
 /**
  * Final Report Figure Generation Script
- * Generates 9 figures as individual PPTX files + PNG screenshots
+ * Generates 8 figures as individual PPTX files + PNG screenshots
  * Refactored per SPEC-FIGURE-001: academic monochrome style (IEEE/ACM convention)
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-9 (PPTX + PNG each)
+ * Output: fig-1 ~ fig-8 (PPTX + PNG each)
  *
  * Figure numbering matches body references in final-report.md:
- *   그림 1 (2.1 관련연구): fig-1-algo-concepts       (createFig8)
- *   그림 2 (3.2 아키텍처): fig-2-system-architecture (createFig1)
- *   그림 3 (3.5 데이터흐름): fig-3-data-flow        (createFig2)
- *   그림 4 (4.2 모듈구조): fig-4-module-structure   (createFig10ModuleStructure)
- *   그림 5 (5.1 실험환경): fig-5-experiment-setup   (createFig9)
- *   그림 6 (5.2 대기시간): fig-6-avg-wait-time      (createFig3)
- *   그림 7 (5.3 MLFQ):    fig-7-mlfq-vs-fcfs       (createFig4)
- *   그림 8 (5.4 Ollama):  fig-8-ollama-tier        (createFig5)
- *   그림 9 (5.5 JFI):     fig-9-jfi-comparison     (createFig6)
+ *   그림 1 (3.2 아키텍처): fig-1-system-architecture (createFig1)
+ *   그림 2 (3.5 데이터흐름): fig-2-data-flow         (createFig2)
+ *   그림 3 (4.2 모듈구조): fig-3-module-structure    (createFig10ModuleStructure)
+ *   그림 4 (5.1 실험환경): fig-4-experiment-setup    (createFig9)
+ *   그림 5 (5.2 대기시간): fig-5-avg-wait-time       (createFig3)
+ *   그림 6 (5.3 MLFQ):    fig-6-mlfq-vs-fcfs        (createFig4)
+ *   그림 7 (5.4 Ollama):  fig-7-ollama-tier         (createFig5)
+ *   그림 8 (5.5 JFI):     fig-8-jfi-comparison      (createFig6)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -1607,15 +1606,14 @@ async function generatePNGs() {
   const context = await browser.newContext({ viewport: { width: 1280, height: 1200 } });
 
   const figures = [
-    { name: 'fig-1-algo-concepts',       html: htmlFig8() },
-    { name: 'fig-2-system-architecture', html: htmlFig1() },
-    { name: 'fig-3-data-flow',           html: htmlFig2() },
-    { name: 'fig-4-module-structure',    html: htmlFig10ModuleStructure() },
-    { name: 'fig-5-experiment-setup',    html: htmlFig9() },
-    { name: 'fig-6-avg-wait-time',       html: htmlFig3() },
-    { name: 'fig-7-mlfq-vs-fcfs',        html: htmlFig4() },
-    { name: 'fig-8-ollama-tier',         html: htmlFig5() },
-    { name: 'fig-9-jfi-comparison',      html: htmlFig6() },
+    { name: 'fig-1-system-architecture', html: htmlFig1() },
+    { name: 'fig-2-data-flow',           html: htmlFig2() },
+    { name: 'fig-3-module-structure',    html: htmlFig10ModuleStructure() },
+    { name: 'fig-4-experiment-setup',    html: htmlFig9() },
+    { name: 'fig-5-avg-wait-time',       html: htmlFig3() },
+    { name: 'fig-6-mlfq-vs-fcfs',        html: htmlFig4() },
+    { name: 'fig-7-ollama-tier',         html: htmlFig5() },
+    { name: 'fig-8-jfi-comparison',      html: htmlFig6() },
   ];
 
   for (const fig of figures) {
@@ -1651,15 +1649,14 @@ async function main() {
   console.log('최종보고서 그림 생성 시작 (SPEC-FIGURE-001 학술 스타일)...\n');
 
   const figures = [
-    { name: 'fig-1-algo-concepts',       fn: createFig8 },
-    { name: 'fig-2-system-architecture', fn: createFig1 },
-    { name: 'fig-3-data-flow',           fn: createFig2 },
-    { name: 'fig-4-module-structure',    fn: createFig10ModuleStructure },
-    { name: 'fig-5-experiment-setup',    fn: createFig9 },
-    { name: 'fig-6-avg-wait-time',       fn: createFig3 },
-    { name: 'fig-7-mlfq-vs-fcfs',        fn: createFig4 },
-    { name: 'fig-8-ollama-tier',         fn: createFig5 },
-    { name: 'fig-9-jfi-comparison',      fn: createFig6 },
+    { name: 'fig-1-system-architecture', fn: createFig1 },
+    { name: 'fig-2-data-flow',           fn: createFig2 },
+    { name: 'fig-3-module-structure',    fn: createFig10ModuleStructure },
+    { name: 'fig-4-experiment-setup',    fn: createFig9 },
+    { name: 'fig-5-avg-wait-time',       fn: createFig3 },
+    { name: 'fig-6-mlfq-vs-fcfs',        fn: createFig4 },
+    { name: 'fig-7-ollama-tier',         fn: createFig5 },
+    { name: 'fig-8-jfi-comparison',      fn: createFig6 },
   ];
 
   // Generate individual PPTX files

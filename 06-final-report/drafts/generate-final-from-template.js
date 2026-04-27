@@ -26,26 +26,25 @@ const JSZip = require(path.join(__dirname, 'node_modules', 'jszip'));
 const BASELINE_PATH = path.resolve(
   __dirname, '..', '..', '05-midterm-report', 'final', '260410 1128 midterm-report.docx'
 );
-const MD_PATH = path.join(__dirname, 'final-report-v13.md');
+const MD_PATH = path.join(__dirname, 'final-report-v47.md');
 const OUT_PATH = path.resolve(__dirname, '..', 'final', 'final-report.docx');
 const FIGURES_DIR = path.resolve(__dirname, '..', 'figures');
 
 const FIGURE_MAP = {
-  1: 'fig-1-algo-concepts.png',
-  2: 'fig-2-system-architecture.png',
-  3: 'fig-3-data-flow.png',
-  4: 'fig-4-module-structure.png',
-  5: 'fig-5-experiment-setup.png',
-  6: 'fig-6-avg-wait-time.png',
-  7: 'fig-7-mlfq-vs-fcfs.png',
-  8: 'fig-8-ollama-tier.png',
-  9: 'fig-9-jfi-comparison.png',
+  1: 'fig-1-system-architecture.png',
+  2: 'fig-2-data-flow.png',
+  3: 'fig-3-module-structure.png',
+  4: 'fig-4-experiment-setup.png',
+  5: 'fig-5-avg-wait-time.png',
+  6: 'fig-6-mlfq-vs-fcfs.png',
+  7: 'fig-7-ollama-tier.png',
+  8: 'fig-8-jfi-comparison.png',
 };
 
-// Keep baseline rId7 = image1.png, rId8 = image2.png. Add rId13-rId19 for image3-image9.
+// Keep baseline rId7 = image1.png, rId8 = image2.png. Add rId13-rId18 for image3-image8.
 const FIGURE_RID = {
-  1: 'rId7', 2: 'rId8', 3: 'rId13', 4: 'rId14', 5: 'rId15',
-  6: 'rId16', 7: 'rId17', 8: 'rId18', 9: 'rId19',
+  1: 'rId7', 2: 'rId8', 3: 'rId13', 4: 'rId14',
+  5: 'rId15', 6: 'rId16', 7: 'rId17', 8: 'rId18',
 };
 
 // ============================================================
@@ -684,7 +683,6 @@ function buildRels() {
     { id: 'rId16', type: 'image', target: 'media/image6.png' },
     { id: 'rId17', type: 'image', target: 'media/image7.png' },
     { id: 'rId18', type: 'image', target: 'media/image8.png' },
-    { id: 'rId19', type: 'image', target: 'media/image9.png' },
   ];
   const baseType = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
   const items = rels.map(r =>
@@ -735,8 +733,8 @@ async function main() {
   for (const f of mediaFiles) zip.remove(f);
   console.log(`  Removed ${mediaFiles.length} old media files`);
 
-  // Insert 9 new figures
-  for (let n = 1; n <= 9; n++) {
+  // Insert 8 new figures
+  for (let n = 1; n <= 8; n++) {
     const fname = FIGURE_MAP[n];
     const src = path.join(FIGURES_DIR, fname);
     if (!fs.existsSync(src)) {
