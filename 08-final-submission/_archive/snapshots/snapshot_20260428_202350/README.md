@@ -6,7 +6,7 @@
 
 ---
 
-## 폴더 구성 (v2.1.0)
+## 폴더 구성 (v2.2.0)
 
 | 경로 | 용도 |
 |------|------|
@@ -14,6 +14,8 @@
 | `source-code/` | 실행 가능한 소스코드. `package-lock.json` 포함 — 재현성 확보 |
 | `experiments/` | 실험 스크립트 + 결과 JSON (재현성 자료, `run-experiments.js`·`compute-stats.js` 등) |
 | `final-report/final-report.docx` | 최종보고서 (클래스넷 업로드용 단일 파일) |
+| `final-report/final-report.pdf` | 최종보고서 PDF (DOCX와 함께 빌드된 보존본) |
+| `final-report/figures/` | 그림 원본 (8 PPTX + 8 PNG + 통합 PPTX, 17개) — 서민지가 직접 편집 가능 |
 | `presentation/presentation.pptx` | 발표 슬라이드 |
 | `presentation/handout.pdf` | 인쇄용 핸드아웃 (발표 D-3까지 PowerPoint에서 생성) |
 | `demo/demo-scenario.md` | 시연 상세 시나리오 (QUICKSTART 이후 참조) |
@@ -38,10 +40,11 @@
 cd /path/to/졸업프로젝트
 zip -r 08-final-submission.zip 08-final-submission \
     -x "08-final-submission/_archive/*" \
-    -x "08-final-submission/.sync/*"
+    -x "08-final-submission/.sync/*" \
+    -x "*.DS_Store"
 ```
 
-`_archive/`(롤백용 자동 백업)와 `.sync/`(동기화 도구)는 제출 ZIP에서 제외합니다.
+`_archive/`(롤백용 자동 백업)와 `.sync/`(동기화 도구), macOS의 `.DS_Store`는 제출 ZIP에서 제외합니다.
 
 ### 시연 (발표장)
 
@@ -55,15 +58,31 @@ zip -r 08-final-submission.zip 08-final-submission \
 
 ## 자료 갱신 방법
 
-이 폴더는 **자동 동기화 폴더**입니다. 직접 편집하면 다음 동기화 때 덮어씌워집니다. 내용을 수정하려면 원본에서 수정 후 아래 명령을 실행하세요.
+이 폴더는 **자동 동기화 폴더**입니다. 직접 편집하면 다음 동기화 때 덮어씌워집니다. 내용을 수정하려면 원본에서 수정 후 아래 명령 중 하나를 실행하세요.
 
+### 권장: 통합 빌드 (단 한 줄)
+
+프로젝트 루트에서:
 ```bash
-cd 08-final-submission/.sync
-node sync-submission.js    # 원본에서 복사 + manifest 갱신
-node verify-submission.js  # 교차 참조 자동 검증
+make finalize    # 그림+DOCX+PDF+PPTX+handout 빌드 → 08 sync → verify (7단계 자동)
 ```
 
-원본 위치: `02-implementation/src-simple/`, `02-implementation/experiments-simple/`, `06-final-report/final/`, `07-presentation/`.
+### 부분 빌드 (변경 부위만 재빌드)
+
+```bash
+make figures   # 그림만
+make docx      # 최종보고서 DOCX만
+make pptx      # 발표 슬라이드만
+make sync      # 08 동기화만 (이미 빌드된 결과물)
+make verify    # 08 검증만
+make stale     # 08이 stale인지 점검 (mtime 비교)
+```
+
+### Stale 자동 알림
+
+매 Claude Code 세션 시작 시 자동으로 mtime 비교가 실행되어 06/07 결과물이 08의 복사본보다 새로우면 경고가 표시됩니다 (`.claude/hooks/project/check-08-stale.sh`).
+
+원본 위치: `02-implementation/src-simple/`, `02-implementation/experiments-simple/`, `06-final-report/final/`, `06-final-report/figures/`, `07-presentation/`.
 
 **예외** — 이 폴더에서 직접 유지되는 파일(sync 대상 아님):
 - `README.md` (이 파일)
