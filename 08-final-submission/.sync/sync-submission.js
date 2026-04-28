@@ -37,6 +37,12 @@ const FILE_TASKS = [
         label: '최종보고서 DOCX',
     },
     {
+        src: '06-final-report/final/final-report.pdf',
+        dest: 'final-report/final-report.pdf',
+        label: '최종보고서 PDF (보존본)',
+        optional: true, // PDF는 DOCX 빌드 후 LibreOffice로 변환되므로 선택적
+    },
+    {
         src: '07-presentation/slides/presentation.pptx',
         dest: 'presentation/presentation.pptx',
         label: '발표 슬라이드 PPTX',
@@ -93,14 +99,15 @@ const DIR_TASKS = [
         src: '02-implementation/experiments-simple',
         dest: 'experiments',
         label: '실험 스크립트 및 결과',
-        exclude: ['.moai', '.claude'],
+        // ollama-results-llama3.2.json: 본문 미인용 백업 모델 결과 — 제외 (사용자 결정 2026-04-28)
+        exclude: ['.moai', '.claude', 'ollama-results-llama3.2.json'],
     },
     {
         src: '06-final-report/figures',
         dest: 'final-report/figures',
         label: '최종보고서 그림 원본 (편집 가능 PPTX + PNG 미리보기)',
-        // 제외: 빌드 도구·의존성. PPTX와 PNG 17개만 복사
-        exclude: ['node_modules', 'package.json', 'package-lock.json', 'generate-final-figures.js'],
+        // 제외: 빌드 도구·의존성·메타데이터. PPTX와 PNG 17개만 복사
+        exclude: ['node_modules', 'package.json', 'package-lock.json', 'generate-final-figures.js', '.gitkeep', '.moai'],
     },
     {
         src: '07-presentation/minji',
