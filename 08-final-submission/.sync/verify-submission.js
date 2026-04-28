@@ -485,6 +485,39 @@ function checkExperimentsStructure() {
     }
 }
 
+/* ===== 8. 그림 원본 (v2.2.0) ===== */
+
+function checkFiguresStructure() {
+    // v2.2.0: 그림 원본을 final-report/figures/에 동기화 — 서민지가 PPTX 직접 편집 가능
+    const figDir = path.join(SUBMISSION_DIR, 'final-report/figures');
+    if (!fs.existsSync(figDir)) {
+        fail('final-report/figures/ directory missing (expected in v2.2.0+)');
+        return;
+    }
+    // 8개 그림 × (PPTX + PNG) + 통합 PPTX = 17 파일
+    const expected = [
+        'fig-1-system-architecture.pptx', 'fig-1-system-architecture.png',
+        'fig-2-data-flow.pptx',           'fig-2-data-flow.png',
+        'fig-3-module-structure.pptx',    'fig-3-module-structure.png',
+        'fig-4-experiment-setup.pptx',    'fig-4-experiment-setup.png',
+        'fig-5-avg-wait-time.pptx',       'fig-5-avg-wait-time.png',
+        'fig-6-mlfq-vs-fcfs.pptx',        'fig-6-mlfq-vs-fcfs.png',
+        'fig-7-ollama-tier.pptx',         'fig-7-ollama-tier.png',
+        'fig-8-jfi-comparison.pptx',      'fig-8-jfi-comparison.png',
+        'final-figures.pptx',
+    ];
+    const missing = [];
+    for (const fname of expected) {
+        const full = path.join(figDir, fname);
+        if (!fs.existsSync(full)) missing.push(fname);
+    }
+    if (missing.length === 0) {
+        pass(`final-report/figures/ has all 17 files (8 PPTX + 8 PNG + integrated PPTX)`);
+    } else {
+        fail(`final-report/figures/ missing files: ${missing.join(', ')}`);
+    }
+}
+
 /* ===== 9. 원본 경로 미참조 검증 (v2.0.0) ===== */
 
 function scanLegacyPaths(relPath) {
@@ -624,6 +657,7 @@ function main() {
     checkMinjiCount();
     checkSourceCodeStructure();
     checkExperimentsStructure();
+    checkFiguresStructure();
     checkNoLegacyPathReferences();
     checkManifestIntegrity();
 

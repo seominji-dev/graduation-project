@@ -79,6 +79,7 @@ const FILE_TASKS = [
 // 디렉토리 복사 대상
 // v2.0.0: source-code/와 experiments/는 08 최상위로 이동 (v1.x에서는 final-report/ 하위)
 // 변경 이유: 서민지 시연 자립성 — 소스코드가 "보고서 첨부물"이 아닌 "실행 가능 패키지"로 인식되도록
+// v2.2.0: final-report/figures/ 추가 — 서민지가 그림 원본(PPTX)을 직접 검토·수정 가능하도록
 const DIR_TASKS = [
     {
         src: '02-implementation/src-simple',
@@ -93,6 +94,13 @@ const DIR_TASKS = [
         dest: 'experiments',
         label: '실험 스크립트 및 결과',
         exclude: ['.moai', '.claude'],
+    },
+    {
+        src: '06-final-report/figures',
+        dest: 'final-report/figures',
+        label: '최종보고서 그림 원본 (편집 가능 PPTX + PNG 미리보기)',
+        // 제외: 빌드 도구·의존성. PPTX와 PNG 17개만 복사
+        exclude: ['node_modules', 'package.json', 'package-lock.json', 'generate-final-figures.js'],
     },
     {
         src: '07-presentation/minji',

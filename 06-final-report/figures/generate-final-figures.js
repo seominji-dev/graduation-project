@@ -904,7 +904,7 @@ function createFig9(pptx) {
 
 function createFig10ModuleStructure(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 4. 모듈 구조도 (Module Structure)', {
+  slide.addText('그림 3. 모듈 구조도 (Module Structure)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.42,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -1025,22 +1025,10 @@ function createFig10ModuleStructure(pptx) {
     align: 'center', valign: 'middle'
   });
 
-  // tests box (AC-12: dashed for reference purpose only, not decorative)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 2.80, y: 4.05, w: 4.40, h: 0.45,
-    fill: { color: COLORS.WHITE },
-    line: { color: COLORS.DARK_GRAY, width: 0.5, dashType: 'dash' }
-  });
-  slide.addText('tests-simple/ (Jest 단위 테스트)', {
-    x: 2.80, y: 4.05, w: 4.40, h: 0.45,
-    fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY,
-    align: 'center', valign: 'middle'
-  });
-
   // Legend (AC-19: dark_gray text)
-  slide.addText('※ 화살표: 의존 관계 (호출 방향) | 점선: 테스트 전용', {
-    x: 0.3, y: 4.6, w: 5.0, h: 0.25,
-    fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY
+  slide.addText('※ 화살표: 의존 관계 (호출 방향)  ·  외부 의존성: Express.js (1개)', {
+    x: 0.3, y: 4.10, w: 9.4, h: 0.25,
+    fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
   });
 }
 
@@ -1540,7 +1528,7 @@ function htmlFig9() {
 function htmlFig10ModuleStructure() {
   // AC-05: no border-radius, AC-09: no rgba, AC-19: black text
   const html = `
-    <div class="fig-title">그림 4. 모듈 구조도 (Module Structure)</div>
+    <div class="fig-title">그림 3. 모듈 구조도 (Module Structure)</div>
     <div style="display:flex; flex-direction:column; align-items:center; gap:14px; padding:8px 40px;">
       <!-- Entry points: index.js (main) -> server.js (Express composition) -->
       <div style="display:flex; align-items:center; gap:10px;">
@@ -1587,12 +1575,8 @@ function htmlFig10ModuleStructure() {
           <div style="color:#333333; font-size:9px; margin-top:3px;">rateLimiter.js (요청 제한)</div>
         </div>
       </div>
-      <!-- tests: dashed (AC-12: dashed for reference/test-only scope) -->
-      <div style="border:1.5px dashed #666666; padding:7px 28px; text-align:center; color:#333333; font-size:10px; background:#FFFFFF;">
-        tests-simple/ (Jest 단위 테스트)
-      </div>
       <div style="color:#333333; font-size:9px; margin-top:2px;">
-        ※ 생산 의존성: Express.js 1개
+        외부 의존성: Express.js (1개)
       </div>
     </div>`;
   return wrapHtml(html);

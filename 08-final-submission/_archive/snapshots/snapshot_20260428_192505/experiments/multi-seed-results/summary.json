@@ -1,0 +1,88 @@
+{
+  "experimentConfig": {
+    "seeds": [
+      12345,
+      23456,
+      34567,
+      45678,
+      56789
+    ],
+    "seedCount": 5,
+    "requestCount": 500,
+    "numBursts": 25,
+    "requestsPerBurst": 20,
+    "timeSliceMs": 500,
+    "burstGapMs": 2000,
+    "processingRanges": {
+      "short": [
+        100,
+        800
+      ],
+      "medium": [
+        1200,
+        4000
+      ],
+      "long": [
+        5000,
+        10000
+      ]
+    },
+    "categoryDistribution": "40% short, 40% medium, 20% long",
+    "simulationType": "preemptive (MLFQ) vs non-preemptive (FCFS)",
+    "timestamp": "2026-04-08T02:04:09.765Z"
+  },
+  "fcfsOverall": {
+    "mean": 641535.39,
+    "min": 621497.55,
+    "max": 669850.1,
+    "count": 5
+  },
+  "mlfqOverall": {
+    "mean": 591112.99,
+    "min": 565758.49,
+    "max": 639161.21,
+    "count": 5
+  },
+  "fcfsShortResponse": {
+    "mean": 634759.46,
+    "min": 598387.94,
+    "max": 666729.92,
+    "count": 5
+  },
+  "mlfqShortResponse": {
+    "mean": 169974.01,
+    "min": 164212.61,
+    "max": 179071.29,
+    "count": 5
+  },
+  "fcfsMediumResponse": {
+    "mean": 645078.19,
+    "min": 619664.37,
+    "max": 674847.43,
+    "count": 5
+  },
+  "mlfqMediumResponse": {
+    "mean": 729167.59,
+    "min": 698873.77,
+    "max": 765354.34,
+    "count": 5
+  },
+  "fcfsLongResponse": {
+    "mean": 650228.46,
+    "min": 616000.15,
+    "max": 688911.57,
+    "count": 5
+  },
+  "mlfqLongResponse": {
+    "mean": 1226080.57,
+    "min": 1198933.13,
+    "max": 1254740.9,
+    "count": 5
+  },
+  "shortImprovement": {
+    "mean": 73.2,
+    "min": 71.76,
+    "max": 74.3,
+    "count": 5
+  }
+}
