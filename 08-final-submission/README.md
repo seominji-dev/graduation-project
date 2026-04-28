@@ -58,13 +58,29 @@ zip -r 08-final-submission.zip 08-final-submission \
 
 ## 자료 갱신 방법
 
-이 폴더는 **자동 동기화 폴더**입니다. 직접 편집하면 다음 동기화 때 덮어씌워집니다. 내용을 수정하려면 원본에서 수정 후 아래 명령을 실행하세요.
+이 폴더는 **자동 동기화 폴더**입니다. 직접 편집하면 다음 동기화 때 덮어씌워집니다. 내용을 수정하려면 원본에서 수정 후 아래 명령 중 하나를 실행하세요.
+
+### 권장: 통합 빌드 (단 한 줄)
+
+프로젝트 루트에서:
+```bash
+make finalize    # 그림+DOCX+PDF+PPTX+handout 빌드 → 08 sync → verify (7단계 자동)
+```
+
+### 부분 빌드 (변경 부위만 재빌드)
 
 ```bash
-cd 08-final-submission/.sync
-node sync-submission.js    # 원본에서 복사 + manifest 갱신
-node verify-submission.js  # 교차 참조 자동 검증
+make figures   # 그림만
+make docx      # 최종보고서 DOCX만
+make pptx      # 발표 슬라이드만
+make sync      # 08 동기화만 (이미 빌드된 결과물)
+make verify    # 08 검증만
+make stale     # 08이 stale인지 점검 (mtime 비교)
 ```
+
+### Stale 자동 알림
+
+매 Claude Code 세션 시작 시 자동으로 mtime 비교가 실행되어 06/07 결과물이 08의 복사본보다 새로우면 경고가 표시됩니다 (`.claude/hooks/project/check-08-stale.sh`).
 
 원본 위치: `02-implementation/src-simple/`, `02-implementation/experiments-simple/`, `06-final-report/final/`, `06-final-report/figures/`, `07-presentation/`.
 
