@@ -186,7 +186,7 @@ Ollama를 비롯한 대부분의 LLM 서빙 도구가 추론 중단을 지원하
 
 ### 4.2 코드 구조와 인터페이스
 
-소스 코드는 핵심 모듈과 보조 요소로 구성된다 (그림 3). 핵심 모듈은 다섯 가지로, api(REST 라우터), schedulers(4개 알고리즘), queue(메모리 대기열), storage(JSON 기록), llm(Ollama 호출)이다. 보조 요소에는 index.js(메인 진입점), server.js(Express 서버 구성 모듈), rate-limiter가 있다. `npm start`로 실행하면 index.js가 server.js의 `createServer()`를 호출해 Express 서버를 띄운다.
+소스 코드는 핵심 모듈과 보조 요소로 구성된다 (그림 3). 핵심 모듈은 다섯 가지로, api(REST API 라우터), schedulers(4개 알고리즘), queue(메모리 큐), storage(JSON 파일 저장), llm(Ollama 연동)이다. 보조 요소로는 index.js(메인 진입점), server.js(Express 서버 구성), utils/rateLimiter.js(요청 제한) 등이 있다. `npm start`로 실행하면 index.js가 server.js의 `createServer()`를 호출해 Express 서버를 띄운다.
 
 > **[그림 3] 모듈 구조도** (figures/fig-3-module-structure.pptx)
 
