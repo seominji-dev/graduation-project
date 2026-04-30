@@ -214,3 +214,9 @@ dist-ssr/
 
 # User Custom Patterns (preserved by moai update)
 tasks/portfolio-migration.md
+
+# Portfolio exclusions (added 2026-04-30)
+snapshot_*/
+_archive/
+_export/
+_gsdata_/

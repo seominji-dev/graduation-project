@@ -39,7 +39,7 @@
  *   이 스크립트는 PROJECT_ROOT(졸업프로젝트/) 기준으로 원본 파일
  *   (02-implementation/, 06-final-report/, 07-presentation/)을 읽어 08 복사본과
  *   교차 참조를 검증한다. 따라서 08 폴더만 단독으로 가진 환경(zip 해제 후 배포)에서는
- *   §A 교차 참조 검증이 전부 FAIL로 나온다. 개발자(서진석) 환경에서만 실행하고,
+ *   §A 교차 참조 검증이 전부 FAIL로 나온다. 개발자 환경에서만 실행하고,
  *   서민지 전달 패키지에는 실행 결과 manifest.yaml(verification_status)만 포함한다.
  *
  * SPEC: SPEC-PIPELINE-FINAL-001 (v1.0.0 기반, 2026-04-24)
