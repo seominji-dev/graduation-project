@@ -1,19 +1,17 @@
 /**
  * Final Report Figure Generation Script
- * Generates 7 figures as individual PPTX files + PNG screenshots
+ * Generates 5 figures as individual PPTX files + PNG screenshots
  * Refactored per SPEC-FIGURE-001: academic monochrome style (IEEE/ACM convention)
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-7 (PPTX + PNG each)
+ * Output: fig-1 ~ fig-5 (PPTX + PNG each)
  *
  * Figure numbering matches body references in final-report.md:
  *   그림 1 (3.2 아키텍처): fig-1-system-architecture (createFig1)
  *   그림 2 (3.5 데이터흐름): fig-2-data-flow         (createFig2)
- *   그림 3 (4.2 모듈구조): fig-3-module-structure    (createFig10ModuleStructure)
- *   그림 4 (5.2 대기시간): fig-4-avg-wait-time       (createFig3)
- *   그림 5 (5.3 MLFQ):    fig-5-mlfq-vs-fcfs        (createFig4)
- *   그림 6 (5.4 Ollama):  fig-6-ollama-tier         (createFig5)
- *   그림 7 (5.5 JFI):     fig-7-jfi-comparison      (createFig6)
+ *   그림 3 (4.2 모듈구조): fig-3-module-structure    (createFig3)
+ *   그림 4 (5.3 MLFQ):    fig-4-mlfq-vs-fcfs        (createFig4)
+ *   그림 5 (5.4 Ollama):  fig-5-ollama-tier         (createFig5)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -49,7 +47,7 @@ const SMALL_SIZE = 9;    // AC-18: 9pt for small labels
 function createFig1(pptx) {
   const slide = pptx.addSlide();
   // AC-27: centered bold 14pt title
-  slide.addText('그림 2. 시스템 아키텍처 (System Architecture)', {
+  slide.addText('그림 1. 시스템 아키텍처 (System Architecture)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -151,7 +149,7 @@ function createFig1(pptx) {
 
 function createFig2(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 3. 데이터 흐름도 (Data Flow)', {
+  slide.addText('그림 2. 데이터 흐름도 (Data Flow)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -303,61 +301,13 @@ function createFig2(pptx) {
   });
 }
 
-// ─── Fig 3: 알고리즘별 평균 대기시간 비교 (Bar Chart) ───
-// Data preserved: FCFS=12203, Priority=12419, MLFQ=12203, WFQ=11846 (ms)
-// AC-20: single-color bars, AC-21: horizontal gridlines only, AC-23: no annotation text
-
-function createFig3(pptx) {
-  const slide = pptx.addSlide();
-  slide.addText('그림 6. 알고리즘별 평균 대기시간 비교 (ms)', {
-    x: 0.3, y: 0.1, w: 9.4, h: 0.45,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-
-  // AC-21: subtitle in dark_gray, no italic (AC-17)
-  slide.addText('기본 실험 500건 | 4명 (등급별 1명) | 순차 도착', {
-    x: 0.3, y: 0.52, w: 9.4, h: 0.25,
-    fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
-  });
-
-  // AC-20: all bars same dark_gray color - no multi-hue
-  slide.addChart(pptx.charts.BAR, [
-    {
-      name: '평균 대기시간 (ms)',
-      labels: ['FCFS', 'Priority', 'MLFQ', 'WFQ'],
-      values: [12203, 12419, 12203, 11846]
-    }
-  ], {
-    x: 0.5, y: 0.85, w: 9.0, h: 4.35,
-    showTitle: false,
-    showValue: true,
-    dataLabelFontSize: 10,
-    dataLabelColor: COLORS.BLACK,
-    catAxisLabelFontSize: 11,
-    catAxisLabelColor: COLORS.BLACK,
-    valAxisLabelFontSize: 9,
-    valAxisLabelColor: COLORS.BLACK,
-    // AC-20: single DARK_GRAY color for all bars
-    chartColors: [COLORS.DARK_GRAY, COLORS.DARK_GRAY, COLORS.DARK_GRAY, COLORS.DARK_GRAY],
-    // AC-21: no vertical gridlines, horizontal only
-    catGridLine: { style: 'none' },
-    valGridLine: { color: 'DDDDDD', style: 'dot', size: 0.5 },
-    showLegend: false,
-    // AC-22: tick marks outside
-    catAxisLineShow: true,
-    valAxisLineShow: true,
-  });
-  // AC-23: "WFQ 최소" annotation removed. No interpretive text in figure.
-}
-
 // ─── Fig 4: MLFQ 선점형 vs FCFS (Grouped Bar Chart) ───
 // Data preserved: FCFS=[635,645,650], MLFQ=[170,729,1226] (s)
 // AC-20: grayscale series (FCFS=LIGHT_GRAY, MLFQ=DARK_GRAY), AC-03: no emotional color
 
 function createFig4(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간', {
+  slide.addText('그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -408,7 +358,7 @@ function createFig4(pptx) {
 
 function createFig5(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 8. 실서버 구독 등급별 평균 대기시간 (ms)', {
+  slide.addText('그림 5. 실서버 구독 등급별 평균 대기시간 (ms)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -457,309 +407,11 @@ function createFig5(pptx) {
   // AC-23: "Enterprise 등급: ..." annotation removed
 }
 
-// ─── Fig 6: 알고리즘별 JFI 비교 (Bar Chart) ───
-// Data preserved: FCFS=1.000, Priority=1.000, MLFQ=1.000, WFQ=0.316
-// AC-03: no emotional color, AC-20: all bars DARK_GRAY, AC-24: dashed reference at 1.0
-
-function createFig6(pptx) {
-  const slide = pptx.addSlide();
-  slide.addText("그림 9. 알고리즘별 Jain's Fairness Index (JFI) 비교", {
-    x: 0.3, y: 0.1, w: 9.4, h: 0.45,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-  slide.addText('JFI = 1.0이 완전 공정, 낮을수록 불공평', {
-    x: 0.3, y: 0.52, w: 9.4, h: 0.25,
-    fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
-  });
-
-  // AC-03: no emotional green/red, AC-20: all bars dark_gray
-  slide.addChart(pptx.charts.BAR, [
-    {
-      name: "JFI (Jain's Fairness Index)",
-      labels: ['FCFS', 'Priority', 'MLFQ', 'WFQ'],
-      values: [1.000, 1.000, 1.000, 0.316]
-    }
-  ], {
-    x: 0.5, y: 0.85, w: 9.0, h: 4.35,
-    showTitle: false,
-    showValue: true,
-    dataLabelFontSize: 11,
-    dataLabelColor: COLORS.BLACK,
-    catAxisLabelFontSize: 12,
-    catAxisLabelColor: COLORS.BLACK,
-    valAxisLabelFontSize: 9,
-    valAxisLabelColor: COLORS.BLACK,
-    valAxisMinVal: 0,
-    valAxisMaxVal: 1.2,
-    // AC-03: all same DARK_GRAY (no emotional green/red)
-    chartColors: [COLORS.DARK_GRAY, COLORS.DARK_GRAY, COLORS.DARK_GRAY, COLORS.DARK_GRAY],
-    catGridLine: { style: 'none' },
-    valGridLine: { color: 'DDDDDD', style: 'dot', size: 0.5 },
-    showLegend: false,
-  });
-
-  // AC-24: reference line label "1.0" only, no descriptive text
-  // (dashed line visual added in HTML version; PPTX note only)
-  slide.addText('── 1.0 (이상적 공정성)', {
-    x: 0.5, y: 5.28, w: 3.5, h: 0.22,
-    fontSize: 8, fontFace: FONT, color: COLORS.BLACK
-  });
-  // AC-23: WFQ annotation box removed
-}
-
-// ─── Fig 7 (internal): 알고리즘 특성 비교 요약 (Table) ───
-// (This figure is not output as fig-7; kept as createFig7 but not in the output list)
-// Data preserved: same table rows FCFS/Priority/MLFQ/WFQ with JFI values
-
-function createFig7(pptx) {
-  const slide = pptx.addSlide();
-  slide.addText('알고리즘 특성 비교 요약', {
-    x: 0.3, y: 0.1, w: 9.4, h: 0.45,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-
-  const headers = ['알고리즘', '차등 서비스', '공정성 (JFI)', '적합 상황'];
-  const rows = [
-    ['FCFS',     'X',              '1.000',    '단순 환경'],
-    ['Priority', '우선순위 기반',  '1.000',    '긴급 요청 처리'],
-    ['MLFQ',     '실행시간 기반',  '1.000',    '짧은 요청 우선'],
-    ['WFQ',      '구독 등급 기반', '0.316',    '등급별 차등 서비스'],
-  ];
-
-  const colWidths = [1.6, 2.4, 1.8, 3.0];
-  const tableX = 0.5;
-  const headerY = 0.8;
-  const rowH = 0.85;
-  const colGap = 0.05;
-
-  // Header row: ACCENT fill + white text (AC-01 allows single accent)
-  headers.forEach((h, ci) => {
-    const cx = tableX + colWidths.slice(0, ci).reduce((a, b) => a + b + colGap, 0);
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: cx, y: headerY, w: colWidths[ci], h: 0.42,
-      fill: { color: COLORS.DARK_GRAY },
-      line: { color: COLORS.BLACK, width: 0.5 }
-    });
-    slide.addText(h, {
-      x: cx, y: headerY, w: colWidths[ci], h: 0.42,
-      fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.WHITE,
-      align: 'center', valign: 'middle'
-    });
-  });
-
-  // Data rows: alternating VERY_LIGHT / WHITE fills
-  rows.forEach((row, ri) => {
-    const ry = headerY + 0.42 + ri * (rowH + 0.05);
-    const bg = ri % 2 === 0 ? COLORS.VERY_LIGHT : COLORS.WHITE;
-
-    row.forEach((cell, ci) => {
-      const cx = tableX + colWidths.slice(0, ci).reduce((a, b) => a + b + colGap, 0);
-      slide.addShape(pptx.shapes.RECTANGLE, {
-        x: cx, y: ry, w: colWidths[ci], h: rowH,
-        fill: { color: bg },
-        line: { color: COLORS.LIGHT_GRAY, width: 0.5 }
-      });
-      // AC-19: all black text, AC-17: no italic
-      slide.addText(cell, {
-        x: cx, y: ry, w: colWidths[ci], h: rowH,
-        fontSize: ci === 0 ? SUB_SIZE : BODY_SIZE,
-        fontFace: FONT,
-        bold: ci === 0,
-        color: COLORS.BLACK,
-        align: 'center', valign: 'middle'
-      });
-    });
-  });
-
-  slide.addText('JFI: 1.000 = 완전 공정 (모든 요청 동등 처리) | 0.316 = 차등 서비스 적용', {
-    x: 0.5, y: 5.3, w: 9.0, h: 0.22,
-    fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY
-  });
-}
-
-// ─── Fig 8: 스케줄링 알고리즘 개념 비교 (Concept Diagram, 2x2 grid) ───
-// Data preserved: FCFS/Priority/MLFQ/WFQ with same bullet descriptions
-// AC-28: identical internal template per panel, AC-04: no radius, AC-07: no transparency
-
-function createFig8(pptx) {
-  const slide = pptx.addSlide();
-  // AC-27: centered bold title
-  slide.addText('그림 1. 스케줄링 알고리즘 개념 비교', {
-    x: 0.3, y: 0.05, w: 9.4, h: 0.42,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-
-  // AC-28: identical cell template for all 4 panels
-  // Cell positions (2x2 grid, AC-25: grid-aligned on 0.05 inch)
-  const cellW = 4.55;
-  const cellH = 2.45;
-  const cells = [
-    { algo: 'FCFS',     x: 0.25, y: 0.55, desc: ['도착 순서대로 처리', '선착순 단순 대기열'] },
-    { algo: 'Priority', x: 5.20, y: 0.55, desc: ['우선순위 높은 요청 선처리', '(URGENT > HIGH > NORMAL > LOW)'] },
-    { algo: 'MLFQ',     x: 0.25, y: 3.10, desc: ['짧은 요청은 상위 큐 유지', '긴 요청은 하위 큐로 강등'] },
-    { algo: 'WFQ',      x: 5.20, y: 3.10, desc: ['가중치 비율로 시간 할당', 'Enterprise가 Free보다 100배 우선'] },
-  ];
-
-  cells.forEach(cell => {
-    // AC-04: RECTANGLE, AC-07: no transparency, AC-08: WHITE fill + BLACK outline
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: cell.x, y: cell.y, w: cellW, h: cellH,
-      fill: { color: COLORS.WHITE },
-      line: { color: COLORS.BLACK, width: 0.75 }
-    });
-
-    // AC-28 identical template: bold 11pt title at top, 9pt bullets below, diagram in center
-    // Algorithm name - bold, black (AC-19)
-    slide.addText(cell.algo, {
-      x: cell.x + 0.15, y: cell.y + 0.08, w: cellW - 0.3, h: 0.35,
-      fontSize: SUB_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK
-    });
-
-    // Description lines (AC-17: no italic, AC-19: dark_gray text)
-    cell.desc.forEach((d, di) => {
-      slide.addText(d, {
-        x: cell.x + 0.15, y: cell.y + 0.42 + di * 0.2, w: cellW - 0.3, h: 0.2,
-        fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
-      });
-    });
-
-    // Visual diagram section: identical height reserved per panel (AC-28)
-    const diagY = cell.y + 0.85;
-    const diagH = 1.5;
-
-    if (cell.algo === 'FCFS') {
-      // Simple queue: R1, R2, R3, R4 boxes + vector arrow (AC-14)
-      ['R1','R2','R3','R4'].forEach((r, i) => {
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: cell.x + 0.15 + i * 0.85, y: diagY + 0.45, w: 0.7, h: 0.5,
-          fill: { color: COLORS.VERY_LIGHT },
-          line: { color: COLORS.BLACK, width: 0.5 }
-        });
-        slide.addText(r, {
-          x: cell.x + 0.15 + i * 0.85, y: diagY + 0.45, w: 0.7, h: 0.5,
-          fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.BLACK, align: 'center', valign: 'middle', bold: true
-        });
-      });
-      // AC-14: thin rect as horizontal line + triangle (no unicode arrow)
-      slide.addShape(pptx.shapes.RECTANGLE, {
-        x: cell.x + 3.55, y: diagY + 0.695, w: 0.55, h: 0.01,
-        fill: { color: COLORS.BLACK }, line: { style: 'none' }
-      });
-      slide.addShape(pptx.shapes.ISOSCELES_TRIANGLE, {
-        x: cell.x + 4.05, y: diagY + 0.62, w: 0.1, h: 0.16,
-        fill: { color: COLORS.BLACK },
-        line: { color: COLORS.BLACK, width: 0.5 },
-        rotate: 90
-      });
-      slide.addText('처리', {
-        x: cell.x + 4.15, y: diagY + 0.62, w: 0.35, h: 0.22,
-        fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
-      });
-
-    } else if (cell.algo === 'Priority') {
-      // 4 priority levels as identical gray boxes with border weight difference
-      const plevels = [
-        { label: 'URGENT', lw: 1.5 },
-        { label: 'HIGH',   lw: 1.0 },
-        { label: 'NORMAL', lw: 0.75 },
-        { label: 'LOW',    lw: 0.5 },
-      ];
-      plevels.forEach((p, i) => {
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: cell.x + 0.15 + i * 1.0, y: diagY + 0.45, w: 0.85, h: 0.5,
-          fill: { color: COLORS.VERY_LIGHT },
-          line: { color: COLORS.BLACK, width: p.lw }
-        });
-        slide.addText(p.label, {
-          x: cell.x + 0.15 + i * 1.0, y: diagY + 0.45, w: 0.85, h: 0.5,
-          fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.BLACK, align: 'center', valign: 'middle', bold: true
-        });
-        // Priority number below
-        slide.addText(`P${i+1}`, {
-          x: cell.x + 0.15 + i * 1.0, y: diagY + 1.0, w: 0.85, h: 0.18,
-          fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
-        });
-      });
-
-    } else if (cell.algo === 'MLFQ') {
-      // 4 queues (Q0-Q3), grayscale shading Q0(dark) -> Q3(light), same as AC-20
-      const qs = [
-        { name: 'Q0 (1초 할당)', fill: COLORS.DARK_GRAY,  tw: 3.8, tc: COLORS.WHITE },
-        { name: 'Q1 (3초 할당)', fill: COLORS.MID_GRAY,   tw: 3.2, tc: COLORS.WHITE },
-        { name: 'Q2 (8초 할당)', fill: '999999',           tw: 2.6, tc: COLORS.BLACK },
-        { name: 'Q3 (무제한)',   fill: COLORS.LIGHT_GRAY,  tw: 2.0, tc: COLORS.BLACK },
-      ];
-      qs.forEach((q, i) => {
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: cell.x + 0.15, y: diagY + 0.3 + i * 0.33, w: q.tw, h: 0.28,
-          fill: { color: q.fill },
-          line: { color: COLORS.BLACK, width: 0.5 }
-        });
-        slide.addText(q.name, {
-          x: cell.x + 0.25, y: diagY + 0.3 + i * 0.33, w: q.tw - 0.1, h: 0.28,
-          fontSize: 8, fontFace: FONT, color: q.tc, valign: 'middle'
-        });
-      });
-      // AC-14: Demotion arrow (thin rect as vertical line + triangle), no unicode
-      slide.addShape(pptx.shapes.RECTANGLE, {
-        x: cell.x + 4.195, y: diagY + 0.3, w: 0.01, h: 0.9,
-        fill: { color: COLORS.DARK_GRAY }, line: { style: 'none' }
-      });
-      slide.addShape(pptx.shapes.ISOSCELES_TRIANGLE, {
-        x: cell.x + 4.12, y: diagY + 1.15, w: 0.16, h: 0.12,
-        fill: { color: COLORS.DARK_GRAY },
-        line: { color: COLORS.DARK_GRAY, width: 0.5 },
-        rotate: 180
-      });
-      slide.addText('강등', {
-        x: cell.x + 4.05, y: diagY + 1.28, w: 0.4, h: 0.2,
-        fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
-      });
-
-    } else if (cell.algo === 'WFQ') {
-      // Weighted bars, grayscale shading (AC-20: grayscale distinction by shade)
-      const wqs = [
-        { label: 'Enterprise (w=100)', pct: 1.00,  fill: COLORS.DARK_GRAY, tc: COLORS.WHITE },
-        { label: 'Premium (w=50)',     pct: 0.68,  fill: COLORS.MID_GRAY,  tc: COLORS.WHITE },
-        { label: 'Standard (w=10)',    pct: 0.40,  fill: COLORS.LIGHT_GRAY, tc: COLORS.BLACK },
-        { label: 'Free (w=1)',         pct: 0.22,  fill: COLORS.VERY_LIGHT, tc: COLORS.BLACK },
-      ];
-      const maxBarW = 3.9;
-      wqs.forEach((wq, i) => {
-        const bw = wq.pct * maxBarW;
-        slide.addShape(pptx.shapes.RECTANGLE, {
-          x: cell.x + 0.15, y: diagY + 0.25 + i * 0.35, w: bw, h: 0.28,
-          fill: { color: wq.fill },
-          line: { color: COLORS.BLACK, width: 0.5 }
-        });
-        slide.addText(wq.label, {
-          x: cell.x + 0.2, y: diagY + 0.25 + i * 0.35, w: bw, h: 0.28,
-          fontSize: 8, fontFace: FONT, color: wq.tc, valign: 'middle'
-        });
-      });
-    }
-  });
-
-  // Grid dividers: horizontal and vertical (BLACK stroke, thin)
-  // AC-10: 0.5pt lines
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 0.25, y: 3.02, w: 9.5, h: 0.025,
-    fill: { color: COLORS.LIGHT_GRAY }, line: { style: 'none' }
-  });
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 4.87, y: 0.55, w: 0.025, h: 4.95,
-    fill: { color: COLORS.LIGHT_GRAY }, line: { style: 'none' }
-  });
-}
-
-// ─── Fig 10: 모듈 구조도 (Module Structure) ───
+// ─── Fig 3: 모듈 구조도 (Module Structure) ───
 // Data preserved: server.js + api/ schedulers/ queue/ storage/ llm/ utils/rateLimiter.js + tests-simple/
 // AC-25: grid alignment, AC-04: no radius, AC-07: no transparency
 
-function createFig10ModuleStructure(pptx) {
+function createFig3(pptx) {
   const slide = pptx.addSlide();
   slide.addText('그림 3. 모듈 구조도 (Module Structure)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.42,
@@ -910,7 +562,7 @@ function wrapHtml(body, height) {
 </style></head><body>${body}</body></html>`;
 }
 
-// HTML for Fig2 (fig-2-system-architecture)
+// HTML for Fig1 (fig-1-system-architecture)
 // 4 layers - Rate Limiter is embedded in API layer as accent sub-box (matches body 3.2)
 function htmlFig1() {
   const layers = [
@@ -919,7 +571,7 @@ function htmlFig1() {
     { name: '스케줄러 계층 (Scheduler)',               subs: ['FCFS', 'Priority', 'MLFQ', 'WFQ'] },
     { name: '저장소/LLM 계층 (Storage/LLM)',          subs: ['메모리 큐', 'JSON 로그', 'Ollama LLM'] },
   ];
-  let html = '<div class="fig-title">그림 2. 시스템 아키텍처 (System Architecture)</div>';
+  let html = '<div class="fig-title">그림 1. 시스템 아키텍처 (System Architecture)</div>';
   html += '<div style="padding:0 48px; display:flex; flex-direction:column; gap:0;">';
   layers.forEach((layer, idx) => {
     // AC-05: border-radius:0, AC-09: no rgba, AC-08: white fill + black stroke
@@ -955,7 +607,7 @@ function htmlFig1() {
   return wrapHtml(html);
 }
 
-// HTML for Fig3 (fig-3-data-flow)
+// HTML for Fig2 (fig-2-data-flow)
 function htmlFig2() {
   const steps = [
     { label: '1. 요청 전송',                       detail: 'POST /api/requests' },
@@ -966,7 +618,7 @@ function htmlFig2() {
     { label: '6. LLM 처리',                         detail: 'Ollama API' },
     { label: '7. 결과 반환<br>+ JSON 기록',          detail: 'COMPLETED' },
   ];
-  let html = '<div class="fig-title">그림 3. 데이터 흐름도 (Data Flow)</div>';
+  let html = '<div class="fig-title">그림 2. 데이터 흐름도 (Data Flow)</div>';
   // Row 1: steps 1-4
   html += '<div style="display:flex; align-items:center; padding:4px 20px; gap:0;">';
   steps.slice(0, 4).forEach((step, i) => {
@@ -1023,54 +675,7 @@ function htmlFig2() {
   return wrapHtml(html);
 }
 
-// HTML for Fig6 (fig-6-avg-wait-time)
-function htmlFig3() {
-  const data = [
-    { label: 'FCFS',     value: 12203 },
-    { label: 'Priority', value: 12419 },
-    { label: 'MLFQ',     value: 12203 },
-    { label: 'WFQ',      value: 11846 },
-  ];
-  const maxVal = 13000;
-  const chartH = 460;
-
-  let html = '<div class="fig-title">그림 6. 알고리즘별 평균 대기시간 비교 (ms)</div>';
-  html += '<div class="fig-subtitle">기본 실험 500건 | 4명 (등급별 1명) | 순차 도착</div>';
-  // AC-21: horizontal only gridlines (drawn as CSS divs)
-  html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 80px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
-  // AC-21: horizontal gridlines only, light-gray
-  [0.25, 0.50, 0.75, 1.0].forEach(pct => {
-    const botPct = pct * 100;
-    html += `<div style="position:absolute; left:0; right:0; bottom:${botPct}%; border-top:0.5px solid #DDDDDD; pointer-events:none;"></div>`;
-  });
-  // AC-24: reference line (dashed), labeled "avg: NNNNms" (numeric only)
-  const avgMs = Math.round(data.reduce((a,b)=>a+b.value,0)/data.length);
-  const refPct = (avgMs / maxVal) * 100;
-  html += `<div style="position:absolute; left:0; right:0; bottom:${refPct}%; border-top:1px dashed #666666; pointer-events:none; z-index:2;"></div>`;
-  html += `<div style="position:absolute; right:4px; bottom:${refPct+0.5}%; font-size:10px; color:#333333; z-index:2;">평균 ${avgMs.toLocaleString()} ms</div>`;
-  data.forEach(d => {
-    const barH = Math.round((d.value / maxVal) * chartH);
-    html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; z-index:1;">`;
-    // AC-20: single dark_gray color, AC-22: numeric label above bar only
-    html += `<div style="font-size:13px; color:#333333; font-weight:bold; margin-bottom:4px;">${d.value.toLocaleString()}</div>`;
-    // AC-06: rectangular top (no border-radius), AC-05: no border-radius
-    html += `<div style="width:80%; height:${barH}px; background:#333333;"></div>`;
-    html += `</div>`;
-  });
-  html += '</div>';
-  html += '<div style="display:flex; gap:48px; padding:6px 80px;">';
-  data.forEach(d => {
-    // AC-22: x-axis labels black
-    html += `<div style="flex:1; text-align:center; font-size:13px; font-weight:bold; color:#000000;">${d.label}</div>`;
-  });
-  html += '</div>';
-  // AC-21: y-axis label
-  html += '<div style="padding:0 80px; font-size:10px; color:#333333;">단위: ms</div>';
-  // AC-23: no "WFQ 최소" annotation
-  return wrapHtml(html);
-}
-
-// HTML for Fig7 (fig-7-mlfq-vs-fcfs)
+// HTML for Fig4 (fig-4-mlfq-vs-fcfs)
 function htmlFig4() {
   const categories = ['짧은 요청 (Short)', '중간 요청 (Medium)', '긴 요청 (Long)'];
   const fcfs  = [635, 645, 650];
@@ -1078,7 +683,7 @@ function htmlFig4() {
   const maxVal = 1400;
   const chartH = 420;
 
-  let html = '<div class="fig-title">그림 7. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간</div>';
+  let html = '<div class="fig-title">그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간</div>';
   html += '<div class="fig-subtitle">5시드 평균 | 버스트 패턴 | 단위: 초(s)</div>';
 
   html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 60px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
@@ -1122,7 +727,7 @@ function htmlFig4() {
   return wrapHtml(html);
 }
 
-// HTML for Fig8 (fig-8-ollama-tier)
+// HTML for Fig5 (fig-5-ollama-tier)
 function htmlFig5() {
   const tiers = ['Enterprise', 'Premium', 'Standard', 'Free'];
   const fcfsVals     = [432, 1480, 2522, 3561];
@@ -1137,7 +742,7 @@ function htmlFig5() {
     { name: 'WFQ',      vals: wfqVals,      fill: '#CCCCCC', tc: '#000000' },
   ];
 
-  let html = '<div class="fig-title">그림 8. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
+  let html = '<div class="fig-title">그림 5. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
   html += '<div class="fig-subtitle">Ollama 실서버 실험 20건 | 단위: ms</div>';
   html += `<div style="display:flex; align-items:flex-end; gap:32px; padding:0 40px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
   // AC-21: horizontal gridlines
@@ -1174,158 +779,8 @@ function htmlFig5() {
   return wrapHtml(html);
 }
 
-// HTML for Fig9 (fig-9-jfi-comparison)
-function htmlFig6() {
-  const data = [
-    { label: 'FCFS',     value: 1.000 },
-    { label: 'Priority', value: 1.000 },
-    { label: 'MLFQ',     value: 1.000 },
-    { label: 'WFQ',      value: 0.316 },
-  ];
-  const maxVal = 1.1;
-  const chartH = 440;
-
-  let html = '<div class="fig-title">그림 9. 알고리즘별 Jain\'s Fairness Index (JFI) 비교</div>';
-  html += '<div class="fig-subtitle">JFI = 1.0이 완전 공정, 낮을수록 불공평</div>';
-  html += `<div style="display:flex; align-items:flex-end; gap:64px; padding:0 100px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
-  // AC-21: horizontal gridlines
-  [0.25, 0.50, 0.75, 1.0].forEach(pct => {
-    html += `<div style="position:absolute; left:0; right:0; bottom:${pct*100}%; border-top:0.5px solid #DDDDDD;"></div>`;
-  });
-  // AC-24: reference line at 1.0, dashed, labeled "1.0" only
-  const refPct = (1.0 / maxVal) * 100;
-  html += `<div style="position:absolute; left:0; right:0; bottom:${refPct}%; border-top:1px dashed #333333; pointer-events:none; z-index:2;"></div>`;
-  html += `<div style="position:absolute; right:4px; bottom:${refPct+0.5}%; font-size:10px; color:#333333; z-index:2;">이상적 공정값 = 1.0</div>`;
-  data.forEach(d => {
-    const barH = Math.round((d.value / maxVal) * chartH);
-    html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; z-index:1;">`;
-    // AC-22: numeric label above bar, AC-19: black/dark text
-    html += `<div style="font-size:14px; color:#333333; font-weight:bold; margin-bottom:5px;">${d.value.toFixed(3)}</div>`;
-    // AC-03: no emotional green/red, AC-20: all dark_gray, AC-06: no border-radius
-    html += `<div style="width:75%; height:${barH}px; background:#333333;"></div>`;
-    html += `</div>`;
-  });
-  html += '</div>';
-  html += '<div style="display:flex; gap:64px; padding:7px 100px;">';
-  data.forEach(d => {
-    html += `<div style="flex:1; text-align:center; font-size:13px; font-weight:bold; color:#000000;">${d.label}</div>`;
-  });
-  html += '</div>';
-  // AC-23: no "WFQ: JFI = 0.316 — 차등 서비스..." annotation
-  return wrapHtml(html);
-}
-
-// HTML for Fig7 (internal table - unused in fig output but kept for consistency)
-function htmlFig7() {
-  const rows = [
-    { algo: 'FCFS',     diff: 'X',              jfi: '1.000', fit: '단순 환경' },
-    { algo: 'Priority', diff: '우선순위 기반',  jfi: '1.000', fit: '긴급 요청 처리' },
-    { algo: 'MLFQ',     diff: '실행시간 기반',  jfi: '1.000', fit: '짧은 요청 우선' },
-    { algo: 'WFQ',      diff: '구독 등급 기반', jfi: '0.316', fit: '등급별 차등 서비스' },
-  ];
-
-  let html = '<div class="fig-title">알고리즘 특성 비교 요약</div>';
-  html += '<div style="padding:8px 40px;">';
-  // AC-05: no border-radius on header
-  html += '<div style="display:flex; background:#333333; overflow:hidden;">';
-  ['알고리즘', '차등 서비스', '공정성 (JFI)', '적합 상황'].forEach((h, i) => {
-    const flexVal = [1.5, 2, 1.5, 2.5][i];
-    html += `<div style="flex:${flexVal}; padding:10px 14px; font-size:12px; font-weight:bold; color:#FFFFFF; text-align:center;">${h}</div>`;
-  });
-  html += '</div>';
-  rows.forEach((row, ri) => {
-    // AC-09: no rgba - use solid alternating colors
-    const bg = ri % 2 === 0 ? '#F5F5F5' : '#FFFFFF';
-    html += `<div style="display:flex; background:${bg}; border:1px solid #CCCCCC; border-top:none;">`;
-    html += `<div style="flex:1.5; padding:14px; font-size:14px; font-weight:bold; color:#000000; text-align:center; border-right:1px solid #CCCCCC;">${row.algo}</div>`;
-    html += `<div style="flex:2; padding:14px; font-size:12px; color:#333333; text-align:center; border-right:1px solid #CCCCCC;">${row.diff}</div>`;
-    // AC-19: no colored text - all black
-    html += `<div style="flex:1.5; padding:14px; font-size:13px; font-weight:bold; color:#000000; text-align:center; border-right:1px solid #CCCCCC;">${row.jfi}</div>`;
-    html += `<div style="flex:2.5; padding:14px; font-size:12px; color:#000000; text-align:center;">${row.fit}</div>`;
-    html += '</div>';
-  });
-  html += '</div>';
-  html += '<div style="padding:6px 40px; font-size:10px; color:#333333;">JFI: 1.000 = 완전 공정 (모든 요청 동등 처리) | 0.316 = 차등 서비스 적용</div>';
-  return wrapHtml(html);
-}
-
-// HTML for Fig1 (fig-1-algo-concepts, 2x2 grid)
-function htmlFig8() {
-  let html = '<div class="fig-title">그림 1. 스케줄링 알고리즘 개념 비교</div>';
-  // AC-28: identical internal template per panel
-  // AC-05: border-radius:0 throughout
-  html += '<div style="display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:min-content; gap:6px; padding:0 14px 6px;">';
-
-  // FCFS panel
-  html += '<div style="border:1.5px solid #000000; padding:12px; background:#FFFFFF;">';
-  html += '<div style="font-size:13px; font-weight:bold; color:#000000;">FCFS (선착순)</div>';
-  html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">도착 순서대로 처리 — 선착순 단순 대기열</div>';
-  html += '<div style="display:flex; align-items:center; gap:0; margin-top:8px;">';
-  ['R1','R2','R3','R4'].forEach(r => {
-    // AC-05: no border-radius, AC-09: no rgba
-    html += `<div style="border:1px solid #000000; background:#F5F5F5; padding:10px 14px; font-size:11px; color:#000000; font-weight:bold;">${r}</div>`;
-  });
-  // AC-13: CSS right-triangle
-  html += '<div style="display:flex; align-items:center; margin-left:8px;">';
-  html += '<div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:11px solid #333333;"></div>';
-  html += '</div>';
-  html += '<div style="font-size:10px; color:#333333; margin-left:6px;">처리</div>';
-  html += '</div></div>';
-
-  // Priority panel
-  html += '<div style="border:1.5px solid #000000; padding:12px; background:#FFFFFF;">';
-  html += '<div style="font-size:13px; font-weight:bold; color:#000000;">Priority (우선순위)</div>';
-  html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">우선순위 높은 요청 선처리</div>';
-  html += '<div style="display:flex; gap:8px; margin-top:8px;">';
-  // AC-20: grayscale with border-weight distinction (same as PPTX version)
-  [{ n:'URGENT', lw:'2px' }, { n:'HIGH', lw:'1.5px' }, { n:'NORMAL', lw:'1px' }, { n:'LOW', lw:'0.5px' }].forEach(r => {
-    html += `<div style="border:${r.lw} solid #000000; background:#F5F5F5; padding:10px 14px; font-size:11px; font-weight:bold; color:#000000;">${r.n}</div>`;
-  });
-  html += '</div></div>';
-
-  // MLFQ panel
-  html += '<div style="border:1.5px solid #000000; padding:12px; background:#FFFFFF;">';
-  html += '<div style="font-size:13px; font-weight:bold; color:#000000;">MLFQ (다단계 피드백 큐)</div>';
-  html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">짧은 요청 우선 + 시간 초과 시 강등</div>';
-  html += '<div style="display:flex; gap:12px; margin-top:8px;">';
-  html += '<div style="flex:1;">';
-  // AC-20: Q0 dark -> Q3 light grayscale (4 queues matching 본문 표 3)
-  [
-    { n:'Q0 (1초 할당)', fill:'#333333', tc:'#FFFFFF', w:'100%' },
-    { n:'Q1 (3초 할당)', fill:'#666666', tc:'#FFFFFF', w:'85%' },
-    { n:'Q2 (8초 할당)', fill:'#999999', tc:'#000000', w:'70%' },
-    { n:'Q3 (무제한)',   fill:'#CCCCCC', tc:'#000000', w:'55%' },
-  ].forEach(q => {
-    html += `<div style="border:1px solid #000000; background:${q.fill}; padding:6px 10px; margin-bottom:5px; font-size:10px; color:${q.tc}; width:${q.w};">${q.n}</div>`;
-  });
-  html += '</div>';
-  // AC-13: CSS down-triangle for demotion
-  html += '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;">';
-  html += '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #333333;"></div>';
-  html += '<div style="font-size:9px; color:#333333; text-align:center;">강등</div>';
-  html += '</div></div></div>';
-
-  // WFQ panel
-  html += '<div style="border:1.5px solid #000000; padding:12px; background:#FFFFFF;">';
-  html += '<div style="font-size:13px; font-weight:bold; color:#000000;">WFQ (가중치 공정 큐잉)</div>';
-  html += '<div style="font-size:9px; color:#333333; margin:3px 0 8px;">가중치 비율로 시간 할당</div>';
-  // AC-20: proportional grayscale bars
-  [
-    { n:'Enterprise (w=100)', w:'95%',  fill:'#333333', tc:'#FFFFFF' },
-    { n:'Premium (w=50)',     w:'65%',  fill:'#666666', tc:'#FFFFFF' },
-    { n:'Standard (w=10)',    w:'38%',  fill:'#CCCCCC', tc:'#000000' },
-    { n:'Free (w=1)',         w:'20%',  fill:'#F5F5F5', tc:'#000000' },
-  ].forEach(t => {
-    html += `<div style="border:1px solid #000000; background:${t.fill}; padding:6px 10px; margin-bottom:5px; width:${t.w}; font-size:10px; color:${t.tc};">${t.n}</div>`;
-  });
-  html += '</div>';
-
-  html += '</div>';
-  return wrapHtml(html);
-}
-
-// HTML for Fig4 (fig-4-module-structure)
-function htmlFig10ModuleStructure() {
+// HTML for Fig3 (fig-3-module-structure)
+function htmlFig3() {
   // AC-05: no border-radius, AC-09: no rgba, AC-19: black text
   const html = `
     <div class="fig-title">그림 3. 모듈 구조도 (Module Structure)</div>
@@ -1392,11 +847,9 @@ async function generatePNGs() {
   const figures = [
     { name: 'fig-1-system-architecture', html: htmlFig1() },
     { name: 'fig-2-data-flow',           html: htmlFig2() },
-    { name: 'fig-3-module-structure',    html: htmlFig10ModuleStructure() },
-    { name: 'fig-4-avg-wait-time',       html: htmlFig3() },
-    { name: 'fig-5-mlfq-vs-fcfs',        html: htmlFig4() },
-    { name: 'fig-6-ollama-tier',         html: htmlFig5() },
-    { name: 'fig-7-jfi-comparison',      html: htmlFig6() },
+    { name: 'fig-3-module-structure',    html: htmlFig3() },
+    { name: 'fig-4-mlfq-vs-fcfs',        html: htmlFig4() },
+    { name: 'fig-5-ollama-tier',         html: htmlFig5() },
   ];
 
   for (const fig of figures) {
@@ -1434,11 +887,9 @@ async function main() {
   const figures = [
     { name: 'fig-1-system-architecture', fn: createFig1 },
     { name: 'fig-2-data-flow',           fn: createFig2 },
-    { name: 'fig-3-module-structure',    fn: createFig10ModuleStructure },
-    { name: 'fig-4-avg-wait-time',       fn: createFig3 },
-    { name: 'fig-5-mlfq-vs-fcfs',        fn: createFig4 },
-    { name: 'fig-6-ollama-tier',         fn: createFig5 },
-    { name: 'fig-7-jfi-comparison',      fn: createFig6 },
+    { name: 'fig-3-module-structure',    fn: createFig3 },
+    { name: 'fig-4-mlfq-vs-fcfs',        fn: createFig4 },
+    { name: 'fig-5-ollama-tier',         fn: createFig5 },
   ];
 
   // Generate individual PPTX files

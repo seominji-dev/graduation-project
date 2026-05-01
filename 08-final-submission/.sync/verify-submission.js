@@ -494,15 +494,13 @@ function checkFiguresStructure() {
         fail('final-report/figures/ directory missing (expected in v2.2.0+)');
         return;
     }
-    // 7개 그림 × (PPTX + PNG) + 통합 PPTX = 15 파일
+    // 5개 그림 × (PPTX + PNG) + 통합 PPTX = 11 파일
     const expected = [
         'fig-1-system-architecture.pptx', 'fig-1-system-architecture.png',
         'fig-2-data-flow.pptx',           'fig-2-data-flow.png',
         'fig-3-module-structure.pptx',    'fig-3-module-structure.png',
-        'fig-4-avg-wait-time.pptx',       'fig-4-avg-wait-time.png',
-        'fig-5-mlfq-vs-fcfs.pptx',        'fig-5-mlfq-vs-fcfs.png',
-        'fig-6-ollama-tier.pptx',         'fig-6-ollama-tier.png',
-        'fig-7-jfi-comparison.pptx',      'fig-7-jfi-comparison.png',
+        'fig-4-mlfq-vs-fcfs.pptx',        'fig-4-mlfq-vs-fcfs.png',
+        'fig-5-ollama-tier.pptx',         'fig-5-ollama-tier.png',
         'final-figures.pptx',
     ];
     const missing = [];

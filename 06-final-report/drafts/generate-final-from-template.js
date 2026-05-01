@@ -34,16 +34,13 @@ const FIGURE_MAP = {
   1: 'fig-1-system-architecture.png',
   2: 'fig-2-data-flow.png',
   3: 'fig-3-module-structure.png',
-  4: 'fig-4-avg-wait-time.png',
-  5: 'fig-5-mlfq-vs-fcfs.png',
-  6: 'fig-6-ollama-tier.png',
-  7: 'fig-7-jfi-comparison.png',
+  4: 'fig-4-mlfq-vs-fcfs.png',
+  5: 'fig-5-ollama-tier.png',
 };
 
-// Keep baseline rId7 = image1.png, rId8 = image2.png. Add rId13-rId17 for image3-image7.
+// Keep baseline rId7 = image1.png, rId8 = image2.png. Add rId13-rId15 for image3-image5.
 const FIGURE_RID = {
-  1: 'rId7', 2: 'rId8', 3: 'rId13', 4: 'rId14',
-  5: 'rId15', 6: 'rId16', 7: 'rId17',
+  1: 'rId7', 2: 'rId8', 3: 'rId13', 4: 'rId14', 5: 'rId15',
 };
 
 // ============================================================
