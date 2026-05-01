@@ -42,11 +42,10 @@ const FIGURE_MAP = {
   1: 'fig-1-system-architecture.png',
   2: 'fig-2-data-flow.png',
   3: 'fig-3-module-structure.png',
-  4: 'fig-4-experiment-setup.png',
-  5: 'fig-5-avg-wait-time.png',
-  6: 'fig-6-mlfq-vs-fcfs.png',
-  7: 'fig-7-ollama-tier.png',
-  8: 'fig-8-jfi-comparison.png',
+  4: 'fig-4-avg-wait-time.png',
+  5: 'fig-5-mlfq-vs-fcfs.png',
+  6: 'fig-6-ollama-tier.png',
+  7: 'fig-7-jfi-comparison.png',
 };
 
 // Figures directory path

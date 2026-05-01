@@ -1,20 +1,19 @@
 /**
  * Final Report Figure Generation Script
- * Generates 8 figures as individual PPTX files + PNG screenshots
+ * Generates 7 figures as individual PPTX files + PNG screenshots
  * Refactored per SPEC-FIGURE-001: academic monochrome style (IEEE/ACM convention)
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-8 (PPTX + PNG each)
+ * Output: fig-1 ~ fig-7 (PPTX + PNG each)
  *
  * Figure numbering matches body references in final-report.md:
  *   그림 1 (3.2 아키텍처): fig-1-system-architecture (createFig1)
  *   그림 2 (3.5 데이터흐름): fig-2-data-flow         (createFig2)
  *   그림 3 (4.2 모듈구조): fig-3-module-structure    (createFig10ModuleStructure)
- *   그림 4 (5.1 실험환경): fig-4-experiment-setup    (createFig9)
- *   그림 5 (5.2 대기시간): fig-5-avg-wait-time       (createFig3)
- *   그림 6 (5.3 MLFQ):    fig-6-mlfq-vs-fcfs        (createFig4)
- *   그림 7 (5.4 Ollama):  fig-7-ollama-tier         (createFig5)
- *   그림 8 (5.5 JFI):     fig-8-jfi-comparison      (createFig6)
+ *   그림 4 (5.2 대기시간): fig-4-avg-wait-time       (createFig3)
+ *   그림 5 (5.3 MLFQ):    fig-5-mlfq-vs-fcfs        (createFig4)
+ *   그림 6 (5.4 Ollama):  fig-6-ollama-tier         (createFig5)
+ *   그림 7 (5.5 JFI):     fig-7-jfi-comparison      (createFig6)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -756,148 +755,6 @@ function createFig8(pptx) {
   });
 }
 
-// ─── Fig 9: 실험 환경 구성도 (Experiment Setup) ───
-// Data preserved: 3 branches + 4-algo Scheduler Layer + 결과측정 metrics
-// AC-02: max 2 colors, AC-05: no border-radius, AC-17: no italic
-
-function createFig9(pptx) {
-  const slide = pptx.addSlide();
-  slide.addText('그림 5. 실험 환경 구성도', {
-    x: 0.3, y: 0.05, w: 9.4, h: 0.42,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-
-  // Data preserved verbatim
-  const experiments = [
-    { title: '기본 실험',       detail: '500건, 4명 (등급별 1명)\n순차 도착',    x: 0.25,  engine: '시뮬레이션' },
-    { title: 'MLFQ 선점형 실험', detail: '500건 × 5시드\n버스트 패턴', x: 3.40,  engine: '시뮬레이션' },
-    { title: '실서버 실험',     detail: '20건\nOllama llama3.2',        x: 6.55,  engine: 'Ollama LLM' },
-  ];
-
-  const expW = 3.0;
-  const expY = 0.55;
-
-  // Top: Request Generator box (AC-04: RECTANGLE, AC-08: dark fill acceptable for header)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 3.45, y: expY, w: 2.9, h: 0.55,
-    fill: { color: COLORS.DARK_GRAY },
-    line: { color: COLORS.BLACK, width: 0.75 }
-  });
-  slide.addText('요청 생성 (Request Generator)', {
-    x: 3.45, y: expY, w: 2.9, h: 0.55,
-    fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.WHITE,
-    align: 'center', valign: 'middle'
-  });
-
-  // AC-14: Arrows from generator to each experiment (thin rect + triangle)
-  experiments.forEach(exp => {
-    const expCenterX = exp.x + expW / 2;
-    const genBottom = expY + 0.55;
-    const expTop = expY + 1.05;
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: expCenterX - 0.005, y: genBottom, w: 0.01, h: expTop - genBottom - 0.1,
-      fill: { color: COLORS.DARK_GRAY }, line: { style: 'none' }
-    });
-    slide.addShape(pptx.shapes.ISOSCELES_TRIANGLE, {
-      x: expCenterX - 0.07, y: expTop - 0.12, w: 0.14, h: 0.12,
-      fill: { color: COLORS.DARK_GRAY },
-      line: { color: COLORS.DARK_GRAY, width: 0.5 },
-      rotate: 180
-    });
-  });
-
-  // Experiment boxes (AC-04: RECTANGLE, AC-07: no transparency, AC-08: white fill)
-  experiments.forEach(exp => {
-    const ey = expY + 1.05;
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: exp.x, y: ey, w: expW, h: 0.95,
-      fill: { color: COLORS.WHITE },
-      line: { color: COLORS.BLACK, width: 0.75 }
-    });
-    // AC-17: no italic, AC-19: black text
-    slide.addText(exp.title, {
-      x: exp.x + 0.05, y: ey + 0.05, w: expW - 0.1, h: 0.3,
-      fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK, align: 'center'
-    });
-    slide.addText(exp.detail, {
-      x: exp.x + 0.05, y: ey + 0.35, w: expW - 0.1, h: 0.38,
-      fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center', valign: 'middle'
-    });
-    slide.addText('엔진: ' + exp.engine, {
-      x: exp.x + 0.05, y: ey + 0.72, w: expW - 0.1, h: 0.18,
-      fontSize: 8, fontFace: FONT, color: COLORS.DARK_GRAY, align: 'center'
-    });
-  });
-
-  // AC-14: Down arrows from experiments to Scheduler Layer
-  const schedY = expY + 2.25;
-  experiments.forEach(exp => {
-    const expCenterX = exp.x + expW / 2;
-    const expBottom = expY + 1.05 + 0.95;
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: expCenterX - 0.005, y: expBottom, w: 0.01, h: schedY - expBottom - 0.1,
-      fill: { color: COLORS.DARK_GRAY }, line: { style: 'none' }
-    });
-    slide.addShape(pptx.shapes.ISOSCELES_TRIANGLE, {
-      x: expCenterX - 0.07, y: schedY - 0.12, w: 0.14, h: 0.12,
-      fill: { color: COLORS.DARK_GRAY },
-      line: { color: COLORS.DARK_GRAY, width: 0.5 },
-      rotate: 180
-    });
-  });
-
-  // Scheduler Layer box (AC-04: RECTANGLE, AC-08: white fill + black outline)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 0.25, y: schedY, w: 9.5, h: 0.72,
-    fill: { color: COLORS.VERY_LIGHT },
-    line: { color: COLORS.BLACK, width: 0.75 }
-  });
-  slide.addText('스케줄러 계층 (Scheduler Layer)', {
-    x: 0.4, y: schedY + 0.04, w: 3.5, h: 0.28,
-    fontSize: BODY_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK
-  });
-
-  // 4 algorithm boxes inside Scheduler Layer (AC-04: RECTANGLE)
-  const algos = ['FCFS', 'Priority', 'MLFQ', 'WFQ'];
-  algos.forEach((a, i) => {
-    const ax = 1.8 + i * 1.8;
-    slide.addShape(pptx.shapes.RECTANGLE, {
-      x: ax, y: schedY + 0.33, w: 1.5, h: 0.28,
-      fill: { color: COLORS.WHITE },
-      line: { color: COLORS.BLACK, width: 0.5 }
-    });
-    slide.addText(a, {
-      x: ax, y: schedY + 0.33, w: 1.5, h: 0.28,
-      fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.BLACK, align: 'center', valign: 'middle', bold: false
-    });
-  });
-
-  // AC-14: Down arrow to results (thin rect + triangle)
-  const measY = schedY + 0.72;
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 4.845, y: measY, w: 0.01, h: 0.3,
-    fill: { color: COLORS.DARK_GRAY }, line: { style: 'none' }
-  });
-  slide.addShape(pptx.shapes.ISOSCELES_TRIANGLE, {
-    x: 4.78, y: measY + 0.22, w: 0.14, h: 0.12,
-    fill: { color: COLORS.DARK_GRAY },
-    line: { color: COLORS.DARK_GRAY, width: 0.5 },
-    rotate: 180
-  });
-
-  // Results box (AC-08: VERY_LIGHT fill, data labels preserved)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: 0.25, y: measY + 0.33, w: 9.5, h: 0.62,
-    fill: { color: COLORS.VERY_LIGHT },
-    line: { color: COLORS.BLACK, width: 0.75 }
-  });
-  slide.addText('결과 측정: 평균 대기시간 · JFI · 요청 유형별 응답시간 · JSON 로그 기록', {
-    x: 0.4, y: measY + 0.33, w: 9.2, h: 0.62,
-    fontSize: BODY_SIZE, fontFace: FONT, color: COLORS.BLACK, align: 'center', valign: 'middle'
-  });
-}
-
 // ─── Fig 10: 모듈 구조도 (Module Structure) ───
 // Data preserved: server.js + api/ schedulers/ queue/ storage/ llm/ utils/rateLimiter.js + tests-simple/
 // AC-25: grid alignment, AC-04: no radius, AC-07: no transparency
@@ -1467,63 +1324,6 @@ function htmlFig8() {
   return wrapHtml(html);
 }
 
-// HTML for Fig5 (fig-5-experiment-setup)
-function htmlFig9() {
-  let html = '<div class="fig-title">그림 5. 실험 환경 구성도</div>';
-  html += '<div style="padding:4px 28px; display:flex; flex-direction:column; gap:7px;">';
-
-  // Request Generator (AC-05: no border-radius, AC-09: no rgba)
-  html += '<div style="background:#333333; color:#FFFFFF; padding:10px; text-align:center; font-size:12px; font-weight:bold;">요청 생성 (Request Generator)</div>';
-
-  // Down arrows + 3 experiment boxes
-  html += '<div style="display:flex; gap:14px;">';
-  const exps = [
-    { title: '기본 실험',       detail: '500건, 4명 (등급별 1명)\n순차 도착',    engine: '시뮬레이션' },
-    { title: 'MLFQ 선점형 실험', detail: '500건 × 5시드\n버스트 패턴', engine: '시뮬레이션' },
-    { title: '실서버 실험',     detail: '20건\nOllama llama3.2',        engine: 'Ollama LLM' },
-  ];
-  exps.forEach(exp => {
-    html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;">`;
-    // AC-13: CSS down-triangle
-    html += '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #333333;"></div>';
-    // AC-05: no border-radius, AC-09: no rgba
-    html += `<div style="border:1.5px solid #000000; padding:10px; background:#FFFFFF; width:100%; text-align:center;">`;
-    html += `<div style="font-size:11px; font-weight:bold; color:#000000; margin-bottom:3px;">${exp.title}</div>`;
-    html += `<div style="font-size:10px; color:#333333; white-space:pre-line;">${exp.detail}</div>`;
-    // AC-17: no italic for engine label
-    html += `<div style="margin-top:5px; font-size:9px; color:#333333;">엔진: ${exp.engine}</div>`;
-    html += `</div>`;
-    // Down arrow to scheduler
-    html += '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #333333;"></div>';
-    html += `</div>`;
-  });
-  html += '</div>';
-
-  // Scheduler box (AC-09: no rgba, AC-05: no border-radius)
-  html += '<div style="border:1.5px solid #000000; padding:10px; background:#F5F5F5;">';
-  html += '<div style="font-size:11px; font-weight:bold; color:#000000; margin-bottom:7px;">스케줄러 계층 (Scheduler Layer)</div>';
-  html += '<div style="display:flex; gap:10px;">';
-  ['FCFS', 'Priority', 'MLFQ', 'WFQ'].forEach(a => {
-    // AC-05: no border-radius
-    html += `<div style="flex:1; border:1px solid #000000; padding:7px; background:#FFFFFF; text-align:center; font-size:11px; font-weight:bold; color:#000000;">${a}</div>`;
-  });
-  html += '</div></div>';
-
-  // AC-13: CSS down-triangle
-  html += '<div style="text-align:center;">';
-  html += '<div style="display:inline-block; width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #333333;"></div>';
-  html += '</div>';
-
-  // Results box (AC-09: no rgba)
-  html += '<div style="border:1.5px solid #000000; padding:10px; background:#F5F5F5; text-align:center;">';
-  html += '<div style="font-size:11px; font-weight:bold; color:#000000;">결과 측정</div>';
-  html += '<div style="font-size:10px; color:#333333; margin-top:3px;">평균 대기시간 · JFI · 요청 유형별 응답시간 · JSON 로그 기록</div>';
-  html += '</div>';
-
-  html += '</div>';
-  return wrapHtml(html);
-}
-
 // HTML for Fig4 (fig-4-module-structure)
 function htmlFig10ModuleStructure() {
   // AC-05: no border-radius, AC-09: no rgba, AC-19: black text
@@ -1593,11 +1393,10 @@ async function generatePNGs() {
     { name: 'fig-1-system-architecture', html: htmlFig1() },
     { name: 'fig-2-data-flow',           html: htmlFig2() },
     { name: 'fig-3-module-structure',    html: htmlFig10ModuleStructure() },
-    { name: 'fig-4-experiment-setup',    html: htmlFig9() },
-    { name: 'fig-5-avg-wait-time',       html: htmlFig3() },
-    { name: 'fig-6-mlfq-vs-fcfs',        html: htmlFig4() },
-    { name: 'fig-7-ollama-tier',         html: htmlFig5() },
-    { name: 'fig-8-jfi-comparison',      html: htmlFig6() },
+    { name: 'fig-4-avg-wait-time',       html: htmlFig3() },
+    { name: 'fig-5-mlfq-vs-fcfs',        html: htmlFig4() },
+    { name: 'fig-6-ollama-tier',         html: htmlFig5() },
+    { name: 'fig-7-jfi-comparison',      html: htmlFig6() },
   ];
 
   for (const fig of figures) {
@@ -1636,11 +1435,10 @@ async function main() {
     { name: 'fig-1-system-architecture', fn: createFig1 },
     { name: 'fig-2-data-flow',           fn: createFig2 },
     { name: 'fig-3-module-structure',    fn: createFig10ModuleStructure },
-    { name: 'fig-4-experiment-setup',    fn: createFig9 },
-    { name: 'fig-5-avg-wait-time',       fn: createFig3 },
-    { name: 'fig-6-mlfq-vs-fcfs',        fn: createFig4 },
-    { name: 'fig-7-ollama-tier',         fn: createFig5 },
-    { name: 'fig-8-jfi-comparison',      fn: createFig6 },
+    { name: 'fig-4-avg-wait-time',       fn: createFig3 },
+    { name: 'fig-5-mlfq-vs-fcfs',        fn: createFig4 },
+    { name: 'fig-6-ollama-tier',         fn: createFig5 },
+    { name: 'fig-7-jfi-comparison',      fn: createFig6 },
   ];
 
   // Generate individual PPTX files
