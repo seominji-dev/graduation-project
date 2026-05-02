@@ -1,17 +1,16 @@
 /**
  * Final Report Figure Generation Script
- * Generates 5 figures as individual PPTX files + PNG screenshots
+ * Generates 4 figures as individual PPTX files + PNG screenshots
  * Refactored per SPEC-FIGURE-001: academic monochrome style (IEEE/ACM convention)
  *
  * Usage: node generate-final-figures.js
- * Output: fig-1 ~ fig-5 (PPTX + PNG each)
+ * Output: fig-1 ~ fig-4 (PPTX + PNG each)
  *
  * Figure numbering matches body references in final-report.md:
  *   그림 1 (3.2 아키텍처): fig-1-system-architecture (createFig1)
  *   그림 2 (3.5 데이터흐름): fig-2-data-flow         (createFig2)
  *   그림 3 (4.2 모듈구조): fig-3-module-structure    (createFig3)
- *   그림 4 (5.3 MLFQ):    fig-4-mlfq-vs-fcfs        (createFig4)
- *   그림 5 (5.4 Ollama):  fig-5-ollama-tier         (createFig5)
+ *   그림 4 (5.4 Ollama):  fig-4-ollama-tier         (createFig5)
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -301,64 +300,13 @@ function createFig2(pptx) {
   });
 }
 
-// ─── Fig 4: MLFQ 선점형 vs FCFS (Grouped Bar Chart) ───
-// Data preserved: FCFS=[635,645,650], MLFQ=[170,729,1226] (s)
-// AC-20: grayscale series (FCFS=LIGHT_GRAY, MLFQ=DARK_GRAY), AC-03: no emotional color
-
-function createFig4(pptx) {
-  const slide = pptx.addSlide();
-  slide.addText('그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간', {
-    x: 0.3, y: 0.1, w: 9.4, h: 0.45,
-    fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
-    align: 'center'
-  });
-  slide.addText('5시드 평균 | 버스트 패턴 | 단위: 초(s)', {
-    x: 0.3, y: 0.52, w: 9.4, h: 0.25,
-    fontSize: SMALL_SIZE, fontFace: FONT, color: COLORS.DARK_GRAY
-  });
-
-  // AC-20: FCFS=LIGHT_GRAY, MLFQ=DARK_GRAY (grayscale series distinction)
-  slide.addChart(pptx.charts.BAR, [
-    {
-      name: 'FCFS',
-      labels: ['짧은 요청 (Short)', '중간 요청 (Medium)', '긴 요청 (Long)'],
-      values: [635, 645, 650]
-    },
-    {
-      name: 'MLFQ (선점형)',
-      labels: ['짧은 요청 (Short)', '중간 요청 (Medium)', '긴 요청 (Long)'],
-      values: [170, 729, 1226]
-    }
-  ], {
-    x: 0.5, y: 0.85, w: 8.5, h: 4.35,
-    showTitle: false,
-    showValue: true,
-    dataLabelFontSize: 10,
-    dataLabelColor: COLORS.BLACK,
-    catAxisLabelFontSize: 11,
-    catAxisLabelColor: COLORS.BLACK,
-    valAxisLabelFontSize: 9,
-    valAxisLabelColor: COLORS.BLACK,
-    // AC-20: grayscale - FCFS light, MLFQ dark
-    chartColors: [COLORS.LIGHT_GRAY, COLORS.DARK_GRAY],
-    catGridLine: { style: 'none' },
-    valGridLine: { color: 'DDDDDD', style: 'dot', size: 0.5 },
-    showLegend: true,
-    legendPos: 'b',
-    legendFontSize: 10,
-    legendFontColor: COLORS.BLACK,
-    barGrouping: 'clustered',
-  });
-  // AC-23: "73% 감소" annotation removed
-}
-
 // ─── Fig 5: 실서버 구독 등급별 평균 대기시간 (Grouped Bar Chart) ───
 // Data (gemma4:e4b): FCFS=[432,1480,2522,3561], Priority=[664,1333,2541,3371], WFQ=[410,1458,2496,3542]
 // AC-20: 3 grayscale shades: FCFS=BLACK, Priority=MID_GRAY, WFQ=LIGHT_GRAY
 
 function createFig5(pptx) {
   const slide = pptx.addSlide();
-  slide.addText('그림 5. 실서버 구독 등급별 평균 대기시간 (ms)', {
+  slide.addText('그림 4. 실서버 구독 등급별 평균 대기시간 (ms)', {
     x: 0.3, y: 0.1, w: 9.4, h: 0.45,
     fontSize: TITLE_SIZE, fontFace: FONT, bold: true, color: COLORS.BLACK,
     align: 'center'
@@ -675,58 +623,6 @@ function htmlFig2() {
   return wrapHtml(html);
 }
 
-// HTML for Fig4 (fig-4-mlfq-vs-fcfs)
-function htmlFig4() {
-  const categories = ['짧은 요청 (Short)', '중간 요청 (Medium)', '긴 요청 (Long)'];
-  const fcfs  = [635, 645, 650];
-  const mlfq  = [170, 729, 1226];
-  const maxVal = 1400;
-  const chartH = 420;
-
-  let html = '<div class="fig-title">그림 4. MLFQ 선점형 vs FCFS — 요청 유형별 응답시간</div>';
-  html += '<div class="fig-subtitle">5시드 평균 | 버스트 패턴 | 단위: 초(s)</div>';
-
-  html += `<div style="display:flex; align-items:flex-end; gap:48px; padding:0 60px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
-  // AC-21: horizontal gridlines
-  [0.25, 0.50, 0.75, 1.0].forEach(pct => {
-    html += `<div style="position:absolute; left:0; right:0; bottom:${pct*100}%; border-top:0.5px solid #DDDDDD;"></div>`;
-  });
-  categories.forEach((cat, i) => {
-    const fH = Math.round((fcfs[i] / maxVal) * chartH);
-    const mH = Math.round((mlfq[i] / maxVal) * chartH);
-    html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; z-index:1;">`;
-    html += `<div style="display:flex; align-items:flex-end; gap:6px; height:100%; width:100%; justify-content:center;">`;
-    // AC-20: FCFS=LIGHT_GRAY, MLFQ=DARK_GRAY, AC-06: no border-radius
-    html += `<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; flex:1; height:100%;">`;
-    html += `<div style="font-size:11px; color:#333333; font-weight:bold; margin-bottom:3px;">${fcfs[i]}</div>`;
-    html += `<div style="width:90%; height:${fH}px; background:#CCCCCC;"></div>`;
-    html += `</div>`;
-    // AC-20: MLFQ darker
-    html += `<div style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; flex:1; height:100%;">`;
-    html += `<div style="font-size:11px; color:#000000; font-weight:bold; margin-bottom:3px;">${mlfq[i]}</div>`;
-    html += `<div style="width:90%; height:${mH}px; background:#333333;"></div>`;
-    html += `</div>`;
-    html += `</div></div>`;
-  });
-  html += '</div>';
-
-  // Category labels
-  html += '<div style="display:flex; gap:48px; padding:6px 60px;">';
-  categories.forEach(cat => {
-    html += `<div style="flex:1; text-align:center; font-size:11px; color:#000000;">${cat}</div>`;
-  });
-  html += '</div>';
-
-  // Legend (AC-20: grayscale swatches, AC-19: black text)
-  html += '<div style="display:flex; justify-content:center; gap:32px; padding:6px 0;">';
-  // AC-05: no border-radius on legend swatches
-  html += '<div style="display:flex; align-items:center; gap:8px;"><div style="width:20px; height:12px; background:#CCCCCC;"></div><span style="font-size:11px; color:#000000;">FCFS</span></div>';
-  html += '<div style="display:flex; align-items:center; gap:8px;"><div style="width:20px; height:12px; background:#333333;"></div><span style="font-size:11px; color:#000000;">MLFQ (선점형)</span></div>';
-  html += '</div>';
-  // AC-23: no "N배 개선" annotation
-  return wrapHtml(html);
-}
-
 // HTML for Fig5 (fig-5-ollama-tier)
 function htmlFig5() {
   const tiers = ['Enterprise', 'Premium', 'Standard', 'Free'];
@@ -742,7 +638,7 @@ function htmlFig5() {
     { name: 'WFQ',      vals: wfqVals,      fill: '#CCCCCC', tc: '#000000' },
   ];
 
-  let html = '<div class="fig-title">그림 5. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
+  let html = '<div class="fig-title">그림 4. 실서버 구독 등급별 평균 대기시간 (ms)</div>';
   html += '<div class="fig-subtitle">Ollama 실서버 실험 20건 | 단위: ms</div>';
   html += `<div style="display:flex; align-items:flex-end; gap:32px; padding:0 40px; height:${chartH}px; border-bottom:1.5px solid #000000; position:relative;">`;
   // AC-21: horizontal gridlines
@@ -848,8 +744,7 @@ async function generatePNGs() {
     { name: 'fig-1-system-architecture', html: htmlFig1() },
     { name: 'fig-2-data-flow',           html: htmlFig2() },
     { name: 'fig-3-module-structure',    html: htmlFig3() },
-    { name: 'fig-4-mlfq-vs-fcfs',        html: htmlFig4() },
-    { name: 'fig-5-ollama-tier',         html: htmlFig5() },
+    { name: 'fig-4-ollama-tier',         html: htmlFig5() },
   ];
 
   for (const fig of figures) {
@@ -888,8 +783,7 @@ async function main() {
     { name: 'fig-1-system-architecture', fn: createFig1 },
     { name: 'fig-2-data-flow',           fn: createFig2 },
     { name: 'fig-3-module-structure',    fn: createFig3 },
-    { name: 'fig-4-mlfq-vs-fcfs',        fn: createFig4 },
-    { name: 'fig-5-ollama-tier',         fn: createFig5 },
+    { name: 'fig-4-ollama-tier',         fn: createFig5 },
   ];
 
   // Generate individual PPTX files

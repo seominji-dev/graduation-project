@@ -42,8 +42,7 @@ const FIGURE_MAP = {
   1: 'fig-1-system-architecture.png',
   2: 'fig-2-data-flow.png',
   3: 'fig-3-module-structure.png',
-  4: 'fig-4-mlfq-vs-fcfs.png',
-  5: 'fig-5-ollama-tier.png',
+  4: 'fig-4-ollama-tier.png',
 };
 
 // Figures directory path
