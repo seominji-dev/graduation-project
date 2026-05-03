@@ -106,7 +106,7 @@ const DIR_TASKS = [
         src: '06-final-report/figures',
         dest: 'final-report/figures',
         label: '최종보고서 그림 원본 (편집 가능 PPTX + PNG 미리보기)',
-        // 제외: 빌드 도구·의존성·메타데이터. PPTX와 PNG 17개만 복사
+        // 제외: 빌드 도구·의존성·메타데이터. 그림 9개만 복사 (4 PPTX + 4 PNG + 통합 PPTX)
         exclude: ['node_modules', 'package.json', 'package-lock.json', 'generate-final-figures.js', '.gitkeep', '.moai'],
     },
     {

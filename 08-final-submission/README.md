@@ -15,7 +15,7 @@
 | `experiments/` | 실험 스크립트 + 결과 JSON (재현성 자료, `run-experiments.js`·`compute-stats.js` 등) |
 | `final-report/final-report.docx` | 최종보고서 (클래스넷 업로드용 단일 파일) |
 | `final-report/final-report.pdf` | 최종보고서 PDF (DOCX와 함께 빌드된 보존본) |
-| `final-report/figures/` | 그림 원본 (8 PPTX + 8 PNG + 통합 PPTX, 17개) — 서민지가 직접 편집 가능 |
+| `final-report/figures/` | 그림 원본 (4 PPTX + 4 PNG + 통합 PPTX, 9개) — 서민지가 직접 편집 가능 |
 | `presentation/presentation.pptx` | 발표 슬라이드 |
 | `presentation/handout.pdf` | 인쇄용 핸드아웃 (발표 D-3까지 PowerPoint에서 생성) |
 | `demo/demo-scenario.md` | 시연 상세 시나리오 (QUICKSTART 이후 참조) |

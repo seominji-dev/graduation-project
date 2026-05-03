@@ -510,7 +510,7 @@ function checkFiguresStructure() {
         if (!fs.existsSync(full)) missing.push(fname);
     }
     if (missing.length === 0) {
-        pass(`final-report/figures/ has all 17 files (8 PPTX + 8 PNG + integrated PPTX)`);
+        pass(`final-report/figures/ has all 9 files (4 PPTX + 4 PNG + integrated PPTX)`);
     } else {
         fail(`final-report/figures/ missing files: ${missing.join(', ')}`);
     }

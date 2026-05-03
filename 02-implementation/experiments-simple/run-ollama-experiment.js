@@ -266,7 +266,7 @@ async function main() {
   } catch (err) {
     console.error(`ERROR: Cannot reach Ollama at localhost:11434`);
     console.error(`Make sure Ollama is running: ollama serve`);
-    console.error(`And the model is available: ollama pull llama3.2`);
+    console.error(`And the model is available: ollama pull gemma4:e4b`);
     process.exit(1);
   }
 
