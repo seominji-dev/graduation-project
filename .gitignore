@@ -232,3 +232,13 @@ tasks/operator-*.md
 
 # Coach guide for Minji (delivered separately, not via git)
 00-서민지-시작하기*
+
+# Hidden tooling files (do NOT ship)
+.agency/
+.ai/
+.mcp.json
+.githooks/
+.github/copilot-instructions.md
+.github/prompts/
+**/.claude/
+**/.moai/
