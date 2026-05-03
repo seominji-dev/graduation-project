@@ -242,3 +242,11 @@ tasks/operator-*.md
 .github/prompts/
 **/.claude/
 **/.moai/
+
+# Older internal notes (do NOT ship)
+07-presentation/REVIEW-*.md
+07-presentation/TODO.md
+archive/graduation-docs/IMPLEMENTATION_REPORT.md
+archive/graduation-docs/CHANGELOG.md
+archive/graduation-docs/AGENTS.pdf
+archive/graduation-docs/skills_manual.md
