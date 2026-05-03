@@ -50,6 +50,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { execSync } = require('child_process');
 
 const SCRIPT_DIR = __dirname;
@@ -194,7 +195,10 @@ function checkDocxPageCount() {
         warn('DOCX page count: soffice not installed (skip; run manual check via Word or install LibreOffice)');
         return;
     }
-    const pdfTmpDir = path.join(SUBMISSION_DIR, 'final-report');
+    // BUGFIX: 이전에는 pdfTmpDir = SUBMISSION_DIR/final-report 였는데, LibreOffice가
+    // 검증용 PDF를 만들면서 보존 대상인 final-report.pdf를 덮어쓰고 finally에서 unlink로
+    // 지웠다. OS 임시 디렉토리로 분리하여 보존 PDF를 건드리지 않도록 한다.
+    const pdfTmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-pdf-'));
     const pdfPath = path.join(pdfTmpDir, 'final-report.pdf');
     try {
         execSync(
@@ -222,12 +226,10 @@ function checkDocxPageCount() {
     } catch (err) {
         fail(`DOCX page count: ${err.message.split('\n')[0]}`);
     } finally {
-        if (fs.existsSync(pdfPath)) {
-            try {
-                fs.unlinkSync(pdfPath);
-            } catch (_) {
-                /* ignore */
-            }
+        try {
+            fs.rmSync(pdfTmpDir, { recursive: true, force: true });
+        } catch (_) {
+            /* ignore */
         }
     }
 }
