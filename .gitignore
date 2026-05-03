@@ -229,3 +229,6 @@ CLAUDE.md
 tasks/
 tasks/operator-*.md
 .private-ops/
+
+# Coach guide for Minji (delivered separately, not via git)
+00-서민지-시작하기*

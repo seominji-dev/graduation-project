@@ -6,6 +6,12 @@
 
 ---
 
+## 빠른 시작
+
+핵심 자료(보고서, 발표 자료, 소스코드, 시연 가이드)는 모두 [`08-final-submission/`](08-final-submission/) 폴더에 통합되어 있습니다. 시연 환경 구축은 [`08-final-submission/QUICKSTART.md`](08-final-submission/QUICKSTART.md)를 참조하세요.
+
+---
+
 ## 프로젝트 개요
 
 운영체제(OS)의 프로세스 스케줄링 알고리즘을 LLM API 요청 관리에 적용하여,
